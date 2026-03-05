@@ -1,0 +1,152 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2025  Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus Prime License Agreement,
+the Altera IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Altera and sold by Altera or its authorized distributors.  Please
+refer to the Altera Software License Subscription Agreements 
+on the Quartus Prime software download page.
+*/
+(header "graphic" (version "1.4"))
+(pin
+	(input)
+	(rect 312 248 480 264)
+	(text "INPUT" (rect 125 0 153 9)(font "Arial" (font_size 6)))
+	(text "CLOCK_50" (rect 5 0 61 10)(font "Arial" ))
+	(pt 168 8)
+	(drawing
+		(line (pt 84 12)(pt 109 12))
+		(line (pt 84 4)(pt 109 4))
+		(line (pt 113 8)(pt 168 8))
+		(line (pt 84 12)(pt 84 4))
+		(line (pt 109 4)(pt 113 8))
+		(line (pt 109 12)(pt 113 8))
+	)
+	(text "VCC" (rect 128 7 148 16)(font "Arial" (font_size 6)))
+)
+(pin
+	(input)
+	(rect 312 328 480 344)
+	(text "INPUT" (rect 125 0 153 9)(font "Arial" (font_size 6)))
+	(text "SW[7..0]" (rect 5 0 48 10)(font "Arial" ))
+	(pt 168 8)
+	(drawing
+		(line (pt 84 12)(pt 109 12))
+		(line (pt 84 4)(pt 109 4))
+		(line (pt 113 8)(pt 168 8))
+		(line (pt 84 12)(pt 84 4))
+		(line (pt 109 4)(pt 113 8))
+		(line (pt 109 12)(pt 113 8))
+	)
+	(text "VCC" (rect 128 7 148 16)(font "Arial" (font_size 6)))
+)
+(pin
+	(input)
+	(rect 312 368 480 384)
+	(text "INPUT" (rect 125 0 153 9)(font "Arial" (font_size 6)))
+	(text "KEY[1]" (rect 5 0 41 10)(font "Arial" ))
+	(pt 168 8)
+	(drawing
+		(line (pt 84 12)(pt 109 12))
+		(line (pt 84 4)(pt 109 4))
+		(line (pt 113 8)(pt 168 8))
+		(line (pt 84 12)(pt 84 4))
+		(line (pt 109 4)(pt 113 8))
+		(line (pt 109 12)(pt 113 8))
+	)
+	(text "VCC" (rect 128 7 148 16)(font "Arial" (font_size 6)))
+)
+(pin
+	(output)
+	(rect 296 288 472 304)
+	(text "OUTPUT" (rect 137 7 175 16)(font "Arial" (font_size 6)))
+	(text "LEDR[7..0]" (rect 5 6 61 16)(font "Arial" ))
+	(pt 176 8)
+	(drawing
+		(line (pt 176 8)(pt 124 8))
+		(line (pt 124 12)(pt 98 12))
+		(line (pt 124 4)(pt 98 4))
+		(line (pt 124 4)(pt 124 12))
+		(line (pt 98 12)(pt 94 8))
+		(line (pt 94 8)(pt 98 4))
+		(line (pt 98 4)(pt 94 8))
+	)
+	(rotate180)
+)
+(symbol
+	(rect 480 184 768 408)
+	(text "NiosV" (rect 126 -1 167 14)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 208 25 218)(font "Arial" ))
+	(port
+		(pt 0 72)
+		(input)
+		(text "clk_clk" (rect 0 0 37 12)(font "Arial" (font_size 8)))
+		(text "clk_clk" (rect 4 61 41 73)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 112 72))
+	)
+	(port
+		(pt 0 152)
+		(input)
+		(text "pio_sw_export[7..0]" (rect 0 0 114 12)(font "Arial" (font_size 8)))
+		(text "pio_sw_export[7..0]" (rect 4 141 118 153)(font "Arial" (font_size 8)))
+		(line (pt 0 152)(pt 112 152)(line_width 3))
+	)
+	(port
+		(pt 0 192)
+		(input)
+		(text "reset_reset_n" (rect 0 0 80 12)(font "Arial" (font_size 8)))
+		(text "reset_reset_n" (rect 4 181 84 193)(font "Arial" (font_size 8)))
+		(line (pt 0 192)(pt 112 192))
+	)
+	(port
+		(pt 0 112)
+		(output)
+		(text "pio_led_export[7..0]" (rect 0 0 112 12)(font "Arial" (font_size 8)))
+		(text "pio_led_export[7..0]" (rect 4 101 116 113)(font "Arial" (font_size 8)))
+		(line (pt 0 112)(pt 112 112)(line_width 3))
+	)
+	(drawing
+		(text "clk" (rect 97 43 114 57)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "clk" (rect 117 67 131 77)(font "Arial" (color 0 0 0)))
+		(text "pio_led" (rect 71 83 119 97)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "export" (rect 117 107 147 117)(font "Arial" (color 0 0 0)))
+		(text "pio_sw" (rect 71 123 118 137)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "export" (rect 117 147 147 157)(font "Arial" (color 0 0 0)))
+		(text "reset" (rect 83 163 116 177)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reset_n" (rect 117 187 153 197)(font "Arial" (color 0 0 0)))
+		(text " NiosV " (rect 258 208 294 218)(font "Arial" ))
+		(line (pt 112 32)(pt 176 32))
+		(line (pt 176 32)(pt 176 208))
+		(line (pt 112 208)(pt 176 208))
+		(line (pt 112 32)(pt 112 208))
+		(line (pt 113 52)(pt 113 76))
+		(line (pt 114 52)(pt 114 76))
+		(line (pt 113 92)(pt 113 116))
+		(line (pt 114 92)(pt 114 116))
+		(line (pt 113 132)(pt 113 156))
+		(line (pt 114 132)(pt 114 156))
+		(line (pt 113 172)(pt 113 196))
+		(line (pt 114 172)(pt 114 196))
+		(line (pt 0 0)(pt 288 0))
+		(line (pt 288 0)(pt 288 224))
+		(line (pt 0 224)(pt 288 224))
+		(line (pt 0 0)(pt 0 224))
+	)
+)
+(connector
+	(pt 472 296)
+	(pt 480 296)
+	(bus)
+)
