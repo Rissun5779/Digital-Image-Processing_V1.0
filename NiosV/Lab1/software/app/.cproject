@@ -21,12 +21,15 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration buildProperties="" id="de.marw.cmake.cdt.lsp.toolchain.cmake.25094913" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="de.marw.cmake.cdt.lsp.toolchain.cmake.25094913" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="de.marw.cmake.cdt.lsp.toolchain.cmake.25094913.809912737" name="/" resourcePath="">
 						<toolChain id="de.marw.cmake.cdt.lsp.toolchain.cmake.1450263305" name="CMake driven" superClass="de.marw.cmake.cdt.lsp.toolchain.cmake">
 							<targetPlatform id="de.marw.cmake.cdt.lsp.targetPlatform.cmake.806389606" name="Any Platform" superClass="de.marw.cmake.cdt.lsp.targetPlatform.cmake"/>
-							<builder buildPath="/app/build/Default" id="de.marw.cmake.cdt.lsp.builder.portable.1464363760" managedBuildOn="true" name="CMake Builder.Default" superClass="de.marw.cmake.cdt.lsp.builder.portable"/>
-							<tool id="de.marw.cmake.cdt.lsp.toolchain.tool.dummy.2081230961" name="CMake driven Languages Proxy" superClass="de.marw.cmake.cdt.lsp.toolchain.tool.dummy"/>
+							<builder buildPath="/app/build/Default" id="de.marw.cmake.cdt.lsp.builder.portable.1464363760" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CMake Builder" superClass="de.marw.cmake.cdt.lsp.builder.portable"/>
+							<tool id="de.marw.cmake.cdt.lsp.toolchain.tool.dummy.2081230961" name="CMake driven Languages Proxy" superClass="de.marw.cmake.cdt.lsp.toolchain.tool.dummy">
+								<inputType id="de.marw.cmake.cdt.lsp.inputType.c.900822215" superClass="de.marw.cmake.cdt.lsp.inputType.c"/>
+								<inputType id="de.marw.cmake.cdt.lsp.inputType.cpp.1678843486" superClass="de.marw.cmake.cdt.lsp.inputType.cpp"/>
+							</tool>
 						</toolChain>
 					</folderInfo>
 				</configuration>
@@ -37,8 +40,20 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="app.null.1713499473" name="app"/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/app"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="de.marw.cmake.cdt.lsp.toolchain.cmake.25094913;de.marw.cmake.cdt.lsp.toolchain.cmake.25094913.809912737;de.marw.cmake.cdt.lsp.toolchain.tool.dummy.2081230961;de.marw.cmake.cdt.lsp.inputType.c.900822215">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="de.marw.cmake.cdt.lsp.toolchain.cmake.25094913;de.marw.cmake.cdt.lsp.toolchain.cmake.25094913.809912737;de.marw.cmake.cdt.lsp.toolchain.tool.dummy.2081230961;de.marw.cmake.cdt.lsp.inputType.cpp.1678843486">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>

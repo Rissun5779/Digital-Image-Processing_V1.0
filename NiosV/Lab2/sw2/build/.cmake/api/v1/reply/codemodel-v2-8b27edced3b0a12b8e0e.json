@@ -1,0 +1,129 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.14"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						3,
+						4
+					]
+				},
+				{
+					"build" : "BSP",
+					"jsonFile" : "directory-BSP-Debug-906bf50ed68f3278de41.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/BSP",
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "main",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						3,
+						4
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "bsp",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "create-hex::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-create-hex-Debug-2cb7fab2a744b4c3ed43.json",
+					"name" : "create-hex",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "create-objdump::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-create-objdump-Debug-d4a34c775d60c7fd7ab5.json",
+					"name" : "create-objdump",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "hal2_bsp::@22b1fb5bb3c77ef0a0a2",
+					"jsonFile" : "target-hal2_bsp-Debug-f0cc3092dd4701047a11.json",
+					"name" : "hal2_bsp",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "main.elf::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-main.elf-Debug-57260db0a2a566a8051a.json",
+					"name" : "main.elf",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "niosv-stack-report::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-niosv-stack-report-Debug-5aaa7849a52a9b533282.json",
+					"name" : "niosv-stack-report",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/build",
+		"source" : "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/APP"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

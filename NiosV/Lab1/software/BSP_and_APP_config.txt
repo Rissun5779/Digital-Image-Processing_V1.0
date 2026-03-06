@@ -9,3 +9,6 @@ sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-stack-report /u
 
 # 連結 niosv-app (以後開發會用到)
 sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-app /usr/local/bin/niosv-app
+
+# index scanner
+/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc ${FLAGS} -E -P -v -dD "${INPUTS}"

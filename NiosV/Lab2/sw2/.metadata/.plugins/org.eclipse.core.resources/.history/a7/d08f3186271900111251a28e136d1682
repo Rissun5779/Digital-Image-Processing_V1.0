@@ -1,0 +1,13 @@
+// INC
+#include <stdio.h>
+#include <unistd.h>
+#include "system.h"
+// DEFINE
+#define LED_REG *(volatile uint32_t* PIO_LED_BASE))
+// MAIN
+int main(){
+  while(1){
+    usleep(100*1000);
+  }
+  return 0;
+}

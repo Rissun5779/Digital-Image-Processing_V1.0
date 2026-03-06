@@ -1,0 +1,18 @@
+15:04:33 **** Incremental Build of configuration Default for project APP ****
+/usr/bin/gmake -j all 
+[ 94%] Built target hal2_bsp
+[ 95%] Building C object CMakeFiles/main.elf.dir/main.c.obj
+[ 96%] Linking C executable main.elf
+[ 96%] Built target main.elf
+[100%] Creating main.elf.objdump.
+[ 97%] Reporting memory available for stack + heap in main.elf.
+[100%] Creating RAM.hex.
+[100%] Built target create-objdump
+main.elf
+ * 30.19 KB - Program size (code + initialized data).
+ * 83.95 KB - Free for stack + heap.
+[100%] Built target niosv-stack-report
+[100%] Built target create-hex
+
+15:04:34 Build Finished. 0 errors, 0 warnings. (took 577ms)
+

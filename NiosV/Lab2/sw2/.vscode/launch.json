@@ -1,0 +1,122 @@
+{
+    "configurations": [
+        {
+            "logging": {
+                "engineLogging": "error"
+            },
+            "name": "NiosV_DEBUG",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/build/main.elf",
+            "args": [],
+            "stopAtConnect": true,
+            "stopAtEntry": true,
+            "cwd": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gdb",
+            "miDebuggerServerAddress": "localhost:29002",
+            "useExtendedRemote": true,
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "setting GDB command timeout increase if the target connection is slow",
+                    "text": "set remotetimeout 5000",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "setting tcp connection timeout in seconds",
+                    "text": "set tcp connect-timeout 90",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "setting tcp retry using tcp connect-timeout",
+                    "text": "set tcp auto-retry on",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Enable non-stop mode",
+                    "text": "set non-stop on",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Enable async mode",
+                    "text": "set target-async on",
+                    "ignoreFailures": true
+                }
+            ],
+            "postRemoteConnectCommands": [
+                {
+                    "description": "Remove the default break at main inserted by cppdbg",
+                    "text": "delete 1",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set mstatus",
+                    "text": "set $mstatus = 0x1800",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Import custom instruction module",
+                    "text": "python import gdb.custominsn",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Source custom instruction Python file",
+                    "text": "source /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/share/gdb/python/gdb/custominsn.py",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Enable custom instruction display",
+                    "text": "set custom-instruction-display on",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Show custom instruction display status",
+                    "text": "show custom-instruction-display",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Pre-run command",
+                    "text": "set custom-instruction-filename /home/rissun57/intelFPGA_lite/24.1std/riscfree/debugger/gdbserver-riscv/niosv_custom_instr.xml",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Load command",
+                    "text": "load",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Break at main",
+                    "text": "-break-insert -t main",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "continue",
+                    "text": "continue",
+                    "ignoreFailures": true
+                }
+            ],
+            "debugServerPath": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/debugger/gdbserver-riscv/ash-riscv-gdb-server",
+            "debugServerArgs": "--gdb-port 29002 --transport-type jtag --device 0x02D020DD --jtag-frequency 16000KHz --tap-number 2 --core-number 0 --probe-type usb-blaster-2 --instance 1 --auto-detect true",
+            "serverLaunchTimeout": 5000,
+            "hardwareBreakpoints": {
+                "require": false,
+                "limit": 4
+            },
+            "symbolLoadInfo": {
+                "loadAll": true,
+                "exceptionList": ""
+            },
+            "metadata": {
+                "tap-label": "5CSEBA6(.|ES)/5CSEMA6/.. (0x02D020DD)",
+                "core-label": "Nios V (0x08986E00)"
+            }
+        }
+    ]
+}

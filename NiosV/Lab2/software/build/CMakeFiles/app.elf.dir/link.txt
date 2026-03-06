@@ -1,0 +1,1 @@
+/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -g -march=rv32i -mabi=ilp32 -nostdlib CMakeFiles/app.elf.dir/hello_world.c.obj -o app.elf  -T /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/hal_bsp/linker.x -nostdlib -Wl,--start-group hal_bsp/libhal2_bsp.a -lc -lstdc++ -lgcc -lm -Wl,--end-group

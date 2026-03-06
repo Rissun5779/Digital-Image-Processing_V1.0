@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "NiosV",
+            "compilerPath": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        }
+    ],
+    "version": 4
+}
