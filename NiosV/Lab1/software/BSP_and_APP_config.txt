@@ -12,3 +12,18 @@ sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-app /usr/local/
 
 # index scanner
 /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc ${FLAGS} -E -P -v -dD "${INPUTS}"
+
+# download to RAM
+niosv-download -g -r /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/app/build/app.elf 或是 其他執行檔的位置
+
+# 如果失敗版本不同用 
+trings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX | tail -5
+
+ls /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6
+
+mv /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6 /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6.bak
+
+cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6
+
+niosv-download -g -r /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/app/build/app.elf
+

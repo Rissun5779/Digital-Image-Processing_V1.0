@@ -23,7 +23,7 @@ int main(){
     }
     i = 0x80;
     while(i!=0xFF){
-      LED_REG = i;.
+      LED_REG = i;
       usleep(500*ms);
       i = (i>>1)+0x80;
     }
