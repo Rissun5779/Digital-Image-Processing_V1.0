@@ -1,0 +1,44 @@
+// INC
+#include <stdio.h>
+#include <unistd.h>
+#include "system.h"
+// DEFINE
+#define HEX_0_REG (*(volatile uint32_t*)PIO_HEX_0_BASE)
+#define HEX_1_REG (*(volatile uint32_t*)PIO_HEX_1_BASE)
+#define HEX_2_REG (*(volatile uint32_t*)PIO_HEX_2_BASE)
+#define HEX_3_REG (*(volatile uint32_t*)PIO_HEX_3_BASE)
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define SW_REG (*(volatile uint32_t*)PIO_SW_BASE)
+#define ms 1000
+// VAR
+unsigned char i;
+unsigned char seven_seg[16]={
+  0XC0, 0XF9, 0XA4, 0XB0, 0X99,
+  0X92, 0X82, 0XF8, 0X80, 0X90,
+  0x08, 0x03, 0x46, 0x21, 0x06,
+  0x0e
+};
+// MAIN
+int main(){
+  uint32_t counter = 0;
+  uint8_t  LED_REF = 0x01;
+
+  while(1){
+    HEX_0_REG = seven_seg[counter%10];
+    HEX_1_REG = seven_seg[(counter/10)%10];
+    HEX_2_REG = seven_seg[(counter/100)%10];
+    HEX_3_REG = seven_seg[(counter/1000)%10];
+    
+    if(LED_REF == 0x00){
+      LED_REF = 0x01;
+    }
+
+    LED_REG = LED_REF;
+
+    usleep(100*ms);
+    counter++;
+    LED_REF <<= 1;
+  }
+  return 0;
+}

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "bsp",
+		"source" : "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp"
+	}
+}

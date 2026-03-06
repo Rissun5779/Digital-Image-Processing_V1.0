@@ -1,0 +1,24 @@
+# # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
+# 
+preplace inst NiosV.RAM -pg 1 -lvl 3 -y 30
+preplace inst NiosV.NiosV.timer_module -pg 1
+preplace inst NiosV.JTAG_UART -pg 1 -lvl 3 -y 110
+preplace inst NiosV.PIO_LED -pg 1 -lvl 3 -y 310
+preplace inst NiosV.NiosV -pg 1 -lvl 2 -y 120
+preplace inst NiosV.CLK -pg 1 -lvl 1 -y 50
+preplace inst NiosV.PIO_SW -pg 1 -lvl 3 -y 210
+preplace inst NiosV.NiosV.hart -pg 1
+preplace inst NiosV.NiosV.clock_bridge -pg 1
+preplace inst NiosV -pg 1 -lvl 1 -y 40 -regy -20
+preplace inst NiosV.NiosV.dbg_mod -pg 1
+preplace inst NiosV.NiosV.reset_bridge -pg 1
+preplace netloc FAN_OUT<net_container>NiosV</net_container>(SLAVE)JTAG_UART.clk,(SLAVE)PIO_LED.clk,(MASTER)CLK.clk,(SLAVE)NiosV.clk,(SLAVE)PIO_SW.clk,(SLAVE)RAM.clk1) 1 1 2 270 40 680
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.reset,(SLAVE)CLK.clk_in_reset) 1 0 1 NJ
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.clk,(SLAVE)CLK.clk_in) 1 0 1 NJ
+preplace netloc FAN_OUT<net_container>NiosV</net_container>(MASTER)CLK.clk_reset,(SLAVE)RAM.reset1,(SLAVE)NiosV.reset,(SLAVE)PIO_LED.reset,(SLAVE)JTAG_UART.reset,(SLAVE)PIO_SW.reset) 1 1 2 290 60 660
+preplace netloc INTERCONNECT<net_container>NiosV</net_container>(SLAVE)RAM.s1,(SLAVE)PIO_SW.s1,(SLAVE)NiosV.timer_sw_agent,(MASTER)NiosV.data_manager,(MASTER)NiosV.instruction_manager,(SLAVE)PIO_LED.s1,(SLAVE)JTAG_UART.avalon_jtag_slave,(SLAVE)NiosV.dm_agent) 1 1 2 310 80 620
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pio_led,(SLAVE)PIO_LED.external_connection) 1 0 3 NJ 340 NJ 340 NJ
+preplace netloc POINT_TO_POINT<net_container>NiosV</net_container>(MASTER)NiosV.platform_irq_rx,(SLAVE)JTAG_UART.irq) 1 2 1 640
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)PIO_SW.external_connection,(SLAVE)NiosV.pio_sw) 1 0 3 NJ 240 NJ 240 NJ
+levelinfo -pg 1 0 60 870
+levelinfo -hier NiosV 70 100 420 710 860

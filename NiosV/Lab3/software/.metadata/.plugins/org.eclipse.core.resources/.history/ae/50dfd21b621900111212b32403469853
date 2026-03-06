@@ -1,0 +1,15 @@
+// INC
+#include <stdio.h>
+#include <unistd.h>
+#include "system.h"
+// DEFINE
+#define HEX_0 (*(volatile uint32_t*)PIO_HEX_0_BASE)
+#define HEX_1 (*(volatile uint32_t*)PIO_HEX_0_BASE)
+#define HEX_2 (*(volatile uint32_t*)PIO_HEX_0_BASE)
+#define HEX_3 (*(volatile uint32_t*)PIO_HEX_0_BASE)
+
+// MAIN
+int main(){
+
+	return 0;
+}

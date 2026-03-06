@@ -1,0 +1,12 @@
+!SESSION 2026-03-06 21:36:57.485 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=21.0.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-06 21:37:30.570
+!MESSAGE Indexed 'app' (4 sources, 0 headers) in 0.399 sec: 20 declarations; 390 references; 3 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-06 21:37:46.939
+!MESSAGE Indexed 'bsp' (85 sources, 84 headers) in 1.19 sec: 1,902 declarations; 3,801 references; 144 unresolved inclusions; 6 syntax errors; 462 unresolved names (7.5%)

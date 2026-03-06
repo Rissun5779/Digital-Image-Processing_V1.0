@@ -1,0 +1,17 @@
+// INC
+#include <stdio.h>
+#include <unistd.h>
+#include "system.h"
+// DEFINE
+#define HEX_0_REG (*(volatile uint32_t*)PIO_HEX_0_BASE)
+#define HEX_1_REG (*(volatile uint32_t*)PIO_HEX_1_BASE)
+#define HEX_2_REG (*(volatile uint32_t*)PIO_HEX_2_BASE)
+#define HEX_3_REG (*(volatile uint32_t*)PIO_HEX_3_BASE)
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define
+// MAIN
+int main(){
+
+	return 0;
+}

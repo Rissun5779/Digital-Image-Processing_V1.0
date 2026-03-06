@@ -1,0 +1,11 @@
+// INC
+#include <stdio.h>
+#include <unistd.h>
+#include "system.h"
+// DEFINE
+#define
+// MAIN
+int main(){
+
+	return 0;
+}

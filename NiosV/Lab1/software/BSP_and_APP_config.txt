@@ -27,3 +27,5 @@ cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /home/rissun57/intelFPGA_lite/24.1st
 
 niosv-download -g -r /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/app/build/app.elf
 
+# DEBUG 通道卡住
+sudo killall -9 ash-riscv-gdb-server juart-terminal riscv32-unknown-elf-gdb openocd
