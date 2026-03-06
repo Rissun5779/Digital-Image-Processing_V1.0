@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Ashling RISC-V GNU GCC toolchain",
+    "compilers": {
+      "C": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc",
+      "CXX": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-g++",
+      "ASM": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc"
+    },
+    "environmentVariables": {
+      "PATH": "/home/rissun57/intelFPGA_lite/24.1std/niosv/bin:/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin:/home/rissun57/intelFPGA_lite/24.1std/riscfree/build_tools/bin:/home/rissun57/intelFPGA_lite/24.1std/riscfree/build_tools/cmake/bin:${env:PATH}"
+    },
+    "preferredGenerator": {
+      "name": "Unix Makefiles"
+    }
+  }
+]

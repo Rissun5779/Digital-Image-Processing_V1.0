@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <unistd.h>
+
+int main(){
+	looper();
+	usleep(100*1000);
+	printf("End the Nios V world!\n");
+	fflush(stdout);
+}

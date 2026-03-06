@@ -1,0 +1,6 @@
+
+State Machine - |NiosV_top|NiosV:inst|NiosV_NiosV:niosv|NiosV_NiosV_hart:hart|niosv_c_core:core_inst|step_state
+Name step_state.STEP_IDLE step_state.STEP_TAKEN step_state.STEP_EN 
+step_state.STEP_IDLE 0 0 0 
+step_state.STEP_EN 1 0 1 
+step_state.STEP_TAKEN 1 1 0 

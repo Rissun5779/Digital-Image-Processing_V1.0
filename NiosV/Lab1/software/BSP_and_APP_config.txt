@@ -1,0 +1,11 @@
+touch ./app/hello.c
+niosv-app --bsp-dir=hal_bsp/ --app-dir=app/ --srcs=app/hello.c --elf-name=hello.elf
+
+# 連結 elf2hex
+sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/elf2hex /usr/local/bin/elf2hex
+
+# 連結 niosv-stack-report
+sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-stack-report /usr/local/bin/niosv-stack-report
+
+# 連結 niosv-app (以後開發會用到)
+sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-app /usr/local/bin/niosv-app

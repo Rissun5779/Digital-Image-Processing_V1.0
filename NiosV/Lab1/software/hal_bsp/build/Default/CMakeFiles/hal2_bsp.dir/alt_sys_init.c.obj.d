@@ -1,0 +1,27 @@
+CMakeFiles/hal2_bsp.dir/alt_sys_init.c.obj: \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/alt_sys_init.c \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/system.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/linker.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_irq.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/intel_niosv.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/alt_types.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/io.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/./system.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/alt_types.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_sys_init.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/lib/gcc/riscv32-unknown-elf/13.2.0/include/stddef.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc/altera_avalon_jtag_uart.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_alarm.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_llist.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/priv/alt_alarm.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_warning.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/os/alt_hooks.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/os/alt_sem.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/priv/alt_no_error.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/os/alt_flag.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc/altera_avalon_jtag_uart_fd.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_dev.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/sys/alt_llist.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/priv/alt_dev_llist.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/intel_niosv_c.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc/intel_niosv.h
