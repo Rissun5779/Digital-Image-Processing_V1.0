@@ -4,25 +4,25 @@ add_subdirectory(../BSP BSP)
 
 include(../BSP/toolchain.cmake)
 
-project(app)
+project(main)
 
 enable_language(ASM)
 enable_language(C)
 enable_language(CXX)
 
-add_executable(app.elf)
+add_executable(main.elf)
 
-target_sources(app.elf
+target_sources(main.elf
     PRIVATE
-        hello_world.c
+        main.c
 )
 
-target_include_directories(app.elf
+target_include_directories(main.elf
     PRIVATE
     PUBLIC
 )
 
-target_link_libraries(app.elf
+target_link_libraries(main.elf
     PRIVATE
         -T "${BspLinkerScript}" -nostdlib
         "${ExtraArchiveLibraries}"
@@ -30,11 +30,11 @@ target_link_libraries(app.elf
 )
 
 # Create objdump from ELF.
-set(objdump app.elf.objdump)
+set(objdump main.elf.objdump)
 add_custom_command(
     OUTPUT "${objdump}"
-    DEPENDS app.elf
-    COMMAND "${ToolchainObjdump}" "${ToolchainObjdumpFlags}" app.elf >
+    DEPENDS main.elf
+    COMMAND "${ToolchainObjdump}" "${ToolchainObjdumpFlags}" main.elf >
             "${objdump}"
     COMMENT "Creating ${objdump}."
     VERBATIM
@@ -43,22 +43,22 @@ add_custom_target(create-objdump ALL DEPENDS "${objdump}")
 
 # Report space free for stack + heap. Note that the file below is never created
 # so the report is always output on build.
-set(stack_report_file app.elf.stack_report)
+set(stack_report_file main.elf.stack_report)
 add_custom_command(
     OUTPUT "${stack_report_file}"
-    DEPENDS app.elf
-    COMMAND niosv-stack-report -p "${ToolchainPrefix}" app.elf
-    COMMENT "Reporting memory available for stack + heap in app.elf."
+    DEPENDS main.elf
+    COMMAND niosv-stack-report -p "${ToolchainPrefix}" main.elf
+    COMMENT "Reporting memory available for stack + heap in main.elf."
     VERBATIM
 )
 add_custom_target(niosv-stack-report ALL DEPENDS "${stack_report_file}")
 
-# Generate HEX file(s) from app.elf using elf2hex tool.
+# Generate HEX file(s) from main.elf using elf2hex tool.
 # Note : If ECC Full is enabled, width of 39 is set for NiosV TCM. Otherwise, 32.
 add_custom_command(
     OUTPUT "RAM.hex"
-    DEPENDS app.elf
-    COMMAND elf2hex app.elf -o RAM.hex -b 0x00000000 -w 32 -e 0x0001DFFF -r 4
+    DEPENDS main.elf
+    COMMAND elf2hex main.elf -o RAM.hex -b 0x00000000 -w 32 -e 0x0001DFFF -r 4
     COMMENT "Creating RAM.hex."
     VERBATIM
 )
