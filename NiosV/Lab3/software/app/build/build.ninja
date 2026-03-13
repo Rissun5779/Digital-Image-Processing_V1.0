@@ -49,9 +49,9 @@ cmake_ninja_workdir = /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/N
 
 build cmake_object_order_depends_target_app.elf: phony || cmake_object_order_depends_target_hal2_bsp
 
-build CMakeFiles/app.elf.dir/main.c.obj: C_COMPILER__app.2eelf_unscanned_Debug /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/main.c || cmake_object_order_depends_target_app.elf
+build CMakeFiles/app.elf.dir/hello_world.c.obj: C_COMPILER__app.2eelf_unscanned_Debug /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/hello_world.c || cmake_object_order_depends_target_app.elf
   DEFINES = -DALT_LOG_FLAGS=0 -D__hal__
-  DEP_FILE = CMakeFiles/app.elf.dir/main.c.obj.d
+  DEP_FILE = CMakeFiles/app.elf.dir/hello_world.c.obj.d
   FLAGS = -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32
   INCLUDES = -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/drivers/inc
   OBJECT_DIR = CMakeFiles/app.elf.dir
@@ -65,7 +65,7 @@ build CMakeFiles/app.elf.dir/main.c.obj: C_COMPILER__app.2eelf_unscanned_Debug /
 #############################################
 # Link the executable app.elf
 
-build app.elf: C_EXECUTABLE_LINKER__app.2eelf_Debug CMakeFiles/app.elf.dir/main.c.obj | /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/linker.x bsp/libhal2_bsp.a || bsp/libhal2_bsp.a
+build app.elf: C_EXECUTABLE_LINKER__app.2eelf_Debug CMakeFiles/app.elf.dir/hello_world.c.obj | /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/linker.x bsp/libhal2_bsp.a || bsp/libhal2_bsp.a
   FLAGS = -g
   LINK_FLAGS = -march=rv32i -mabi=ilp32 -nostdlib
   LINK_LIBRARIES = -T  /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/linker.x  -nostdlib  -Wl,--start-group  bsp/libhal2_bsp.a  -lc  -lstdc++  -lgcc  -lm  -Wl,--end-group

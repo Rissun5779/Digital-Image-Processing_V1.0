@@ -31,6 +31,12 @@
 },
 {
   "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
+  "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -Wa,-gdwarf2 -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/machine_trap.S.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/machine_trap.S",
+  "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/machine_trap.S",
+  "output": "CMakeFiles/hal2_bsp.dir/HAL/src/machine_trap.S.obj"
+},
+{
+  "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
   "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/alt_alarm_start.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_alarm_start.c",
   "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_alarm_start.c",
   "output": "CMakeFiles/hal2_bsp.dir/HAL/src/alt_alarm_start.c.obj"
@@ -223,6 +229,12 @@
 },
 {
   "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
+  "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/alt_gmon.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_gmon.c",
+  "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_gmon.c",
+  "output": "CMakeFiles/hal2_bsp.dir/HAL/src/alt_gmon.c.obj"
+},
+{
+  "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
   "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/alt_icache_flush.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_icache_flush.c",
   "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_icache_flush.c",
   "output": "CMakeFiles/hal2_bsp.dir/HAL/src/alt_icache_flush.c.obj"
@@ -262,6 +274,12 @@
   "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/alt_ioctl.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_ioctl.c",
   "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_ioctl.c",
   "output": "CMakeFiles/hal2_bsp.dir/HAL/src/alt_ioctl.c.obj"
+},
+{
+  "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
+  "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/alt_irq_handler.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_irq_handler.c",
+  "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/alt_irq_handler.c",
+  "output": "CMakeFiles/hal2_bsp.dir/HAL/src/alt_irq_handler.c.obj"
 },
 {
   "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
@@ -484,6 +502,12 @@
   "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/intel_niosv_irq.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/intel_niosv_irq.c",
   "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/intel_niosv_irq.c",
   "output": "CMakeFiles/hal2_bsp.dir/HAL/src/intel_niosv_irq.c.obj"
+},
+{
+  "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",
+  "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/hal2_bsp.dir/HAL/src/mtimer.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/mtimer.c",
+  "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab1/software/hal_bsp/HAL/src/mtimer.c",
+  "output": "CMakeFiles/hal2_bsp.dir/HAL/src/mtimer.c.obj"
 },
 {
   "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/build",

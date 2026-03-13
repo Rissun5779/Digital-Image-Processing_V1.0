@@ -14,7 +14,7 @@ add_executable(app.elf)
 
 target_sources(app.elf
     PRIVATE
-        main.c
+        hello_world.c
 )
 
 target_include_directories(app.elf
