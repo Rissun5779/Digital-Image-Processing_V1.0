@@ -1,9 +1,9 @@
 [
 {
   "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/build",
-  "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/app.elf.dir/main.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/main.c",
-  "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/main.c",
-  "output": "CMakeFiles/app.elf.dir/main.c.obj"
+  "command": "/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc -DALT_LOG_FLAGS=0 -D__hal__ -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/. -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/HAL/inc -I/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/bsp/drivers/inc -g -DALT_SINGLE_THREADED -Wall -Wformat-security -Wformat -fstack-protector-strong -march=rv32i -mabi=ilp32 -o CMakeFiles/app.elf.dir/hello_world.c.obj -c /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/hello_world.c",
+  "file": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/hello_world.c",
+  "output": "CMakeFiles/app.elf.dir/hello_world.c.obj"
 },
 {
   "directory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab3/software/app/build",
