@@ -1,3 +1,8 @@
 {
+<<<<<<< HEAD
     "cmake.sourceDirectory": "/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app"
+=======
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda"
+>>>>>>> 4746d04e8391dbd668a4eda8db13ed971aec5315
 }
