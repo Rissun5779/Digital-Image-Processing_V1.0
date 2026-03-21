@@ -1,0 +1,30 @@
+CONDITION,DO
+,"set_new_param PIN_TYPE_GUI ""Bidir"""
+,set_new_param SIZE [get_old_param WIDTH]
+,set_new_param gui_use_oe [get_old_param oe]
+,"set_new_param gui_diff_buff ""false"""
+,"set_new_param gui_pseudo_diff ""false"""
+,"set_new_param gui_bus_hold ""false"""
+,"set_new_param gui_open_drain ""false"""
+,"set_new_param gui_io_reg_mode ""DDIO"""
+,"set_new_param gui_hr_logic ""false"""
+,"set_new_param gui_separate_io_clks ""true"""
+"[get_old_param ACLR_INTERNAL] == ""true""","set_new_param gui_areset_mode ""Clear"""
+"[get_old_param ASET_INTERNAL] == ""true""","set_new_param gui_areset_mode ""Preset"""
+"[get_old_param ACLR_INTERNAL] == ""false"" && [get_old_param ASET_INTERNAL] == ""false""","set_new_param gui_areset_mode ""None"""
+"[get_old_param SCLR_INTERNAL] == ""true""","set_new_param gui_sreset_mode ""Clear"""
+"[get_old_param SSET_INTERNAL] == ""true""","set_new_param gui_sreset_mode ""Preset"""
+"[get_old_param SCLR_INTERNAL] == ""false"" && [get_old_param SSET_INTERNAL] == ""false""","set_new_param gui_sreset_mode ""None"""
+"[exists_old_param use_in_dynamic_delay_chain] && [get_old_param use_in_dynamic_delay_chain] == ""TRUE""","croak ""Dynamic delay chains are not supported in Altera GPIO"""
+"[exists_old_param use_out_dynamic_delay_chain1] && [get_old_param use_out_dynamic_delay_chain1] == ""TRUE""","croak ""Dynamic delay chains are not supported in Altera GPIO"""
+"[exists_old_param use_out_dynamic_delay_chain2] && [get_old_param use_out_dynamic_delay_chain2] == ""TRUE""","croak ""Dynamic delay chains are not supported in Altera GPIO"""
+,"set_new_param gui_enable_termination_ports ""false"""
+,set_new_param device_family [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param gui_enable_cke [get_old_param inclocken]
+,ignore_new_param EXT_DRIVER_PARAM
+,ignore_new_param GENERATE_SDC_FILE
+,ignore_new_param AUTO_DEVICE
+,ignore_new_param AUTO_BASE_DEVICE
+,ignore_new_param AUTO_DEVICE_SPEEDGRADE
+,"set_new_param gui_enable_migratable_port_names ""true"""
+,"set_new_param IP_MIGRATE_PORT_MAP_FILE ""altddio_bidir_port_map.csv"""

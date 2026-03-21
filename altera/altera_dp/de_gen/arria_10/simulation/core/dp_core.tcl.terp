@@ -1,0 +1,81 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part          $param0
+@@ set rx_link_rate         $param1
+@@ set rx_max_lane_count    $param2
+@@ set rx_symbols_per_clock $param3
+@@ set rx_pixels_per_clock  $param4
+@@ set rx_video_bpc         $param5
+@@ set rx_support_ss        $param6
+@@ set rx_support_audio     $param7
+@@ set rx_audio_chans       $param8
+@@ set rx_aux_gpu           $param9
+@@ set rx_support_automated_test    $param10
+@@ set rx_scrambler_seed    $param11
+@@ set rx_aux_debug         $param12
+@@ set rx_export_msa        $param13
+@@ set tx_link_rate         $param14
+@@ set tx_max_lane_count    $param15
+@@ set tx_symbols_per_clock $param16
+@@ set tx_pixels_per_clock  $param17
+@@ set tx_video_bpc         $param18
+@@ set tx_support_ss        $param19
+@@ set tx_support_audio     $param20
+@@ set tx_audio_chans       $param21
+@@ set tx_support_analog_reconfig   $param22
+@@ set tx_support_automated_test    $param23
+@@ set tx_scrambler_seed    $param24
+@@ set tx_aux_debug         $param25
+
+# qsys scripting (.tcl) file for dp_tx
+package require -exact qsys 16.0
+
+create_system {dp_core}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {false}
+
+# Instances and instance parameters
+# Instances and instance parameters
+# Reset Bridge
+add_instance reset_bridge altera_reset_bridge
+set_instance_parameter_value reset_bridge {ACTIVE_LOW_RESET} {1}
+set_instance_parameter_value reset_bridge {SYNCHRONOUS_EDGES} {none}
+# Clock Source
+add_instance clk_100 clock_source
+set_instance_parameter_value clk_100 {clockFrequency} {100000000.0}
+# Clock Source
+add_instance dp_rx dp_rx
+# DP Source
+add_instance dp_tx dp_tx
+
+# connections and connection parameters
+add_connection reset_bridge.out_reset clk_100.clk_in_reset
+add_connection clk_100.clk dp_rx.clk_100_clk_in
+add_connection clk_100.clk dp_tx.clk_100_clk_in
+
+set_instance_property reset_bridge AUTO_EXPORT {true}
+set_instance_property clk_100 AUTO_EXPORT {true}
+#set_instance_property oc_i2c_master_0 AUTO_EXPORT {true}
+set_instance_property dp_rx AUTO_EXPORT {true}
+set_instance_property dp_tx AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {dp_core.qsys}

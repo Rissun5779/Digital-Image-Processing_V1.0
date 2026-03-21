@@ -1,0 +1,159 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ set data_in_msb [expr {$in_width - 1}]
+@@ set data_out_msb [expr {$out_width - 1}]
+
+module ${output_name} (
+   input clk, 
+   input reset_n,
+@@ if { $is_variable_streaming } {
+	input [$length_msb : 0] fftpts_in,
+@@ }
+@@ if { $has_inverse } {
+	input	[0 : 0] inverse,
+@@ }
+	input	sink_valid,
+	input	sink_sop,
+	input	sink_eop,
+	input	logic [$data_in_msb : 0] sink_real,
+	input	logic [$data_in_msb : 0] sink_imag,
+	input	logic [1 : 0] sink_error,
+	input	source_ready,
+@@ if { $is_variable_streaming } {
+   output [$length_msb : 0] fftpts_out,
+@@ } else {
+   output [5 : 0] source_exp,
+@@ }
+	output sink_ready,
+	output [1 : 0] source_error,
+	output source_sop,
+	output source_eop,
+	output source_valid,
+	output [$data_out_msb : 0] source_real,
+	output [$data_out_msb : 0] source_imag
+	);
+
+@@ if { $is_variable_streaming } {
+	$module_name #(
+		.DEVICE_FAMILY_g("${device_family}"),
+		.MAX_FFTPTS_g($max_fftpts),
+		.NUM_STAGES_g($num_stages),
+		.DATAWIDTH_g($in_width),
+		.TWIDWIDTH_g($twid_width),
+		.MAX_GROW_g ($max_grow),
+		.TWIDROM_BASE_g("${output_name}_"),
+		.DSP_ROUNDING_g(0),
+		.INPUT_FORMAT_g("$in_order"),
+		.OUTPUT_FORMAT_g("$out_order"),
+		.REPRESENTATION_g("$representation"),
+		.DSP_ARCH_g($dsp_arch),
+        .PRUNE_g("${prune}") 
+	)
+	${module_name}_inst (
+		.clk(clk),
+@@ if { $is_fixed_point || $dsp_arch==3} {
+		.clk_ena(1'b1),
+@@ }
+		.reset_n(reset_n),
+		.fftpts_in(fftpts_in),
+		.fftpts_out(fftpts_out),
+@@ if { $has_inverse } {
+		.inverse(inverse[0]),
+@@ }
+		.sink_valid(sink_valid),
+		.sink_sop(sink_sop),
+		.sink_eop(sink_eop),
+		.sink_real(sink_real),
+		.sink_imag(sink_imag),
+		.sink_ready(sink_ready),
+		.sink_error(sink_error),
+		.source_error(source_error),
+		.source_ready(source_ready),
+		.source_sop(source_sop),
+		.source_eop(source_eop),
+		.source_valid(source_valid),
+		.source_real(source_real),
+		.source_imag(source_imag)
+	);
+endmodule
+@@ } else {
+	$module_name #(
+		.device_family("${device_family}"),
+		.nps($max_fftpts),
+		.bfp(1),
+		.nume($nume),
+		.mpr($in_width),
+		.twr($twid_width),
+@@ if { $in_width < 20 } {
+		.bpr(16),
+		.bpb(4),
+@@ } else {
+		.bpr(24),
+		.bpb(6),
+@@ }
+		.fpr(4),
+		.mram(0),
+		.m512(0),
+		.mult_type(1),
+		.mult_imp(0),
+		.dsp_arch($dsp_arch),
+		.srr("AUTO_SHIFT_REGISTER_RECOGNITION=OFF"),
+@@ if { $module_name eq {asj_fft_si_qe_so_b} || $module_name eq {asj_fft_si_qe_so_bb} } {
+		.X0(0),
+		.X1($x1),
+		.X2($x2),
+		.rfs1e("${output_name}_1ne${max_fftpts}sin.hex"),
+		.rfs2e("${output_name}_2ne${max_fftpts}sin.hex"),
+		.rfs3e("${output_name}_3ne${max_fftpts}sin.hex"),
+		.rfc1e("${output_name}_1ne${max_fftpts}cos.hex"),
+		.rfc2e("${output_name}_2ne${max_fftpts}cos.hex"),
+		.rfc3e("${output_name}_3ne${max_fftpts}cos.hex"),
+		.rfs1o("${output_name}_1no${max_fftpts}sin.hex"),
+		.rfs2o("${output_name}_2no${max_fftpts}sin.hex"),
+		.rfs3o("${output_name}_3no${max_fftpts}sin.hex"),
+		.rfc1o("${output_name}_1no${max_fftpts}cos.hex"),
+		.rfc2o("${output_name}_2no${max_fftpts}cos.hex"),
+		.rfc3o("${output_name}_3no${max_fftpts}cos.hex")
+@@ } else {
+		.rfs1("${output_name}_1n${max_fftpts}sin.hex"),
+		.rfs2("${output_name}_2n${max_fftpts}sin.hex"),
+		.rfs3("${output_name}_3n${max_fftpts}sin.hex"),
+		.rfc1("${output_name}_1n${max_fftpts}cos.hex"),
+		.rfc2("${output_name}_2n${max_fftpts}cos.hex"),
+		.rfc3("${output_name}_3n${max_fftpts}cos.hex")
+@@ }
+	)
+	${module_name}_inst (
+		.clk(clk),
+		.clk_ena(1'b1),
+		.reset_n(reset_n),
+		.inverse(inverse),
+		.sink_valid(sink_valid),
+		.sink_sop(sink_sop),
+		.sink_eop(sink_eop),
+		.sink_real(sink_real),
+		.sink_imag(sink_imag),
+		.sink_ready(sink_ready),
+		.sink_error(sink_error),
+		.source_error(source_error),
+		.source_ready(source_ready),
+		.source_sop(source_sop),
+		.source_eop(source_eop),
+		.source_valid(source_valid),
+		.source_exp(source_exp),
+		.source_real(source_real),
+		.source_imag(source_imag)
+	);
+endmodule
+@@ }

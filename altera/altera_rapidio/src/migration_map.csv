@@ -1,0 +1,69 @@
+CONDITION,DO
+,set_new_param deviceFamily [get_old_param INTENDED_DEVICE_FAMILY]
+,"set_new_param mode_selection ""SERIAL_1X"""
+[get_old_param p_x2_mode] == 1,"set_new_param mode_selection ""SERIAL_2X"""
+[get_old_param p_x4_mode] == 1,"set_new_param mode_selection ""SERIAL_4X"""
+,"set_new_param p_SYNC_ACKID ""false"""
+[get_old_param p_SYNC_ACKID] == 1,"set_new_param p_SYNC_ACKID ""true"""
+,"set_new_param p_SEND_RESET_DEVICE ""false"""
+[get_old_param p_SEND_RESET_DEVICE] == 1,"set_new_param p_SEND_RESET_DEVICE ""true"""
+,set_new_param p_LINK_REQUEST_ATTEMPTS  [get_old_param p_LINK_REQUEST_ATTEMPTS]
+,set_new_param p_data_rate [get_old_param p_data_rate]
+,set_new_param p_ref_clk_freq [get_old_param p_ref_clk_freq]
+,set_new_param p_RXBUFRSIZE [get_old_param p_RXBUFRSIZE]
+,set_new_param p_TXBUFRSIZE [get_old_param p_TXBUFRSIZE]
+,set_new_param p_rx_threshold_0 [get_old_param p_rx_threshold_0]
+,set_new_param p_rx_threshold_1 [get_old_param p_rx_threshold_1]
+,set_new_param p_rx_threshold_2 [get_old_param p_rx_threshold_2]
+,"set_new_param p_TRANSPORT ""false"""
+[get_old_param p_TRANSPORT] == 1,"set_new_param p_TRANSPORT ""true"""
+,"set_new_param p_TRANSPORT_LARGE ""false"""
+[get_old_param p_TRANSPORT_LARGE] == 1,"set_new_param p_TRANSPORT_LARGE ""true"""
+,"set_new_param p_GENERIC_LOGICAL ""false"""
+[get_old_param p_GENERIC_LOGICAL] == 1,"set_new_param p_GENERIC_LOGICAL ""true"""
+,"set_new_param p_PROMISCUOUS ""false"""
+[get_old_param p_PROMISCUOUS] == 1,"set_new_param p_PROMISCUOUS ""true"""
+,set_new_param p_MAINTENANCE_WINDOWS [get_old_param p_MAINTENANCE_WINDOWS]
+,"set_new_param p_TX_PORT_WRITE ""false"""
+[get_old_param p_TX_PORT_WRITE] == 1,"set_new_param p_TX_PORT_WRITE ""true"" "
+,"set_new_param p_RX_PORT_WRITE ""false"""
+[get_old_param p_RX_PORT_WRITE] == 1,"set_new_param p_RX_PORT_WRITE ""true"""
+,set_new_param p_IO_SLAVE_WIDTH [get_old_param p_IO_SLAVE_WIDTH]
+,"set_new_param p_READ_WRITE_ORDER ""false"""
+ [get_old_param p_READ_WRITE_ORDER] == 1,"set_new_param p_READ_WRITE_ORDER ""true"""
+,set_new_param p_IO_MASTER_WINDOWS [get_old_param p_IO_MASTER_WINDOWS]
+,set_new_param p_IO_SLAVE_WINDOWS [get_old_param p_IO_SLAVE_WINDOWS]
+,"set_new_param p_DRBELL_TX ""false"""
+[get_old_param p_DRBELL_TX] == 1,"set_new_param p_DRBELL_TX ""true"""
+,"set_new_param p_DRBELL_RX ""false"""
+ [get_old_param p_DRBELL_RX] == 1,"set_new_param p_DRBELL_RX""true"""
+,"set_new_param p_DRBELL_WRITE_ORDER ""false"""
+[get_old_param p_DRBELL_WRITE_ORDER] == 1,"set_new_param p_DRBELL_WRITE_ORDER ""true"""
+,set_new_param p_DEVICE_ID [get_old_param p_DEVICE_ID]
+,set_new_param p_DEVICE_VENDOR_ID [get_old_param p_DEVICE_VENDOR_ID]
+,set_new_param p_DEVICE_REV [get_old_param p_DEVICE_REV]
+,set_new_param p_ASSEMBLY_ID [get_old_param p_ASSEMBLY_ID]
+,set_new_param p_ASSEMBLY_VENDOR_ID [get_old_param p_ASSEMBLY_VENDOR_ID]
+,set_new_param p_ASSEMBLY_REVISION [get_old_param p_ASSEMBLY_REVISION]
+,set_new_param p_FIRST_EF_PTR [get_old_param p_FIRST_EF_PTR]
+,"set_new_param p_BRIDGE ""false"""
+[get_old_param p_BRIDGE] == 1,"set_new_param p_BRIDGE ""true"""
+,"set_new_param p_MEMORY ""false"""
+ [get_old_param p_MEMORY] == 1,"set_new_param p_MEMORY ""true"""
+,"set_new_param p_PROCESSOR ""false"""
+ [get_old_param p_PROCESSOR] == 1,"set_new_param p_PROCESSOR ""true"""
+,"set_new_param p_SWITCH ""false"""
+[get_old_param p_SWITCH] == 1,"set_new_param p_SWITCH  ""true"""
+,set_new_param p_PORT_TOTAL [get_old_param p_PORT_TOTAL]
+,set_new_param p_PORT_NUMBER [get_old_param p_PORT_NUMBER]
+,"set_new_param p_SOURCE_OPERATION_DATA_MESSAGE ""false"""
+[get_old_param p_SOURCE_OPERATION_DATA_MESSAGE] == 1,"set_new_param p_SOURCE_OPERATION_DATA_MESSAGE ""true"""
+,"set_new_param p_DESTINATION_OPERATION_DATA_MESSAGE ""false"""
+[get_old_param p_DESTINATION_OPERATION_DATA_MESSAGE] == 1,"set_new_param p_DESTINATION_OPERATION_DATA_MESSAGE ""true"""
+,"set_new_param p_UNDER_SOPC ""false"""
+[get_old_param p_UNDER_SOPC] == 1,"set_new_param p_UNDER_SOPC  ""true"""
+,set_new_param p_IO_SLAVE_OUTSTANDING_NREADS [get_old_param p_IO_SLAVE_OUTSTANDING_NREADS]
+,set_new_param p_IO_SLAVE_OUTSTANDING_NWRITE_RS [get_old_param p_IO_SLAVE_OUTSTANDING_NWRITE_RS]
+,ignore_new_param auto_cfg_rx
+,ignore_new_param rio_p_maintenance_master_slave
+,ignore_new_param rio_p_io_master_slave

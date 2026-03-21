@@ -1,0 +1,266 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+
+
+//============================================================================
+// This confidential and proprietary software may be used only as authorized
+// by a licensing agreement from ALTERA 
+// copyright notice must be reproduced on all authorized copies.
+//============================================================================
+
+//============================================================================
+// Reconfig Top
+// Contains the reconfiguration logic for PCS and PMA reconfiguration
+// for a single channel via an Avalon-MM interface
+//============================================================================
+
+`timescale 1 ps / 1 ps
+
+import ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::*;
+import altera_xcvr_native_s10_functions_h::*;
+import altera_xcvr_10gkr_s10_override_data::*;
+
+module rcfg_top_${random_str}
+    #(
+  parameter ES_DEVICE        = 1,       // select ES or PROD device
+  parameter LTD_MSB          = 8'd100,  // Link Fail Timer lsb for BASE-X PCS
+  parameter SYNTH_LT         = 1,       // Synthesize/include the LT module
+  parameter SYNTH_AN_LT      = 1,       // Synthesize/include the AN or LT
+  parameter SYNTH_GIGE       = 1,       // Synthesize/include the GIGE logic
+  parameter SYNTH_FEC        = 1,       // Synthesize/include the FEC logic
+  parameter SYNTH_1588       = 1,       // Synthesize/include the 1588 mode
+  parameter REF_CLK          = 1        // CDR Reference clock = 644, else 322
+    ) (
+  input  wire           mgmt_clk,       // managemnt/reconfig clock
+  input  wire           mgmt_clk_reset, // managemnt/reconfig reset
+     // PCS reconfig requests
+  input  wire           seq_start_rc,   // start the PCS reconfig
+  input  wire [5:0]     pcs_mode_rc,    // PCS mode for reconfig - 1 hot
+                                        // bit 0 = AN mode = low_lat, PLL LTR
+                                        // bit 1 = LT mode = low_lat, PLL LTD
+                                        // bit 2 = 10G data mode = 10GBASE-R
+                                        // bit 3 = GigE data mode = 8G PCS
+                                        // bit 4 = XAUI data mode = future?
+                                        // bit 5 = 10G-FEC
+  output reg            rc_busy,        // reconfig is busy
+  input  wire           skip_cal,       // skip the calibration
+     // PMA reconfig requests
+  input  wire            lt_start_rc,   // start the TX EQ reconfig
+  input  wire [4:0]      main_rc,       // main tap value for reconfig
+  input  wire [5:0]      post_rc,       // post tap value for reconfig
+  input  wire [4:0]      pre_rc,        // pre tap value for reconfig
+  input  wire [2:0]      tap_to_upd,    // specific TX EQ tap to update
+                                        // bit-2 = main, bit-1 = post, ...
+     // HSSI control
+  input  wire       calibration_busy,   // HSSI cal busy
+  input  wire       rx_is_lockedtodata, // HSSI rx_is_lockedtodata
+  input  wire       rx_is_lockedtoref , // HSSI rx_is_lockedtoref 
+  output reg        start_reset_ctrl,   // Kick off reset controller
+  input  wire       tx_analogreset_stat,
+  input  wire       rx_analogreset_stat,
+  input  wire       tx_digitalreset_stat,
+  input  wire       rx_digitalreset_stat,
+     // HSSI Reconfig master
+  output wire            xcvr_rcfg_write,   // AVMM write
+  output wire            xcvr_rcfg_read,    // AVMM read
+  output wire [9:0]      xcvr_rcfg_address, // AVMM address
+  output wire [7:0]      xcvr_rcfg_wrdata,  // AVMM write data
+  input  wire [7:0]      xcvr_rcfg_rddata,  // AVMM read data
+  input  wire            xcvr_rcfg_wtrqst   // AVMM wait request
+  );
+
+// get MIF depth from any profile (since all profile depths are same) + Add override data depth
+// and calculate address width required  
+ localparam mif_rom_depth   = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::ram_depth+  altera_xcvr_10gkr_s10_override_data::an_ram_depth + 1 ; // +1 for FFF- last data
+ localparam rom_addr_width  = altera_xcvr_native_s10_functions_h::clogb2_alt_xcvr_native_s10(mif_rom_depth); //Calculate address width
+
+//===========================================================================
+// Define Wires and Variables
+//===========================================================================
+     //  PCS Controllers
+  wire [9:0]      pcs_addr;
+  wire [7:0]      pcs_writedata;
+  wire [7:0]      pcs_datamask;
+  wire            pcs_write;
+  wire            refclk_req;
+  wire            cgb_req;
+  wire            refclk_sel;
+  wire            cgb_sel;
+  wire            pcs_rc_busy;
+  wire            cal_req;
+  wire            cal_sel;
+  wire            avmm_req;
+  wire            rx_cdr_is_locked;
+     //  Reconfig data
+  wire            last_data;
+  wire [rom_addr_width-1:0]      pcs_data_addr;
+  wire            en_next;
+     //  PMA Controller
+  wire            pma_rc_busy;
+  wire            pma_write;
+  wire            pma_rmw;
+  wire [9:0]      pma_addr;
+  wire [7:0]      pma_writedata;
+  wire [7:0]      pma_datamask;
+     //  AVMM signals 
+  wire [9:0]      ctrl_addr;
+  wire [7:0]      ctrl_writedata;
+  wire [7:0]      ctrl_datamask;
+  wire            ctrl_write;
+  wire            ctrl_rmw;
+  wire            ctrl_busy;
+
+//===========================================================================
+// Combine the signals
+//===========================================================================
+  assign rc_busy    =                  pcs_rc_busy    | pma_rc_busy;
+// Change RTL to mux between  pcs, and pma add/data/ctrl - in case pma bus retains previous
+  assign ctrl_write = pcs_rc_busy ? pcs_write  : pma_write;
+  assign ctrl_addr  = pcs_rc_busy ? pcs_addr   : pma_addr;
+  assign ctrl_writedata =
+                  pcs_rc_busy ? pcs_writedata : pma_writedata;
+  assign ctrl_datamask = 
+                   pcs_rc_busy ? pcs_datamask : pma_datamask;
+
+
+//===========================================================================
+// Instantiate the PMA TX controllers
+//===========================================================================
+generate
+  if (SYNTH_LT) begin: PMA_RC
+    // TX Equalization
+    rcfg_s10_txeq_ctrl  rcfg_s10_txeq_ctrl_inst (
+      .clk            (mgmt_clk),
+      .reset          (mgmt_clk_reset),
+        // PCS reconfig requests
+      .lt_start_rc   (lt_start_rc),
+      .main_rc       (main_rc),
+      .post_rc       (post_rc),
+      .pre_rc        (pre_rc),
+      .tap_to_upd    (tap_to_upd),
+      .rc_busy       (pma_rc_busy),
+        // AVMM master
+      .ctrl_addr      (pma_addr),
+      .ctrl_writedata (pma_writedata),
+      .ctrl_datamask  (pma_datamask),
+      .ctrl_write     (pma_write),
+      .ctrl_rmw       (pma_rmw),
+      .ctrl_busy      (ctrl_busy)
+    );
+  end // PMA_RC
+  else begin: NO_PMA
+    assign pma_rc_busy = 1'b0;
+    assign pma_addr    = 10'b0;
+    assign pma_write   = 1'b0;
+    assign pma_rmw     = 1'b0;
+    assign pma_writedata  = 8'b0;
+    assign pma_datamask   = 8'b0;
+  end
+endgenerate
+
+//===========================================================================
+// Instantiate the PCS controller
+//===========================================================================
+rcfg_s10_pcs_ctrl  # (
+  .ROM_ADDR_DEPTH   (rom_addr_width)
+) rcfg_s10_pcs_ctrl_inst (
+  .clk            (mgmt_clk),
+  .reset          (mgmt_clk_reset),
+    // PCS reconfig requests
+  .seq_start_rc   (seq_start_rc),
+  .pcs_mode_rc    (pcs_mode_rc[4:3]),
+  .rc_busy        (pcs_rc_busy),
+  .skip_cal       (skip_cal),
+    // to the AVMM master
+  .ctrl_busy      (ctrl_busy),
+  .refclk_req     (refclk_req),
+  .cgb_req        (cgb_req),
+  .cal_req        (cal_req),
+  .refclk_sel     (refclk_sel),
+  .cgb_sel        (cgb_sel),
+  .cal_sel        (cal_sel),
+  .avmm_req       (avmm_req),
+    // HSSI control
+  .calibration_busy  (calibration_busy),
+  .start_reset_ctrl  (start_reset_ctrl),
+  .tx_analogreset_ack(tx_analogreset_stat),
+  .rx_analogreset_ack(rx_analogreset_stat),
+  .tx_digitalreset_ack(tx_digitalreset_stat),
+  .rx_digitalreset_ack(rx_digitalreset_stat),
+    // Reconfig Data
+  .last_data      (last_data),
+  .pcs_data_addr  (pcs_data_addr),
+  .en_next        (en_next)
+);
+
+//===========================================================================
+// Instantiate the Reconfig data
+// have 8 different images depending upon the modes
+// Some images have 3 sets of data, some have 4 depending upon FEC
+// Images may have 2 copies of the data sets, one with AN/LT and one without
+//===========================================================================
+ rcfg_data_${random_str} # (
+       .ROM_ADDR_DEPTH   (rom_addr_width)
+ ) rcfg_data  (                                                    
+       .pcs_data_addr    (pcs_data_addr),                    
+       .pcs_mode_rc      (pcs_mode_rc),                      
+       .rcfg_addr        (pcs_addr),                         
+       .rcfg_data        (pcs_writedata),                    
+       .rcfg_mask        (pcs_datamask)                      
+        );
+
+
+  // need to condition the controls to the AVMM master
+  assign last_data  = (pcs_addr == 10'h3ff);
+  assign pcs_write  = en_next & ~last_data && (ctrl_datamask == 8'hFF);
+  assign ctrl_rmw   = en_next & ~last_data && (ctrl_datamask != 8'hFF);
+
+  // delay first rmw by 1 clock to align with address
+  reg  dly_rmw;
+  wire fnl_rmw;
+  always_ff @(posedge mgmt_clk)
+    dly_rmw <= ~pcs_rc_busy & ctrl_rmw;
+  assign fnl_rmw = (pcs_rc_busy & ctrl_rmw) | dly_rmw | pma_rmw;
+
+//===========================================================================
+// Instantiate the AVMM master State Machine
+//===========================================================================
+rcfg_avmm_mstr  rcfg_avmm_mstr_inst (
+  .clk            (mgmt_clk),
+  .reset          (mgmt_clk_reset),
+  .pcs_mode_rc    (pcs_mode_rc[1:0]),
+    //  from the Controllers
+  .ctrl_addr      (ctrl_addr),
+  .ctrl_writedata (ctrl_writedata),
+  .ctrl_datamask  (ctrl_datamask),
+  .ctrl_write     (ctrl_write),
+  .ctrl_rmw       (fnl_rmw),
+  .ctrl_busy      (ctrl_busy),
+  .refclk_req     (refclk_req),
+  .cgb_req        (cgb_req),
+  .cal_req        (cal_req),
+  .refclk_sel     (refclk_sel),
+  .cgb_sel        (cgb_sel),
+  .cal_sel        (cal_sel),
+  .avmm_req       (avmm_req),
+    // HSSI Reconfig master
+  .xcvr_rcfg_write    (xcvr_rcfg_write),
+  .xcvr_rcfg_read     (xcvr_rcfg_read),
+  .xcvr_rcfg_address  (xcvr_rcfg_address),
+  .xcvr_rcfg_wrdata   (xcvr_rcfg_wrdata),
+  .xcvr_rcfg_rddata   (xcvr_rcfg_rddata),
+  .xcvr_rcfg_wtrqst   (xcvr_rcfg_wtrqst)
+);
+
+endmodule // rcfg_top

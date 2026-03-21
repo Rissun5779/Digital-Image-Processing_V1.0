@@ -1,0 +1,60 @@
+DPRIO Offset(hex) ,DPRIO Bit Offset ,Attribute Name ,Other DPRIO Offset (hex) ,Attribute Encoding ,DPRIO Encoding ,Block,VISIBLE,ACCESS,OVERRIDE,GUI VISIBLE,User Description,UI Index
+200,[7:0],A10_XR_ADDR_ID,201|202|203,A10_XR_ADDR_ID[7:0],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+201,[7:0],A10_XR_ADDR_ID,200|202|203,A10_XR_ADDR_ID[15:8],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+202,[7:0],A10_XR_ADDR_ID,200|201|203,A10_XR_ADDR_ID[23:16],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+203,[7:0],A10_XR_ADDR_ID,200|201|202,A10_XR_ADDR_ID[31:24],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+204,[0:0],A10_XR_ADDR_STATUS_EN,,A10_XR_ADDR_STATUS_EN[0:0],DIRECT MAPPED,capability,,RO,,FALSE,Status Enable,
+,[7:1],RESERVED,,,,,,,,,,
+205,[0:0],A10_XR_ADDR_CONTROL_EN,,A10_XR_ADDR_CONTROL_EN[0:0],DIRECT MAPPED,capability,,RO,,FALSE,Control Enable,
+,[7:1],RESERVED,,,,capability,,,,,,
+210,[7:0],A10_XR_ADDR_NAT_CHNLS,,A10_XR_ADDR_NAT_CHNLS[7:0],DIRECT MAPPED,capability,,RO,,,Number of Channels,2
+211,[7:0],A10_XR_ADDR_NAT_CHNL_NUM,,A10_XR_ADDR_NAT_CHNL_NUM[7:0],DIRECT MAPPED,capability,,RO,,,Current channel,3
+212,[1:0],A10_XR_ADDR_NAT_DUPLEX,,duplex,2'b11,capability,,RO,,,Channel Type,1
+,,,,tx_only,2'b10,capability,,,,,,
+,,,,rx_only,2'b01,capability,,,,,,
+,[7:2],RESERVED,,,,,,,,,,
+213,[0:0],A10_XR_ADDR_NAT_PRBS_EN,,A10_XR_ADDR_NAT_PRBS_EN[0:0],DIRECT MAPPED,capability,,RO,,FALSE,PRBS Enable,
+,[7:1],RESERVED,,,,,,,,,,
+214,[0:0],A10_XR_ADDR_NAT_ODI_EN,,A10_XR_ADDR_NAT_ODI_EN[0:0],DIRECT MAPPED,capability,,RO,,FALSE,ODI Enable,
+,[7:1],RESERVED,,,,,,,,,,
+280,[0:0],A10_XR_OFFSET_RD_LTD,,0,1'b0,status,,RO,,,Locked to Data,1
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_RD_LTR,,0,1'b0,status,,RO,,,Locked to Reference,0
+,,,,1,1'b1,,,,,,,
+,[7:2],RESERVED,,,,,,,,,,
+281,[0:0],A10_XR_OFFSET_TX_CAL_BUSY,,0,1'b0,status,,RO,,,TX Cal Busy,2
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_RX_CAL_BUSY,,0,1'b0,status,,RO,,,RX Cal Busy,3
+,,,,1,1'b1,,,,,,,
+,[7:2],RESERVED,,,,,,,,,,
+2E0,[0:0],A10_XR_OFFSET_SET_LTD,,0,1'b0,control,,RW,,,Set locked to data,5
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_SET_LTR,,0,1'b0,control,,RW,,,Set locked to reference,4
+,,,,1,1'b1,,,,,,,
+,[2:2],A10_XR_OFFSET_SET_LTD_OVR,,A10_XR_OFFSET_SET_LTD_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_SET_LTD,FALSE,Locked to data Override,
+,[3:3],A10_XR_OFFSET_SET_LTR_OVR,,A10_XR_OFFSET_SET_LTR_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_SET_LTR,FALSE,Locked to reference Override,
+,[7:4],RESERVED,,,,,,,,,,6
+2E1,[0:0],A10_XR_OFFSET_LPBK,,0,1'b0,control,,RW,,,Serial Loopback,
+,,,,1,1'b1,,,,,,,
+,[7:1],RESERVED,,,,,,,,,,
+2E2,[0:0],A10_XR_OFFSET_RX_ANA,,0,1'b0,control,,RW,,,RX Analog Reset,2
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_RX_DIG,,0,1'b0,control,,RW,,,RX Digital Reset,3
+,,,,1,1'b1,,,,,,,
+,[2:2],A10_XR_OFFSET_TX_ANA,,0,1'b0,control,,RW,,,TX Analog Reset,0
+,,,,1,1'b1,,,,,,,
+,[3:3],A10_XR_OFFSET_TX_DIG,,0,1'b0,control,,RW,,,TX Digital Reset,1
+,,,,1,1'b1,,,,,,,
+,[4:4],A10_XR_OFFSET_RX_ANA_OVR,,A10_XR_OFFSET_RX_ANA_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_RX_ANA,FALSE,RX Analog Reset Override,
+,[5:5],A10_XR_OFFSET_RX_DIG_OVR,,A10_XR_OFFSET_RX_DIG_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_RX_DIG,FALSE,RX Digital Reset Override,
+,[6:6],A10_XR_OFFSET_TX_ANA_OVR,,A10_XR_OFFSET_TX_ANA_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_TX_ANA,FALSE,TX Analog Reset Override,
+,[7:7],A10_XR_OFFSET_TX_DIG_OVR,,A10_XR_OFFSET_TX_DIG_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_TX_DIG,FALSE,TX Digtal Reset Override,
+100,[0:0],A10_XR_OFFSET_PRBS_EN,,0,1'b0,control,,RW,,FALSE,PRBS Enable,
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_PRBS_RESET,,0,1'b0,control,,RW,,FALSE,PRBS Reset,
+,,,,1,1'b1,,,,,,,
+,[2:2],A10_XR_OFFSET_PRBS_SNAP,,0,1'b0,control,,RW,,FALSE,PRBS Snap,
+,,,,1,1'b1,,,,,,,
+,[3:3],A10_XR_OFFSET_PRBS_LOCK,,0,1'b0,control,,RW,,FALSE,PRBS Lock,
+,,,,1,1'b1,,,,,,,
+,[7:4],RESERVED,,,,,,,,,,

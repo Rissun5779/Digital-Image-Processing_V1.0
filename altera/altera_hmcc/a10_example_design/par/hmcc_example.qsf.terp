@@ -1,0 +1,314 @@
+@@ #
+@@ # Variables used for TERP:
+@@ # device_part       :   specific device part being used
+@@ # num_channels      :   number of channels used
+@@ # data_rate
+@@ #
+
+
+set_global_assignment -name FAMILY "Arria 10"
+set_global_assignment -name DEVICE $device_part
+set_global_assignment -name TOP_LEVEL_ENTITY hmcc_example
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+
+@@ # Match device "10AX115S3F45I2SGES" and its speedgrade variants.
+@@ if { [string match "10AX115S?F45??SG*" $device_part] } {
+# 50 MHz clock always present for reset & reconfig controllers and for I2C master.
+set_location_assignment PIN_AU33                  -to clk_50
+set_instance_assignment -name IO_STANDARD "1.8 V" -to clk_50
+
+## 125 MHz reference clock for use in loopback configurations.
+#set_location_assignment PIN_BD24 -to clk_125
+#set_instance_assignment -name IO_STANDARD LVDS -to clk_125
+
+# HMC Reference Clock comming from FMC daughter card.
+# Line rate divided by 32 reference clock for link 0 transceivers on FMCB/FMC0
+set_location_assignment PIN_W8                 -to hssi_refclk
+set_instance_assignment -name IO_STANDARD LVDS -to hssi_refclk
+## Line rate divided by 32 reference clock for link 1 transceivers on FMCA/FMC1
+#set_location_assignment PIN_AL8                -to hssi_refclk
+#set_instance_assignment -name IO_STANDARD LVDS -to hssi_refclk
+
+# Transceiver pins for Link 0 on FMCB/FMC0
+set_location_assignment PIN_AA3 -to hmc_lxrx[0]
+set_location_assignment PIN_W3  -to hmc_lxrx[1]
+set_location_assignment PIN_Y5  -to hmc_lxrx[2]
+set_location_assignment PIN_V5  -to hmc_lxrx[3]
+set_location_assignment PIN_U3  -to hmc_lxrx[4]
+set_location_assignment PIN_T5  -to hmc_lxrx[5]
+set_location_assignment PIN_R3  -to hmc_lxrx[6]
+set_location_assignment PIN_P5  -to hmc_lxrx[7]
+@@ if {$num_channels == 16} {
+set_location_assignment PIN_N3  -to hmc_lxrx[8]
+set_location_assignment PIN_M5  -to hmc_lxrx[9]
+set_location_assignment PIN_L3  -to hmc_lxrx[10]
+set_location_assignment PIN_K5  -to hmc_lxrx[11]
+set_location_assignment PIN_H5  -to hmc_lxrx[12]
+set_location_assignment PIN_G7  -to hmc_lxrx[13]
+set_location_assignment PIN_F5  -to hmc_lxrx[14]
+set_location_assignment PIN_E7  -to hmc_lxrx[15]
+@@ }
+
+set_location_assignment PIN_AB1 -to hmc_lxtx[0]
+set_location_assignment PIN_Y1  -to hmc_lxtx[1]
+set_location_assignment PIN_V1  -to hmc_lxtx[2]
+set_location_assignment PIN_T1  -to hmc_lxtx[3]
+set_location_assignment PIN_P1  -to hmc_lxtx[4]
+set_location_assignment PIN_M1  -to hmc_lxtx[5]
+set_location_assignment PIN_K1  -to hmc_lxtx[6]
+set_location_assignment PIN_J3  -to hmc_lxtx[7]
+@@ if {$num_channels == 16} {
+set_location_assignment PIN_H1  -to hmc_lxtx[8]
+set_location_assignment PIN_G3  -to hmc_lxtx[9]
+set_location_assignment PIN_F1  -to hmc_lxtx[10]
+set_location_assignment PIN_E3  -to hmc_lxtx[11]
+set_location_assignment PIN_D1  -to hmc_lxtx[12]
+set_location_assignment PIN_C3  -to hmc_lxtx[13]
+set_location_assignment PIN_B1  -to hmc_lxtx[14]
+set_location_assignment PIN_A3  -to hmc_lxtx[15]
+@@ }
+
+
+
+# HMC Control Signals
+#set_location_assignment PIN_AK14 -to hmc_ctrl_cub[0]
+#set_location_assignment PIN_AJ12 -to hmc_ctrl_cub[1]
+#set_location_assignment PIN_AN14 -to hmc_ctrl_cub[2]
+
+## On FMCA/FMC1
+set_location_assignment PIN_G21                   -to hmc_ctrl_p_rst_n
+set_instance_assignment -name IO_STANDARD "1.5 V"  -to hmc_ctrl_p_rst_n
+## On FMCB/FMC0
+set_location_assignment PIN_B17                   -to hmc_ctrl_ferr_n
+set_instance_assignment -name IO_STANDARD "1.5 V" -to hmc_ctrl_ferr_n
+
+## I2C 
+## FMC_I2C/Local_I2C on FMCA/FMC1  - this I2C can access the HMC
+## These are driven low to protect the FPGA from the 3.3V pull-up on rev C of the Arria 10 Dev Kit board.
+set_location_assignment PIN_AU10                  -to hmc_ctrl_scl
+set_location_assignment PIN_AV10                  -to hmc_ctrl_sda
+set_instance_assignment -name IO_STANDARD "1.8 V" -to hmc_ctrl_scl
+set_instance_assignment -name IO_STANDARD "1.8 V" -to hmc_ctrl_sda
+## FMC0_I2C on FMCB/FMC0  - this I2C cannot access the HMC
+## These are defined to be driven low to protect the FPGA from the 3.3V pull-up on rev C of the Arria 10 Dev Kit board.
+set_location_assignment PIN_J17                   -to fmc0_scl
+set_location_assignment PIN_J16                   -to fmc0_sda
+set_instance_assignment -name IO_STANDARD "1.5 V" -to fmc0_scl
+set_instance_assignment -name IO_STANDARD "1.5 V" -to fmc0_sda
+
+
+## User LEDs
+set_location_assignment PIN_L23 -to heart_beat_n
+set_location_assignment PIN_K25 -to link_init_complete_n
+set_location_assignment PIN_K26 -to test_passed_n
+set_location_assignment PIN_L27 -to test_failed_n
+## LEDs I/O standard should be 2.5V but it not available.
+set_instance_assignment -name IO_STANDARD "1.8 V" -to heart_beat_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to link_init_complete_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to test_passed_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to test_failed_n
+
+# User reset button.
+set_location_assignment PIN_T12                   -to push_button
+set_instance_assignment -name IO_STANDARD "1.8 V" -to push_button
+
+
+@@ }
+
+# Transceiver Settings
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[0]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[1]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[2]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[3]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[4]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[5]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[6]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[7]
+
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[0]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[1]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[2]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[3]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[4]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[5]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[6]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[7]
+
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[0]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[1]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[2]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[3]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[4]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[5]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[6]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[7]
+
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[0]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[1]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[2]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[3]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[4]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[5]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[6]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[7]
+
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[0]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[1]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[2]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[3]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[4]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[5]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[6]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[7]
+
+@@   if {$data_rate == 10} {
+# The recommended value for line rates below 11.3Gbps is 0.9V but the Arria 10 dev. kit board is set to 1.0V
+# **** Adjust to reflect the voltage on your board. ****
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[4]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[5]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[6]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[7]
+
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[4]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[5]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[6]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[7]
+@@ } else {
+# The recommended value for line rates between 11.3Gbps and 17.4Gbps is 1.03V but the Arria 10 dev. kit board is set to 1.0V
+# **** Adjust to reflect the voltage on your board. ****
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[4]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[5]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[6]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[7]
+
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[4]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[5]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[6]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[7]
+@@ }
+
+@@ if {$num_channels == 16} {
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[8]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[9]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[10]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[11]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[12]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[13]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[14]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to hmc_lxrx[15]
+
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[8]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[9]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[10]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[11]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[12]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[13]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[14]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to hmc_lxrx[15]
+
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[8]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[9]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[10]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[11]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[12]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[13]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[14]
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_8 -to hmc_lxrx[15]
+
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[8]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[9]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[10]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[11]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[12]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[13]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[14]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to hmc_lxrx[15]
+
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[8]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[9]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[10]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[11]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[12]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[13]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[14]
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to hmc_lxtx[15]
+
+@@   if {$data_rate == 10} {
+# The recommended value for line rates below 11.3Gbps is 0.9V but the Arria 10 dev. kit board is set to 1.0V
+# **** Adjust to reflect the voltage on your board. ****
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[8]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[9]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[10]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[11]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[12]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[13]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[14]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[15]
+
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[8]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[9]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[10]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[11]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[12]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[13]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[14]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[15]
+@@   } else {
+# The recommended value for line rates between 11.3Gbps and 17.4Gbps is 1.03V but the Arria 10 dev. kit board is set to 1.0V
+# **** Adjust to reflect the voltage on your board. ****
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[8]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[9]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[10]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[11]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[12]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[13]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[14]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxrx[15]
+
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[8]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[9]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[10]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[11]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[12]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[13]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[14]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to hmc_lxtx[15]
+@@   }
+
+@@ }
+
+set_global_assignment -name SDC_FILE hmcc_example.sdc
+set_global_assignment -name VERILOG_FILE ../src/m20k_2port.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/response_monitor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/request_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/i2c_control.sv
+set_global_assignment -name VERILOG_FILE ../src/i2c_32sub.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/hmcc_example.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/atx_pll_recal.sv
+
+set_global_assignment -name QIP_FILE ../../ip/altera_atx_pll_ip/altera_atx_pll_ip.qip
+set_global_assignment -name QIP_FILE ../../ip/altera_hmcc_ip/altera_hmcc_ip.qip
+set_global_assignment -name QIP_FILE ../../ip/bidir_pin/bidir_pin.qipset_global_assignment -name QIP_FILE ../../ip/AVMM/AVMM.qip

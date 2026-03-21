@@ -1,0 +1,134 @@
+#include <unistd.h>
+#include <stdint.h>
+#include <stdarg.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include "kissfft/kiss_fft.h"
+
+#define FFT_SIZE 8
+
+// ===================== 1. RISC-V 性能計數器 (64-bit) =====================
+static inline uint64_t get_cycles() {
+    uint32_t hi, lo, tmp;
+    __asm__ __volatile__ (
+        "1: rdcycleh %0\n"
+        "   rdcycle  %1\n"
+        "   rdcycleh %2\n"
+        "   bne %0, %2, 1b"
+        : "=&r"(hi), "=&r"(lo), "=&r"(tmp)
+    );
+    return ((uint64_t)hi << 32) | lo;
+}
+
+static inline uint64_t get_instret() {
+    uint32_t hi, lo, tmp;
+    __asm__ __volatile__ (
+        "1: rdinstreth %0\n"
+        "   rdinstret  %1\n"
+        "   rdinstreth %2\n"
+        "   bne %0, %2, 1b"
+        : "=&r"(hi), "=&r"(lo), "=&r"(tmp)
+    );
+    return ((uint64_t)hi << 32) | lo;
+}
+
+// ===================== 2. 自訂輕量化 printf 實作 =====================
+void print_int(int n) {
+    char buf[12];
+    int i = 0;
+    if (n == 0) { alt_putchar('0'); return; }
+    if (n < 0) {
+        alt_putchar('-');
+        unsigned int un = (n == -2147483648) ? 2147483648U : (unsigned int)(-n);
+        while (un > 0) { buf[i++] = (un % 10) + '0'; un /= 10; }
+    } else {
+        while (n > 0) { buf[i++] = (n % 10) + '0'; n /= 10; }
+    }
+    while (i > 0) alt_putchar(buf[--i]);
+}
+
+void print_float(float f, int precision) {
+    if (f < 0) { alt_putchar('-'); f = -f; }
+    float rounding = 0.5f;
+    for (int i = 0; i < precision; i++) rounding /= 10.0f;
+    f += rounding;
+    int integer_part = (int)f;
+    print_int(integer_part);
+    if (precision > 0) {
+        alt_putchar('.');
+        float fractional_part = f - (float)integer_part;
+        for (int i = 0; i < precision; i++) {
+            fractional_part *= 10.0f;
+            int digit = (int)fractional_part;
+            alt_putchar(digit + '0');
+            fractional_part -= (float)digit;
+        }
+    }
+}
+
+void custom_printf(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    for (const char* p = format; *p != '\0'; p++) {
+        if (*p == '%') {
+            p++;
+            int precision = 6;
+            while (*p >= '0' && *p <= '9') p++; // 跳過寬度
+            if (*p == '.') {
+                p++;
+                int val = 0;
+                while (*p >= '0' && *p <= '9') { val = val * 10 + (*p - '0'); p++; }
+                precision = val;
+            }
+            switch (*p) {
+                case 'd': print_int(va_arg(args, int)); break;
+                case 'f': print_float((float)va_arg(args, double), precision); break;
+                case 's': { char* s = va_arg(args, char*); while (*s) alt_putchar(*s++); break; }
+                case 'c': alt_putchar((char)va_arg(args, int)); break;
+                default: alt_putchar('%'); alt_putchar(*p);
+            }
+        } else { alt_putchar(*p); }
+    }
+    va_end(args);
+}
+
+// ===================== 3. 主程式邏輯 =====================
+int main() {
+    custom_printf("--- Nios V Performance Lab (RAM Only) ---\n");
+    custom_printf("CPU Frequency: %d Hz\n\n", (int)ALT_CPU_FREQ);
+
+    kiss_fft_cpx in[FFT_SIZE], out[FFT_SIZE];
+    for(int i=0; i<FFT_SIZE; i++) { in[i].r = (float)i; in[i].i = 0.0f; }
+
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+
+    // --- 效能測量開始 ---
+    uint64_t c_start = get_cycles();
+    uint64_t i_start = get_instret();
+
+    kiss_fft(cfg, in, out);
+
+    uint64_t c_end = get_cycles();
+    uint64_t i_end = get_instret();
+    // --- 效能測量結束 ---
+
+    // 印出 FFT 結果
+    for(int i=0; i<FFT_SIZE; i++) {
+        custom_printf("FFT[%d] = %.3f + %.3fi\n", i, out[i].r, out[i].i);
+    }
+
+    // 計算數據
+    uint64_t total_c = c_end - c_start;
+    uint64_t total_i = i_end - i_start;
+    float cpi = (float)total_c / (float)total_i;
+    float time_ms = ((float)total_c / (float)ALT_CPU_FREQ) * 1000.0f;
+
+    custom_printf("\n--- Benchmark Results ---\n");
+    custom_printf("Total Cycles:   %d\n", (int)total_c);
+    custom_printf("Instructions:   %d\n", (int)total_i);
+    custom_printf("Avg CPI:        %.3f\n", cpi);
+    custom_printf("Exec Time:      %.3f ms\n", time_ms);
+
+    kiss_fft_free(cfg);
+    return 0;
+}

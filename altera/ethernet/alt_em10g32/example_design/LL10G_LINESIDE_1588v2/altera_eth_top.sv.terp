@@ -1,0 +1,595 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+module altera_eth_top # (
+
+        parameter TSTAMP_FP_WIDTH = 4,
+        parameter NUM_CHANNELS = ${NUM_CHANNELS}
+
+ )(
+
+        input       wire                                        mm_clk,
+        
+        input       wire                                        ref_clk_1g,
+        input       wire                                        ref_clk_10g,
+
+        inout       wire                                        sfpa_mod1_scl,
+        inout       wire                                        sfpa_mod2_sda,
+
+        output      wire                                        sfp_txdisable,
+        output      wire                                        xfp_txdisable,
+
+        input       wire                                        SFPP_TX_FAULT,
+        input       wire                                        SFPP_RX_LOS,
+
+
+        input       wire        [NUM_CHANNELS-1:0]              rx_serial_data,
+        output      wire        [NUM_CHANNELS-1:0]              tx_serial_data,
+
+        output      wire        [NUM_CHANNELS-1:0]              channel_ready_n,
+        input       wire        [NUM_CHANNELS-1:0]              channel_reset_n,
+        input       wire                                        master_reset_n,
+
+
+        output      wire        [NUM_CHANNELS-1:0]              mdio_mdc,
+        input       wire        [NUM_CHANNELS-1:0]              mdio_in,
+        output      wire        [NUM_CHANNELS-1:0]              mdio_out,
+        output      wire        [NUM_CHANNELS-1:0]              mdio_oen
+
+
+);
+    localparam MAX_NUM_CHANNELS         = 12;
+
+    localparam ORDINARY_CLOCK           = 2'h0;
+    localparam BOUNDARY_CLOCK           = 2'h1;
+    localparam E2E_TRANSPARENT_CLOCK    = 2'h2;
+    localparam P2P_TRANSPARENT_CLOCK    = 2'h3;
+
+    localparam ODD_NUM_CHANNEL = (NUM_CHANNELS % 2 > 0) ? 1 : 0;
+    localparam LAST_TRAFIIC_CTRL_PAIR = (divceil(NUM_CHANNELS, 2) - 1);
+
+    wire    [NUM_CHANNELS-1:0]      rx_recovered_clk;
+
+    wire    [NUM_CHANNELS-1:0]      led_an;
+    wire    [NUM_CHANNELS-1:0]      led_char_err;
+    wire    [NUM_CHANNELS-1:0]      led_disp_err;
+
+//    wire    [NUM_CHANNELS-1:0]      channel_reset_n;
+//    wire                            master_reset_n;
+
+    wire                            xgmii_clk;
+
+    wire    [31:0]                  jtag_if_address;
+    wire                            jtag_if_read;
+    wire    [31:0]                  jtag_if_readdata;
+    wire                            jtag_if_write;
+    wire    [31:0]                  jtag_if_writedata;
+    wire                            jtag_if_waitrequest;
+    wire                            jtag_if_readdatavalid;
+
+    wire    [19:0]                  multi_channel_address;
+    wire                            multi_channel_read;
+    wire    [31:0]                  multi_channel_readdata;
+    wire                            multi_channel_write;
+    wire    [31:0]                  multi_channel_writedata;
+    wire                            multi_channel_waitrequest;
+ 
+
+    wire    [MAX_NUM_CHANNELS/2-1:0]            error_n;
+
+    wire    [MAX_NUM_CHANNELS/2-1:0]        traffic_controller_write;
+    wire    [MAX_NUM_CHANNELS/2-1:0]        traffic_controller_read;
+    wire    [MAX_NUM_CHANNELS/2-1:0][13:0]  traffic_controller_address;
+    wire    [MAX_NUM_CHANNELS/2-1:0][31:0]  traffic_controller_writedata;
+    wire    [MAX_NUM_CHANNELS/2-1:0][31:0]  traffic_controller_readdata;
+    wire    [MAX_NUM_CHANNELS/2-1:0]        traffic_controller_waitrequest;
+
+    wire    [NUM_CHANNELS-1:0]              avalon_st_tx_startofpacket;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_tx_endofpacket;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_tx_valid;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_tx_ready;
+    wire    [NUM_CHANNELS-1:0][63:0]        avalon_st_tx_data;
+    wire    [NUM_CHANNELS-1:0][2:0]         avalon_st_tx_empty;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_tx_error;
+
+    wire    [NUM_CHANNELS-1:0]              avalon_st_rx_startofpacket;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_rx_endofpacket;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_rx_valid;
+    wire    [NUM_CHANNELS-1:0]              avalon_st_rx_ready;
+    wire    [NUM_CHANNELS-1:0][63:0]        avalon_st_rx_data;
+    wire    [NUM_CHANNELS-1:0][2:0]         avalon_st_rx_empty;
+    wire    [NUM_CHANNELS-1:0][5:0]         avalon_st_rx_error;
+
+    wire    [NUM_CHANNELS-1:0]              avalon_st_tx_status_valid;          
+    wire    [NUM_CHANNELS-1:0][39:0]        avalon_st_tx_status_data;           
+    wire    [NUM_CHANNELS-1:0][6:0]         avalon_st_tx_status_error;              
+    wire    [NUM_CHANNELS-1:0]              avalon_st_rx_status_valid;           
+    wire    [NUM_CHANNELS-1:0][39:0]        avalon_st_rx_status_data;            
+    wire    [NUM_CHANNELS-1:0][6:0]         avalon_st_rx_status_error; 
+
+
+    
+     // Timestamp request
+    wire    [NUM_CHANNELS-1:0]                              tx_egress_timestamp_request_valid;
+    wire    [NUM_CHANNELS-1:0][TSTAMP_FP_WIDTH - 1:0]       tx_egress_timestamp_request_fingerprint;
+    
+    // TX Ingress Timestamp correction - temporary not use
+    wire    [NUM_CHANNELS-1:0]                              tx_ingress_timestamp_valid      = 'h0;
+    wire    [NUM_CHANNELS-1:0][95:0]                        tx_ingress_timestamp_96b_data   = 'h0;
+    wire    [NUM_CHANNELS-1:0][63:0]                        tx_ingress_timestamp_64b_data   = 'h0;
+    wire    [NUM_CHANNELS-1:0]                              tx_ingress_timestamp_format     = 'h0;
+    
+
+    // output RX timestamp 
+    wire    [NUM_CHANNELS-1:0]                              rx_ingress_timestamp_96b_valid;
+    wire    [NUM_CHANNELS-1:0][95:0]                        rx_ingress_timestamp_96b_data;
+    
+    wire    [NUM_CHANNELS-1:0]                              rx_ingress_timestamp_64b_valid;
+    wire    [NUM_CHANNELS-1:0][63:0]                        rx_ingress_timestamp_64b_data;
+     
+
+    // output TX timestamp and fingerprint
+    wire    [NUM_CHANNELS-1:0]                              tx_egress_timestamp_96b_valid;
+    wire    [NUM_CHANNELS-1:0][95:0]                        tx_egress_timestamp_96b_data;
+    wire    [NUM_CHANNELS-1:0][TSTAMP_FP_WIDTH - 1:0]       tx_egress_timestamp_96b_fingerprint;
+    
+    wire    [NUM_CHANNELS-1:0]                              tx_egress_timestamp_64b_valid;
+    wire    [NUM_CHANNELS-1:0][63:0]                        tx_egress_timestamp_64b_data;
+    wire    [NUM_CHANNELS-1:0][TSTAMP_FP_WIDTH - 1:0]       tx_egress_timestamp_64b_fingerprint;
+
+    wire    [NUM_CHANNELS-1:0]                              start_tod_sync;
+
+    wire                                                    master_pulse_per_second;  
+    wire    [NUM_CHANNELS-1:0]                              pps_10g;
+    wire    [NUM_CHANNELS-1:0]                              pps_1g;
+        
+    
+    wire    [NUM_CHANNELS-1:0]                              channel_ready;
+    
+    wire                                                    xgmii_clk_reset_n;
+    wire                                                    top_mm_clk_reset_n;
+
+    wire    scl_in;
+    wire    scl_out;
+    wire    scl_oe_h;
+    wire    sda_in;
+    wire    sda_out;
+    wire    sda_oe_h;
+    
+    wire [17:0]     two_wire_controller_csr_address;
+    wire            two_wire_controller_csr_read;
+    wire            two_wire_controller_csr_write;
+    wire [31:0]     two_wire_controller_csr_writedata;
+    wire [31:0]     two_wire_controller_csr_readdata;
+    wire            two_wire_controller_csr_waitrequest;
+    wire            two_wire_controller_csr_readdata_valid;
+    
+    
+    assign sfp_txdisable = 1'b0;
+    assign xfp_txdisable= 1'b0; 
+    
+    assign channel_ready_n = ~ channel_ready;   
+   
+//==============================Async Reset synchronization================================     
+    
+    //AVMM Clock Reset Sync
+    altera_std_synchronizer #(2) sync_u0 (
+        .clk        (mm_clk),
+        .reset_n    (master_reset_n),
+        .din        (1'b1),
+        .dout       (top_mm_clk_reset_n)
+    );  
+        
+    //XGMII Clock Reset Sync
+    altera_std_synchronizer #(2) sync_u1 (
+        .clk        (xgmii_clk),
+        .reset_n    (master_reset_n),
+        .din        (1'b1),
+        .dout       (xgmii_clk_reset_n)
+    );  
+    
+//==============================Multi Channel MAC and PHY================================   
+    altera_eth_multi_channel_1588 #(
+        .NUM_CHANNELS(NUM_CHANNELS),                    // range from 1-12
+        .TSTAMP_FP_WIDTH (TSTAMP_FP_WIDTH),             // Time Stamp Fingerprint data width, must follow MAC Megacore "TSTAMP_FP_WIDTH"
+        .SV_RCN_BUNDLE_MODE (2),                        // mode0-10GBaseKR, mode1-1G10G without 1588, mode2 -1G10G with 1588  
+        .MDIO_MDC_CLOCK_DIVISOR (32),                   // MDIO Clock Divider
+        .SHARED_REFCLK_EN (1)
+    ) altera_eth_multi_channel_1588_inst (
+        .mm_clk                                         (mm_clk),
+        .xgmii_clk                                      (xgmii_clk),
+      
+        .master_reset_n                                 (master_reset_n),
+        .channel_reset_n                                (channel_reset_n),
+    
+
+        .pll_ref_clk_1g                                 (ref_clk_1g),
+        .pll_ref_clk_10g                                (ref_clk_10g),
+
+        .cdr_ref_clk_10g                                (ref_clk_10g),            
+        .cdr_ref_clk_1g                                 (ref_clk_1g),                                            
+
+        .rx_recovered_clk                               (rx_recovered_clk),             
+ 
+        .rx_serial_data                                 (rx_serial_data),
+        .tx_serial_data                                 (tx_serial_data),
+   
+        .avalon_st_tx_startofpacket                     (avalon_st_tx_startofpacket),
+        .avalon_st_tx_endofpacket                       (avalon_st_tx_endofpacket),
+        .avalon_st_tx_valid                             (avalon_st_tx_valid),
+        .avalon_st_tx_ready                             (avalon_st_tx_ready),
+        .avalon_st_tx_data                              (avalon_st_tx_data),
+        .avalon_st_tx_empty                             (avalon_st_tx_empty),
+        .avalon_st_tx_error                             (avalon_st_tx_error),
+
+        .avalon_st_rx_startofpacket                     (avalon_st_rx_startofpacket),
+        .avalon_st_rx_endofpacket                       (avalon_st_rx_endofpacket),
+        .avalon_st_rx_valid                             (avalon_st_rx_valid),
+        .avalon_st_rx_ready                             (avalon_st_rx_ready),
+        .avalon_st_rx_data                              (avalon_st_rx_data),
+        .avalon_st_rx_empty                             (avalon_st_rx_empty),
+        .avalon_st_rx_error                             (avalon_st_rx_error),
+
+        .avalon_st_tx_status_valid                      (avalon_st_tx_status_valid),                      
+        .avalon_st_tx_status_data                       (avalon_st_tx_status_data),                       
+        .avalon_st_tx_status_error                      (avalon_st_tx_status_error),                        
+        .avalon_st_rx_status_valid                      (avalon_st_rx_status_valid),                       
+        .avalon_st_rx_status_data                       (avalon_st_rx_status_data),                        
+        .avalon_st_rx_status_error                      (avalon_st_rx_status_error), 
+        
+        .avalon_st_pause_data                           ({NUM_CHANNELS{2'h0}}), 
+                                                    
+        .address                                        (multi_channel_address),
+        .waitrequest                                    (multi_channel_waitrequest),
+        .read                                           (multi_channel_read),       
+        .readdata                                       (multi_channel_readdata),   
+        .write                                          (multi_channel_write),      
+        .writedata                                      (multi_channel_writedata),
+        
+        .channel_ready                                  (channel_ready),
+        .ethernet_1g_an                                 (led_an), 
+        .ethernet_1g_char_err                           (led_char_err), 
+        .ethernet_1g_disp_err                           (led_disp_err),       
+        
+        .mdio_mdc                                       (mdio_mdc),                       
+        .mdio_in                                        (mdio_in),                   
+        .mdio_out                                       (mdio_out),                   
+        .mdio_oen                                       (mdio_oen),
+
+        .tx_egress_timestamp_request_in_valid           (tx_egress_timestamp_request_valid),
+        .tx_egress_timestamp_request_in_fingerprint     (tx_egress_timestamp_request_fingerprint),
+    
+        .tx_ingress_timestamp_valid                     (tx_ingress_timestamp_valid),
+        .tx_ingress_timestamp_96b_data                  (tx_ingress_timestamp_96b_data),
+        .tx_ingress_timestamp_64b_data                  (tx_ingress_timestamp_64b_data),
+        .tx_ingress_timestamp_format                    (tx_ingress_timestamp_format),
+                                                        
+        .tx_egress_timestamp_96b_valid                  (tx_egress_timestamp_96b_valid),
+        .tx_egress_timestamp_96b_data                   (tx_egress_timestamp_96b_data),
+        .tx_egress_timestamp_96b_fingerprint            (tx_egress_timestamp_96b_fingerprint),
+                                                        
+        .tx_egress_timestamp_64b_valid                  (tx_egress_timestamp_64b_valid),
+        .tx_egress_timestamp_64b_data                   (tx_egress_timestamp_64b_data),
+        .tx_egress_timestamp_64b_fingerprint            (tx_egress_timestamp_64b_fingerprint),
+                                                        
+        .rx_ingress_timestamp_96b_valid                 (rx_ingress_timestamp_96b_valid),
+        .rx_ingress_timestamp_96b_data                  (rx_ingress_timestamp_96b_data),
+                                                        
+        .rx_ingress_timestamp_64b_valid                 (rx_ingress_timestamp_64b_valid),
+        .rx_ingress_timestamp_64b_data                  (rx_ingress_timestamp_64b_data),
+    
+        .start_tod_sync                                 (start_tod_sync),
+        .master_pulse_per_second                        (master_pulse_per_second),
+        .pulse_per_second_10g                           (pps_10g),
+        .pulse_per_second_1g                            (pps_1g),
+    
+ 
+        // Configuration
+        .clock_operation_mode_mode                      ({NUM_CHANNELS{ORDINARY_CLOCK}}),
+        .pkt_with_crc_mode                              ({NUM_CHANNELS{1'b0}})    
+    );
+      
+//==============================TRAFFIC_CTRL================================ 
+
+//number of channel must set to 2 and fingerprint width must set to 4
+    genvar portid;
+    generate
+  
+    for (portid =0; portid <(divceil(NUM_CHANNELS, 2)); portid = portid+1)
+    begin: ETH_TRAFFIC_CTRL_PAIR_CHANNEL
+
+        if((ODD_NUM_CHANNEL == 1) && (portid == LAST_TRAFIIC_CTRL_PAIR)) begin
+
+            eth_traffic_controller_top  #(2,4) eth_traffic_controller_top_u0 (
+                .clk                                                (xgmii_clk),
+                .reset_n                                            (xgmii_clk_reset_n),
+            
+                .avl_mm_read                                        (traffic_controller_read[portid]),
+                .avl_mm_write                                       (traffic_controller_write[portid]),
+                .avl_mm_waitrequest                                 (traffic_controller_waitrequest[portid]),
+                .avl_mm_baddress                                    (traffic_controller_address[portid]),
+                .avl_mm_readdata                                    (traffic_controller_readdata[portid]),
+                .avl_mm_writedata                                   (traffic_controller_writedata[portid]),
+                
+                .avl_st_tx_data                                     ({       avalon_st_tx_data                       [2*portid] }),
+                .avl_st_tx_empty                                    ({       avalon_st_tx_empty                      [2*portid] }),
+                .avl_st_tx_eop                                      ({       avalon_st_tx_endofpacket                [2*portid] }),                                   
+                .avl_st_tx_error                                    ({       avalon_st_tx_error                      [2*portid] }),
+                .avl_st_tx_ready                                    ({ 1'b0, avalon_st_tx_ready                      [2*portid] }),
+                .avl_st_tx_sop                                      ({       avalon_st_tx_startofpacket              [2*portid] }),                                     
+                .avl_st_tx_val                                      ({       avalon_st_tx_valid                      [2*portid] }),                                                 
+                                                                    
+                .avl_st_rx_data                                     ({64'h0, avalon_st_rx_data                       [2*portid] }),                                  
+                .avl_st_rx_empty                                    ({ 3'h0, avalon_st_rx_empty                      [2*portid] }),
+                .avl_st_rx_eop                                      ({ 1'b0, avalon_st_rx_endofpacket                [2*portid] }),                                   
+                .avl_st_rx_error                                    ({ 6'h0, avalon_st_rx_error                      [2*portid] }),
+                .avl_st_rx_ready                                    ({       avalon_st_rx_ready                      [2*portid] }),
+                .avl_st_rx_sop                                      ({ 1'b0, avalon_st_rx_startofpacket              [2*portid] }),
+                .avl_st_rx_val                                      ({ 1'b0, avalon_st_rx_valid                      [2*portid] }),
+            
+                .avl_st_tx_status_valid                             ({ 1'b0, avalon_st_tx_status_valid               [2*portid] }),
+                .avl_st_tx_status_data                              ({40'h0, avalon_st_tx_status_data                [2*portid] }),                               
+                .avl_st_tx_status_error                             ({ 7'h0, avalon_st_tx_status_error               [2*portid] }),
+                                                                    
+                .avl_st_rx_status_valid                             ({ 1'b0, avalon_st_rx_status_valid               [2*portid] }),
+                .avl_st_rx_status_data                              ({40'h0, avalon_st_rx_status_data                [2*portid] }),                               
+                .avl_st_rx_status_error                             ({ 7'h0, avalon_st_rx_status_error               [2*portid] }),
+            
+                .tx_egress_timestamp_96b_valid                      ({ 1'b0, tx_egress_timestamp_96b_valid           [2*portid] }), 
+                .tx_egress_timestamp_96b_data                       ({96'h0, tx_egress_timestamp_96b_data            [2*portid] }), 
+                .tx_egress_timestamp_96b_fingerprint                ({{TSTAMP_FP_WIDTH{1'b0}}, tx_egress_timestamp_96b_fingerprint[2*portid] }), 
+        
+                .tx_egress_timestamp_request_fingerprint            ({       tx_egress_timestamp_request_fingerprint [2*portid] }), 
+                .tx_egress_timestamp_request_valid                  ({       tx_egress_timestamp_request_valid       [2*portid] }),
+        
+                .rx_ingress_timestamp_96b_valid                     ({ 1'b0, rx_ingress_timestamp_96b_valid          [2*portid] }), 
+                .rx_ingress_timestamp_96b_data                      ({96'h0, rx_ingress_timestamp_96b_data           [2*portid] }),
+            
+                .eth_std_stop_mon                                   (2'b00),
+                .eth_std_mon_active                                 (),
+                .eth_std_mon_done                                   (),
+                .eth_std_mon_error                                  (),
+                
+                .eth_1588_wait_limit                                (1'b1),
+                .eth_1588_start_tod_sync                            ({       start_tod_sync                          [2*portid] }),
+                .eth_1588_channel_ready                             ({ 1'b0, channel_ready                           [2*portid] }),
+                .eth_1588_traffic_controller_error_n                (error_n[portid])
+            );    
+
+        end
+        else begin
+
+            eth_traffic_controller_top  #(2,4) eth_traffic_controller_top_u0 (
+                .clk                                                (xgmii_clk),
+                .reset_n                                            (xgmii_clk_reset_n),
+            
+                .avl_mm_read                                        (traffic_controller_read[portid]),
+                .avl_mm_write                                       (traffic_controller_write[portid]),
+                .avl_mm_waitrequest                                 (traffic_controller_waitrequest[portid]),
+                .avl_mm_baddress                                    (traffic_controller_address[portid]),
+                .avl_mm_readdata                                    (traffic_controller_readdata[portid]),
+                .avl_mm_writedata                                   (traffic_controller_writedata[portid]),
+                
+                .avl_st_tx_data                                     (avalon_st_tx_data                       [2*(portid+1)-1: 2*portid]),
+                .avl_st_tx_empty                                    (avalon_st_tx_empty                      [2*(portid+1)-1: 2*portid]),
+                .avl_st_tx_eop                                      (avalon_st_tx_endofpacket                [2*(portid+1)-1: 2*portid]),                                   
+                .avl_st_tx_error                                    (avalon_st_tx_error                      [2*(portid+1)-1: 2*portid]),
+                .avl_st_tx_ready                                    (avalon_st_tx_ready                      [2*(portid+1)-1: 2*portid]),
+                .avl_st_tx_sop                                      (avalon_st_tx_startofpacket              [2*(portid+1)-1: 2*portid]),                                     
+                .avl_st_tx_val                                      (avalon_st_tx_valid                      [2*(portid+1)-1: 2*portid]),                                                 
+                                                                    
+                .avl_st_rx_data                                     (avalon_st_rx_data                       [2*(portid+1)-1: 2*portid]),                                  
+                .avl_st_rx_empty                                    (avalon_st_rx_empty                      [2*(portid+1)-1: 2*portid]),
+                .avl_st_rx_eop                                      (avalon_st_rx_endofpacket                [2*(portid+1)-1: 2*portid]),                                   
+                .avl_st_rx_error                                    (avalon_st_rx_error                      [2*(portid+1)-1: 2*portid]),
+                .avl_st_rx_ready                                    (avalon_st_rx_ready                      [2*(portid+1)-1: 2*portid]),
+                .avl_st_rx_sop                                      (avalon_st_rx_startofpacket              [2*(portid+1)-1: 2*portid]),
+                .avl_st_rx_val                                      (avalon_st_rx_valid                      [2*(portid+1)-1: 2*portid]),
+            
+                .avl_st_tx_status_valid                             (avalon_st_tx_status_valid               [2*(portid+1)-1: 2*portid]),
+                .avl_st_tx_status_data                              (avalon_st_tx_status_data                [2*(portid+1)-1: 2*portid]),                               
+                .avl_st_tx_status_error                             (avalon_st_tx_status_error               [2*(portid+1)-1: 2*portid]),
+                                                                    
+                .avl_st_rx_status_valid                             (avalon_st_rx_status_valid               [2*(portid+1)-1: 2*portid]),
+                .avl_st_rx_status_data                              (avalon_st_rx_status_data                [2*(portid+1)-1: 2*portid]),                               
+                .avl_st_rx_status_error                             (avalon_st_rx_status_error               [2*(portid+1)-1: 2*portid]),
+            
+                .tx_egress_timestamp_96b_valid                      (tx_egress_timestamp_96b_valid           [2*(portid+1)-1: 2*portid]), 
+                .tx_egress_timestamp_96b_data                       (tx_egress_timestamp_96b_data            [2*(portid+1)-1: 2*portid]), 
+                .tx_egress_timestamp_96b_fingerprint                (tx_egress_timestamp_96b_fingerprint     [2*(portid+1)-1: 2*portid]), 
+        
+                .tx_egress_timestamp_request_fingerprint            (tx_egress_timestamp_request_fingerprint [2*(portid+1)-1: 2*portid]), 
+                .tx_egress_timestamp_request_valid                  (tx_egress_timestamp_request_valid       [2*(portid+1)-1: 2*portid]),
+        
+                .rx_ingress_timestamp_96b_valid                     (rx_ingress_timestamp_96b_valid          [2*(portid+1)-1: 2*portid]), 
+                .rx_ingress_timestamp_96b_data                      (rx_ingress_timestamp_96b_data           [2*(portid+1)-1: 2*portid]),
+            
+                .eth_std_stop_mon                                   (2'b00),
+                .eth_std_mon_active                                 (),
+                .eth_std_mon_done                                   (),
+                .eth_std_mon_error                                  (),
+                
+                .eth_1588_wait_limit                                (1'b1),
+                .eth_1588_start_tod_sync                            (start_tod_sync                          [2*(portid+1)-1: 2*portid]),
+                .eth_1588_channel_ready                             (channel_ready                           [2*(portid+1)-1: 2*portid]),
+                .eth_1588_traffic_controller_error_n                (error_n[portid])
+            );   
+
+        end
+    end
+endgenerate 
+ 
+//==============================JTAG MASTER================================     
+    altera_jtag_avalon_master JTAG_MASTER (
+        .master_0_clk_clk                           (mm_clk),                                   
+        .master_0_clk_reset_reset                   (~top_mm_clk_reset_n),                  
+        .master_0_master_address                    (jtag_if_address),          
+        .master_0_master_readdata                   (jtag_if_readdata),         
+        .master_0_master_read                       (jtag_if_read),                     
+        .master_0_master_write                      (jtag_if_write),            
+        .master_0_master_writedata                  (jtag_if_writedata),
+        .master_0_master_readdatavalid              (jtag_if_readdatavalid),
+        .master_0_master_waitrequest                (jtag_if_waitrequest)       
+    
+    );
+
+//==============================Address Decoder================================ 
+    address_decoder_top address_decoder_top_inst (
+        .clk_100_clk                                                        (mm_clk),                                        
+        .reset_clk_100_reset_n                                              (top_mm_clk_reset_n),                              
+
+        .clk_156_25_clk                                                     (xgmii_clk),                                     
+        .reset_clk_156_25_reset_n                                           (xgmii_clk_reset_n),
+        
+        .master_channel_avalon_anti_master_0_address                        (jtag_if_address[25:0]),        
+        .master_channel_avalon_anti_master_0_waitrequest                    (jtag_if_waitrequest),    
+        .master_channel_avalon_anti_master_0_read                           (jtag_if_read),           
+        .master_channel_avalon_anti_master_0_readdata                       (jtag_if_readdata),       
+        .master_channel_avalon_anti_master_0_readdatavalid                  (jtag_if_readdatavalid),  
+        .master_channel_avalon_anti_master_0_write                          (jtag_if_write),          
+        .master_channel_avalon_anti_master_0_writedata                      (jtag_if_writedata),      
+
+        .multi_channel_avalon_anti_slave_0_address                          (multi_channel_address),          
+        .multi_channel_avalon_anti_slave_0_write                            (multi_channel_write),            
+        .multi_channel_avalon_anti_slave_0_read                             (multi_channel_read),             
+        .multi_channel_avalon_anti_slave_0_readdata                         (multi_channel_readdata),         
+        .multi_channel_avalon_anti_slave_0_writedata                        (multi_channel_writedata),        
+        .multi_channel_avalon_anti_slave_0_waitrequest                      (multi_channel_waitrequest),      
+
+        .traffic_controller_0_avalon_anti_slave_0_address                   (traffic_controller_address[0]),     
+        .traffic_controller_0_avalon_anti_slave_0_write                     (traffic_controller_write[0]),       
+        .traffic_controller_0_avalon_anti_slave_0_read                      (traffic_controller_read[0]),        
+        .traffic_controller_0_avalon_anti_slave_0_readdata                  (traffic_controller_readdata[0]),    
+        .traffic_controller_0_avalon_anti_slave_0_writedata                 (traffic_controller_writedata[0]),   
+        .traffic_controller_0_avalon_anti_slave_0_waitrequest               (traffic_controller_waitrequest[0]),
+
+        .traffic_controller_1_avalon_anti_slave_0_address                   (traffic_controller_address[1]),     
+        .traffic_controller_1_avalon_anti_slave_0_write                     (traffic_controller_write[1]),       
+        .traffic_controller_1_avalon_anti_slave_0_read                      (traffic_controller_read[1]),        
+        .traffic_controller_1_avalon_anti_slave_0_readdata                  (traffic_controller_readdata[1]),    
+        .traffic_controller_1_avalon_anti_slave_0_writedata                 (traffic_controller_writedata[1]),   
+        .traffic_controller_1_avalon_anti_slave_0_waitrequest               (traffic_controller_waitrequest[1]),
+        
+        .traffic_controller_2_avalon_anti_slave_0_address                   (traffic_controller_address[2]),     
+        .traffic_controller_2_avalon_anti_slave_0_write                     (traffic_controller_write[2]),       
+        .traffic_controller_2_avalon_anti_slave_0_read                      (traffic_controller_read[2]),        
+        .traffic_controller_2_avalon_anti_slave_0_readdata                  (traffic_controller_readdata[2]),    
+        .traffic_controller_2_avalon_anti_slave_0_writedata                 (traffic_controller_writedata[2]),   
+        .traffic_controller_2_avalon_anti_slave_0_waitrequest               (traffic_controller_waitrequest[2]),
+        
+        .traffic_controller_3_avalon_anti_slave_0_address                   (traffic_controller_address[3]),     
+        .traffic_controller_3_avalon_anti_slave_0_write                     (traffic_controller_write[3]),       
+        .traffic_controller_3_avalon_anti_slave_0_read                      (traffic_controller_read[3]),        
+        .traffic_controller_3_avalon_anti_slave_0_readdata                  (traffic_controller_readdata[3]),    
+        .traffic_controller_3_avalon_anti_slave_0_writedata                 (traffic_controller_writedata[3]),   
+        .traffic_controller_3_avalon_anti_slave_0_waitrequest               (traffic_controller_waitrequest[3]),
+        
+        .traffic_controller_4_avalon_anti_slave_0_address                   (traffic_controller_address[4]),     
+        .traffic_controller_4_avalon_anti_slave_0_write                     (traffic_controller_write[4]),       
+        .traffic_controller_4_avalon_anti_slave_0_read                      (traffic_controller_read[4]),        
+        .traffic_controller_4_avalon_anti_slave_0_readdata                  (traffic_controller_readdata[4]),    
+        .traffic_controller_4_avalon_anti_slave_0_writedata                 (traffic_controller_writedata[4]),   
+        .traffic_controller_4_avalon_anti_slave_0_waitrequest               (traffic_controller_waitrequest[4]),
+
+        .traffic_controller_5_avalon_anti_slave_0_address                   (traffic_controller_address[5]),     
+        .traffic_controller_5_avalon_anti_slave_0_write                     (traffic_controller_write[5]),       
+        .traffic_controller_5_avalon_anti_slave_0_read                      (traffic_controller_read[5]),        
+        .traffic_controller_5_avalon_anti_slave_0_readdata                  (traffic_controller_readdata[5]),    
+        .traffic_controller_5_avalon_anti_slave_0_writedata                 (traffic_controller_writedata[5]),   
+        .traffic_controller_5_avalon_anti_slave_0_waitrequest               (traffic_controller_waitrequest[5]),
+        
+        .i2c_bridge_avalon_anti_slave_0_address                             (two_wire_controller_csr_address),              
+        .i2c_bridge_avalon_anti_slave_0_write                               (two_wire_controller_csr_write),              
+        .i2c_bridge_avalon_anti_slave_0_read                                (two_wire_controller_csr_read),                 
+        .i2c_bridge_avalon_anti_slave_0_readdata                            (two_wire_controller_csr_readdata), 
+        .i2c_bridge_avalon_anti_slave_0_readdatavalid                       (two_wire_controller_csr_readdata_valid),       
+        .i2c_bridge_avalon_anti_slave_0_writedata                           (two_wire_controller_csr_writedata), 
+        .i2c_bridge_avalon_anti_slave_0_waitrequest                         (two_wire_controller_csr_waitrequest)
+        
+    
+    );  
+
+    
+    optics_control #(
+    .STATUS_ADDR_PREFIX (10'h1),
+   .SCL_FREQ (50000),   // for two_wire - note : using >400K may have legal implications
+   .CLK_FREQ (100000000), 
+   .MDIO_FREQ (50000)
+    ) optics_control_inst (
+    .clk_status                 (mm_clk)    ,
+   .reset                       (~top_mm_clk_reset_n),
+    .status_addr                (two_wire_controller_csr_address[17:2]),
+    .status_read                (two_wire_controller_csr_read),
+    .status_write               (two_wire_controller_csr_write),
+    .status_writedata           (two_wire_controller_csr_writedata),
+    .status_readdata            (two_wire_controller_csr_readdata),
+   .status_waitrequest          (two_wire_controller_csr_waitrequest),
+    .status_readdata_valid      (two_wire_controller_csr_readdata_valid),   
+    // CFP dedicated controls
+    .cfp_mod_lopwr              (),
+    .cfp_mod_rst                (), 
+    .cfp_tx_dis                 (), 
+    .cfp_mod_abs                (),
+    .cfp_rx_los                 (SFPP_RX_LOS),      
+    .cfp_prg_alrm               (), 
+    .cfp_prg_cntl               (), 
+    
+    // two_wire controls
+    .xfp_sda_in                 (sda_in),
+    .xfp_sda_out                (sda_out),
+    .xfp_sda_oe                 (sda_oe_h), 
+    .xfp_scl_in                 (scl_in),
+    .xfp_scl_out                (scl_out),
+    .xfp_scl_oe                 (scl_oe_h)
+        
+);
+              
+
+
+    two_wire_iopad io(
+    .scl        (sfpa_mod1_scl),
+    .scl_out    (scl_out),
+    .scl_oe_h   (scl_oe_h),
+    .scl_in     (scl_in),
+    .sda        (sfpa_mod2_sda),
+    .sda_out    (sda_out),
+    .sda_oe_h   (sda_oe_h),
+    .sda_in     (sda_in)
+
+    );
+    
+    // temporary commented out due to ip catalog cannot successfully update the source and probe ip.
+/*    source source_inst (
+    .source ({channel_reset_n,master_reset_n})
+    );
+  */  
+
+    // --------------------------------------------------
+    // Calculates the divceil of the input value (m/n)
+    // --------------------------------------------------
+    function integer divceil;
+        input integer m;
+		input integer n;
+        integer i;
+
+        begin
+            i = m % n;
+            divceil = (m/n);
+            if (i > 0) begin
+                divceil = divceil + 1;
+			end
+        end
+    endfunction
+
+endmodule         
+        

@@ -1,0 +1,14 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include <kiss_fft.h>
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS       1000
+#define FFT_SIZE    8
+
+int main()
+{
+	alt_printf("--- KissFFT Nios V Example ----\n");
+	return 0;
+}

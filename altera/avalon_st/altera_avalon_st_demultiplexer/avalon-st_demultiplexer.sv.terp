@@ -1,0 +1,298 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// altera message_level level1
+// (C) 2001-2013 Altera Corporation. All rights reserved.
+// Your use of Altera Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Altera Program License Subscription 
+// Agreement, Altera MegaCore Function License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Altera and sold by 
+// Altera or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+ 
+// \$Id: //acds/rel/13.1/ip/.../avalon-st_demultiplexer.sv.terp#1 $
+// \$Revision: #1 $
+// \$Date: 2013/09/09 $
+// \$Author: dmunday $
+
+
+// --------------------------------------------------------------------------------
+//| Avalon Streaming Demultiplexer
+// --------------------------------------------------------------------------------
+
+
+`timescale 1ns / 100ps
+// ------------------------------------------
+// Generation parameters:
+//   output_name:        $output_name
+//   use_packets:        $use_packets
+//   use_empty:          $use_empty
+//   empty_width:        $emptyWidth
+//   data_width:         $dataWidth
+//   channel_width:      $channelWidth
+//   error_width:        $errorWidth
+//   num_outputs:        $numOutputs
+//   outChWidth:         $outChWidth
+//   selectWidth:        $selectWidth
+//   selectBits:         $selectBits
+//   inPayloadMap:       $inPayloadMap
+//   outPayloadWidth:    $outPayloadWidth
+//   outPayloadMap:      $outPayloadMap
+//   
+// ------------------------------------------
+
+@@ set data "_data"
+@@ set valid "_valid"
+@@ set validwire "_valid_wire"
+@@ set ready "_ready"
+@@ set sop "_startofpacket"
+@@ set eop "_endofpacket"
+@@ set empty "_empty"
+@@ set error "_error"
+@@ set channel "_channel"
+@@ set payload "_payload"
+
+module $output_name (     
+ // Interface: in
+@@ if {$channelWidth>0} {
+@@ if {$channelWidth==1} {
+ input              in_channel,
+@@ } else {
+ input     [$channelWidth-1: 0] in_channel,
+@@ }
+@@ }
+ input              in_valid,
+ output reg         in_ready,
+@@ if {$dataWidth==1} {
+ input              in_data,
+@@ } else {
+ input    [$dataWidth-1: 0] in_data,
+@@ }
+@@ if {$errorWidth>0} {
+@@ if {$errorWidth==1} {
+ input              in_error,
+@@ } else {
+ input    [$errorWidth-1 : 0] in_error,
+@@ }
+@@ }
+@@ if {$use_packets} {
+ input              in_startofpacket,
+ input              in_endofpacket,
+@@ }
+@@ if {$use_empty} {
+@@ if {$emptyWidth==1} {
+ input              in_empty,
+@@ } else {
+ input     [$emptyWidth-1: 0] in_empty,
+@@ }
+@@ }                    
+
+@@for {set i 0} {$i < $numOutputs} {incr i} {
+// Interface: out$i
+@@ if {$outChWidth>0} {
+@@ if {$outChWidth==1} {
+ output reg          out$i$channel,
+@@ } else {
+ output reg [$outChWidth-1: 0] out$i$channel,
+@@ }
+@@ }
+ output reg          out$i$valid,
+ input               out$i$ready,
+@@ if {$dataWidth==1} {
+ output reg          out$i$data,
+@@ } else {
+ output reg [$dataWidth-1: 0] out$i$data,
+@@ }
+@@ if {$errorWidth>0} {
+@@ if {$errorWidth==1} {
+ output reg          out$i$error,
+@@ } else {
+ output reg [$errorWidth-1: 0] out$i$error,
+@@ }
+@@ }
+@@ if {$use_packets} {
+ output reg          out$i$sop,
+ output reg          out$i$eop, 
+@@ }
+@@ if {$use_empty} {
+@@ if {$emptyWidth==1} {
+ output reg          out$i$empty,
+@@ } else {
+ output reg [$emptyWidth-1: 0] out$i$empty,
+@@ }
+@@ }
+@@ }
+  // Interface: clk
+ input              clk,
+ // Interface: reset
+ input              reset_n
+
+ /*AUTOARG*/);
+                          
+@@set max_output [expr $numOutputs - 1 ]
+
+// ---------------------------------------------------------------------
+//| Signal Declarations
+// ---------------------------------------------------------------------
+   wire           in_ready_wire;
+@@if {$selectWidth >0} {
+   reg [$selectWidth -1:0]   in_select;
+@@} else {
+   reg            in_select;
+@@}
+   reg [$outPayloadWidth -1:0]  in_payload;
+   reg            lhs_ready;
+   wire           lhs_valid; 
+@@if {$selectWidth >0} {
+   wire [$selectWidth -1:0]  mid_select;
+@@} else {
+   wire           mid_select;
+@@}
+   wire [$outPayloadWidth -1:0] mid_payload;
+   
+@@for {set i 0} {$i <= $max_output} {incr i} {
+   reg            rhs$i$valid;
+   wire           rhs$i$ready;
+@@}
+@@for {set i 0} {$i <= $max_output} {incr i} {
+   wire           out$i$validwire;
+   wire [$outPayloadWidth-1:0]  out$i$payload;                  
+@@}
+// ---------------------------------------------------------------------
+//| Input Mapping
+// ---------------------------------------------------------------------
+always @* begin
+   in_ready   = in_ready_wire;
+   in_payload = {$inPayloadMap};
+@@if {$selectWidth >0} {
+@@if {$channelWidth==1} {
+   in_select  = in_channel;
+@@} else {
+   in_select  = in_channel[$selectBits];
+@@}
+@@} else {
+   in_select = 0;
+@@}
+end
+
+// ---------------------------------------------------------------------
+//| Input Pipeline Stage
+// ---------------------------------------------------------------------
+@@set pname "_1stage_pipeline"
+$output_name$pname #( .PAYLOAD_WIDTH( $outPayloadWidth + $selectWidth )) inpipe
+ ( .clk      (clk ),
+   .reset_n  (reset_n  ),
+   .in_ready (in_ready_wire ),
+   .in_valid (in_valid ),
+   .in_payload ({in_select, in_payload}),
+   .out_ready(lhs_ready ),
+   .out_valid(lhs_valid),
+   .out_payload({mid_select, mid_payload}) );
+
+
+// ---------------------------------------------------------------------
+//| Demuxing
+// ---------------------------------------------------------------------
+always @* begin
+     lhs_ready  = 1;
+@@for {set i 0} {$i <= $max_output} {incr i} {                      
+     rhs$i$valid = 0;
+@@}
+   // Do mux
+   case (mid_select)
+@@for {set i 0} {$i <= $max_output} {incr i} {                                            
+       $i: begin
+             lhs_ready = rhs$i$ready;
+             rhs$i$valid = lhs_valid;
+           end
+@@}
+   endcase // case (mid_select)
+end
+
+
+   // ---------------------------------------------------------------------
+   //| Output Pipeline Stage
+   // ---------------------------------------------------------------------
+@@for {set i 0} {$i <= $max_output} {incr i} {
+$output_name$pname #( .PAYLOAD_WIDTH($outPayloadWidth)) outpipe$i
+  ( .clk        (clk ),
+    .reset_n    (reset_n  ),
+    .in_ready   (rhs$i$ready ),
+    .in_valid   (rhs$i$valid),
+    .in_payload (mid_payload),
+    .out_ready  (out$i$ready ),
+    .out_valid  (out$i$validwire),
+    .out_payload(out$i$payload)  );
+@@}
+
+   // ---------------------------------------------------------------------
+   //| Output Mapping
+   // ---------------------------------------------------------------------
+always @* begin
+@@for {set i 0} {$i <= $max_output} {incr i} {
+   out$i$valid   = out$i$validwire;
+@@set thisPayload [lindex $outPayloadMap $i]
+   {$thisPayload} = out$i$payload;                                              
+@@}
+end
+
+endmodule //
+
+//  --------------------------------------------------------------------------------
+// | single buffered pipeline stage
+//  --------------------------------------------------------------------------------
+module $output_name$pname
+  #( parameter PAYLOAD_WIDTH = 8 )
+   ( input                          clk,
+     input                          reset_n,
+     output reg                     in_ready,
+     input                          in_valid,
+     input [PAYLOAD_WIDTH-1:0]      in_payload,
+     input                          out_ready,
+     output reg                     out_valid,
+     output reg [PAYLOAD_WIDTH-1:0] out_payload
+   );
+
+   reg                              in_ready1;
+   always @* begin
+      in_ready = out_ready || ~out_valid;
+         //     in_ready = in_ready1;
+         //     if (!out_ready)
+         //       in_ready = 0;
+   end
+
+   always @ (negedge reset_n, posedge clk) begin
+      if (!reset_n) begin
+         in_ready1   <= 0;
+         out_valid   <= 0;
+         out_payload <= 0;
+      end else begin
+         in_ready1 <= out_ready || !out_valid;
+         if (in_valid) begin
+            out_valid <= 1;
+         end else if (out_ready) begin
+            out_valid <= 0;
+         end
+         if(in_valid && in_ready) begin
+            out_payload <= in_payload;
+         end
+      end // else: !if(!reset_n)
+   end // always @ (negedge reset_n, posedge clk)
+endmodule //
+
+

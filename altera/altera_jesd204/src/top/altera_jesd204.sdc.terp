@@ -1,0 +1,1098 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+#Users are recommended to modify this sdc file if these settings do not reflects the correct design's usage .
+#For example, users must comment out set_clock_groups -asynch -group {jesd204_*x_link_clk} - group {jesd204_*x_avs_clk} if the jesd204_*x_link_clk is synchronous to jesd204_*x_avs_clk
+
+set jesd204_sdc_debug 0
+
+# Check if port exists
+proc jesd204_port_existence {port_name} {
+   set port_collection [get_ports -nowarn \$port_name]
+   if { [get_collection_size \$port_collection] > 0 } {
+      return 1
+   } else {
+      return 0
+   }
+}
+
+# Return existing clock target list
+proc jesd204_get_clock_target_list {} {
+   upvar 1 jesd204_sdc_debug jesd204_sdc_debug
+
+   set result [list]
+   set clocks_collection [get_clocks -nowarn]
+   foreach_in_collection clock \$clocks_collection { 
+      set clock_name       [get_clock_info -name \$clock] 
+      set clock_target_col [get_clock_info -targets \$clock]
+      lappend result       [query_collection -report -all \$clock_target_col]
+      if {\$jesd204_sdc_debug} { post_message -type info "clock_name : \$clock_name" }
+   }
+   if {\$jesd204_sdc_debug} { post_message -type info "JESD204 clock_target list: \$result" }
+
+   return \$result
+}
+
+set jesd204_clock_target_list [jesd204_get_clock_target_list]
+
+@@ if { $data_path == "TX" } {
+   @@ if {$wrapper == "base_phy"} {
+      @@ if {$device_family == "Stratix V" || $device_family == "Arria V GZ"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+      set jesd204_tx_avs_clk_ext          [jesd204_port_existence jesd204_tx_avs_clk]
+      set jesd204_tx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz and tx_avs_clk to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] and tx_avs_clk at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+         create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_tx_avs_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {txlink_clk} -group {pll_ref_clk} -group {tx_avs_clk}  -group {reconfig_to_xcvr[0]}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_8g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+         set_max_delay -from [get_keepers {*inst_sv_hssi_8g_tx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_tx_base*altera_jesd204_tx_csr_inst|*fifo*full*}] ${linkclk_period_ns}ns 
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG2"} {       
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_10g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+         @@ }
+      @@ } elseif {$device_family == "Arria V" || $device_family == "Cyclone V"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+      set jesd204_tx_avs_clk_ext          [jesd204_port_existence jesd204_tx_avs_clk]
+      set jesd204_tx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz and tx_avs_clk to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] and tx_avs_clk at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+         create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_tx_avs_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {txlink_clk} -group {pll_ref_clk} -group {tx_avs_clk}  -group {reconfig_to_xcvr[0]}
+      }
+
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_av_hssi_8g_tx_pcs|wys~BURIED_SYNC_DATA*}] ${linkclk_period_ns}ns 
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG4"} {
+         if {\$jesd204_tx_avs_clk_ext} {
+            #set clock groups between avs clocks and transceiver's clkout
+            set_clock_groups -asynchronous -group {tx_avs_clk} -group [get_clocks {*|inst_phy|inst_xcvr|gen_native_inst.av_xcvr_native_insts[*].gen_bonded_group_native.av_xcvr_native_inst|inst_av_pma|av_tx_pma|tx_pma_insts[*].av_tx_pma_ch_inst|tx_pma_ch.tx_cgb|pclk[2]}]                  
+         }
+         #set false path on FIFO empty and full status signal from PCFIFO to CSR 
+         set_false_path -from [get_keepers {*inst_phy|altera_jesd204_*x_mlpcs:inst_*x_mlpcs|*x_pcs_inst|*pcfifo|o_fifo_full}] -to [get_keepers {*|altera_jesd204_*x_base:inst_*x|altera_jesd204_*x_csr:altera_jesd204_*x_csr_inst|phy_csr_*x_pcfifo_full*}]         
+         #TimeQuest constraints to constrain the timing across asynchronous clock domain crossings.
+         #The idea is to minimize skew to less than one clock period to keep the gray encoding, 
+         #and to minimize latency on the pointer crossing. Refer to case:206467 for details
+         set pcfifo_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_wr_ptr[*]*}]
+         set pcfifo_sync_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_wr_ptr[*]*}]
+         set pcfifo_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_rd_ptr[*]*}]
+         set pcfifo_sync_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_rd_ptr[*]*}]
+         set_max_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr -100ns
+         set_max_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr -100ns 
+         set_net_delay -max 2ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -max 2ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+            if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {     
+               for {set lane 0} {\$lane < $L} {incr lane} {           
+               set tx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$tx_pcfifo_gray_wr_ptr_per_lane -to \$tx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$tx_pcfifo_gray_rd_ptr_per_lane -to \$tx_pcfifo_sync_gray_rd_ptr_per_lane                    
+               }
+            } 
+         @@ }
+      @@ } elseif {$device_family == "Arria 10" || $device_family == "Stratix 10"} {
+      # Please uncomment and remove the REMOVE_ME and constraint the PLL reference clock 
+      # REMOVE_ME create_clock -name "< pll_ref_clk >" -period < refclk_period_ns >ns [get_ports *< pll_ref_clk >*]
+      # REMOVE_ME derive_pll_clocks -create_base_clocks
+      # REMOVE_ME derive_clock_uncertainty
+      @@ if {$test_components_en == "true"} {
+         # This section is only for Altera Internal Use. 
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk]
+         derive_pll_clocks -create_base_clocks
+         derive_clock_uncertainty 
+      @@ }
+
+      set jesd204_txlink_clk_ext  [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_tx_avs_clk_ext  [jesd204_port_existence jesd204_tx_avs_clk]
+      set jesd204_tx_avs_clk_lsrc [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+         #Temporary set tx_avs_clk to 125MHz. Users are responsible to constraint the tx_avs_clk at desired value
+         create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {txlink_clk} -group {tx_avs_clk} 
+      }
+
+      @@ if {$reconfig_en == "true"} {
+      @@ if {$rcfg_shared == "true" || $L == 1} {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk]
+      set jesd204_reconfig_clk_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_clk]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk] 
+      }
+      @@ } else {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk[*]]
+      set jesd204_reconfig_clk_lsrc [lsearch -regexp \$jesd204_clock_target_list \{reconfig_clk\\[\\d\\]\}]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk[*]] 
+      }
+      @@ }
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {reconfig_clk} -group {tx_avs_clk}
+      }
+
+      if {\$jesd204_tx_avs_clk_ext} {
+         set_false_path -through [get_nets *jesd204*|inst_xcvr|*twentynm_xcvr_native_inst|inst_twentynm_xcvr_avmm|pld_cal_done*] -to [get_clocks {tx_avs_clk}]
+      }
+      @@ }
+      @@ }
+
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *inst_tx|altera_jesd204_tx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|rx_sync_req_n] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *inst_tx|altera_jesd204_tx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|rx_sync_req_n] 1
+
+   @@ } elseif {$wrapper == "base"} {
+   set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+   set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+   set jesd204_tx_avs_clk_ext          [jesd204_port_existence jesd204_tx_avs_clk]
+   set jesd204_tx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+
+   derive_clock_uncertainty
+   if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+      create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+   }
+   if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+      #Temporary set tx_avs_clk to 125MHz. Users are responsible to constraint the tx_avs_clk at desired value
+      create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+   }
+   if {\$jesd204_txlink_clk_ext && \$jesd204_tx_avs_clk_ext} {
+      set_clock_groups -asynchronous -group {txlink_clk} -group {tx_avs_clk}
+   }
+
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|rx_sync_req_n] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|rx_sync_req_n] 1
+
+   @@ } else {
+   #phy only
+      @@ if {$device_family == "Stratix V" || $device_family == "Arria V GZ"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {txlink_clk} -group {pll_ref_clk} -group {reconfig_to_xcvr[0]}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_8g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+         set_max_delay -from [get_keepers {*inst_sv_hssi_8g_tx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_tx_base*altera_jesd204_tx_csr_inst|*fifo*full*}] ${linkclk_period_ns}ns 
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG2"} {                    
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_10g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+         @@ }
+      @@ } elseif {$device_family == "Arria V" || $device_family == "Cyclone V"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {txlink_clk} -group {pll_ref_clk} -group {reconfig_to_xcvr[0]}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {   
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_av_hssi_8g_tx_pcs|wys~BURIED_SYNC_DATA*}] ${linkclk_period_ns}ns
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG4"} {
+         #set false path on FIFO empty and full status signal from PCFIFO to CSR 
+         set_false_path -from [get_keepers {*inst_phy|altera_jesd204_*x_mlpcs:inst_*x_mlpcs|*x_pcs_inst|*pcfifo|o_fifo_full}] -to [get_keepers {*|altera_jesd204_*x_base:inst_*x|altera_jesd204_*x_csr:altera_jesd204_*x_csr_inst|phy_csr_*x_pcfifo_full*}]         
+         #TimeQuest constraints to constrain the timing across asynchronous clock domain crossings.
+         #The idea is to minimize skew to less than one clock period to keep the gray encoding, 
+         #and to minimize latency on the pointer crossing. Refer to case:206467 for details
+         set pcfifo_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_wr_ptr[*]*}]
+         set pcfifo_sync_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_wr_ptr[*]*}]
+         set pcfifo_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_rd_ptr[*]*}]
+         set pcfifo_sync_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_rd_ptr[*]*}]
+         set_max_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr -100ns
+         set_max_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr -100ns 
+         set_net_delay -max 2ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -max 2ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+            if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {     
+               for {set lane 0} {\$lane < $L} {incr lane} {           
+               set tx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$tx_pcfifo_gray_wr_ptr_per_lane -to \$tx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$tx_pcfifo_gray_rd_ptr_per_lane -to \$tx_pcfifo_sync_gray_rd_ptr_per_lane                    
+               }
+            } 
+         @@ }
+      @@ } elseif {$device_family == "Arria 10" || $device_family == "Stratix 10"} {
+      # Please uncomment and remove the REMOVE_ME and constraint the PLL reference clock 
+      # REMOVE_ME create_clock -name "< pll_ref_clk >" -period < refclk_period_ns >ns [get_ports *< pll_ref_clk >*]
+      # REMOVE_ME derive_pll_clocks -create_base_clocks
+      # REMOVE_ME derive_clock_uncertainty
+
+      set jesd204_txlink_clk_ext  [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      @@ if {$reconfig_en == "true"} {
+      @@ if {$rcfg_shared == "true" || $L == 1} {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk]
+      set jesd204_reconfig_clk_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_clk]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk] 
+      }
+      @@ } else {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk[*]]
+      set jesd204_reconfig_clk_lsrc [lsearch -regexp \$jesd204_clock_target_list \{reconfig_clk\\[\\d\\]\}]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk[*]] 
+      }
+      @@ }
+      @@ }
+
+      @@ }
+   @@ }
+@@ } elseif { $data_path == "RX" } {
+   @@ if {$wrapper == "base_phy"} {
+      @@ if {$device_family == "Stratix V" || $device_family == "Arria V GZ"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+      set jesd204_rx_avs_clk_ext          [jesd204_port_existence jesd204_rx_avs_clk]
+      set jesd204_rx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz and rx_avs_clk to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] and rx_avs_clk at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+         create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_rx_avs_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {pll_ref_clk} -group {rx_avs_clk}  -group {reconfig_to_xcvr[0]}
+      }
+        @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns 
+        @@ } elseif { $pcs_config == "JESD_PCS_CFG2"} { 
+           # FB 178709. Duplicate clock edge issue on FIFO. 
+           set_false_path -from {*gen_bonded_group_native.xcvr_native_inst|sv_pcs:inst_sv_pcs|sv_pcs_ch:ch[*].inst_sv_pcs_ch|sv_hssi_10g_rx_pcs_rbc:inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG22} -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*full*}]
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG16}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns  
+        @@ }
+      @@ } elseif {$device_family == "Arria V" || $device_family == "Cyclone V"} {
+      set jesd204_pll_ref_clk_ext  [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_rxlink_clk_ext  [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+      set jesd204_rx_avs_clk_ext  [jesd204_port_existence jesd204_rx_avs_clk]
+      set jesd204_rx_avs_clk_lsrc [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz and rx_avs_clk to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] and rx_avs_clk at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+         create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_rx_avs_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {pll_ref_clk} -group {rx_avs_clk}  -group {reconfig_to_xcvr[0]}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround.FB 161708 
+         set_max_delay -from [get_keepers {*inst_av_hssi_8g_rx_pcs|wys~BURIED_SYNC_DATA*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG4"} {
+         if {\$jesd204_rx_avs_clk_ext} {
+            #set clock groups between avs clocks and transceiver's clkout          
+            set_clock_groups -asynchronous -group {rx_avs_clk} -group [get_clocks {*|inst_xcvr|gen_native_inst.av_xcvr_native_insts[*].gen_bonded_group_native.av_xcvr_native_inst|inst_av_pma|av_rx_pma|rx_pmas[*].rx_pma.rx_pma_deser|clk90b}]
+         }
+         #set false path on FIFO empty and full status signal from PCFIFO to CSR 
+         set_false_path -from [get_keepers {*inst_phy|altera_jesd204_*x_mlpcs:inst_*x_mlpcs|*x_pcs_inst|*pcfifo|o_fifo_full}] -to [get_keepers {*|altera_jesd204_*x_base:inst_*x|altera_jesd204_*x_csr:altera_jesd204_*x_csr_inst|phy_csr_*x_pcfifo_full*}]
+         #TimeQuest constraints to constrain the timing across asynchronous clock domain crossings.
+         #The idea is to minimize skew to less than one clock period to keep the gray encoding, 
+         #and to minimize latency on the pointer crossing. Refer to case:206467 for details
+         set pcfifo_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_wr_ptr[*]*}]
+         set pcfifo_sync_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_wr_ptr[*]*}]
+         set pcfifo_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_rd_ptr[*]*}]
+         set pcfifo_sync_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_rd_ptr[*]*}]
+         set_max_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr -100ns
+         set_max_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr -100ns 
+         set_net_delay -max 2ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -max 2ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+            if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {     
+               for {set lane 0} {\$lane < $L} {incr lane} {           
+               set rx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$rx_pcfifo_gray_wr_ptr_per_lane -to \$rx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$rx_pcfifo_gray_rd_ptr_per_lane -to \$rx_pcfifo_sync_gray_rd_ptr_per_lane                    
+               }
+            } 
+         @@ } 
+      @@ } elseif {$device_family == "Arria 10" || $device_family == "Stratix 10"} {
+      set jesd204_pll_ref_clk_ext  [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_rxlink_clk_ext   [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc  [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_rx_avs_clk_ext   [jesd204_port_existence jesd204_rx_avs_clk]
+      set jesd204_rx_avs_clk_lsrc  [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+         #Temporary set rx_avs_clk to 125MHz. Users are responsible to constraint the rx_avs_clk at desired value
+         create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_rx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {pll_ref_clk} -group {rx_avs_clk} 
+      }
+
+      @@ if {$reconfig_en == "true"} {
+      @@ if {$rcfg_shared == "true" || $L == 1} {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk]
+      set jesd204_reconfig_clk_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_clk]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk] 
+      }
+      @@ } else {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk[*]]
+      set jesd204_reconfig_clk_lsrc [lsearch -regexp \$jesd204_clock_target_list \{reconfig_clk\\[\\d\\]\}]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk[*]] 
+      }
+      @@ }
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_rx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {reconfig_clk} -group {rx_avs_clk}
+      }
+
+      if {\$jesd204_rx_avs_clk_ext} {
+         set_false_path -through [get_nets *jesd204*|inst_xcvr|*twentynm_xcvr_native_inst|inst_twentynm_xcvr_avmm|pld_cal_done*] -to [get_clocks {rx_avs_clk}]
+      }
+      @@ }
+
+@@ if {$device_family == "Arria 10"} { 
+# set false path for rx_enh_fifo_full. Refer to case:203192 for details. 
+set a10_async_10g_rx_oflw_err [get_pins -nowarn -compatibility_mode *twentynm_xcvr_native_inst*inst_twentynm_pcs*inst_twentynm_hssi_rx_pld_pcs_interface*pld_10g_rx_oflw_err ]
+if { [get_collection_size \$a10_async_10g_rx_oflw_err] > 0 } {
+    set_false_path -through \$a10_async_10g_rx_oflw_err -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*full*}]
+}
+@@ }
+      @@ }
+
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_valid] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_valid] 1
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_min] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_min] 1
+
+
+   @@ } elseif {$wrapper == "base"} {
+   set jesd204_rxlink_clk_ext     [jesd204_port_existence rxlink_clk]
+   set jesd204_rxlink_clk_lsrc    [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+   set jesd204_rx_avs_clk_ext     [jesd204_port_existence jesd204_rx_avs_clk]
+   set jesd204_rx_avs_clk_lsrc    [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+
+   derive_clock_uncertainty
+   if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+      create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+   }
+   if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+      #Temporary set rx_avs_clk to 125MHz. Users are responsible to constraint the rx_avs_clk at desired value
+      create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk] 
+   }
+   if {\$jesd204_rxlink_clk_ext && \$jesd204_rx_avs_clk_ext} {
+      set_clock_groups -asynchronous -group {rxlink_clk} -group {rx_avs_clk}
+   }
+
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_valid] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_valid] 1
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_min] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_min] 1
+
+   @@ } else {
+   #phy only
+      @@ if {$device_family == "Stratix V" || $device_family == "Arria V GZ"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {pll_ref_clk} -group {reconfig_to_xcvr[0]}
+      }
+        @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns 
+        @@ } elseif { $pcs_config == "JESD_PCS_CFG2"} {
+           # FB 178709. Duplicate clock edge issue on FIFO. 
+           set_false_path -from {*gen_bonded_group_native.xcvr_native_inst|sv_pcs:inst_sv_pcs|sv_pcs_ch:ch[*].inst_sv_pcs_ch|sv_hssi_10g_rx_pcs_rbc:inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG22} -to  [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*full*}]
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns  
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG16}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns  
+        @@ }
+      @@ } elseif {$device_family == "Arria V" || $device_family == "Cyclone V"} {
+      set jesd204_pll_ref_clk_ext         [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc        [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         #Temporary set reconfig_to_xcvr[0] to 125MHz. Users are responsible to constraint the reconfig_to_xcvr[0] at desired value
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_pll_ref_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {pll_ref_clk} -group {reconfig_to_xcvr[0]}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {     
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround.FB 161708 
+         set_max_delay -from [get_keepers {*inst_av_hssi_8g_rx_pcs|wys~BURIED_SYNC_DATA*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG4"} {
+         #set false path on FIFO empty and full status signal from PCFIFO to CSR 
+         set_false_path -from [get_keepers {*inst_phy|altera_jesd204_*x_mlpcs:inst_*x_mlpcs|*x_pcs_inst|*pcfifo|o_fifo_full}] -to [get_keepers {*|altera_jesd204_*x_base:inst_*x|altera_jesd204_*x_csr:altera_jesd204_*x_csr_inst|phy_csr_*x_pcfifo_full*}]
+         #TimeQuest constraints to constrain the timing across asynchronous clock domain crossings.
+         #The idea is to minimize skew to less than one clock period to keep the gray encoding, 
+         #and to minimize latency on the pointer crossing. Refer to case:206467 for details
+         set pcfifo_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_wr_ptr[*]*}]
+         set pcfifo_sync_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_wr_ptr[*]*}]
+         set pcfifo_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_rd_ptr[*]*}]
+         set pcfifo_sync_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_rd_ptr[*]*}]
+         set_max_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr -100ns
+         set_max_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr -100ns 
+         set_net_delay -max 2ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -max 2ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+            if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {     
+               for {set lane 0} {\$lane < $L} {incr lane} {           
+               set rx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$rx_pcfifo_gray_wr_ptr_per_lane -to \$rx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$rx_pcfifo_gray_rd_ptr_per_lane -to \$rx_pcfifo_sync_gray_rd_ptr_per_lane                    
+               }
+            } 
+         @@ }  
+      @@ } elseif {$device_family == "Arria 10" || $device_family == "Stratix 10"} {
+      set jesd204_pll_ref_clk_ext  [jesd204_port_existence pll_ref_clk]
+      set jesd204_pll_ref_clk_lsrc [lsearch -exact \$jesd204_clock_target_list pll_ref_clk]
+      set jesd204_rxlink_clk_ext   [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc  [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+
+      if {\$jesd204_pll_ref_clk_ext && \$jesd204_pll_ref_clk_lsrc == -1} {
+         create_clock -name "pll_ref_clk" -period ${refclk_period_ns}ns [get_ports pll_ref_clk]
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_pll_ref_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {pll_ref_clk} 
+      }
+      @@ if {$reconfig_en == "true"} {
+      @@ if {$rcfg_shared == "true" || $L == 1} {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk]
+      set jesd204_reconfig_clk_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_clk]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk] 
+      }
+      @@ } else {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk[*]]
+      set jesd204_reconfig_clk_lsrc [lsearch -regexp \$jesd204_clock_target_list \{reconfig_clk\\[\\d\\]\}]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk[*]] 
+      }
+      @@ }
+      @@ }
+      @@ }
+   @@ }
+   
+@@ } else {
+   #RX_TX 
+   @@ if {$wrapper == "base_phy"} {
+      @@ if {$device_family == "Stratix V" || $device_family == "Arria V GZ"} {
+      set jesd204_tx_pll_ref_clk_ext      [jesd204_port_existence tx_pll_ref_clk]
+      set jesd204_tx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list tx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_ext      [jesd204_port_existence rx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list rx_pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_rx_avs_clk_ext          [jesd204_port_existence jesd204_rx_avs_clk]
+      set jesd204_rx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+      set jesd204_tx_avs_clk_ext          [jesd204_port_existence jesd204_tx_avs_clk]
+      set jesd204_tx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_tx_pll_ref_clk_ext && \$jesd204_tx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "tx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports tx_pll_ref_clk] 
+      }
+      if {\$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "rx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports rx_pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+         create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk]
+      }
+      if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+         create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_tx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_avs_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_txlink_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {tx_pll_ref_clk} -group {rx_pll_ref_clk} -group {rx_avs_clk} -group {reconfig_to_xcvr[0]} -group {txlink_clk} -group {tx_avs_clk}
+      }
+        @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_8g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_tx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_tx_base*altera_jesd204_tx_csr_inst|*fifo*full*}] ${linkclk_period_ns}ns 
+        @@ } elseif { $pcs_config == "JESD_PCS_CFG2"} {
+           # FB 178709. Duplicate clock edge issue on FIFO. 
+           set_false_path -from {*gen_bonded_group_native.xcvr_native_inst|sv_pcs:inst_sv_pcs|sv_pcs_ch:ch[*].inst_sv_pcs_ch|sv_hssi_10g_rx_pcs_rbc:inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG22} -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*full*}]
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG16}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns  
+           set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_10g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+ 
+        @@ }
+      @@ } elseif {$device_family == "Arria V" || $device_family == "Cyclone V"} {
+      set jesd204_tx_pll_ref_clk_ext      [jesd204_port_existence tx_pll_ref_clk]
+      set jesd204_tx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list tx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_ext      [jesd204_port_existence rx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list rx_pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_rx_avs_clk_ext          [jesd204_port_existence jesd204_rx_avs_clk]
+      set jesd204_rx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+      set jesd204_tx_avs_clk_ext          [jesd204_port_existence jesd204_tx_avs_clk]
+      set jesd204_tx_avs_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_tx_pll_ref_clk_ext && \$jesd204_tx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "tx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports tx_pll_ref_clk] 
+      }
+      if {\$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "rx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports rx_pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+         create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk]
+      }
+      if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+         create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_tx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_avs_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_txlink_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {tx_pll_ref_clk} -group {rx_pll_ref_clk} -group {rx_avs_clk} -group {reconfig_to_xcvr[0]} -group {txlink_clk} -group {tx_avs_clk}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+         set_max_delay -from [get_keepers {*inst_av_hssi_8g_rx_pcs|wys~BURIED_SYNC_DATA*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns 
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_av_hssi_8g_tx_pcs|wys~BURIED_SYNC_DATA*}] ${linkclk_period_ns}ns 
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG4"} {
+         #set clock groups between avs clocks and transceiver's clkout
+         if {\$jesd204_tx_avs_clk_ext} {
+            set_clock_groups -asynchronous -group {tx_avs_clk} -group [get_clocks {*|inst_phy|inst_xcvr|gen_native_inst.av_xcvr_native_insts[*].gen_bonded_group_native.av_xcvr_native_inst|inst_av_pma|av_tx_pma|tx_pma_insts[*].av_tx_pma_ch_inst|tx_pma_ch.tx_cgb|pclk[2]}] 
+         }
+         if {\$jesd204_rx_avs_clk_ext} {
+            set_clock_groups -asynchronous -group {rx_avs_clk} -group [get_clocks {*|inst_xcvr|gen_native_inst.av_xcvr_native_insts[*].gen_bonded_group_native.av_xcvr_native_inst|inst_av_pma|av_rx_pma|rx_pmas[*].rx_pma.rx_pma_deser|clk90b}]
+         }
+         #set false path on FIFO empty and full status signal from PCFIFO to CSR 
+         set_false_path -from [get_keepers {*inst_phy|altera_jesd204_*x_mlpcs:inst_*x_mlpcs|*x_pcs_inst|*pcfifo|o_fifo_full}] -to [get_keepers {*|altera_jesd204_*x_base:inst_*x|altera_jesd204_*x_csr:altera_jesd204_*x_csr_inst|phy_csr_*x_pcfifo_full*}]
+         #TimeQuest constraints to constrain the timing across asynchronous clock domain crossings.
+         #The idea is to minimize skew to less than one clock period to keep the gray encoding, 
+         #and to minimize latency on the pointer crossing. Refer to case:206467 for details
+         set pcfifo_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_wr_ptr[*]*}]
+         set pcfifo_sync_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_wr_ptr[*]*}]
+         set pcfifo_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_rd_ptr[*]*}]
+         set pcfifo_sync_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_rd_ptr[*]*}]
+         set_max_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr -100ns
+         set_max_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr -100ns 
+         set_net_delay -max 2ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -max 2ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+            if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {     
+               for {set lane 0} {\$lane < $L} {incr lane} { 
+               set tx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$tx_pcfifo_gray_wr_ptr_per_lane -to \$tx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$tx_pcfifo_gray_rd_ptr_per_lane -to \$tx_pcfifo_sync_gray_rd_ptr_per_lane            
+               set rx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$rx_pcfifo_gray_wr_ptr_per_lane -to \$rx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$rx_pcfifo_gray_rd_ptr_per_lane -to \$rx_pcfifo_sync_gray_rd_ptr_per_lane                    
+               }
+            } 
+         @@ } 
+      @@ } elseif {$device_family == "Arria 10" || $device_family == "Stratix 10"} {
+
+      set jesd204_rx_pll_ref_clk_ext  [jesd204_port_existence rx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_lsrc [lsearch -exact \$jesd204_clock_target_list rx_pll_ref_clk]
+      set jesd204_rxlink_clk_ext      [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_txlink_clk_ext      [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_rx_avs_clk_ext      [jesd204_port_existence jesd204_rx_avs_clk]
+      set jesd204_rx_avs_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list jesd204_rx_avs_clk]
+      set jesd204_tx_avs_clk_ext      [jesd204_port_existence jesd204_tx_avs_clk]
+      set jesd204_tx_avs_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list jesd204_tx_avs_clk]
+
+      # Please uncomment and remove the REMOVE_ME and constraint the PLL reference clock 
+      # REMOVE_ME create_clock -name "< tx_pll_ref_clk >" -period < refclk_period_ns >ns [get_ports *< pll_ref_clk >*]
+      if {\$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "rx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports rx_pll_ref_clk] 
+      }
+
+      # REMOVE_ME derive_pll_clocks -create_base_clocks
+      # REMOVE_ME derive_clock_uncertainty
+      @@ if {$test_components_en == "true"} {
+         # This section is only for Altera Internal Use. 
+         create_clock -name "tx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports tx_pll_ref_clk]
+         derive_pll_clocks -create_base_clocks
+         derive_clock_uncertainty 
+      @@ }
+
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_rx_avs_clk_lsrc == -1} {
+         create_clock -name "rx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_rx_avs_clk]
+      }
+      if {\$jesd204_tx_avs_clk_ext && \$jesd204_tx_avs_clk_lsrc == -1} {
+         create_clock -name "tx_avs_clk" -period ${avsclk_period_ns}ns [get_ports jesd204_tx_avs_clk] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_avs_clk_ext && \$jesd204_txlink_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {rx_pll_ref_clk} -group {rx_avs_clk} -group {txlink_clk} -group {tx_avs_clk}
+      }
+
+      @@ if {$reconfig_en == "true"} {
+      @@ if {$rcfg_shared == "true" || $L == 1} {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk]
+      set jesd204_reconfig_clk_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_clk]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk] 
+      }
+      @@ } else {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk[*]]
+      set jesd204_reconfig_clk_lsrc [lsearch -regexp \$jesd204_clock_target_list \{reconfig_clk\\[\\d\\]\}]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk[*]] 
+      }
+      @@ }
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_rx_avs_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_clock_groups -asynchronous -group {reconfig_clk} -group {rx_avs_clk} -group {tx_avs_clk}
+      }
+
+      if {\$jesd204_rx_avs_clk_ext && \$jesd204_tx_avs_clk_ext} {
+         set_false_path -through [get_nets *jesd204*|inst_xcvr|*twentynm_xcvr_native_inst|inst_twentynm_xcvr_avmm|pld_cal_done*] -to [get_clocks {*x_avs_clk}]
+      }
+      @@ }
+
+      @@ }
+
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|rx_sync_req_n] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_tx|altera_jesd204_tx_ctl_inst|rx_sync_req_n] 1
+
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_valid] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_valid] 1
+set_multicycle_path -end -setup -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_min] 2
+set_multicycle_path -end -hold -from [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|csr_f_latch[*]] -to [get_cells -compatibility_mode *|inst_rx|altera_jesd204_rx_ctl_inst|sync_n_min] 1
+
+@@ if {$device_family == "Arria 10"} { 
+# set false path for rx_enh_fifo_full. Refer to case:203192 for details. 
+set a10_async_10g_rx_oflw_err [get_pins -nowarn -compatibility_mode *twentynm_xcvr_native_inst*inst_twentynm_pcs*inst_twentynm_hssi_rx_pld_pcs_interface*pld_10g_rx_oflw_err ]
+if { [get_collection_size \$a10_async_10g_rx_oflw_err] > 0 } {
+    set_false_path -through \$a10_async_10g_rx_oflw_err -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*full*}]
+}
+@@ }
+
+   @@ } elseif {$wrapper == "base"} {
+   #NOT SUPPORTED YET
+   @@ } else {
+   #phy only 
+      @@ if {$device_family == "Stratix V" || $device_family == "Arria V GZ"} {
+      set jesd204_tx_pll_ref_clk_ext      [jesd204_port_existence tx_pll_ref_clk]
+      set jesd204_tx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list tx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_ext      [jesd204_port_existence rx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list rx_pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_tx_pll_ref_clk_ext && \$jesd204_tx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "tx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports tx_pll_ref_clk] 
+      }
+      if {\$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "rx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports rx_pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_tx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_txlink_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {tx_pll_ref_clk} -group {rx_pll_ref_clk}  -group {reconfig_to_xcvr[0]} -group {txlink_clk}
+      }
+
+        @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_8g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_rx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_8g_tx_pcs|wys~SYNC_DATA_REG17}] -to [get_keepers {*altera_jesd204_tx_base*altera_jesd204_tx_csr_inst|*fifo*full*}] ${linkclk_period_ns}ns 
+        @@ } elseif {$pcs_config == "JESD_PCS_CFG2"} { 
+           # FB 178709. Duplicate clock edge issue on FIFO. 
+           set_false_path -from {*gen_bonded_group_native.xcvr_native_inst|sv_pcs:inst_sv_pcs|sv_pcs_ch:ch[*].inst_sv_pcs_ch|sv_hssi_10g_rx_pcs_rbc:inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG22} -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*full*}]
+           # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround. FB 161708 
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|syncdatain*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns  
+           set_max_delay -from [get_keepers {*inst_sv_hssi_10g_rx_pcs|wys~SYNC_DATA_REG16}] -to [get_keepers {*altera_jesd204_rx_base*altera_jesd204_rx_csr_inst|*fifo*empty*}] ${linkclk_period_ns}ns  
+           set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_sv_hssi_10g_tx_pcs|syncdatain*}] ${linkclk_period_ns}ns 
+        @@ }
+      @@ } elseif {$device_family == "Arria V" || $device_family == "Cyclone V"} {
+      set jesd204_tx_pll_ref_clk_ext      [jesd204_port_existence tx_pll_ref_clk]
+      set jesd204_tx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list tx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_ext      [jesd204_port_existence rx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list rx_pll_ref_clk]
+      set jesd204_rxlink_clk_ext          [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_txlink_clk_ext          [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc         [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+      set jesd204_reconfig_to_xcvr_0_ext  [jesd204_port_existence reconfig_to_xcvr[0]]
+      set jesd204_reconfig_to_xcvr_0_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_to_xcvr[0]]
+
+      if {\$jesd204_tx_pll_ref_clk_ext && \$jesd204_tx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "tx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports tx_pll_ref_clk] 
+      }
+      if {\$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "rx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports rx_pll_ref_clk] 
+      }
+      derive_pll_clocks -create_base_clocks
+      derive_clock_uncertainty
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_reconfig_to_xcvr_0_lsrc == -1} {
+         create_clock -name "reconfig_to_xcvr[0]" -period ${avsclk_period_ns}ns [get_ports reconfig_to_xcvr[0]] 
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_tx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_ext && \$jesd204_reconfig_to_xcvr_0_ext && \$jesd204_txlink_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {tx_pll_ref_clk} -group {rx_pll_ref_clk}  -group {reconfig_to_xcvr[0]} -group {txlink_clk}
+      }
+         @@ if {$pcs_config == "JESD_PCS_CFG1"} {
+         # JESD204B IP may not meet timing for high data rate and multi lanes design due to non-ideal placement of Quartus fitter. Set Max delay for workaround.FB 161708 
+         set_max_delay -from [get_keepers {*inst_av_hssi_8g_rx_pcs|wys~BURIED_SYNC_DATA*}] -to [get_keepers {*inst_phy*inst_rx_mlpcs*altera_jesd204_rx_pcs_inst*}] ${linkclk_period_ns}ns
+         set_max_delay -from [get_keepers {*inst_tx*altera_jesd204_tx_dll_inst*}] -to [get_keepers {*inst_av_hssi_8g_tx_pcs|wys~BURIED_SYNC_DATA*}] ${linkclk_period_ns}ns
+         @@ } elseif {$pcs_config == "JESD_PCS_CFG4"} {
+         #set false path on FIFO empty and full status signal from PCFIFO to CSR 
+         set_false_path -from [get_keepers {*inst_phy|altera_jesd204_*x_mlpcs:inst_*x_mlpcs|*x_pcs_inst|*pcfifo|o_fifo_full}] -to [get_keepers {*|altera_jesd204_*x_base:inst_*x|altera_jesd204_*x_csr:altera_jesd204_*x_csr_inst|phy_csr_*x_pcfifo_full*}]
+         #TimeQuest constraints to constrain the timing across asynchronous clock domain crossings.
+         #The idea is to minimize skew to less than one clock period to keep the gray encoding, 
+         #and to minimize latency on the pointer crossing. Refer to case:206467 for details
+         set pcfifo_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_wr_ptr[*]*}]
+         set pcfifo_sync_gray_wr_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_wr_ptr[*]*}]
+         set pcfifo_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|gray_rd_ptr[*]*}]
+         set pcfifo_sync_gray_rd_ptr [get_keepers {*|altera_jesd204_pcfifo:pcfifo|*dcfifo|sync_gray_rd_ptr[*]*}]
+         set_max_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr -100ns
+         set_max_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr 100ns
+         set_min_delay -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr -100ns 
+         set_net_delay -max 2ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_wr_ptr -to \$pcfifo_sync_gray_wr_ptr
+         set_net_delay -max 2ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+         set_net_delay -min 0ns -from \$pcfifo_gray_rd_ptr -to \$pcfifo_sync_gray_rd_ptr
+            if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {     
+               for {set lane 0} {\$lane < $L} {incr lane} { 
+               set tx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set tx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set tx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_tx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$tx_pcfifo_gray_wr_ptr_per_lane -to \$tx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$tx_pcfifo_gray_rd_ptr_per_lane -to \$tx_pcfifo_sync_gray_rd_ptr_per_lane            
+               set rx_pcfifo_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_wr_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_wr_ptr\\[*\\]*]
+               set rx_pcfifo_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|gray_rd_ptr\\[*\\]*]
+               set rx_pcfifo_sync_gray_rd_ptr_per_lane [get_keepers *inst_phy\\|*inst_rx_mlpcs\\|*\\[\${lane}\\]*altera_jesd204_pcfifo:pcfifo\\|*dcfifo\\|sync_gray_rd_ptr\\[*\\]*]      
+               set_max_skew ${linkclk_period_ns}ns -from \$rx_pcfifo_gray_wr_ptr_per_lane -to \$rx_pcfifo_sync_gray_wr_ptr_per_lane
+               set_max_skew ${phyclk_period_ns}ns -from \$rx_pcfifo_gray_rd_ptr_per_lane -to \$rx_pcfifo_sync_gray_rd_ptr_per_lane                    
+               }
+            } 
+         @@ }  
+      @@ } elseif {$device_family == "Arria 10" || $device_family == "Stratix 10"} {
+      # Please uncomment and remove the REMOVE_ME and constraint the PLL reference clock 
+      # REMOVE_ME create_clock -name "< tx_pll_ref_clk >" -period < refclk_period_ns >ns [get_ports *< tx_pll_ref_clk >*]
+      set jesd204_rx_pll_ref_clk_ext  [jesd204_port_existence rx_pll_ref_clk]
+      set jesd204_rx_pll_ref_clk_lsrc [lsearch -exact \$jesd204_clock_target_list rx_pll_ref_clk]
+      set jesd204_rxlink_clk_ext      [jesd204_port_existence rxlink_clk]
+      set jesd204_rxlink_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list rxlink_clk]
+      set jesd204_txlink_clk_ext      [jesd204_port_existence txlink_clk]
+      set jesd204_txlink_clk_lsrc     [lsearch -exact \$jesd204_clock_target_list txlink_clk]
+
+      if {\$jesd204_rx_pll_ref_clk_ext && \$jesd204_rx_pll_ref_clk_lsrc == -1} {
+         create_clock -name "rx_pll_ref_clk" -period ${refclk_period_ns}ns [get_ports rx_pll_ref_clk] 
+      }
+      # REMOVE_ME derive_pll_clocks -create_base_clocks
+      # REMOVE_ME derive_clock_uncertainty
+
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rxlink_clk_lsrc == -1} {
+         create_clock -name "rxlink_clk" -period ${linkclk_period_ns}ns [get_ports rxlink_clk]
+      }
+      if {\$jesd204_txlink_clk_ext && \$jesd204_txlink_clk_lsrc == -1} {
+         create_clock -name "txlink_clk" -period ${linkclk_period_ns}ns [get_ports txlink_clk]
+      }
+      if {\$jesd204_rxlink_clk_ext && \$jesd204_rx_pll_ref_clk_ext && \$jesd204_txlink_clk_ext} {
+         set_clock_groups -asynchronous -group {rxlink_clk} -group {rx_pll_ref_clk} -group {txlink_clk}
+      }
+      @@ if {$reconfig_en == "true"} {
+      @@ if {$rcfg_shared == "true" || $L == 1} {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk]
+      set jesd204_reconfig_clk_lsrc [lsearch -exact \$jesd204_clock_target_list reconfig_clk]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk] 
+      }
+      @@ } else {
+      set jesd204_reconfig_clk_ext  [jesd204_port_existence reconfig_clk[*]]
+      set jesd204_reconfig_clk_lsrc [lsearch -regexp \$jesd204_clock_target_list \{reconfig_clk\\[\\d\\]\}]
+
+      if {\$jesd204_reconfig_clk_ext && \$jesd204_reconfig_clk_lsrc == -1} {
+         # Set reconfig_clk to 100MHz. Users are responsible to constraint the reconfig_clk at desired value
+         create_clock -name "reconfig_clk" -period 10ns [get_ports reconfig_clk[*]] 
+      }
+      @@ }
+      @@ }
+      @@ }
+   @@ }
+@@ }
+
+
+@@ if {$wrapper == "base_phy"} {
+   @@ if {$test_components_en == "true"} {
+   # This section is only for Altera Internal Use. 
+   create_clock -name "xcvr_rst_ctrl_clk" -period ${linkclk_period_ns}ns [get_ports xcvr_rst_ctrl_clk]
+   @@ }
+@@ }
+
+

@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+   <presets version="16.0">
+      <!-- 8 bits -->
+      <preset name="CbCrY':SDTV(8b) to Computer B'G'R'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="9" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.018" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.164" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.391" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.813" />
+         <parameter name="REQ_FCOEFF_C1" value="1.164" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.596" />
+         <parameter name="REQ_FCOEFF_C2" value="1.164" />
+         <parameter name="REQ_FCOEFF_S0" value="-276.928" />
+         <parameter name="REQ_FCOEFF_S1" value="135.488" />
+         <parameter name="REQ_FCOEFF_S2" value="-222.912" />
+      </preset>
+      <preset name="Computer B'G'R'(8b) to CbCrY':SDTV(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="8" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.439" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.291" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.148" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.071" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.368" />
+         <parameter name="REQ_FCOEFF_C1" value="0.439" />
+         <parameter name="REQ_FCOEFF_A2" value="0.098" />
+         <parameter name="REQ_FCOEFF_B2" value="0.504" />
+         <parameter name="REQ_FCOEFF_C2" value="0.257" />
+         <parameter name="REQ_FCOEFF_S0" value="128.0" />
+         <parameter name="REQ_FCOEFF_S1" value="128.0" />
+         <parameter name="REQ_FCOEFF_S2" value="16.0" />
+      </preset>
+      <preset name="CbCrY':HDTV(8b) to Computer B'G'R'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="9" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.115" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.164" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.213" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.534" />
+         <parameter name="REQ_FCOEFF_C1" value="1.164" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.793" />
+         <parameter name="REQ_FCOEFF_C2" value="1.164" />
+         <parameter name="REQ_FCOEFF_S0" value="-289.344" />
+         <parameter name="REQ_FCOEFF_S1" value="76.992" />
+         <parameter name="REQ_FCOEFF_S2" value="-248.128" />
+      </preset>
+      <preset name="Computer B'G'R'(8b) to CbCrY':HDTV(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="8" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.439" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.338" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.101" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.04" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.399" />
+         <parameter name="REQ_FCOEFF_C1" value="0.439" />
+         <parameter name="REQ_FCOEFF_A2" value="0.062" />
+         <parameter name="REQ_FCOEFF_B2" value="0.614" />
+         <parameter name="REQ_FCOEFF_C2" value="0.183" />
+         <parameter name="REQ_FCOEFF_S0" value="128.0" />
+         <parameter name="REQ_FCOEFF_S1" value="128.0" />
+         <parameter name="REQ_FCOEFF_S2" value="16.0" />
+      </preset>    
+      <preset name="CbCrY':SDTV(8b) to Studio B'G'R'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="8" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="1.732" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.336" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.698" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.371" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="-221.696" />
+         <parameter name="REQ_FCOEFF_S1" value="132.352" />
+         <parameter name="REQ_FCOEFF_S2" value="-175.488" />
+      </preset>
+      <preset name="Studio B'G'R'(8b) to CbCrY':SDTV(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="8" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.511" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.339" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.172" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.083" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.428" />
+         <parameter name="REQ_FCOEFF_C1" value="0.511" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="128.0" />
+         <parameter name="REQ_FCOEFF_S1" value="128.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="CbCrY':HDTV(8b) to Studio B'G'R'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="8" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="1.816" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.183" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.459" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.54" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="-232.448" />
+         <parameter name="REQ_FCOEFF_S1" value="82.176" />
+         <parameter name="REQ_FCOEFF_S2" value="-197.12" />
+      </preset>
+      <preset name="Studio B'G'R'(8b) to CbCrY':HDTV(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="8" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.511" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.394" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.117" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.047" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.464" />
+         <parameter name="REQ_FCOEFF_C1" value="0.511" />
+         <parameter name="REQ_FCOEFF_A2" value="0.072" />
+         <parameter name="REQ_FCOEFF_B2" value="0.715" />
+         <parameter name="REQ_FCOEFF_C2" value="0.213" />
+         <parameter name="REQ_FCOEFF_S0" value="128.0" />
+         <parameter name="REQ_FCOEFF_S1" value="128.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="IQY'(8b) to Computer B'G'R'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="-1.107" />
+         <parameter name="REQ_FCOEFF_B0" value="1.704" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.272" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.647" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.956" />
+         <parameter name="REQ_FCOEFF_B2" value="0.621" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="Computer B'G'R'(8b) to IQY'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="-0.321" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.275" />
+         <parameter name="REQ_FCOEFF_C0" value="0.596" />
+         <parameter name="REQ_FCOEFF_A1" value="0.311" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.523" />
+         <parameter name="REQ_FCOEFF_C1" value="0.212" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="UVY'(8b) to Computer B'G'R'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.032" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.395" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.581" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.14" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="Computer B'G'R'(8b) to UVY'(8b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="8" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.436" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.289" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.147" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.1" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.515" />
+         <parameter name="REQ_FCOEFF_C1" value="0.614" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+
+
+
+
+      <!-- 10 bits -->
+      <preset name="CbCrY':SDTV(10b) to Computer B'G'R'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="11" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.018" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.164" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.391" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.813" />
+         <parameter name="REQ_FCOEFF_C1" value="1.164" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.596" />
+         <parameter name="REQ_FCOEFF_C2" value="1.164" />
+         <parameter name="REQ_FCOEFF_S0" value="-1107.712" />
+         <parameter name="REQ_FCOEFF_S1" value="541.952" />
+         <parameter name="REQ_FCOEFF_S2" value="-891.648" />
+      </preset>
+      <preset name="Computer B'G'R'(10b) to CbCrY':SDTV(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="10" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.439" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.291" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.148" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.071" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.368" />
+         <parameter name="REQ_FCOEFF_C1" value="0.439" />
+         <parameter name="REQ_FCOEFF_A2" value="0.098" />
+         <parameter name="REQ_FCOEFF_B2" value="0.504" />
+         <parameter name="REQ_FCOEFF_C2" value="0.257" />
+         <parameter name="REQ_FCOEFF_S0" value="512.0" />
+         <parameter name="REQ_FCOEFF_S1" value="512.0" />
+         <parameter name="REQ_FCOEFF_S2" value="64.0" />
+      </preset>
+      <preset name="CbCrY':HDTV(10b) to Computer B'G'R'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="11" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.115" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.164" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.213" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.534" />
+         <parameter name="REQ_FCOEFF_C1" value="1.164" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.793" />
+         <parameter name="REQ_FCOEFF_C2" value="1.164" />
+         <parameter name="REQ_FCOEFF_S0" value="-1157.376" />
+         <parameter name="REQ_FCOEFF_S1" value="307.968" />
+         <parameter name="REQ_FCOEFF_S2" value="-992.512" />
+      </preset>
+      <preset name="Computer B'G'R'(10b) to CbCrY':HDTV(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="10" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.439" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.338" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.101" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.04" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.399" />
+         <parameter name="REQ_FCOEFF_C1" value="0.439" />
+         <parameter name="REQ_FCOEFF_A2" value="0.062" />
+         <parameter name="REQ_FCOEFF_B2" value="0.614" />
+         <parameter name="REQ_FCOEFF_C2" value="0.183" />
+         <parameter name="REQ_FCOEFF_S0" value="512.0" />
+         <parameter name="REQ_FCOEFF_S1" value="512.0" />
+         <parameter name="REQ_FCOEFF_S2" value="64.0" />
+      </preset>    
+      <preset name="CbCrY':SDTV(10b) to Studio B'G'R'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="10" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="1.732" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.336" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.698" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.371" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="-886.784" />
+         <parameter name="REQ_FCOEFF_S1" value="529.408" />
+         <parameter name="REQ_FCOEFF_S2" value="-701.952" />
+      </preset>
+      <preset name="Studio B'G'R'(10b) to CbCrY':SDTV(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="10" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.511" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.339" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.172" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.083" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.428" />
+         <parameter name="REQ_FCOEFF_C1" value="0.511" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="512.0" />
+         <parameter name="REQ_FCOEFF_S1" value="512.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="CbCrY':HDTV(10b) to Studio B'G'R'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="10" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="1.816" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.183" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.459" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.54" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="-929.792" />
+         <parameter name="REQ_FCOEFF_S1" value="328.704" />
+         <parameter name="REQ_FCOEFF_S2" value="-788.48" />
+      </preset>
+      <preset name="Studio B'G'R'(10b) to CbCrY':HDTV(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="10" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.511" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.394" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.117" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.047" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.464" />
+         <parameter name="REQ_FCOEFF_C1" value="0.511" />
+         <parameter name="REQ_FCOEFF_A2" value="0.072" />
+         <parameter name="REQ_FCOEFF_B2" value="0.715" />
+         <parameter name="REQ_FCOEFF_C2" value="0.213" />
+         <parameter name="REQ_FCOEFF_S0" value="512.0" />
+         <parameter name="REQ_FCOEFF_S1" value="512.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="IQY'(10b) to Computer B'G'R'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="-1.107" />
+         <parameter name="REQ_FCOEFF_B0" value="1.704" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.272" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.647" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.956" />
+         <parameter name="REQ_FCOEFF_B2" value="0.621" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="Computer B'G'R'(10b) to IQY'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="-0.321" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.275" />
+         <parameter name="REQ_FCOEFF_C0" value="0.596" />
+         <parameter name="REQ_FCOEFF_A1" value="0.311" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.523" />
+         <parameter name="REQ_FCOEFF_C1" value="0.212" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="UVY'(10b) to Computer B'G'R'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.032" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.395" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.581" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.14" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="Computer B'G'R'(10b) to UVY'(10b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="10" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.436" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.289" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.147" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.1" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.515" />
+         <parameter name="REQ_FCOEFF_C1" value="0.614" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+
+
+
+
+
+
+      <!-- 12 bits -->
+      <preset name="CbCrY':SDTV(12b) to Computer B'G'R'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="13" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.018" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.164" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.391" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.813" />
+         <parameter name="REQ_FCOEFF_C1" value="1.164" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.596" />
+         <parameter name="REQ_FCOEFF_C2" value="1.164" />
+         <parameter name="REQ_FCOEFF_S0" value="-4430.848" />
+         <parameter name="REQ_FCOEFF_S1" value="2167.808" />
+         <parameter name="REQ_FCOEFF_S2" value="-3566.592" />
+      </preset>
+      <preset name="Computer B'G'R'(12b) to CbCrY':SDTV(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="12" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.439" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.291" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.148" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.071" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.368" />
+         <parameter name="REQ_FCOEFF_C1" value="0.439" />
+         <parameter name="REQ_FCOEFF_A2" value="0.098" />
+         <parameter name="REQ_FCOEFF_B2" value="0.504" />
+         <parameter name="REQ_FCOEFF_C2" value="0.257" />
+         <parameter name="REQ_FCOEFF_S0" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S1" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S2" value="256.0" />
+      </preset>
+      <preset name="CbCrY':HDTV(12b) to Computer B'G'R'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="13" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.115" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.164" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.213" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.534" />
+         <parameter name="REQ_FCOEFF_C1" value="1.164" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.793" />
+         <parameter name="REQ_FCOEFF_C2" value="1.164" />
+         <parameter name="REQ_FCOEFF_S0" value="-4629.504" />
+         <parameter name="REQ_FCOEFF_S1" value="1231.872" />
+         <parameter name="REQ_FCOEFF_S2" value="-3970.048" />
+      </preset>
+      <preset name="Computer B'G'R'(12b) to CbCrY':HDTV(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="12" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.439" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.338" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.101" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.04" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.399" />
+         <parameter name="REQ_FCOEFF_C1" value="0.439" />
+         <parameter name="REQ_FCOEFF_A2" value="0.062" />
+         <parameter name="REQ_FCOEFF_B2" value="0.614" />
+         <parameter name="REQ_FCOEFF_C2" value="0.183" />
+         <parameter name="REQ_FCOEFF_S0" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S1" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S2" value="256.0" />
+      </preset>    
+      <preset name="CbCrY':SDTV(12b) to Studio B'G'R'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="12" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="1.732" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.336" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.698" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.371" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="-3547.136" />
+         <parameter name="REQ_FCOEFF_S1" value="2117.632" />
+         <parameter name="REQ_FCOEFF_S2" value="-2807.808" />
+      </preset>
+      <preset name="Studio B'G'R'(12b) to CbCrY':SDTV(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="12" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.511" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.339" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.172" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.083" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.428" />
+         <parameter name="REQ_FCOEFF_C1" value="0.511" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S1" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="CbCrY':HDTV(12b) to Studio B'G'R'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="1" />
+         <parameter name="SUMMAND_INT_BITS" value="12" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="1.816" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.183" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.459" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.54" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="-3719.168" />
+         <parameter name="REQ_FCOEFF_S1" value="1314.816" />
+         <parameter name="REQ_FCOEFF_S2" value="-3153.92" />
+      </preset>
+      <preset name="Studio B'G'R'(12b) to CbCrY':HDTV(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="12" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.511" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.394" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.117" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.047" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.464" />
+         <parameter name="REQ_FCOEFF_C1" value="0.511" />
+         <parameter name="REQ_FCOEFF_A2" value="0.072" />
+         <parameter name="REQ_FCOEFF_B2" value="0.715" />
+         <parameter name="REQ_FCOEFF_C2" value="0.213" />
+         <parameter name="REQ_FCOEFF_S0" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S1" value="2048.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="IQY'(12b) to Computer B'G'R'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="1" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="-1.107" />
+         <parameter name="REQ_FCOEFF_B0" value="1.704" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.272" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.647" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.956" />
+         <parameter name="REQ_FCOEFF_B2" value="0.621" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="Computer B'G'R'(12b) to IQY'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="-0.321" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.275" />
+         <parameter name="REQ_FCOEFF_C0" value="0.596" />
+         <parameter name="REQ_FCOEFF_A1" value="0.311" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.523" />
+         <parameter name="REQ_FCOEFF_C1" value="0.212" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="UVY'(12b) to Computer B'G'R'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="2" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="2.032" />
+         <parameter name="REQ_FCOEFF_B0" value="0.0" />
+         <parameter name="REQ_FCOEFF_C0" value="1.0" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.395" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.581" />
+         <parameter name="REQ_FCOEFF_C1" value="1.0" />
+         <parameter name="REQ_FCOEFF_A2" value="0.0" />
+         <parameter name="REQ_FCOEFF_B2" value="1.14" />
+         <parameter name="REQ_FCOEFF_C2" value="1.0" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+      <preset name="Computer B'G'R'(12b) to UVY'(12b)" kind="alt_vip_cl_csc" version="All" description="">
+         <parameter name="INPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="OUTPUT_BITS_PER_SYMBOL" value="12" />
+         <parameter name="INPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="OUTPUT_DATA_TYPE_SIGNED" value="0" />
+         <parameter name="MOVE_BINARY_POINT_RIGHT" value="0" />
+         <parameter name="COEFFICIENT_SIGNED" value="1" />
+         <parameter name="COEFFICIENT_INT_BITS" value="0" />
+         <parameter name="SUMMAND_SIGNED" value="0" />
+         <parameter name="SUMMAND_INT_BITS" value="0" />
+         <parameter name="COEF_SUM_FRACTION_BITS" value="8" />
+         <parameter name="REQ_FCOEFF_A0" value="0.436" />
+         <parameter name="REQ_FCOEFF_B0" value="-0.289" />
+         <parameter name="REQ_FCOEFF_C0" value="-0.147" />
+         <parameter name="REQ_FCOEFF_A1" value="-0.1" />
+         <parameter name="REQ_FCOEFF_B1" value="-0.515" />
+         <parameter name="REQ_FCOEFF_C1" value="0.614" />
+         <parameter name="REQ_FCOEFF_A2" value="0.114" />
+         <parameter name="REQ_FCOEFF_B2" value="0.587" />
+         <parameter name="REQ_FCOEFF_C2" value="0.299" />
+         <parameter name="REQ_FCOEFF_S0" value="0.0" />
+         <parameter name="REQ_FCOEFF_S1" value="0.0" />
+         <parameter name="REQ_FCOEFF_S2" value="0.0" />
+      </preset>
+
+   </presets>
+</ip>
+

@@ -1,0 +1,180 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+create_clock -name "sys_clk" -period ${sys_clk_period}ns [get_ports {sys_clk}]
+
+@@ if { $device_family == "Stratix V" || $device_family == "Arria V GZ" || $device_family == "Arria V" || $device_family == "Cyclone V" } {
+create_clock -name "tx_pll_refclk" -period ${ref_clk_period_ns}ns [get_ports {tx_pll_refclk}]
+
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
+
+set match 0
+set prefix_list [list]
+
+foreach_in_collection clk [all_clocks] {
+   set clk_name [get_clock_info -name \$clk]
+
+@@ if { $device_family == "Arria V" || $device_family == "Cyclone V"  } {
+   set match [regexp -lineanchor {([a-z,0-9,_,\\|]+)\\|altera_rapidio2_native_phy\\|.*wys\\|rcvdclkpma\$} \$clk_name pattern prefix_pre]
+@@ } else { #Stratix V
+   set match [regexp -lineanchor {([a-z,0-9,_,\\|]+)\\|altera_rapidio2_native_phy\\|.*wys\\|clocktopld\$} \$clk_name pattern prefix_pre]
+@@ }
+
+   if {\$match == 1} {
+        if {[lsearch \$prefix_list \$prefix_pre ] == -1} {
+            lappend prefix_list \$prefix_pre
+        }
+   }
+}
+
+foreach prefix \$prefix_list {
+
+   @@ if { $device_family == "Arria V" || $device_family == "Cyclone V"  } {
+      @@ if { $support_4x } {
+set_clock_groups -exclusive -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[0]*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[1]*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[2]*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[3]*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*tx_pcs|wys|txpmalocalclk] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk*}]
+      @@ } else { 
+         @@ if { $support_2x } {
+set_clock_groups -exclusive -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[0]*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[1]*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*tx_pcs|wys|txpmalocalclk] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk*}]
+         @@ } else { #1x mode
+set_clock_groups -exclusive -group [get_clocks \$prefix*altera_rapidio2_native_phy*rx_pcs|wys|rcvdclkpma] -group [get_clocks \$prefix*altera_rapidio2_native_phy*tx_pcs|wys|txpmalocalclk] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk*}]
+         @@ }
+      @@ }
+ 
+   @@ } else { #Stratix V
+      @@ if { $support_4x } {
+set_clock_groups -exclusive -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[0]*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[1]*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[2]*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[3]*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*tx_pcs|wys|clkout] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk*}]
+      @@ } else { 
+         @@ if { $support_2x } {
+set_clock_groups -exclusive -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[0]*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*ch[1]*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*tx_pcs|wys|clkout] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk*}]
+         @@ } else { #1x mode
+set_clock_groups -exclusive -group [get_clocks \$prefix*altera_rapidio2_native_phy*rx_pcs|wys|clocktopld] -group [get_clocks \$prefix*altera_rapidio2_native_phy*tx_pcs|wys|clkout] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk*}]
+         @@ }
+      @@ }
+   @@ }
+
+}
+
+@@ } else { #Arria 10
+create_clock -name "tx_pll_refclk" -period ${ref_clk_period_ns}ns [get_ports {tx_pll_refclk}]
+
+     @@ if { $device_family == "Stratix 10"} {
+derive_clock_uncertainty
+
+set top_module ${module_name}
+set top_instance_list [get_entity_instances \$top_module]
+
+foreach each_inst \$top_instance_list {
+
+## false path from rx_clkout to sys_clk
+@@ if { $support_4x } {
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|dskw_top|four_lanes_aligned] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|physical|four_lanes_aligned_meta_sync|din_s1]
+@@ }
+@@ if { $support_2x } {
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|dskw_top|two_lanes_aligned] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|physical|two_lanes_aligned_meta_sync|din_s1]
+@@ }
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|lane_sync_sm_lane*|state[1]] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|physical|meta_sync[*].lanes_sync_meta_sync|din_s1]
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_megacore_top|altera_rapidio2_bus_synchronizer|freeze_init_port_width] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|altera_rapidio2_bus_synchronizer|freeze_init_port_width_synchronizer|din_s1]
+
+## false path from sys_clk to rx_clkout  
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_megacore_top|altera_rapidio2_bus_synchronizer|update_init_port_width] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|altera_rapidio2_bus_synchronizer|update_init_port_width_synchronizer|din_s1]
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_megacore_top|altera_rapidio2_bus_synchronizer|init_port_width_hold[*]] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|altera_rapidio2_bus_synchronizer|init_port_width_frozen[*]]
+
+## false path from rx_clkout to tx_clkout
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|lane_sync_sm_lane_*|state[1]] -to [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|lane_sync_lane_*_synchronizer|din_s1]
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|dskw_top|lane_sync_status_changed] -to [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|lane_sync_status_changed_synchronizer|din_s1]
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_registers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|fifo_altera_syncram|altera_syncram_impl5|ram_block*reg1]
+
+## false path from tx_clkout to sys_clk*
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_megacore_top|physical|tx_ready_meta_sync_2|dreg[1]] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_rx_phy1|altera_rapidio2_rx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|fifo_altera_syncram|altera_syncram_impl5|ram_block*reg1]
+
+## false path from sys_clk to tx_clkout
+set_false_path -from [get_registers \$each_inst*|altera_rapidio2_megacore_top|crm|clk_rst_sync_reg2] -to [get_registers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_tx_phy1|altera_rapidio2_tx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|fifo_altera_syncram|altera_syncram_impl5|ram_block*reg1]
+
+
+## false path removal rx_clkout to tx_clkout
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|rdptr_g1p|q_bin[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|rdptr_g1p|q[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|rdptr_g[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|rs_dgwp|dffpipe8|dffe*[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|rs_brp|dffe*[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|fifo_clr] -to [get_keepers \$each_inst*|altera_rapidio2_soft_pcs|soft_logic_top|rate_match_top|rate_match_lane_*|rate_match_fifo|dcfifo_component|auto_generated|rs_bwp|dffe*[*]]
+
+## false path recovery tx_clkout to sys_clk
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|tx_ready_meta_sync_2|dreg[1]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_rx_phy1|altera_rapidio2_rx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rs_dgwp|dffpipe7|dffe*[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|tx_ready_meta_sync_2|dreg[1]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_rx_phy1|altera_rapidio2_rx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rdptr_g[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|tx_ready_meta_sync_2|dreg[1]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_rx_phy1|altera_rapidio2_rx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rdptr_g1p|q[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|tx_ready_meta_sync_2|dreg[1]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_rx_phy1|altera_rapidio2_rx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rdptr_g1p|q_bin[*]]
+
+## false path recovery sys_clk to tx_clkout
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|clk_rst_sync_reg2] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_tx_phy1|altera_rapidio2_tx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rs_dgwp|dffpipe7|dffe*[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|clk_rst_sync_reg2] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_tx_phy1|altera_rapidio2_tx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rdptr_g[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|clk_rst_sync_reg2] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_tx_phy1|altera_rapidio2_tx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rdptr_g1p|q[*]]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|clk_rst_sync_reg2] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|physical|altera_rapidio2_physical_layer|altera_rapidio2_phy1|altera_rapidio2_tx_phy1|altera_rapidio2_tx_dcfifo|altera_rapidio2_dcfifo|dcfifo|auto_generated|rdptr_g1p|q_bin[*]]
+
+## false path from digitalreset_stat to CRM synchronizer async clear pin
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_native_phy|altera_rapidio2_native_phy|g_non_hip_reset.alt_xcvr_native_reset_seq|g_trs.tx_dig_reset_seq|reset_out_stage[*]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|sync_tx_digitalreset_to_tx_clk_domain|din_s1]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_native_phy|altera_rapidio2_native_phy|g_non_hip_reset.alt_xcvr_native_reset_seq|g_trs.tx_dig_reset_seq|reset_out_stage[*]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|sync_tx_digitalreset_to_tx_clk_domain|dreg[*]]
+
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_native_phy|altera_rapidio2_native_phy|g_non_hip_reset.alt_xcvr_native_reset_seq|g_trs.rx_dig_reset_seq|reset_out_stage[*]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|sync_rx_digitalreset_to_rx_clk_domain|din_s1]
+set_false_path -from [get_keepers \$each_inst*|altera_rapidio2_native_phy|altera_rapidio2_native_phy|g_non_hip_reset.alt_xcvr_native_reset_seq|g_trs.rx_dig_reset_seq|reset_out_stage[*]] -to [get_keepers \$each_inst*|altera_rapidio2_megacore_top|crm|sync_rx_digitalreset_to_rx_clk_domain|dreg[*]]
+
+
+}
+
+    @@ } else {
+    @@ if { $device_family == "Arria 10"} {
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
+
+set top_module ${module_name}
+set top_instance_list [get_entity_instances \$top_module]
+
+foreach each_inst \$top_instance_list {
+# Find the tx_clkout and rx_clkout prefixes
+    set match 0
+    set loop 1
+    set go_on 1
+# Insert escape to avoid OR character
+    regsub -all {\\|} \$each_inst {\\|} each_inst
+
+    while {[regexp {\\|} \$each_inst] && \$go_on == 1} {
+        foreach_in_collection clk [all_clocks] {
+            #puts [get_clock_info -name \$clk]
+            set clk_name [get_clock_info -name \$clk]
+            set match [regexp "\$each_inst.*tx_clkout" \$clk_name pattern]
+            if {\$match == 1} {
+                puts "matched clock"
+                set rio_tx_clkout \$clk_name
+                set go_on 0
+                break
+            }
+        }
+        if { \$match != 1} {
+           #puts "Not match on attempt: \$loop"
+           regsub -lineanchor {\\\\\\|[a-z0-9_]+\$} \$each_inst {} each_inst
+           #puts "new each_inst: \$each_inst"
+           incr loop
+        }
+     }
+     ## removed added escape characters
+     set prefix \$each_inst
+     regsub -all {\\\\} \$prefix {} prefix
+     set_clock_groups -exclusive -group [get_clocks \$prefix*rx_clkout] -group [get_clocks \$prefix*tx_clkout] -group [get_clocks {sys_clk}] -group [get_clocks {tx_pll_refclk}]
+
+ }
+
+      @@  }
+    @@}
+
+@@ }

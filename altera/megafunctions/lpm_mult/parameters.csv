@@ -1,0 +1,25 @@
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,SYSTEM_INFO,VISIBLE,DESCRIPTION,
+DEVICE_FAMILY,STRING,,Device Family,{device_family},FALSE,Specifies which device family is currently selected.,
+,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,DESCRIPTION,UNITS,
+GUI_WIDTH_A,INTEGER,8,Dataa width,TRUE,The size of the dataa[] input port,Bits,
+GUI_WIDTH_B,INTEGER,8,Datab width,TRUE,The size of the datab[] input port,Bits,
+GUI_WIDTH_P,INTEGER,16,Value,TRUE,The size of the result[] output port,Bits,
+,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,DESCRIPTION,,
+GUI_CONSTANT_B,INTEGER,0,Value,TRUE,Constant value for the datab[] input port,,
+GUI_LATENCY,POSITIVE,1,Latency,TRUE,Number of latency clock cycles associated with the result[] output port,,
+GUI_CLEAR_TYPE,STRING,NONE,Clear Signal Type,TRUE,Create an 'aclr' asynchronous clear port or 'sclr' synchronous port,,
+GUI_CLKEN,BOOLEAN,FALSE,Create a 'clken' clock enable clock,TRUE,Clock enabled for pipelined usage,,
+,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,ALLOWED_RANGES,DISPLAY_HINT,DESCRIPTION
+GUI_USE_MULT,INTEGER,1,Type,TRUE,"""1: Multiply 'dataa' input by 'datab' input"" ""0: Multiply 'dataa' input by itself (squaring operation)""",RADIO,Select to multiply dataa[] and datab[] or square dataa[]
+GUI_AUTO_SIZE_RESULT,INTEGER,1,Type,TRUE,"""1: Automatically calculate the width"" ""0: Restrict the width""",RADIO,Automatically calculate the width of the result[] output port
+GUI_B_IS_CONSTANT,INTEGER,0,Does the 'datab' input bus have a constant value?,TRUE,"""0: No"" ""1: Yes""",RADIO,Select if datab[] is a constant size
+GUI_SIGNED_MULT,INTEGER,0,Which type of multiplication do you want?,TRUE,"""0: Unsigned"" ""1: Signed""",RADIO,Select if dataa[] and datab[] represent signed or unsigned values
+GUI_IMPLEMENTATION,INTEGER,0,Which multiplier implementation should be used?,TRUE,"""0: Use the default implementation"" ""1: Use the dedicated multiplier circuitry"" ""2: Use logic elements""",RADIO,Select the implementation style used
+GUI_PIPELINE,INTEGER,0,Pipeline,TRUE,"""0: No"" ""1: Yes""",RADIO,Enable or disable the usage of pipelining
+GUI_OPTIMIZE,INTEGER,0,Type,TRUE,"""0: Default"" ""1: Speed"" ""2: Area""",RADIO,Select the type of optimizations used
+,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,DERIVED,DESCRIPTION,
+GUI_RESULT_WIDTH,INTEGER,16,Result width,TRUE,TRUE,Displays the result width if the user sets it or it is automatically calculated,

@@ -1,0 +1,72 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+    create_clock -name {clk_status} -period 10.000 -waveform { 0.000 5.000 } [get_ports { clk_status }]
+    create_clock -name {reconfig_clk} -period 10.000 -waveform { 0.000 5.000 } [get_ports { reconfig_clk }]
+
+    derive_pll_clocks -create_base_clocks
+    derive_clock_uncertainty
+
+@@ if {$speed == 50} {
+    set CLK_STATUS      [get_clocks clk_status]
+    set TX_CORECLK      [get_clocks av_top|${ip_name}_0|s*|tx_coreclkin]
+    set RX_CORECLK      [get_clocks av_top|${ip_name}_0|s*|rx_coreclkin]
+    set TX_PMA_CLK      [get_clocks av_top|${ip_name}_0|s*|tx_pma_clk]
+    set RX_PMA_CLK      [get_clocks av_top|${ip_name}_0|s*|rx_pma_clk]
+    set RX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|s*|rx_pma_div_clk]
+    set TX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|s*|tx_pma_div_clk]
+@@ } else {
+    set CLK_STATUS      [get_clocks clk_status]
+@@  if {$enable_ptp == 1} {
+    set TX_CORECLK      [get_clocks av_top|${ip_name}_0|tx_clkout]
+    set RX_CORECLK      [get_clocks av_top|${ip_name}_0|rx_clkout]
+@@  } else {
+    set TX_CORECLK      [get_clocks av_top|${ip_name}_0|tx_coreclkin]
+    set RX_CORECLK      [get_clocks av_top|${ip_name}_0|rx_coreclkin]
+@@  }
+    set TX_PMA_CLK      [get_clocks av_top|${ip_name}_0|tx_pma_clk]
+    set RX_PMA_CLK      [get_clocks av_top|${ip_name}_0|rx_pma_clk]
+    set RX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|rx_pma_div_clk]
+    set TX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|tx_pma_div_clk]
+@@ }
+
+if {\$::TimeQuestInfo(nameofexecutable) eq "quartus_fit"} {
+   # fitter; 15% at 390MHz
+   set_clock_uncertainty -setup -add -from \$RX_PMA_DIV_CLK 0.333
+   set_clock_uncertainty -setup -add -from \$TX_PMA_DIV_CLK 0.333
+@@ if {$enable_ptp == 1} {
+   set_clock_uncertainty -setup -add -from \$TX_CORECLK 0.333
+   set_clock_uncertainty -setup -add -from \$RX_CORECLK 0.333
+@@ } else {
+   set_clock_uncertainty -setup -add -from \$RX_CORECLK -to \$RX_PMA_DIV_CLK 0.333
+@@ }
+} else {
+   # everywhere else
+}
+
+@@ if {$enable_ptp == 0} {
+set_clock_groups -asynchronous -group \$CLK_STATUS -group \$TX_CORECLK -group \$RX_CORECLK
+@@ }
+set_clock_groups -asynchronous -group \$CLK_STATUS -group \$RX_PMA_CLK -group \$RX_PMA_DIV_CLK
+set_clock_groups -asynchronous -group \$CLK_STATUS -group \$TX_PMA_CLK
+set_clock_groups -asynchronous -group \$CLK_STATUS -group \$TX_PMA_DIV_CLK
+
+set_false_path -from [all_inputs]
+set_false_path -to   [all_outputs]
+
+# DIV40 clock
+@@ if {$speed == 50 && $enable_div40} {
+    set RX_CLK      [get_clocks av_top|${ip_name}_0|eth_custom|rxfpll|alt_e2550_rx_fpll|outclk0]
+    set_clock_groups -asynchronous -group \$CLK_STATUS -group \$TX_PMA_DIV_CLK -group \$RX_CLK
+@@ }
+

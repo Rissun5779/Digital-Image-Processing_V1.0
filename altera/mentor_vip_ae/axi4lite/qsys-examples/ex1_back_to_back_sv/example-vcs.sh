@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# Usage: <command> [32|64]
+# 32 bit mode is run unless 64 is passed in as the first argument.
+
+SYSTEM_NAME=ex1_back_to_back_sv
+ARRIA10_OR_NEWER=0
+
+MENTOR_VIP_AE=${MENTOR_VIP_AE:-$QUARTUS_ROOTDIR/../ip/altera/mentor_vip_ae}
+
+if [ "$1" == "64" ]
+then
+        RUN_64bit=-full64
+        export LD_LIBRARY_PATH=${VCS_HOME}/gnu/linux/gcc-4.7.2/lib64
+        QUESTA_MVC_GCC_PATH=${VCS_HOME}/gnu/linux/gcc-4.7.2
+        QUESTA_MVC_GCC_LIB=${MENTOR_VIP_AE}/common/questa_mvc_core/linux_x86_64_gcc-4.7.2_vcs
+else
+        export LD_LIBRARY_PATH=${VCS_HOME}/gnu/linux/gcc-4.7.2/lib
+        QUESTA_MVC_GCC_PATH=${VCS_HOME}/gnu/linux/gcc-4.7.2
+        QUESTA_MVC_GCC_LIB=${MENTOR_VIP_AE}/common/questa_mvc_core/linux_gcc-4.7.2_vcs
+fi
+
+QSYS_SIMDIR=../..
+
+if [ ${ARRIA10_OR_NEWER} == "1" ]
+then
+        SIM_DIR_NAME=sim
+else
+        SIM_DIR_NAME=simulation
+fi
+cd ${SYSTEM_NAME}/${SIM_DIR_NAME}/synopsys/vcs
+rm -rf csrc simv simv.daidir transcript ucli.key vc_hdrs.h
+## source vcs_setup.sh SKIP_ELAB=1 SKIP_SIM=1;
+    
+    vcs \
+      +vpi +acc +vcs+lic+wait \
+      -lca -timescale=1ps/1ps +v2k -sverilog +systemverilogext+.sv -ntb_opts dtm $USER_DEFINED_ELAB_OPTIONS \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/altera_primitives.v \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/220model.v \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/sgate.v \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/altera_mf.v \
+      $QUARTUS_ROOTDIR/eda/sim_lib/altera_lnsim.sv \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/cycloneiv_hssi_atoms.v \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/cycloneiv_pcie_hip_atoms.v \
+      -v $QUARTUS_ROOTDIR/eda/sim_lib/cycloneiv_atoms.v \
+      $QSYS_SIMDIR/submodules/altera_reset_controller.v \
+      $QSYS_SIMDIR/submodules/altera_reset_synchronizer.v \
+\
+      $MENTOR_VIP_AE/common/questa_mvc_svapi.svh \
+      $MENTOR_VIP_AE/axi4/bfm/mgc_common_axi4.sv \
+      $MENTOR_VIP_AE/axi4/bfm/mgc_axi4_monitor.sv \
+      $MENTOR_VIP_AE/axi4/bfm/mgc_axi4_inline_monitor.sv \
+      $MENTOR_VIP_AE/axi4lite/bfm/mgc_axi4lite_inline_monitor.sv \
+      $MENTOR_VIP_AE/axi4/bfm/mgc_axi4_slave.sv \
+      $MENTOR_VIP_AE/axi4lite/bfm/mgc_axi4lite_slave.sv \
+      $MENTOR_VIP_AE/axi4/bfm/mgc_axi4_master.sv \
+      $MENTOR_VIP_AE/axi4lite/bfm/mgc_axi4lite_master.sv \
+      $QSYS_SIMDIR/ex1_back_to_back_sv.v \
+      \
+      \
+      $QSYS_SIMDIR/../../master_test_program.sv \
+      $QSYS_SIMDIR/../../monitor_test_program.sv  \
+      $QSYS_SIMDIR/../../slave_test_program.sv  \
+      \
+      $QSYS_SIMDIR/../../top.sv \
+      \
+        -cpp ${QUESTA_MVC_GCC_PATH}/xbin/g++ \
+        -LDFLAGS "-L ${QUESTA_MVC_GCC_LIB} \
+          -Wl,-rpath ${QUESTA_MVC_GCC_LIB}" \
+        -laxi4_IN_SystemVerilog_VCS_full \
+        -top top \
+       ${RUN_64bit}
+
+
+./simv -l transcript
+

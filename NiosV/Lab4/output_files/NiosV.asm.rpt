@@ -1,5 +1,5 @@
 Assembler report for NiosV
-Fri Mar 13 18:17:00 2026
+Sat Mar 21 20:48:04 2026
 Quartus Prime Version 24.1std.0 Build 1077 03/04/2025 SC Lite Edition
 
 
@@ -39,7 +39,7 @@ on the Quartus Prime software download page.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Fri Mar 13 18:17:00 2026 ;
+; Assembler Status      ; Successful - Sat Mar 21 20:48:04 2026 ;
 ; Revision Name         ; NiosV                                 ;
 ; Top-level Entity Name ; NiosV_top                             ;
 ; Family                ; Cyclone V                             ;
@@ -79,8 +79,8 @@ on the Quartus Prime software download page.
 +----------------+--------------------+
 ; Option         ; Setting            ;
 +----------------+--------------------+
-; JTAG usercode  ; 0x03C36F4E         ;
-; Checksum       ; 0x03C36F4E         ;
+; JTAG usercode  ; 0x0AC5FFC1         ;
+; Checksum       ; 0x0AC5FFC1         ;
 +----------------+--------------------+
 
 
@@ -90,14 +90,14 @@ on the Quartus Prime software download page.
 Info: *******************************************************************
 Info: Running Quartus Prime Assembler
     Info: Version 24.1std.0 Build 1077 03/04/2025 SC Lite Edition
-    Info: Processing started: Fri Mar 13 18:16:48 2026
+    Info: Processing started: Sat Mar 21 20:47:48 2026
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off NiosV -c NiosV
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (115030): Assembler is generating device programming files
 Info: Quartus Prime Assembler was successful. 0 errors, 1 warning
-    Info: Peak virtual memory: 579 megabytes
-    Info: Processing ended: Fri Mar 13 18:17:01 2026
-    Info: Elapsed time: 00:00:13
-    Info: Total CPU time (on all processors): 00:00:12
+    Info: Peak virtual memory: 633 megabytes
+    Info: Processing ended: Sat Mar 21 20:48:04 2026
+    Info: Elapsed time: 00:00:16
+    Info: Total CPU time (on all processors): 00:00:16
 
 

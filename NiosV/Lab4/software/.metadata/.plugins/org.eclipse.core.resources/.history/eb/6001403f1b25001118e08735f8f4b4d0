@@ -1,0 +1,11 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <system.h>
+
+#define LED_REG *(volatile uint32_t)
+
+int main()
+{
+    printf("Hello, World Nios !\n");
+    return 0;
+}

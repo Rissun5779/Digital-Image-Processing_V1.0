@@ -1,0 +1,38 @@
+CONDITION,DO
+
+,set_new_param ISBER [get_old_param BER]
+,set_new_param NODESYNC [get_old_param NODE_SYNC]
+,set_new_param L [get_old_param L0]
+,set_new_param n [get_old_param N0]
+,set_new_param BSF [get_old_param best_state_finder]
+,set_new_param acs_units [get_old_param ACS_UNITS]
+,set_new_param v [get_old_param TRACEBACK]
+,set_new_param softbits [get_old_param SOFTBITS]
+,set_new_param ga_display [get_old_param POLY_CODE_0_0]
+,set_new_param gb_display [get_old_param POLY_CODE_0_1]
+,set_new_param gc_display [get_old_param POLY_CODE_0_2]
+,set_new_param gd_display [get_old_param POLY_CODE_0_3]
+,set_new_param ge_display [get_old_param POLY_CODE_0_4]
+,set_new_param gf_display [get_old_param POLY_CODE_0_5]
+,set_new_param gg_display [get_old_param POLY_CODE_0_6]
+,set_new_param FMAX [get_old_param clock_speed]
+
+"[get_old_param ARCHITECTURE]  == ""hybrid""","set_new_param viterbi_type ""Hybrid"""
+"[get_old_param ARCHITECTURE]  == ""parallel""","set_new_param viterbi_type ""Parallel"""
+
+"[get_old_param parallel_optimization]  == ""none""","set_new_param parallel_optimization ""None"""
+"[get_old_param parallel_optimization]  == ""continuous""","set_new_param parallel_optimization ""Continuous"""
+"[get_old_param parallel_optimization]  == ""block""","set_new_param parallel_optimization ""Block"""
+
+"[get_old_param DECIMALOCTAL]  == ""decimal""","set_new_param ISOCTAL ""Decimal"""
+"[get_old_param DECIMALOCTAL]  == ""octal""","set_new_param ISOCTAL ""Octal"""
+
+"[get_old_param MODE0]  == ""V""","set_new_param mode ""Viterbi"""
+"[get_old_param MODE0]  == ""T""","set_new_param mode ""TCM"""
+
+[get_old_param NCODES]  == 1 ,set_new_param ncodes 1
+[get_old_param NCODES]  != 1 ,croak "number of codes must be 1 in order to migrate"
+,set_new_param selected_device_family {Arria 10} 
+
+,ignore_new_param design_env
+

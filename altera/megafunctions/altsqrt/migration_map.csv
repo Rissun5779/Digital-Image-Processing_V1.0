@@ -1,0 +1,10 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_BIT_WIDTH [get_old_param WIDTH]
+"[get_old_param PIPELINE] == "0"","set_new_param GUI_PIPELINE "No""
+"[get_old_param PIPELINE] > "0"","set_new_param GUI_PIPELINE "Yes I want an output latency (set the latency cycles below)""
+"[exists_old_param PIPELINE]","set_new_param GUI_CYCLES_VALUE [get_old_param PIPELINE]"
+"[exists_old_param USED_PORT_aclr] && [string equal [get_old_param USED_PORT_aclr] "true"]","set_new_param GUI_ASYNC_CLR_INPUT "true""
+"![exists_old_param USED_PORT_aclr]","set_new_param GUI_ASYNC_CLR_INPUT "false""
+"[exists_old_param USED_PORT_ena] && [string equal [get_old_param USED_PORT_ena] "true"]","set_new_param GUI_CLK_ENABLE_INPUT "true""
+"![exists_old_param USED_PORT_ena]","set_new_param GUI_CLK_ENABLE_INPUT "false""

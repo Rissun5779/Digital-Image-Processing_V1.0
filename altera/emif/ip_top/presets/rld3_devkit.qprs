@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip><presets version="18.1">
+	<preset name="Arria 10 GX FPGA Development Kit with RLDRAM3 HILO" kind="ip_top" version="18.1" description="Arria 10 GX FPGA Development Kit with RLDRAM3 HILO">
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_RLD3" />
+		<parameter name="PHY_RLD3_CORE_CLKS_SHARING_ENUM" value="CORE_CLKS_SHARING_DISABLED" />
+		<parameter name="MEM_RLD3_SPEEDBIN_ENUM" value="RLD3_SPEEDBIN_093E" />
+		<parameter name="PHY_RLD3_DEFAULT_REF_CLK_FREQ" value="false" />
+		<parameter name="PHY_RLD3_USER_REF_CLK_FREQ_MHZ" value="133.333" />
+		<parameter name="PHY_RLD3_MEM_CLK_FREQ_MHZ" value="1066.667" />
+		<parameter name="PHY_RLD3_DEFAULT_IO" value="false" />
+		<parameter name="MEM_RLD3_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_RLD3_BANK_ADDR_WIDTH" value="4" />
+		<parameter name="MEM_RLD3_BL" value="2" />
+		<parameter name="MEM_RLD3_DATA_LATENCY_MODE_ENUM" value="RLD3_DL_RL16_WL17" />
+		<parameter name="MEM_RLD3_T_RC_MODE_ENUM" value="RLD3_TRC_9" />
+		<parameter name="MEM_RLD3_TDS_PS" value="-30" />
+		<parameter name="MEM_RLD3_TDH_PS" value="5" />
+		<parameter name="MEM_RLD3_TQKQ_MAX_PS" value="75" />
+		<parameter name="MEM_RLD3_TQH_CYC" value="0.38" />
+		<parameter name="MEM_RLD3_TCKDK_MAX_CYC" value="0.27" />
+		<parameter name="MEM_RLD3_TCKDK_MIN_CYC" value="-0.27" />
+		<parameter name="MEM_RLD3_TCKQK_MAX_PS" value="135" />
+		<parameter name="MEM_RLD3_TIS_PS" value="85" />
+		<parameter name="MEM_RLD3_TIH_PS" value="65" />
+		<parameter name="MEM_RLD3_WIDTH_EXPANDED" value="false" />
+		<parameter name="PHY_RLD3_USER_AC_IO_STD_ENUM" value="IO_STD_HSTL_12_C2" />
+		<parameter name="PHY_RLD3_USER_CK_IO_STD_ENUM" value="IO_STD_HSTL_12_C2" />
+		<parameter name="PHY_RLD3_USER_DATA_IO_STD_ENUM" value="IO_STD_HSTL_12_C2" />
+		<parameter name="PHY_RLD3_USER_AC_MODE_ENUM" value="OUT_OCT_25_CAL" />
+		<parameter name="PHY_RLD3_USER_CK_MODE_ENUM" value="OUT_OCT_25_CAL" />
+		<parameter name="PHY_RLD3_USER_DATA_OUT_MODE_ENUM" value="OUT_OCT_25_CAL" />
+		<parameter name="PHY_RLD3_USER_DATA_IN_MODE_ENUM" value="IN_OCT_50_CAL" />
+		<parameter name="PHY_RLD3_USER_PLL_REF_CLK_IO_STD_ENUM" value="IO_STD_LVDS" />
+		<parameter name="PHY_RLD3_USER_RZQ_IO_STD_ENUM" value="IO_STD_CMOS_12" />
+		<parameter name="EX_DESIGN_GUI_RLD3_GEN_SYNTH" value="true" />
+		<parameter name="DIAG_RLD3_EXPORT_SEQ_AVALON_SLAVE" value="CAL_DEBUG_EXPORT_MODE_JTAG" />
+		<parameter name="EX_DESIGN_GUI_RLD3_TARGET_DEV_KIT" value="TARGET_DEV_KIT_A10_GX_FPGA_RLDRAM3" />
+		<parameter name="EX_DESIGN_GUI_RLD3_PREV_PRESET" value="TARGET_DEV_KIT_A10_GX_FPGA_RLDRAM3" />
+	</preset>
+</presets></ip>

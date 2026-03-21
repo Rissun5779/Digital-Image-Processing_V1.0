@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element alt_vip_cl_mixer_0
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+   element alt_vip_cl_vfb_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="5CEBA2F17A7" />
+ <parameter name="deviceFamily" value="Cyclone V" />
+ <parameter name="deviceSpeedGrade" value="7" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="alt_vip_cl_mixer_0_control"
+   internal="alt_vip_cl_mixer_0.control"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_mixer_0_dout"
+   internal="alt_vip_cl_mixer_0.dout"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="alt_vip_cl_mixer_0_main_clock"
+   internal="alt_vip_cl_mixer_0.main_clock"
+   type="clock"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_mixer_0_main_reset"
+   internal="alt_vip_cl_mixer_0.main_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_vfb_0_control"
+   internal="alt_vip_cl_vfb_0.control"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_vfb_0_din"
+   internal="alt_vip_cl_vfb_0.din"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_vfb_0_main_clock"
+   internal="alt_vip_cl_vfb_0.main_clock"
+   type="clock"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_vfb_0_main_reset"
+   internal="alt_vip_cl_vfb_0.main_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_vfb_0_mem_clock"
+   internal="alt_vip_cl_vfb_0.mem_clock"
+   type="clock"
+   dir="end" />
+ <interface
+   name="alt_vip_cl_vfb_0_mem_master_rd"
+   internal="alt_vip_cl_vfb_0.mem_master_rd"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="alt_vip_cl_vfb_0_mem_master_wr"
+   internal="alt_vip_cl_vfb_0.mem_master_wr"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="alt_vip_cl_vfb_0_mem_reset"
+   internal="alt_vip_cl_vfb_0.mem_reset"
+   type="reset"
+   dir="end" />
+ <module
+   name="alt_vip_cl_mixer_0"
+   kind="alt_vip_cl_mixer"
+   version="17.1"
+   enabled="1">
+  <parameter name="ALPHA_ENABLE" value="0" />
+  <parameter name="ALPHA_STREAMS_ENABLE" value="0" />
+  <parameter name="AUTO_DEVICE" value="5CEBA2F17A7" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="7" />
+  <parameter name="BITS_PER_SYMBOL" value="8" />
+  <parameter name="COLOR_PLANES_ARE_IN_PARALLEL" value="1" />
+  <parameter name="COLOR_SPACE" value="RGB" />
+  <parameter name="FAMILY" value="Cyclone V" />
+  <parameter name="IS_422" value="0" />
+  <parameter name="LAYER_POSITION_ENABLE" value="0" />
+  <parameter name="MAX_HEIGHT" value="380" />
+  <parameter name="MAX_WIDTH" value="560" />
+  <parameter name="NO_OF_INPUTS" value="1" />
+  <parameter name="NUMBER_OF_COLOR_PLANES" value="2" />
+  <parameter name="PATTERN" value="colorbars" />
+  <parameter name="PIPELINE_READY" value="0" />
+  <parameter name="PIXELS_IN_PARALLEL" value="4" />
+  <parameter name="UNIFORM_VALUE_BCR" value="0" />
+  <parameter name="UNIFORM_VALUE_GCB" value="0" />
+  <parameter name="UNIFORM_VALUE_RY" value="0" />
+  <parameter name="USER_PACKET_FIFO_DEPTH" value="0" />
+  <parameter name="USER_PACKET_SUPPORT" value="DISCARD" />
+ </module>
+ <module
+   name="alt_vip_cl_vfb_0"
+   kind="alt_vip_cl_vfb"
+   version="17.1"
+   enabled="1">
+  <parameter name="AUTO_DEVICE" value="5CEBA2F17A7" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="7" />
+  <parameter name="BITS_PER_SYMBOL" value="8" />
+  <parameter name="BURST_ALIGNMENT" value="1" />
+  <parameter name="CLOCKS_ARE_SEPARATE" value="1" />
+  <parameter name="COLOR_PLANES_ARE_IN_PARALLEL" value="1" />
+  <parameter name="CONTROLLED_DROP_REPEAT" value="0" />
+  <parameter name="DROP_FRAMES" value="1" />
+  <parameter name="DROP_INVALID_FIELDS" value="0" />
+  <parameter name="DROP_REPEAT_USER" value="1" />
+  <parameter name="FAMILY" value="Cyclone V" />
+  <parameter name="INTERLACED_SUPPORT" value="0" />
+  <parameter name="IS_FRAME_READER" value="0" />
+  <parameter name="IS_FRAME_WRITER" value="0" />
+  <parameter name="IS_SYNC_MASTER" value="0" />
+  <parameter name="IS_SYNC_SLAVE" value="0" />
+  <parameter name="MAX_HEIGHT" value="380" />
+  <parameter name="MAX_SYMBOLS_PER_PACKET" value="10" />
+  <parameter name="MAX_WIDTH" value="560" />
+  <parameter name="MEM_BASE_ADDR" value="0" />
+  <parameter name="MEM_BUFFER_OFFSET" value="16777216" />
+  <parameter name="MEM_PORT_WIDTH" value="128" />
+  <parameter name="MULTI_FRAME_DELAY" value="1" />
+  <parameter name="NUMBER_OF_COLOR_PLANES" value="3" />
+  <parameter name="PIXELS_IN_PARALLEL" value="4" />
+  <parameter name="READER_RUNTIME_CONTROL" value="0" />
+  <parameter name="READY_LATENCY" value="1" />
+  <parameter name="READ_BURST_TARGET" value="32" />
+  <parameter name="READ_FIFO_DEPTH" value="64" />
+  <parameter name="REPEAT_FRAMES" value="1" />
+  <parameter name="TEST_INIT" value="0" />
+  <parameter name="USER_PACKETS_MAX_STORAGE" value="0" />
+  <parameter name="USE_BUFFER_OFFSET" value="0" />
+  <parameter name="WRITER_RUNTIME_CONTROL" value="1" />
+  <parameter name="WRITE_BURST_TARGET" value="32" />
+  <parameter name="WRITE_FIFO_DEPTH" value="64" />
+ </module>
+ <connection
+   kind="avalon_streaming"
+   version="17.1"
+   start="alt_vip_cl_vfb_0.dout"
+   end="alt_vip_cl_mixer_0.din0" />
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

@@ -1,0 +1,145 @@
+module ${output_name}  (
+@@if { $total_clks_used > 1 } {
+	input  wire [${total_clks_used}-1:0] clk,
+	input  wire [${total_clks_used}-1:0] ena,
+@@} elseif { $total_clks_used > 0 } {
+    input  wire                          clk,
+    input  wire                          ena,
+@@}
+@@if { $single_clear == "true" } {
+    input  wire                          clr,
+@@} else {
+    input  wire [1:0]                    clr,
+@@}
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    input  wire                          accumulate,
+@@}        
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    input  wire [31:0]                   ax,
+@@}        
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    input  wire [31:0]                   ay,
+@@}        
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    input  wire [31:0]                   az,
+@@}        
+@@if { [lsearch -nocase $interfaces "chainin"] != -1 } {
+    input  wire [31:0]                   chainin,
+@@}
+@@if { [lsearch -nocase $interfaces "chainout"] != -1 } {
+    output wire [31:0]                   chainout,
+@@}
+@@if {$mult_exceptions} {
+    output wire                          mult_overflow,
+    output wire                          mult_underflow,
+    output wire                          mult_invalid,
+    output wire                          mult_inexact,
+@@}
+@@if {$adder_exceptions} {
+    output wire                          adder_overflow,
+    output wire                          adder_underflow,
+    output wire                          adder_invalid,
+    output wire                          adder_inexact,
+@@}
+    output wire [31:0]                   result
+
+	);
+@@if { $total_clks_used > 0 } {
+    wire [${total_clks_used}-1:0] clk_vec;
+    wire [${total_clks_used}-1:0] ena_vec;
+@@}
+    wire [1:0]                   clr_vec;
+@@if { $total_clks_used > 1 } {
+    assign clk_vec = clk;
+    assign ena_vec = ena;
+@@} elseif { $total_clks_used > 0 } {
+    assign clk_vec[0] = clk;
+    assign ena_vec[0] = ena;
+@@}
+@@if {$clear_type == "NONE" } {
+    assign clr_vec = '0;
+@@} else {
+@@if { $single_clear == "true" } {
+    assign clr_vec[1] = clr;
+    assign clr_vec[0] = clr;
+@@} else {
+    assign clr_vec = clr;
+@@}
+@@}
+fourteennm_fp_mac  #(
+@@foreach cur_clock $hdl_clocks {
+@@set val [subst $${cur_clock}_derived]
+    .${cur_clock}("${val}"),
+@@}
+    .clear_type("${clear_type}"),
+    .use_chainin("${use_chainin}"),
+    .operation_mode("${OPERATION}"),
+    .adder_subtract("${adder_subtract}")
+) $OPERATION (
+@@ set clk_assignment "\}"
+@@ set ena_assignment "\}"
+@@for {set i 0} {$i < $total_clks_used} {incr i} {
+@@ if { $i != 0 } {set clk_assignment ",${clk_assignment}" }
+@@ if { $i != 0 } {set ena_assignment ",${ena_assignment}" }
+@@  set clk_assignment "clk_vec\[${i}\]${clk_assignment}"
+@@  set ena_assignment "ena_vec\[${i}\]${ena_assignment}"
+@@}
+@@for {set i $total_clks_used} {$i < 3} {incr i} {
+@@ if { $i != 0 } {set clk_assignment ",${clk_assignment}" }
+@@ if { $i != 0 } {set ena_assignment ",${ena_assignment}" }
+@@  set clk_assignment "1'b0${clk_assignment}"
+@@  set ena_assignment "1'b0${ena_assignment}"
+@@}
+@@ set clk_assignment "\{${clk_assignment}"
+@@ set ena_assignment "\{${ena_assignment}"
+    .clk($clk_assignment),
+    .ena($ena_assignment),
+    .clr(clr_vec),
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    .accumulate(accumulate),
+@@}
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    .ax(ax),
+@@}
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    .ay(ay),
+@@}
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    .az(az),
+@@}
+
+@@if { $use_chainin } {
+    .chainin(chainin),
+@@} else {
+    .chainin(32'b0),
+@@}
+    .resulta(result),
+@@if {$mult_exceptions} {
+    .mult_overflow (mult_overflow),
+    .mult_underflow(mult_underflow),
+    .mult_invalid  (mult_invalid),
+    .mult_inexact  (mult_inexact),
+@@} else {
+    .mult_overflow (open),
+    .mult_underflow(open),
+    .mult_invalid  (open),
+    .mult_inexact  (open),
+@@}
+@@if {$adder_exceptions} {
+    .adder_overflow  (adder_overflow),
+    .adder_underflow (adder_underflow),
+    .adder_invalid   (adder_invalid),
+    .adder_inexact   (adder_inexact),
+@@} else {
+    .adder_overflow (open),
+    .adder_underflow(open),
+    .adder_invalid  (open),
+    .adder_inexact  (open),
+@@}
+@@if { $use_chainout } {
+    .chainout(chainout)
+@@} else {
+    .chainout()
+@@}
+);
+endmodule

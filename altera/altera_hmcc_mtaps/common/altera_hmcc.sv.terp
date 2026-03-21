@@ -1,0 +1,863 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #
+@@ # Variables used for TERP:
+@@ # device_family:   device family we are targeting
+@@ # top_level_name:  dynamically generated top level file name (based on parameterization)
+@@ # ports : number of ports
+@@ # response_reordering : responds reordering on or off
+@@ # altera_xcvr_name: dynamically generated name of the altera_xcvr module
+@@ # altera_hmcc_rx_xcvr_reset_name: dynamically generated name of the altera_hmcc_mtaps_rx_xcvr_reset module
+@@ # altera_hmcc_tx_xcvr_reset_name: dynamically generated name of the altera_hmcc_mtaps_tx_xcvr_reset module
+@@
+@@ set dp0 "dp0"
+@@ if {$ports == 1} { set dp0 "dp" }
+@@
+@@ #set expose_req_tags 1
+@@ #set expose_rsp_tags 1
+@@ set expose_req_tags [expr $response_reordering == 0 ]
+@@ set expose_rsp_tags [expr $response_reordering == 0 ]
+
+// For benchmarking
+// set_global_assignment -name SEARCH_PATH ../../src
+// set_global_assignment -name SEARCH_PATH ../../src/hsl
+// set_global_assignment -name SEARCH_PATH ../../src/xcvr
+// set_global_assignment -name SEARCH_PATH ../../src/xcvr/altera_hmcc_mtaps_xcvr
+// set_global_assignment -name SEARCH_PATH ../../src/xcvr/altera_hmcc_mtaps_xcvr_reset
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_lxrxps
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_lxtxps
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ferr_n
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_p_rst_n
+// set_instance_assignment -name VIRTUAL_PIN ON -to i2c_load_registers
+// set_instance_assignment -name VIRTUAL_PIN ON -to i2c_registers_loaded
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_ready
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_tag
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_cube
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_addr
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_cmd
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_sop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_eop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_data
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_req_valid
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_tag
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_size
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_cmd
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_sop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_eop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_error
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_errstat
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_data
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp*_rsp_valid
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_address
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_read
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_write
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_writedata
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_readdatavalid
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_readdata
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_irq
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_clk,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_reset,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_write,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_read,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_address,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_writedata,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_readdata,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_waitrequest
+
+`timescale 1ps/1ps
+
+module $top_level_name
+#(
+    parameter   DEVICE_FAMILY        = "$device_family",
+    parameter   CHANNELS             = 16,
+    parameter   DATA_RATE            = "10000 Mbps",
+    parameter   ENABLE_ECC           = "TRUE",
+    parameter   RESPONSE_REORDERING  = $response_reordering,
+    parameter   PORTS                = $ports,
+    parameter   ENABLE_SCRAM         = "TRUE",
+    parameter   BYPASS_LINK_INIT     = 0,
+    parameter   RETRY_TIMEOUT_PERIOD = 5,
+    parameter   RETRY_LIMIT          = 3,
+    parameter   IRTRY_INSERT_COUNT   = 32,
+    parameter   RX_MAPPING           = 64'hFEDC_BA98_7654_3210, // To compensate for PCB wiring.
+    parameter   TX_MAPPING           = 64'hFEDC_BA98_7654_3210,
+    parameter   ENABLE_ANALYZER      = 0 // Set to 1 to cause a dump of the received and transmitted traffic to the capture.csv file.
+) (
+    // Clock and Reset
+   input                           rst_n, // master hard reset input to the TX reset controller
+   input                           rx_cdr_refclk0,
+   input [CHANNELS*6-1:0]          tx_bonding_clocks,
+// output wire                     pll_powerdown,
+   input                           pll_cal_busy,
+   input                           pll_locked, // Must be externally ANDed into a single bit.
+   output logic                    core_rst_n, // Asserted until core_clk is stable for use by external logic.
+   output wire                     core_clk,
+
+    // HMC interface
+   input [CHANNELS-1:0]            hmc_lxrx,
+   output wire [CHANNELS-1:0]      hmc_lxtx,
+   input                           hmc_lxrxps,
+   output wire                     hmc_lxtxps,
+   input                           hmc_ferr_n,
+   output wire                     hmc_p_rst_n,
+
+    // HMC I2C interface
+   input                           i2c_registers_loaded,
+   output wire                     i2c_load_registers,
+
+    // User Request interface 0
+   output wire                     ${dp0}_req_ready,
+@@ if { $expose_req_tags } {
+   input [8:0]                     ${dp0}_req_tag,
+@@ }
+   input [2:0]                     ${dp0}_req_cube,
+   input [33:0]                    ${dp0}_req_addr,
+   input [5:0]                     ${dp0}_req_cmd,
+   input                           ${dp0}_req_sop,
+   input                           ${dp0}_req_eop,
+   input [(CHANNELS*32)-1:0]       ${dp0}_req_data,
+   input                           ${dp0}_req_valid,
+
+    // User Response interface 0
+   output wire                     ${dp0}_rsp_valid,
+@@ if { $expose_rsp_tags } {
+   output wire [8:0]               ${dp0}_rsp_tag,
+@@ }
+   output wire [2:0]               ${dp0}_rsp_size,
+   (* altera_attribute = "-name MESSAGE_DISABLE 13410" *)
+   output wire [5:0]               ${dp0}_rsp_cmd,
+   output wire                     ${dp0}_rsp_sop,
+   output wire                     ${dp0}_rsp_eop,
+   output wire [(CHANNELS*32)-1:0] ${dp0}_rsp_data,
+   output wire                     ${dp0}_rsp_error,
+   output wire [6:0]               ${dp0}_rsp_errstat,
+
+    // User Request interface 1
+@@ if {$ports > 1} {
+   output wire                     dp1_req_ready,
+  @@ if { $expose_req_tags } {
+   input [8:0]                     dp1_req_tag,
+  @@ }
+   input [2:0]                     dp1_req_cube,
+   input [33:0]                    dp1_req_addr,
+   input [5:0]                     dp1_req_cmd,
+   input                           dp1_req_sop,
+   input                           dp1_req_eop,
+   input [(CHANNELS*32)-1:0]       dp1_req_data,
+   input                           dp1_req_valid,
+
+    // User Response interface 1
+   output wire                     dp1_rsp_valid,
+  @@ if { $expose_rsp_tags } {
+   output wire [8:0]               dp1_rsp_tag,
+  @@ }
+   output wire [2:0]               dp1_rsp_size,
+   (* altera_attribute = "-name MESSAGE_DISABLE 13410" *)
+   output wire [5:0]               dp1_rsp_cmd,
+   output wire                     dp1_rsp_sop,
+   output wire                     dp1_rsp_eop,
+   output wire [(CHANNELS*32)-1:0] dp1_rsp_data,
+   output wire                     dp1_rsp_error,
+   output wire [6:0]               dp1_rsp_errstat,
+@@ }
+
+@@ if {$ports > 2} {
+    // User Request interface 2
+   output wire                     dp2_req_ready,
+  @@ if { $expose_req_tags } {
+   input [8:0]                     dp2_req_tag,
+  @@ }
+   input [2:0]                     dp2_req_cube,
+   input [33:0]                    dp2_req_addr,
+   input [5:0]                     dp2_req_cmd,
+   input                           dp2_req_sop,
+   input                           dp2_req_eop,
+   input [(CHANNELS*32)-1:0]       dp2_req_data,
+   input                           dp2_req_valid,
+
+    // User Response interface 2
+   output wire                     dp2_rsp_valid,
+  @@ if { $expose_rsp_tags } {
+   output wire [8:0]               dp2_rsp_tag,
+  @@ }
+   output wire [2:0]               dp2_rsp_size,
+   (* altera_attribute = "-name MESSAGE_DISABLE 13410" *)
+   output wire [5:0]               dp2_rsp_cmd,
+   output wire                     dp2_rsp_sop,
+   output wire                     dp2_rsp_eop,
+   output wire [(CHANNELS*32)-1:0] dp2_rsp_data,
+   output wire                     dp2_rsp_error,
+   output wire [6:0]               dp2_rsp_errstat,
+@@ }
+    // User Request interface 3
+@@ if {$ports > 3} {
+    output wire                     dp3_req_ready,
+  @@ if { $expose_req_tags } {
+   input [8:0]                     dp3_req_tag,
+  @@ }
+   input [2:0]                     dp3_req_cube,
+   input [33:0]                    dp3_req_addr,
+   input [5:0]                     dp3_req_cmd,
+   input                           dp3_req_sop,
+   input                           dp3_req_eop,
+   input [(CHANNELS*32)-1:0]       dp3_req_data,
+   input                           dp3_req_valid,
+
+    // User Response interface 3
+   output wire                     dp3_rsp_valid,
+  @@ if { $expose_rsp_tags } {
+   output wire [8:0]               dp3_rsp_tag,
+  @@ }
+   output wire [2:0]               dp3_rsp_size,
+   (* altera_attribute = "-name MESSAGE_DISABLE 13410" *)
+   output wire [5:0]               dp3_rsp_cmd,
+   output wire                     dp3_rsp_sop,
+   output wire                     dp3_rsp_eop,
+   output wire [(CHANNELS*32)-1:0] dp3_rsp_data,
+   output wire                     dp3_rsp_error,
+   output wire [6:0]               dp3_rsp_errstat,
+@@ }
+    // Control/Status AVMM Interface
+   input [5:0]                     csr_address,
+   input                           csr_read,
+   input                           csr_write,
+   input [31:0]                    csr_writedata,
+   output wire                     csr_readdatavalid,
+   output wire [31:0]              csr_readdata,
+   output wire                     csr_irq,
+
+
+    // Transceiver Reconfiguration
+   input                           reconfig_clk, // Also used for reset controllers. 
+   input                           reconfig_reset,
+   input                           reconfig_write,
+   input                           reconfig_read,
+   input [((CHANNELS==16)?13:12):0]reconfig_address,
+   input [31:0]                    reconfig_writedata,
+   output wire [31:0]              reconfig_readdata,
+   output wire                     reconfig_waitrequest,
+    // debug/status output signals
+   output wire                     link_init_complete,
+
+   output wire [(CHANNELS*32)-1:0] debug_tx_data,
+   output wire [(CHANNELS*32)-1:0] debug_rx_data
+
+);
+
+`ifdef ALTERA_RESERVED_QIS
+   localparam       SIMULATION_SPEEDUP = 0;   // affects Tinit time
+`else
+   localparam       SIMULATION_SPEEDUP = 1;
+`endif
+
+   localparam PORT0_MAX_TAG = (1*512)/PORTS - 1;
+   localparam PORT1_MAX_TAG = (2*512)/PORTS - 1;
+   localparam PORT2_MAX_TAG = (3*512)/PORTS - 1;
+
+   // signals between altera_hmcc_mtaps_dcore and altera_hmcc_mtaps_xcvr
+   wire    [CHANNELS-1:0]          tx_clkout;
+
+   // signals between altera_hmcc_mtaps_dcore and altera_hmcc_mtaps_lane_swapper
+   wire    [CHANNELS*32-1:0]       dcore_tx_parallel_data;
+   wire    [CHANNELS*32-1:0]       dcore_rx_parallel_data;
+   wire    [CHANNELS-1:0]          dcore_rx_10g_bitslip;
+   wire    [CHANNELS-1:0]          dcore_rx_10g_fifo_rd_en;
+   wire    [CHANNELS-1:0]          dcore_rx_is_lockedtodata;
+// wire    [CHANNELS-1:0]          dcore_loopback;
+
+   // signals between altera_hmcc_mtaps_lane_swapper and altera_hmcc_mtaps_xcvr
+   wire    [CHANNELS*32-1:0]       xcvr_tx_parallel_data;
+   wire    [CHANNELS*32-1:0]       xcvr_rx_parallel_data;
+   wire    [CHANNELS-1:0]          xcvr_rx_10g_bitslip;
+   wire    [CHANNELS-1:0]          xcvr_rx_10g_fifo_rd_en;
+   wire    [CHANNELS-1:0]          xcvr_rx_is_lockedtodata;
+// wire    [CHANNELS-1:0]          xcvr_loopback;
+
+   // signals between altera_hmcc_mtaps_xcvr and altera_hmcc_mtaps_xcvr_reset
+   wire    [CHANNELS-1:0]          tx_analogreset;
+   wire    [CHANNELS-1:0]          tx_digitalreset;
+   wire    [CHANNELS-1:0]          tx_cal_busy;
+   wire    [CHANNELS-1:0]          rx_analogreset;
+   wire    [CHANNELS-1:0]          rx_digitalreset;
+   wire    [CHANNELS-1:0]          rx_cal_busy;
+@@ if { $device_family == "Stratix 10" } {
+   wire    [CHANNELS-1:0]          tx_analogreset_stat;
+   wire    [CHANNELS-1:0]          tx_digitalreset_stat;
+   wire    [CHANNELS-1:0]          rx_analogreset_stat; 
+   wire    [CHANNELS-1:0]          rx_digitalreset_stat;
+@@ }
+
+   // signals between altera_hmcc_mtaps_xcvr_reset and altera_hmcc_mtaps_dcore
+   wire    [CHANNELS-1:0]          tx_ready;
+   wire                            i2c_registers_loaded_hard ; // Safely crossed into the core_clk clock domain.
+   reg                             xcvr_ready; // ~rx_digitalreset[0] crossed into core_clk clock domain.
+
+   // Reset signals from dcore
+   wire                            soft_reset;
+   wire                            retrain;
+
+   // Names for stretched reset signals.
+   wire                            dcore_rst_n; // Reset dcore except CSR
+   wire                             init_rst_n; // Reset only initialization circuits.
+   wire                              csr_rst_n; // Reset CSR
+// wire                               rx_rst_n; // Reset RX reset controller
+
+   assign core_clk = tx_clkout[0]; // Use clock from channel 0 as main core clock.
+
+   // Synchronize the i2c_registers_loaded into the core_clk domain.
+   altera_std_synchronizer_nocut
+   #(
+     .depth          ( 2 )
+     ) registers_loaded
+   (
+    .clk            ( core_clk                  ),
+    .reset_n        ( core_rst_n                ),
+    .din            ( i2c_registers_loaded      ),
+    .dout           ( i2c_registers_loaded_hard )
+    );
+
+   // Main digital core.
+   altera_hmcc_mtaps_dcore
+   #(
+     .DEVICE_FAMILY          ( DEVICE_FAMILY ),
+     .CHANNELS               ( CHANNELS ),
+     .DATA_RATE              ( DATA_RATE ),
+     .ENABLE_ECC             ( ENABLE_ECC ),
+     .RESPONSE_REORDERING    ( RESPONSE_REORDERING ),
+     .PORTS                  ( PORTS ),
+     .PORT0_MAX_TAG          ( PORT0_MAX_TAG ),
+     .PORT1_MAX_TAG          ( PORT1_MAX_TAG ),
+     .PORT2_MAX_TAG          ( PORT2_MAX_TAG ),
+     .ENABLE_SCRAM           ( ENABLE_SCRAM ),
+     .SIMULATION_SPEEDUP     ( SIMULATION_SPEEDUP ),
+     .BYPASS_LINK_INIT       ( BYPASS_LINK_INIT ),
+     .RETRY_TIMEOUT_PERIOD   ( RETRY_TIMEOUT_PERIOD ),
+     .RETRY_LIMIT            ( RETRY_LIMIT ),
+     .IRTRY_INSERT_COUNT     ( IRTRY_INSERT_COUNT )
+     ) dcore
+   (
+    .clk                    ( core_clk    ),
+    .dcore_rst_n            ( dcore_rst_n ), // input
+    .init_rst_n             (  init_rst_n ), // input
+    .csr_rst_n              (   csr_rst_n ), // input
+
+    .retrain                ( retrain      ), // output
+    .soft_reset             ( soft_reset   ), // output
+
+    .dp0_req_ready           ( ${dp0}_req_ready   ),
+@@ if { $expose_req_tags } {
+    .dp0_req_tag             ( ${dp0}_req_tag     ),
+@@ } else {
+    .dp0_req_tag             ( 9'h0            ),
+@@ }
+    .dp0_req_cube            ( ${dp0}_req_cube    ),
+    .dp0_req_addr            ( ${dp0}_req_addr    ),
+    .dp0_req_cmd             ( ${dp0}_req_cmd     ),
+    .dp0_req_sop             ( ${dp0}_req_sop     ),
+    .dp0_req_eop             ( ${dp0}_req_eop     ),
+    .dp0_req_data            ( ${dp0}_req_data    ),
+    .dp0_req_valid           ( ${dp0}_req_valid   ),
+
+    .dp0_rsp_valid           ( ${dp0}_rsp_valid   ),
+@@ if { $expose_rsp_tags } {
+    .dp0_rsp_tag             ( ${dp0}_rsp_tag     ),
+@@ } else {
+    .dp0_rsp_tag             (                 ),
+@@ }
+    .dp0_rsp_size            ( ${dp0}_rsp_size    ),
+    .dp0_rsp_cmd             ( ${dp0}_rsp_cmd     ),
+    .dp0_rsp_sop             ( ${dp0}_rsp_sop     ),
+    .dp0_rsp_eop             ( ${dp0}_rsp_eop     ),
+    .dp0_rsp_data            ( ${dp0}_rsp_data    ),
+    .dp0_rsp_error           ( ${dp0}_rsp_error   ),
+    .dp0_rsp_errstat         ( ${dp0}_rsp_errstat ),
+
+@@ if {$ports <= 1} {
+    .dp1_req_ready           (                 ),
+    .dp1_req_tag             ( 9'h0            ),
+    .dp1_req_cube            ( 3'h0            ),
+    .dp1_req_addr            ( 34'h0           ),
+    .dp1_req_cmd             ( 6'h0            ),
+    .dp1_req_sop             ( 1'b0            ),
+    .dp1_req_eop             ( 1'b0            ),
+    .dp1_req_data            ( {{CHANNELS}{32'h0}}),
+    .dp1_req_valid           ( 1'b0            ),
+
+    .dp1_rsp_valid           (                 ),
+    .dp1_rsp_tag             (                 ),
+    .dp1_rsp_size            (                 ),
+    .dp1_rsp_cmd             (                 ),
+    .dp1_rsp_sop             (                 ),
+    .dp1_rsp_eop             (                 ),
+    .dp1_rsp_data            (                 ),
+    .dp1_rsp_error           (                 ),
+    .dp1_rsp_errstat         (                 ),
+@@ } else {
+    .dp1_req_ready           ( dp1_req_ready   ),
+  @@ if { $expose_req_tags } {
+    .dp1_req_tag             ( dp1_req_tag     ),
+  @@ } else {
+    .dp1_req_tag             ( 9'h0            ),
+  @@ }
+    .dp1_req_cube            ( dp1_req_cube    ),
+    .dp1_req_addr            ( dp1_req_addr    ),
+    .dp1_req_cmd             ( dp1_req_cmd     ),
+    .dp1_req_sop             ( dp1_req_sop     ),
+    .dp1_req_eop             ( dp1_req_eop     ),
+    .dp1_req_data            ( dp1_req_data    ),
+    .dp1_req_valid           ( dp1_req_valid   ),
+
+    .dp1_rsp_valid           ( dp1_rsp_valid   ),
+  @@ if { $expose_rsp_tags } {
+    .dp1_rsp_tag             ( dp1_rsp_tag     ),
+  @@ } else {
+    .dp1_rsp_tag             (                 ),
+  @@ }
+    .dp1_rsp_size            ( dp1_rsp_size    ),
+    .dp1_rsp_cmd             ( dp1_rsp_cmd     ),
+    .dp1_rsp_sop             ( dp1_rsp_sop     ),
+    .dp1_rsp_eop             ( dp1_rsp_eop     ),
+    .dp1_rsp_data            ( dp1_rsp_data    ),
+    .dp1_rsp_error           ( dp1_rsp_error   ),
+    .dp1_rsp_errstat         ( dp1_rsp_errstat ),
+@@ }
+
+@@ if {$ports <= 2} {
+    .dp2_req_ready           (                 ),
+    .dp2_req_tag             ( 9'h0            ),
+    .dp2_req_cube            ( 3'h0            ),
+    .dp2_req_addr            ( 34'h0           ),
+    .dp2_req_cmd             ( 6'h0            ),
+    .dp2_req_sop             ( 1'b0            ),
+    .dp2_req_eop             ( 1'b0            ),
+    .dp2_req_data            ( {{CHANNELS}{32'h0}}),
+    .dp2_req_valid           ( 1'b0            ),
+
+    .dp2_rsp_valid           (                 ),
+    .dp2_rsp_tag             (                 ),
+    .dp2_rsp_size            (                 ),
+    .dp2_rsp_cmd             (                 ),
+    .dp2_rsp_sop             (                 ),
+    .dp2_rsp_eop             (                 ),
+    .dp2_rsp_data            (                 ),
+    .dp2_rsp_error           (                 ),
+    .dp2_rsp_errstat         (                 ),
+@@ } else {
+    .dp2_req_ready           ( dp2_req_ready   ),
+@@ if { $expose_req_tags } {
+    .dp2_req_tag             ( dp2_req_tag     ),
+@@ } else {
+    .dp2_req_tag             ( 9'h0            ),
+@@ }
+    .dp2_req_cube            ( dp2_req_cube    ),
+    .dp2_req_addr            ( dp2_req_addr    ),
+    .dp2_req_cmd             ( dp2_req_cmd     ),
+    .dp2_req_sop             ( dp2_req_sop     ),
+    .dp2_req_eop             ( dp2_req_eop     ),
+    .dp2_req_data            ( dp2_req_data    ),
+    .dp2_req_valid           ( dp2_req_valid   ),
+
+    .dp2_rsp_valid           ( dp2_rsp_valid   ),
+@@ if { $expose_rsp_tags } {
+    .dp2_rsp_tag             ( dp2_rsp_tag     ),
+@@ } else {
+    .dp2_rsp_tag             (                 ),
+@@ }
+    .dp2_rsp_size            ( dp2_rsp_size    ),
+    .dp2_rsp_cmd             ( dp2_rsp_cmd     ),
+    .dp2_rsp_sop             ( dp2_rsp_sop     ),
+    .dp2_rsp_eop             ( dp2_rsp_eop     ),
+    .dp2_rsp_data            ( dp2_rsp_data    ),
+    .dp2_rsp_error           ( dp2_rsp_error   ),
+    .dp2_rsp_errstat         ( dp2_rsp_errstat ),
+@@ }
+
+@@ if {$ports <= 3} {
+    .dp3_req_ready           (                 ),
+    .dp3_req_tag             ( 9'h0            ),
+    .dp3_req_cube            ( 3'h0            ),
+    .dp3_req_addr            ( 34'h0           ),
+    .dp3_req_cmd             ( 6'h0            ),
+    .dp3_req_sop             ( 1'b0            ),
+    .dp3_req_eop             ( 1'b0            ),
+    .dp3_req_data            ( {{CHANNELS}{32'h0}}),
+    .dp3_req_valid           ( 1'b0            ),
+
+    .dp3_rsp_valid           (                 ),
+    .dp3_rsp_tag             (                 ),
+    .dp3_rsp_size            (                 ),
+    .dp3_rsp_cmd             (                 ),
+    .dp3_rsp_sop             (                 ),
+    .dp3_rsp_eop             (                 ),
+    .dp3_rsp_data            (                 ),
+    .dp3_rsp_error           (                 ),
+    .dp3_rsp_errstat         (                 ),
+@@ } else {
+    .dp3_req_ready           ( dp3_req_ready   ),
+@@ if { $expose_req_tags } {
+    .dp3_req_tag             ( dp3_req_tag     ),
+@@ } else {
+    .dp3_req_tag             ( 9'h0            ),
+@@ }
+    .dp3_req_cube            ( dp3_req_cube    ),
+    .dp3_req_addr            ( dp3_req_addr    ),
+    .dp3_req_cmd             ( dp3_req_cmd     ),
+    .dp3_req_sop             ( dp3_req_sop     ),
+    .dp3_req_eop             ( dp3_req_eop     ),
+    .dp3_req_data            ( dp3_req_data    ),
+    .dp3_req_valid           ( dp3_req_valid   ),
+
+    .dp3_rsp_valid           ( dp3_rsp_valid   ),
+@@ if { $expose_rsp_tags } {
+    .dp3_rsp_tag             ( dp3_rsp_tag     ),
+@@ } else {
+    .dp3_rsp_tag             (                 ),
+@@ }
+    .dp3_rsp_size            ( dp3_rsp_size    ),
+    .dp3_rsp_cmd             ( dp3_rsp_cmd     ),
+    .dp3_rsp_sop             ( dp3_rsp_sop     ),
+    .dp3_rsp_eop             ( dp3_rsp_eop     ),
+    .dp3_rsp_data            ( dp3_rsp_data    ),
+    .dp3_rsp_error           ( dp3_rsp_error   ),
+    .dp3_rsp_errstat         ( dp3_rsp_errstat ),
+@@ } 
+
+    .csr_address            ( csr_address ),
+    .csr_read               ( csr_read ),
+    .csr_write              ( csr_write ),
+    .csr_writedata          ( csr_writedata ),
+    .csr_readdatavalid      ( csr_readdatavalid ),
+    .csr_readdata           ( csr_readdata ),
+    .csr_irq                ( csr_irq ),
+
+    .xcvr_ready             ( xcvr_ready ), // input
+    .tx_parallel_data       ( dcore_tx_parallel_data ),
+    .rx_parallel_data       ( dcore_rx_parallel_data ),
+    .rx_10g_bitslip         ( dcore_rx_10g_bitslip ),
+    .rx_10g_fifo_rd_en      ( dcore_rx_10g_fifo_rd_en ),
+    .pll_locked             ( /*pll_locked*/ 1'b1 ), // Only used to set a value in the CSRs, but registers can only be read once core_clk is stable and thus pll_locked will always be set by then.
+    .rx_is_lockedtodata     ( dcore_rx_is_lockedtodata ),
+@@ if { $device_family == "Stratix 10"} {
+    .rx_digitalreset_stat     ( rx_digitalreset_stat[0] ), 
+@@ } else {
+    .rx_digitalreset_stat     ( 1'b0     ), 
+@@ }
+//  .loopback               ( dcore_loopback ),
+
+    .hmc_ferr_n             ( hmc_ferr_n ),
+    .hmc_lxrxps             ( hmc_lxrxps ),
+    .hmc_lxtxps             ( hmc_lxtxps ),
+    .hmc_p_rst_n            ( hmc_p_rst_n ), // output
+
+    .link_init_complete     ( link_init_complete ),
+
+    .i2c_load_registers     ( i2c_load_registers ),
+    .i2c_registers_loaded   ( i2c_registers_loaded_hard ),
+    .debug_tx_data          ( debug_tx_data ),
+    .debug_rx_data          ( debug_rx_data )
+    );
+
+   altera_hmcc_mtaps_lane_swapper
+   #(
+      .CHANNELS   ( CHANNELS   ),
+      .RX_MAPPING ( RX_MAPPING ),
+      .TX_MAPPING ( TX_MAPPING )
+   ) lane_swapper (
+      .dcore_tx_parallel_data   ( dcore_tx_parallel_data   ),
+      .dcore_rx_parallel_data   ( dcore_rx_parallel_data   ),
+      .dcore_rx_10g_bitslip     ( dcore_rx_10g_bitslip     ),
+      .dcore_rx_10g_fifo_rd_en  ( dcore_rx_10g_fifo_rd_en  ),
+      .dcore_rx_is_lockedtodata ( dcore_rx_is_lockedtodata ),
+//    .dcore_loopback           ( dcore_loopback           ),
+      .xcvr_tx_parallel_data    ( xcvr_tx_parallel_data    ),
+      .xcvr_rx_parallel_data    ( xcvr_rx_parallel_data    ),
+      .xcvr_rx_10g_bitslip      ( xcvr_rx_10g_bitslip      ),
+      .xcvr_rx_10g_fifo_rd_en   ( xcvr_rx_10g_fifo_rd_en   ),
+      .xcvr_rx_is_lockedtodata  ( xcvr_rx_is_lockedtodata  )
+//   ,.xcvr_loopback            ( xcvr_loopback            )
+   );
+
+   // Transceiver
+   $altera_xcvr_name xcvr (
+      .tx_analogreset           (tx_analogreset           ), // input  wire [CHANNELS-1:0]
+      .tx_digitalreset          (tx_digitalreset          ), // input  wire [CHANNELS-1:0]
+      .rx_analogreset           (rx_analogreset           ), // input  wire [CHANNELS-1:0]
+      .rx_digitalreset          (rx_digitalreset          ), // input  wire [CHANNELS-1:0]
+@@ if { $device_family == "Stratix 10" } {
+      .tx_analogreset_stat      (tx_analogreset_stat      ), // output wire [CHANNELS-1:0]
+      .tx_digitalreset_stat     (tx_digitalreset_stat     ), // output wire [CHANNELS-1:0]
+      .rx_analogreset_stat      (rx_analogreset_stat      ), // output wire [CHANNELS-1:0]
+      .rx_digitalreset_stat     (rx_digitalreset_stat     ), // output wire [CHANNELS-1:0]
+@@ }
+      .tx_cal_busy              (tx_cal_busy              ), // output wire [CHANNELS-1:0]
+      .rx_cal_busy              (rx_cal_busy              ), // output wire [CHANNELS-1:0]
+      .rx_cdr_refclk0           (rx_cdr_refclk0           ), // input  wire
+      .tx_serial_data           (hmc_lxtx                 ), // output wire [CHANNELS-1:0]
+      .rx_serial_data           (hmc_lxrx                 ), // input  wire [CHANNELS-1:0]
+      .rx_is_lockedtodata       (xcvr_rx_is_lockedtodata  ), // output wire [CHANNELS-1:0]
+      .tx_coreclkin             ({CHANNELS{core_clk}}     ), // input  wire [CHANNELS-1:0]
+      .rx_coreclkin             ({CHANNELS{core_clk}}     ), // input  wire [CHANNELS-1:0]
+      .tx_clkout                (tx_clkout                ), // output wire [CHANNELS-1:0]
+      .rx_clkout                (                         ), // output wire [CHANNELS-1:0]
+      .tx_parallel_data         (xcvr_tx_parallel_data    ), // input  wire [(CHANNELS*32)-1:0]
+      .rx_parallel_data         (xcvr_rx_parallel_data    ), // output wire [(CHANNELS*32)-1:0]
+@@ if { $device_family != "Stratix 10" } {
+      .tx_enh_data_valid        ({CHANNELS{1'b1}}         ), // input  wire [CHANNELS-1:0]
+@@ }
+@@ if { $device_family == "Stratix 10" } {
+      //.tx_serial_clk0 ({CHANNELS{tx_bonding_clocks[5]}}), //Comment out tx_bonding_clocks above
+      .rx_fifo_rd_en        (xcvr_rx_10g_fifo_rd_en   ), // input  wire [CHANNELS-1:0]
+      .rx_bitslip               (xcvr_rx_10g_bitslip      ), // input  wire [CHANNELS-1:0]
+@@ } else {
+      .rx_seriallpbken          ({CHANNELS{1'b0}}         ), // input  wire [CHANNELS-1:0]
+      .rx_enh_fifo_full         (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_pfull        (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_empty        (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_pempty       (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_rd_en        (xcvr_rx_10g_fifo_rd_en   ), // input  wire [CHANNELS-1:0]
+      .rx_bitslip               (xcvr_rx_10g_bitslip      ), // input  wire [CHANNELS-1:0]
+@@ }
+@@ if { $device_family == "Arria 10" } {
+      .reconfig_clk             (reconfig_clk             ), // input  wire [0:0]
+      .reconfig_reset           (reconfig_reset           ), // input  wire [0:0]
+      .reconfig_write           (reconfig_write           ), // input  wire [0:0]
+      .reconfig_read            (reconfig_read            ), // input  wire [0:0]
+      .reconfig_address         (reconfig_address         ), // input  wire [13:0]
+      .reconfig_writedata       (reconfig_writedata       ), // input  wire [31:0]
+      .reconfig_readdata        (reconfig_readdata        ), // output wire [31:0]
+      .reconfig_waitrequest     (reconfig_waitrequest     ),  // output wire [0:0]
+@@ }
+      .unused_tx_parallel_data  ({CHANNELS{96'b0}}        ), // input  wire [(CHANNELS*96)-1:0]
+      .unused_rx_parallel_data  (                         ), // output wire [(CHANNELS*96)-1:0]
+      .tx_bonding_clocks        (tx_bonding_clocks        ) // input  wire [(CHANNELS*6)-1:0]
+
+);
+
+   // TX reset controller
+   $altera_hmcc_tx_xcvr_reset_name tx_rst
+   (
+@@ if { $device_family == "Stratix 10" } {
+    .clock                ( reconfig_clk        ),  // 50Mhz clock
+@@ }
+@@ if { $device_family != "Stratix 10" } {
+    .clock                ( rx_cdr_refclk0      ),                                        
+@@}    
+    .reset                ( ~rst_n              ),
+    .tx_analogreset       ( tx_analogreset      ), // all bits have same source
+    .tx_digitalreset      ( tx_digitalreset     ), // all bits have same source
+@@ if { $device_family == "Stratix 10" } {
+    .tx_analogreset_stat  (tx_analogreset_stat  ), // input
+    .tx_digitalreset_stat (tx_digitalreset_stat ), // input
+@@ }
+    .tx_ready             ( tx_ready            ), // all bits have same source
+    .pll_locked           ( pll_locked          ), // input single bit
+    .pll_select           ( 1'b0                ),
+    .tx_cal_busy          ( tx_cal_busy         )
+   );
+
+   //RX reset controller
+   $altera_hmcc_rx_xcvr_reset_name rx_rst
+   (
+@@ if { $device_family == "Stratix 10" } {
+    .clock                ( reconfig_clk            ),  // 50Mhz clock
+@@ }
+@@ if { $device_family != "Stratix 10" } {
+    .clock                ( rx_cdr_refclk0          ),                                        
+@@}    
+    .reset                ( ~init_rst_n             ), // Make sure TX side is done before releasing RX side.
+    .rx_analogreset       (  rx_analogreset         ), // output[15:0] all bits have same source
+    .rx_digitalreset      (  rx_digitalreset        ), // output[15:0] all bits have same source
+@@ if { $device_family == "Stratix 10" } {
+    .rx_analogreset_stat  (rx_analogreset_stat      ), // input
+    .rx_digitalreset_stat (rx_digitalreset_stat     ), // input
+@@ }
+    .rx_ready             (                         ), // output[15:0] all bits have same source
+    .rx_is_lockedtodata   ( xcvr_rx_is_lockedtodata ), // input[15:0] internally ANDed
+    .rx_cal_busy          (  rx_cal_busy            )  // input[15:0]
+    );
+
+   // Create an xcvr_ready signal in the core_clk clock domain for dcore.
+   // rx_digitalreset looks like it is the last reset to be released.
+   // Metastable hardenned as data rather than as asynchornous reset to avoid asynchronous de-assertion of xcvr_ready.
+   altera_std_synchronizer_nocut xcvr_ready_synchronizer
+   (
+    .clk     (  core_clk           ),
+    .reset_n (  core_rst_n         ),
+    .din     ( ~rx_digitalreset[0] ),
+    .dout    (  xcvr_ready         ) 
+    );
+
+   // High level reset management circuits.
+   // core_clk is garantied to be stable by the time tx_ready is asserted.
+
+   // Cross tx_ready into core_clk domain with a reset synchronizer circuit.
+   wire                              tx_ready_hard;
+   altera_std_synchronizer_nocut tx_ready_synchronizer
+   (
+    .clk     ( core_clk      ),
+    .reset_n ( tx_ready[0]   ),
+    .din     ( 1'b1          ),
+    .dout    ( tx_ready_hard ) 
+    );
+
+   // Create various reset pulses.
+   reg dcore_rst_n_pulse;
+   reg init_rst_n_pulse;
+   reg csr_rst_n_pulse;
+// reg rx_rst_n_pulse;
+
+
+   always_ff @( posedge core_clk or negedge tx_ready_hard )begin
+      if( !tx_ready_hard )begin
+         dcore_rst_n_pulse <= 1'b0;
+         init_rst_n_pulse  <= 1'b0;
+         csr_rst_n_pulse   <= 1'b0;
+//       rx_rst_n_pulse    <= 1'b0;
+      end else begin
+
+         if( soft_reset ) begin
+            dcore_rst_n_pulse <= 1'b0;
+         end else begin
+            dcore_rst_n_pulse <= 1'b1;
+         end
+
+         if( retrain || soft_reset ) begin
+            init_rst_n_pulse <= 1'b0;
+         end else begin
+            init_rst_n_pulse <= 1'b1;
+         end
+
+         csr_rst_n_pulse <= 1'b1;
+
+//       if( retrain || soft_reset ) begin
+//          rx_rst_n_pulse <= 1'b0;
+//       end else begin
+//          rx_rst_n_pulse <= 1'b1;
+//       end
+
+      end
+   end
+
+   // Stretch the pulses to at least 16 core_clk cycles.
+   reg [15:0] dcore_rst_n_stretch;
+   reg [15:0] init_rst_n_stretch;
+   reg [16:0] csr_rst_n_stretch;
+// reg [15:0] rx_rst_n_stretch;
+   always_ff @( posedge core_clk or negedge tx_ready_hard )begin
+      if( !tx_ready_hard )begin
+         dcore_rst_n_stretch <= 16'd0;
+         init_rst_n_stretch  <= 16'd0;
+         csr_rst_n_stretch   <= 16'd0;
+//       rx_rst_n_stretch    <= 16'd0;
+      end else begin
+         if( !dcore_rst_n_pulse ) begin
+            dcore_rst_n_stretch <= 16'd0;
+         end else begin
+            dcore_rst_n_stretch <= { dcore_rst_n_stretch[14:0], 1'b1 };
+         end
+         if( !init_rst_n_pulse ) begin
+            init_rst_n_stretch  <= 16'd0;
+         end else begin
+            init_rst_n_stretch  <= {  init_rst_n_stretch[14:0], 1'b1 };
+         end
+         if( !csr_rst_n_pulse ) begin
+            csr_rst_n_stretch  <= 17'd0;
+         end else begin
+            csr_rst_n_stretch   <= {   csr_rst_n_stretch[15:0], 1'b1 };
+         end
+//       if( !rx_rst_n_pulse ) begin
+//          rx_rst_n_stretch  <= 16'd0;
+//       end else begin
+//          rx_rst_n_stretch    <= {    rx_rst_n_stretch[14:0], 1'b1 };
+//       end
+      end
+   end
+   assign dcore_rst_n = dcore_rst_n_stretch[15];
+   assign init_rst_n  =  init_rst_n_stretch[15];
+   assign csr_rst_n   =   csr_rst_n_stretch[15];
+// assign rx_rst_n    =   rx_rst_n_stretch[15];
+
+   assign  core_rst_n =   csr_rst_n_stretch[16]; // external core_rst_n delayed by one cycle to match the delay added to the various resets in all modules.
+
+`ifndef ALTERA_RESERVED_QIS
+   generate
+      if( ENABLE_ANALYZER ) begin
+
+         reg [16*8:1] extra_name = "tokens_available";
+
+         altera_hmcc_mtaps_protocol_analyzer
+         #(
+           .CHANNELS         ( CHANNELS  ),
+           .SHOW_NULL_FLITS  ( 0         ),
+           .EXTRA_WIDTH      ( 8         ),
+           .EXTRA_NAME_WIDTH ( 16        ),
+           .EXTRA_TYPE       ( "DECIMAL" )
+            )
+         analyzer
+         (
+          .rst_n         ( core_rst_n             ),
+          .clk           ( core_clk               ),
+          .debug_rx_data ( debug_rx_data          ),
+          .debug_tx_data ( debug_tx_data          ),
+          .extra_data    ( dcore.tokens_available ),
+          .extra_name    ( extra_name             ),
+          .capture_on    ( |dcore.init.init_state[5:4] )
+          );
+
+      end
+   endgenerate
+`endif
+
+   // Parameter validation
+   // --------------------
+
+   // synthesis translate_off
+   initial begin : parameter_check
+      bit invalid_parameter;
+
+      if( ( DEVICE_FAMILY != "Stratix V" ) && ( DEVICE_FAMILY != "Arria 10" ) && ( DEVICE_FAMILY != "Stratix 10" ) ) begin
+          \$display( "FATAL ERROR: Invalid DEVICE_FAMILY %s", DEVICE_FAMILY );
+          invalid_parameter = 1'b1;
+      end
+
+      if( ( CHANNELS != 16 ) && ( CHANNELS != 8 ) ) begin
+          \$display( "FATAL_ERROR: Invalid CHANNELS %d", CHANNELS );
+          invalid_parameter = 1'b1;
+      end
+
+      if( ( DEVICE_FAMILY == "Arria 10" ) && ( DATA_RATE != "10000 Mbps" ) && ( DATA_RATE != "12500 Mbps" ) ) begin
+          \$display( "FATAL_ERROR: Invalid DATA_RATE %s", DATA_RATE );
+          invalid_parameter = 1'b1;
+      end
+      
+      if( ( DEVICE_FAMILY == "Stratix 10" ) && ( DATA_RATE != "10000 Mbps" ) && ( DATA_RATE != "12500 Mbps" ) && ( DATA_RATE != "15000 Mbps" ) ) begin
+          \$display( "FATAL_ERROR: Invalid DATA_RATE %s", DATA_RATE );
+          invalid_parameter = 1'b1;
+      end
+
+      if( ( ENABLE_SCRAM != "TRUE" ) && ( ENABLE_SCRAM != "FALSE" ) ) begin
+          \$display( "FATAL_ERROR: Invalid ENABLE_SCRAM %s", ENABLE_SCRAM );
+          invalid_parameter = 1'b1;
+      end
+
+      if( ( ENABLE_ECC != "TRUE" ) && ( ENABLE_ECC != "FALSE" ) ) begin
+          \$display( "FATAL_ERROR: Invalid ENABLE_ECC %s", ENABLE_ECC );
+          invalid_parameter = 1'b1;
+      end
+
+      if( invalid_parameter ) \$stop;
+   end
+   // synthesis translate_on
+
+endmodule

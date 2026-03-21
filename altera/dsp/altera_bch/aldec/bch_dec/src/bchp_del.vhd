@@ -1,0 +1,89 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- This simulation model contains highly confidential and
+-- proprietary information of Intel and is being provided
+-- in accordance with and subject to the protections of the
+-- applicable Intel Program License Subscription Agreement
+-- which governs its use and disclosure. Your use of Intel
+-- Corporation's design tools, logic functions and other
+-- software and tools, and its AMPP partner logic functions,
+-- and any output files from any of the foregoing (including device
+-- programming or simulation files), and any associated
+-- documentation or information are expressly subject to the
+-- terms and conditions of the Intel Program License Subscription
+-- Agreement, Intel FPGA IP License Agreement, or other
+-- applicable license agreement, including, without limitation,
+-- that your use is for the sole purpose of simulating designs
+-- for use exclusively in logic devices manufactured by Intel and sold
+-- by Intel or its authorized distributors. Please refer to the
+-- applicable agreement for further details. Intel products and
+-- services are protected under numerous U.S. and foreign patents,
+-- maskwork rights, copyrights and other intellectual property laws.
+-- Intel assumes no responsibility or liability arising out of the
+-- application or use of this simulation model.
+-- ACDS 18.1
+`protect begin_protected
+`protect version = 1
+`protect encrypt_agent= "Aldec protectip", encrypt_agent_info= "Riviera-PRO 2015.06.92"
+`protect key_keyowner= "Aldec", key_keyname= "ALDEC15_001", key_method= "rsa"
+`protect encoding= (enctype="base64", line_length= 76, bytes= 256)
+`protect key_block
+WpDeC7Aq7rSZsrWl2oWJaoNqnqCojv/B0O7EKjr0BsIg3kNDv6S7eiKXCeZwa0bqcNDBroo+2KSl
+dCe9/tynn1iz/5eXBXJDuoZSBowkVJtijzahO1zh0jRUd5WVebh2vrU0c2DNvOshXMKo9Ee0muO4
+Fs7pepCfrcXHtiO+x8z65pw6chlh8bhyh52aJUO2iBejvixkzpij5f9gkcW18KRm/ilXv7eGlsjG
+FP+pHNKq68gtQfhzViyqTYfcJAjz/I6RBNyNOVED4jdFIHL5I5qRD8Y033JbuHaraG5RnVw71WFE
+wlxKHSrxASpm+l/AdRGSzbteluepySVGcaSIuQ==
+`protect data_keyowner= "altera", data_keyname= "altera"
+`protect data_method= "aes128-cbc"
+`protect encoding= (enctype="base64", line_length= 76, bytes= 2832)
+`protect data_block
+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
+`protect end_protected

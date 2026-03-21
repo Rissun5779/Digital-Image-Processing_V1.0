@@ -1,0 +1,32 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_WIDTH [get_old_param nBit]
+,set_new_param GUI_DIRECTION [get_old_param Direction]
+,set_new_param GUI_MODULUS_COUNTER [get_old_param ModulusCounter]
+,set_new_param GUI_MODULUS_VALUE [get_old_param ModulusValue]
+[get_old_param CLK_EN] == 1,set_new_param GUI_CLKEN TRUE
+[get_old_param CLK_EN] == 0,set_new_param GUI_CLKEN FALSE
+[get_old_param CNT_EN] == 1,set_new_param GUI_CNTEN TRUE
+[get_old_param CNT_EN] == 0,set_new_param GUI_CNTEN FALSE
+[get_old_param CarryIn] == 1,set_new_param GUI_CARRYIN TRUE
+[get_old_param CarryIn] == 0,set_new_param GUI_CARRYIN FALSE
+[get_old_param CarryOut] == 1,set_new_param GUI_CARRYOUT TRUE
+[get_old_param CarryOut] == 0,set_new_param GUI_CARRYOUT FALSE
+,set_new_param GUI_ASET_ALL1 [get_old_param ASET_ALL1]
+,set_new_param GUI_SSET_ALL1 [get_old_param SSET_ALL1]
+[exists_old_param LPM_AVALUE],set_new_param GUI_AVALUE [get_old_param LPM_AVALUE]
+[exists_old_param LPM_SVALUE],set_new_param GUI_SVALUE [get_old_param LPM_SVALUE]
+[get_old_param ASET_ALL1] == 0,ignore_new_param GUI_AVALUE
+[get_old_param SSET_ALL1] == 0,ignore_new_param GUI_SVALUE
+[get_old_param SCLR] == 1,set_new_param GUI_SCLR TRUE
+[get_old_param SCLR] == 0,set_new_param GUI_SCLR FALSE
+[get_old_param SLOAD] == 1,set_new_param GUI_SLOAD TRUE
+[get_old_param SLOAD] == 0,set_new_param GUI_SLOAD FALSE
+[get_old_param SSET] == 1,set_new_param GUI_SSET TRUE
+[get_old_param SSET] == 0,set_new_param GUI_SSET FALSE
+[get_old_param ACLR] == 1,set_new_param GUI_ACLR TRUE
+[get_old_param ACLR] == 0,set_new_param GUI_ACLR FALSE
+[get_old_param ALOAD] == 1,set_new_param GUI_ALOAD TRUE
+[get_old_param ALOAD] == 0,set_new_param GUI_ALOAD FALSE
+[get_old_param ASET] == 1,set_new_param GUI_ASET TRUE
+[get_old_param ASET] == 0,set_new_param GUI_ASET FALSE

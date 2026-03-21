@@ -1,0 +1,13 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+"[exists_old_param MODULE_TYPE]",set_new_param MODULE_TYPE [get_old_param MODULE_TYPE]
+,set_new_param WIDTH_CODEWORD [get_old_param width_codeword]
+,set_new_param WIDTH_DATAWORD [get_old_param width_dataword]
+,set_new_param LPM_PIPELINE [get_old_param lpm_pipeline]
+"[exists_old_param USED_PORT_aclr] && [string equal [get_old_param USED_PORT_aclr] "true"]","set_new_param GUI_USE_ACLR ""True"""
+"[exists_old_param USED_PORT_clocken] && [string equal [get_old_param USED_PORT_clocken] "true"]","set_new_param GUI_USE_CLKEN ""True"""
+"[exists_old_param USED_PORT_syn_e] && [string equal [get_old_param USED_PORT_syn_e] "true"]","set_new_param GUI_USE_SYN_E ""True"""
+"![exists_old_param USED_PORT_aclr]","set_new_param GUI_USE_ACLR ""False"""
+"![exists_old_param USED_PORT_clocken]","set_new_param GUI_USE_CLKEN ""False"""
+"![exists_old_param USED_PORT_syn_e]","set_new_param GUI_USE_SYN_E ""False"""
+,ignore_new_param CBX_AUTO_BLACKBOX

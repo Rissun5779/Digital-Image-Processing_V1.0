@@ -1,0 +1,97 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2016 Altera Corporation. All rights reserved.
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, the Altera Quartus Prime License Agreement,
+# the Altera MegaCore Function License Agreement, or other 
+# applicable license agreement, including, without limitation, 
+# that your use is for the sole purpose of programming logic 
+# devices manufactured by Altera and sold by Altera or its 
+# authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 16.1.0 Internal Build 73 05/17/2016 PN Pro Edition
+# Date created = 14:37:03  May 20, 2016
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		jesd204b_ed_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults_pro.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "$device_family"
+set_global_assignment -name DEVICE $device
+set_global_assignment -name TOP_LEVEL_ENTITY jesd204b_ed
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "14:37:03  MAY 20, 2016"
+set_global_assignment -name LAST_QUARTUS_VERSION "16.1.0 Pro Edition"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 100
+set_global_assignment -name SYSTEMVERILOG_FILE jesd204b_ed.sv
+set_global_assignment -name QSYS_FILE jesd204b_ed_qsys.qsys
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_reset_controller_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_reset_bridge_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_master_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_spi_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_pio_1.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_pio_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_iopll_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_clk_4.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_clk_3.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_clk_2.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_clk_1.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_clk_0.ip
+set_global_assignment -name QSYS_FILE jesd204b_subsystem_s10.qsys
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_xcvr_reset_control_s10_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_xcvr_atx_pll_s10_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_reset_sequencer_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_reset_bridge_3.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_reset_bridge_2.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_reset_bridge_1.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_reset_bridge_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_mm_bridge_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_jesd204_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_clk_3.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_clk_2.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_clk_1.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_clk_0.ip
+set_global_assignment -name PBIP_FILE ip/se_outbuf_1bit.ip
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/ramp_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/ramp_checker.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/prbs_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/prbs_checker.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/pattern_generator_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/pattern_checker_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/alternate_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/alternate_checker.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_assembler_nprime12.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_assembler.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_deassembler_nprime12.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_deassembler.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_transport_rx_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_transport_tx_top.sv
+set_global_assignment -name VERILOG_FILE switch_debouncer.v
+set_global_assignment -name VERILOG_FILE spi_mosi_oe.v
+set_global_assignment -name SDC_FILE jesd204b_ed.sdc
+
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_dout[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_din[*]
+

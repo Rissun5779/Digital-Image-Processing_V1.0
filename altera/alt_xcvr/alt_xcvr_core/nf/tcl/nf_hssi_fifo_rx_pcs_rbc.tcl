@@ -1,0 +1,68 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+proc ::nf_xcvr_native::parameters::validate_hssi_fifo_rx_pcs_double_read_mode { PROP_M_AUTOSET PROP_M_AUTOWARN device_revision hssi_fifo_rx_pcs_double_read_mode hssi_fifo_rx_pcs_prot_mode hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx hssi_rx_pld_pcs_interface_hd_fifo_shared_fifo_width_rx } {
+
+   set legal_values [list "double_read_dis" "double_read_en"]
+
+   if [expr { ($hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx=="teng_mode_rx") }] {
+      if [expr { ($hssi_rx_pld_pcs_interface_hd_fifo_shared_fifo_width_rx=="single_rx") }] {
+         set legal_values [intersect $legal_values [list "double_read_dis"]]
+      }
+      if [expr { ($hssi_rx_pld_pcs_interface_hd_fifo_shared_fifo_width_rx=="double_rx") }] {
+         set legal_values [intersect $legal_values [list "double_read_en"]]
+      }
+   }
+   if [expr { ($hssi_fifo_rx_pcs_prot_mode=="teng_mode") }] {
+      set legal_values [intersect $legal_values [list "double_read_en" "double_read_dis"]]
+   } else {
+      set legal_values [intersect $legal_values [list "double_read_dis"]]
+   }
+
+   if { $PROP_M_AUTOSET } {
+      set len [llength $legal_values]
+      if { $len > 0 } {
+         ip_set "parameter.hssi_fifo_rx_pcs_double_read_mode.value" [lindex $legal_values 0]
+      }
+      if { $len != 1 && $PROP_M_AUTOWARN} {
+         auto_legal_value_warning_message hssi_fifo_rx_pcs_double_read_mode $legal_values
+      }
+   } else {
+      auto_invalid_value_message auto hssi_fifo_rx_pcs_double_read_mode $hssi_fifo_rx_pcs_double_read_mode $legal_values { hssi_fifo_rx_pcs_prot_mode hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx hssi_rx_pld_pcs_interface_hd_fifo_shared_fifo_width_rx }
+   }
+}
+
+proc ::nf_xcvr_native::parameters::validate_hssi_fifo_rx_pcs_prot_mode { PROP_M_AUTOSET PROP_M_AUTOWARN device_revision hssi_fifo_rx_pcs_prot_mode hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx } {
+
+   set legal_values [list "non_teng_mode" "teng_mode"]
+
+   if [expr { ($hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx=="teng_mode_rx") }] {
+      set legal_values [intersect $legal_values [list "teng_mode"]]
+   }
+   if [expr { ($hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx=="non_teng_mode_rx") }] {
+      set legal_values [intersect $legal_values [list "non_teng_mode"]]
+   }
+
+   if { $PROP_M_AUTOSET } {
+      set len [llength $legal_values]
+      if { $len > 0 } {
+         ip_set "parameter.hssi_fifo_rx_pcs_prot_mode.value" [lindex $legal_values 0]
+      }
+      if { $len != 1 && $PROP_M_AUTOWARN} {
+         auto_legal_value_warning_message hssi_fifo_rx_pcs_prot_mode $legal_values
+      }
+   } else {
+      auto_invalid_value_message auto hssi_fifo_rx_pcs_prot_mode $hssi_fifo_rx_pcs_prot_mode $legal_values { hssi_rx_pld_pcs_interface_hd_fifo_prot_mode_rx }
+   }
+}
+

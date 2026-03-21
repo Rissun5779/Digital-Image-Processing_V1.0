@@ -1,0 +1,8 @@
+[Arithmetic]
+ALTERA_FP_FUNCTIONS v18.1 = "%t" "%w/../../common/lib/megawizard.pl" --wizard:altera_fp_functions  --early_gen:on --wizard_file:"%w/source/altera_fp_hw.tcl" --family_parameter:selected_device_family %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<DEVICE_FAMILY SUPPORTED="NONE | Arria V | Arria V GZ | Arria II GX | Arria II GZ | Cyclone 10 LP | Cyclone V | Cyclone IV E | Cyclone IV GX | MAX 10 FPGA |Stratix V | Stratix IV" SUPPORT_CHECK="ON" /> 
+<LANGUAGES AHDL="OFF" VERILOG="OFF"/>
+<ALIAS>altera_fp_functions v18.0</ALIAS>
+</INFO>

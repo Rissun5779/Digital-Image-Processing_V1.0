@@ -1,0 +1,158 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+
+
+//===========================================================================
+// This confidential and proprietary software may be used only as authorized
+// by a licensing agreement from ALTERA
+// copyright notice must be reproduced on all authorized copies.
+//============================================================================
+
+//============================================================================
+// Reconfig PCS Data array
+// For the basic variant with a 644 MHz reference clock
+//============================================================================
+
+`timescale 1 ps / 1 ps
+// Import multiple packages as needed
+///  @@ foreach profile  $s10_kr_reconfig_profiles  {
+///  Import ${profile}::*;
+///  @@}	
+// Always import all reconfig profiles
+// 0-->10G, 1-->AN, 2-->LT, 3-->FEC
+import ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::*;
+import ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::*;
+import ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG2::*;
+// import FEC profile data only if FEC is enabled
+@@ if ${synth_fec} {
+import ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG3::*;
+@@ }	
+import altera_xcvr_10gkr_s10_override_data::*;
+
+module rcfg_data_${random_str}
+    #(
+  parameter ROM_ADDR_DEPTH   = 6,       // Synthesize/include the AN or LT
+  parameter SYNTH_AN_LT      = 1,       // Synthesize/include the AN or LT
+  parameter SYNTH_FEC        = 0        // Synthesize/include the FEC
+    ) (
+  input  wire [ROM_ADDR_DEPTH-1:0]     pcs_data_addr,  // data array address
+  input  wire [5:0]     pcs_mode_rc,    // PCS mode for reconfig - 1 hot
+                                        // bit 0 = AN mode = low_lat, PLL LTR
+                                        // bit 1 = LT mode = low_lat, PLL LTD
+                                        // bit 2 = 10G data mode = 10GBASE-R
+                                        // bit 3 = GigE data mode = 8G PCS
+                                        // bit 4 = XAUI data mode = future?
+                                        // bit 5 = 10G-FEC
+  output wire [9:0]     rcfg_addr,      // HSSI DPRIO address/offset
+  output wire [7:0]     rcfg_data,      // HSSI DPRIO data
+  output wire [7:0]     rcfg_mask       // Mask for read-modify-write
+  );
+
+
+
+localparam rom_data_width=27;
+   generate
+     if (SYNTH_AN_LT) begin : backplane
+    // Define Wires and Variables
+   reg [rom_data_width-1:0] teng_data  [${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::ram_depth+1];
+   reg [rom_data_width-1:0] an_data    [${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::ram_depth+altera_xcvr_10gkr_s10_override_data::an_ram_depth+1];
+   reg [rom_data_width-1:0] lt_data    [${s10_kr_reconfig_profiles}_reconfig_parameters_CFG2::ram_depth+1];
+@@ if ${synth_fec} {
+     reg [rom_data_width-1:0] fec_data   [${s10_kr_reconfig_profiles}_reconfig_parameters_CFG3::ram_depth+1];
+@@ }	
+
+   initial begin
+     integer  i,j;
+      for (i=0; i<${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::ram_depth; i=i+1) begin : ROM_TENG
+        teng_data [i] = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::get_ram_data(i);
+        j = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG0::get_ram_data(i);
+        \$display ("Value for rom- %0d is --> %h",i,j);
+      end
+        teng_data [i] = {rom_data_width{1'b1}};
+        j       = {rom_data_width{1'b1}};
+        \$display ("Value for rom- %0d is --> %h",i,j);
+	
+      for (i=0; i<${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::ram_depth; i=i+1) begin : ROM_AN
+        an_data [i] = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::get_ram_data(i);
+        j = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::get_ram_data(i);
+        \$display ("Value for rom- %0d is --> %h",i,j);
+      end
+      for (i=0; i<altera_xcvr_10gkr_s10_override_data::an_ram_depth; i=i+1) begin : ROM_AN_OVERRIDE
+        an_data [i+${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::ram_depth] = altera_xcvr_10gkr_s10_override_data::get_an_ovrd_data(i);
+        j = altera_xcvr_10gkr_s10_override_data::get_an_ovrd_data(i);
+        \$display ("Value for rom- %0d is --> %h",i+${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::ram_depth,j);
+      end
+        an_data [i+${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::ram_depth] = {rom_data_width{1'b1}};
+        j       = {rom_data_width{1'b1}};
+        \$display ("Value for rom- %0d is --> %h",i+${s10_kr_reconfig_profiles}_reconfig_parameters_CFG1::ram_depth,j);
+	
+      for (i=0; i<${s10_kr_reconfig_profiles}_reconfig_parameters_CFG2::ram_depth; i=i+1) begin : ROM_LT
+        lt_data [i] = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG2::get_ram_data(i);
+        j = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG2::get_ram_data(i);
+        \$display ("Value for rom- %0d is --> %h",i,j);
+      end
+        lt_data [i] = {rom_data_width{1'b1}};
+        j       = {rom_data_width{1'b1}};
+        \$display ("Value for rom- %0d is --> %h",i,j);
+	
+@@ if {$synth_fec} {
+      for (i=0; i<${s10_kr_reconfig_profiles}_reconfig_parameters_CFG3::ram_depth; i=i+1) begin : ROM_FEC
+        fec_data [i] = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG3::get_ram_data(i);
+        j = ${s10_kr_reconfig_profiles}_reconfig_parameters_CFG3::get_ram_data(i);
+        \$display ("Value for rom- %0d is --> %h",i,j);
+      end
+        fec_data [i] = {rom_data_width{1'b1}};
+        j       = {rom_data_width{1'b1}};
+        \$display ("Value for rom- %0d is --> %h",i,j);
+@@ }	
+	
+   end
+
+
+    // assign outputs
+   wire [rom_data_width-1:0] teng_temp;
+   wire [rom_data_width-1:0] an_temp;
+   wire [rom_data_width-1:0] lt_temp;
+   wire [rom_data_width-1:0] fec_temp;
+
+    // retreive the 27-bit word
+   assign teng_temp = teng_data  [pcs_data_addr];
+   assign an_temp   = an_data    [pcs_data_addr];
+   assign lt_temp   = lt_data    [pcs_data_addr];
+@@ if {$synth_fec} {
+   assign fec_temp  = fec_data   [pcs_data_addr];
+@@ } else {	
+   assign fec_temp  = {rom_data_width{1'b0}};
+@@ }	
+
+    // mux the correct bits
+    assign rcfg_addr = pcs_mode_rc[0] ? an_temp[rom_data_width-1:16]   :
+                       pcs_mode_rc[1] ? lt_temp[rom_data_width-1:16]   :
+                       pcs_mode_rc[2] ? teng_temp[rom_data_width-1:16] :
+                       pcs_mode_rc[5] ? fec_temp[rom_data_width-1:16] : 10'h0;
+
+    assign rcfg_mask = pcs_mode_rc[0] ? an_temp[15:8]    :
+                       pcs_mode_rc[1] ? lt_temp[15:8]    :
+                       pcs_mode_rc[2] ? teng_temp[15:8]  :
+                       pcs_mode_rc[5] ? fec_temp[15:8]  : 8'h0;
+
+    assign rcfg_data = pcs_mode_rc[0] ? an_temp[7:0]     :
+                       pcs_mode_rc[1] ? lt_temp[7:0]     :
+                       pcs_mode_rc[2] ? teng_temp[7:0]   :
+                       pcs_mode_rc[5] ? fec_temp[7:0]   : 8'h0;
+
+  end  // backplane
+endgenerate
+
+endmodule // rcfg_revd_data

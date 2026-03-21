@@ -1,0 +1,374 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1 ps / 1 ps
+
+module seriallite_iii_streaming_demo #
+(
+   parameter                  lanes                      = $lanes,
+   parameter   [63:0]         total_samples_to_transfer  = 64'hFFFFFFFFFFFFFFFF,
+   parameter                  addr_width                 = 12  // 11 + ceiling[log2(lanes)]
+)
+(
+   // System clocks and reset
+   input                      mgmt_clk,
+   input                      mgmt_reset_n,		
+
+   input                      pll_ref_clk,
+   
+   // Transceiver serial data
+   output   [lanes-1:0]       tx,
+   input    [lanes-1:0]       rx,
+
+   // Tx/Rx activity indicators
+   output                     tx_activity_n,
+   output                     rx_activity_n,
+
+   // Source/Sink link up indicators
+   output                     src_link_up_n,
+   output                     snk_link_up_n,
+
+   // Source/Sink reset indicators
+   output                     src_core_reset_n,
+   output                     snk_core_reset_n
+
+);
+   
+   wire                       src_core_reset;
+   wire                       src_user_clock;
+   wire                       src_user_clock_reset;
+   wire                       src_link_up;
+   wire   [(lanes*64)-1:0]    src_data;
+   wire   [7:0]               src_sync;
+   wire   [3:0]               src_error;
+   wire                       src_start_of_burst;
+   wire                       src_end_of_burst;
+   wire                       src_valid;
+
+   wire                       snk_core_reset;
+   wire                       snk_user_clock;
+   wire                       snk_user_clock_reset;
+   wire                       snk_link_up;
+   wire   [(lanes*64)-1:0]    snk_data;
+   wire   [7:0]               snk_sync;
+   wire   [(lanes+5)-1:0]     snk_error;
+   wire                       snk_start_of_burst;
+   wire                       snk_end_of_burst;
+   wire                       snk_valid;
+
+   wire   [31:0]              src_phy_mgmt_readdata;
+   wire   [31:0]              src_phy_mgmt_writedata;
+   wire   [addr_width-1:0]    src_phy_mgmt_address;
+   wire                       src_phy_mgmt_read;
+   wire                       src_phy_mgmt_write;
+   wire                       src_phy_mgmt_waitrequest;
+
+   wire   [addr_width-1:0]    snk_phy_mgmt_address;
+   wire                       snk_phy_mgmt_write;
+   wire                       snk_phy_mgmt_read;
+   wire   [31:0]              snk_phy_mgmt_readdata;
+   wire   [31:0]              snk_phy_mgmt_writedata;
+   wire                       snk_phy_mgmt_waitrequest;
+
+   wire                       tg_enable;
+   wire                       tg_test_mode;
+   wire                       tg_enable_stalls;
+   wire                       crc_error_inject;
+
+   wire   [15:0]              tg_burst_count;
+   wire   [63:0]              tg_words_transferred;
+
+   wire                       tc_enable = 1'b1;
+   wire   [26:0]              tc_burst_count;
+   wire   [63:0]              tc_words_transferred;
+
+   wire   [lanes-1:0]         tc_lane_swap_error;
+   wire   [lanes-1:0]         tc_lane_sequence_error;
+   wire   [lanes-1:0]         tc_lane_alignment_error;
+
+   wire   [8:0]               demo_mgmt_address;
+   wire                       demo_mgmt_write;
+   wire                       demo_mgmt_read;
+   wire   [31:0]              demo_mgmt_readdata;
+   wire   [31:0]              demo_mgmt_writedata;
+   wire                       demo_mgmt_waitrequest;
+   wire                       mgmt_clk_reset;
+   
+   wire                       tx_serial_clk;
+@@ if { $lanes > 6 } {
+   wire                       mcgb_serial_clk;
+@@ }
+   wire                       tx_pll_locked;
+
+   wire                       serial_clk; 
+@@ for {set i 0} {$i < $lanes} {incr i 1} { 
+   wire                       tx_serial_clk_ch$i;
+@@ }
+   
+   // tx_serial_clk or mcgb_serial_clk assignment
+@@ if { $lanes > 6 } {
+   assign serial_clk  = mcgb_serial_clk;
+@@ } else { 
+   assign serial_clk  = tx_serial_clk;
+@@ } 
+  
+	//
+   // Drive the, active-low, user leds
+   //
+   assign src_core_reset_n = ~src_core_reset;
+   assign snk_core_reset_n = ~snk_core_reset;
+	
+   // Activity indicators
+   assign tx_activity_n    = ~src_valid;
+   assign rx_activity_n    = ~snk_valid;
+
+   // Link Status indicators
+   assign src_link_up_n    = ~src_link_up;
+   assign snk_link_up_n    = ~snk_link_up;
+   
+   wire    fpll_locked;
+   wire    pll_locked_det;
+
+   altera_std_synchronizer_nocut #
+   (
+     .depth(2),
+     .rst_value(1)
+   )
+   user_clk_reset_sync 
+   (
+     .clk(src_user_clock), 
+     .reset_n(pll_locked_det), 
+     .din(1'b0), 
+     .dout(src_user_clock_reset)
+   );
+  
+   // source user clock reset
+   assign pll_locked_det = tx_pll_locked & fpll_locked;
+
+   demo_mgmt #
+   (
+      .lanes(lanes)
+   )
+   demo_mgmt
+   (
+      // Traffic generator control
+      .tg_enable(tg_enable),
+      .tg_test_mode(tg_test_mode),
+      .tg_enable_stalls(tg_enable_stalls),
+      .crc_err_inject(crc_error_inject),
+
+      // Traffic generator status
+      .tg_burst_count(tg_burst_count),
+      .tg_words_transferred(tg_words_transferred),
+
+      // Source core interface
+      .source_reset(src_core_reset),
+      .source_user_clock(src_user_clock),
+      .source_user_clock_reset(src_user_clock_reset),
+      .source_error(src_error[3]|src_error[0]),
+
+      // Sink core interface
+      .sink_reset(snk_core_reset), 
+      .sink_user_clock(snk_user_clock),
+      .sink_user_clock_reset(snk_user_clock_reset),
+      .sink_error(snk_error[(lanes+3)-1:0]),
+
+      // Traffic checker status
+      .tc_burst_count(tc_burst_count),
+      .tc_words_received(tc_words_transferred),
+      .tc_lane_swap_error(tc_lane_swap_error),
+      .tc_lane_sequence_error(tc_lane_sequence_error),
+      .tc_lane_alignment_error(tc_lane_alignment_error),
+
+      // Demo management interface
+      .demo_mgmt_clk(mgmt_clk),     
+      .demo_mgmt_clk_reset(mgmt_clk_reset),
+      .demo_mgmt_address(demo_mgmt_address),
+      .demo_mgmt_write(demo_mgmt_write),
+      .demo_mgmt_read(demo_mgmt_read),
+      .demo_mgmt_readdata(demo_mgmt_readdata),
+      .demo_mgmt_writedata(demo_mgmt_writedata),
+      .demo_mgmt_waitrequest(demo_mgmt_waitrequest)
+   );
+
+
+   traffic_gen #
+   (
+      .LANES(lanes),
+      .TOTAL_SAMPLES_TO_TRANSFER(total_samples_to_transfer)
+   )
+   traffic_gen
+   (
+      // Clocks and reset
+      .user_clock(src_user_clock),   //input
+      .user_clock_reset(src_user_clock_reset | src_core_reset), 
+	
+      // Streaming data interface
+      .data(src_data),
+      .sync(src_sync),
+      .valid(src_valid),
+      .start_of_burst(src_start_of_burst),
+      .end_of_burst(src_end_of_burst),
+      .link_up(src_link_up),
+	  
+      // Test control ports
+      .tg_enable(tg_enable),
+      .tg_test_mode(tg_test_mode),
+      .tg_enable_stalls(tg_enable_stalls),
+
+      // Status interface
+      .tg_burst_count(tg_burst_count),
+      .tg_words_transferred(tg_words_transferred)
+   );
+
+   altera_sl3_tx source
+   (
+      .tx_serial_clk        ({lanes{serial_clk}}),
+      .tx_pll_locked(tx_pll_locked),
+      .data(src_data),
+      .end_of_burst(src_end_of_burst),
+      .error(src_error),
+      .start_of_burst(src_start_of_burst),
+      .sync(src_sync),
+      .link_up(src_link_up),
+      .ready(),
+      .tx_serial_data(tx),
+      .user_clock(src_user_clock),
+      .user_clock_reset(src_user_clock_reset),
+      .valid(src_valid),
+      //. TODO crc_error_inject(crc_error_inject),
+      .phy_mgmt_clk(mgmt_clk),
+      .phy_mgmt_clk_reset(mgmt_clk_reset),
+      .phy_mgmt_address(src_phy_mgmt_address),
+      .phy_mgmt_read(src_phy_mgmt_read),
+      .phy_mgmt_readdata(src_phy_mgmt_readdata),
+      .phy_mgmt_write(src_phy_mgmt_write),
+      .phy_mgmt_writedata(src_phy_mgmt_writedata),
+      .phy_mgmt_waitrequest(src_phy_mgmt_waitrequest)
+   );
+
+
+   altera_sl3_rx sink
+   (
+      .data(snk_data),
+      .end_of_burst(snk_end_of_burst),
+      .error(snk_error),
+      .xcvr_pll_ref_clk(pll_ref_clk),
+      .rx_serial_data(rx),
+      .link_up(snk_link_up),
+      .start_of_burst(snk_start_of_burst),
+      .sync(snk_sync),
+	  @@ if { $cmode == "false" } {
+      .user_clock(snk_user_clock),  //output
+      .user_clock_reset(snk_user_clock_reset),  //output
+	  @@}
+      .valid(snk_valid),
+      .phy_mgmt_clk(mgmt_clk),
+      .phy_mgmt_clk_reset(mgmt_clk_reset),
+      .phy_mgmt_address(src_phy_mgmt_address),
+      .phy_mgmt_read(src_phy_mgmt_read),
+      .phy_mgmt_readdata(snk_phy_mgmt_readdata),
+      .phy_mgmt_write(src_phy_mgmt_write),
+      .phy_mgmt_writedata(src_phy_mgmt_writedata),
+      .phy_mgmt_waitrequest(snk_phy_mgmt_waitrequest)
+    );
+	
+   traffic_check #
+   (
+      .LANES(lanes)
+   )
+   traffic_check
+   (
+      // Clocks and reset
+      .user_clock(snk_user_clock),   //input
+      .user_clock_reset(snk_user_clock_reset | snk_core_reset),    //input
+
+      // Streaming data interface
+      .data(snk_data),
+      .sync(snk_sync),
+      .valid(snk_valid),
+      .start_of_burst(snk_start_of_burst),
+      .end_of_burst(snk_end_of_burst),
+
+      // Test control ports
+      .tc_enable(tc_enable),
+      .tc_test_mode(tg_test_mode),
+      .tc_enable_stalls(tg_enable_stalls),
+
+      // Status ports
+      .tc_burst_count(tc_burst_count),
+      .tc_words_received(tc_words_transferred),
+      .tc_lane_swap_error(tc_lane_swap_error),
+      .tc_lane_sequence_error(tc_lane_sequence_error),
+      .tc_lane_alignment_error(tc_lane_alignment_error)
+   );
+
+
+   demo_control demo_control
+   (
+      // Clocks and reset
+      .clk_clk(mgmt_clk),
+      .reset_reset_n(mgmt_reset_n),
+
+      // Source core Interlaken management interface
+      .source_mgmt_address(src_phy_mgmt_address),
+      .source_mgmt_write(src_phy_mgmt_write),
+      .source_mgmt_read(src_phy_mgmt_read),
+      .source_mgmt_readdata(src_phy_mgmt_readdata),
+      .source_mgmt_writedata(src_phy_mgmt_writedata),
+      .source_mgmt_waitrequest(src_phy_mgmt_waitrequest),
+
+      // Sink core Interlaken management interface
+      .sink_mgmt_address(snk_phy_mgmt_address),
+      .sink_mgmt_write(snk_phy_mgmt_write),
+      .sink_mgmt_read(snk_phy_mgmt_read),
+      .sink_mgmt_readdata(snk_phy_mgmt_readdata),
+      .sink_mgmt_writedata(snk_phy_mgmt_writedata),
+      .sink_mgmt_waitrequest(snk_phy_mgmt_waitrequest),
+
+       // Demo management interface
+      .demo_mgmt_address(demo_mgmt_address),
+      .demo_mgmt_write(demo_mgmt_write),
+      .demo_mgmt_read(demo_mgmt_read),
+      .demo_mgmt_readdata(demo_mgmt_readdata),
+      .demo_mgmt_writedata(demo_mgmt_writedata),
+      .demo_mgmt_waitrequest(demo_mgmt_waitrequest),
+		
+      // synchronized reset to mgmt_clk
+      .sync_reset_reset (mgmt_clk_reset)
+   );
+   
+   
+   altera_sl3_atx_pll tx_pll_inst
+   (
+      .pll_cal_busy(),
+      .pll_locked(tx_pll_locked),
+      .pll_refclk0(pll_ref_clk),  
+@@ if { $lanes > 6 } {
+      .tx_serial_clk(),
+      .mcgb_serial_clk(mcgb_serial_clk)
+@@ } else {
+      .tx_serial_clk(tx_serial_clk) 
+@@ }
+   );
+   
+ 
+   altera_sl3_fpll user_clk_inst (
+      .pll_refclk0(pll_ref_clk),
+      .pll_locked(fpll_locked),
+      .outclk_div1(src_user_clock)
+   );
+   
+   
+
+endmodule  // seriallite_iii_streaming_demo

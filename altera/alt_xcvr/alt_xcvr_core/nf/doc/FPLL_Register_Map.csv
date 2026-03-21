@@ -1,0 +1,860 @@
+DPRIO Offset(hex) ,DPRIO Bit Offset ,Attribute Name ,Other DPRIO Offset (hex) ,Attribute Encoding ,DPRIO Encoding ,Block
+000,0,arbiter_ctrl,"",uc,1'b1,hssi_avmm_if
+,,,,pld,1'b0
+,1,cal_done,"",cal_done_assert,1'b1,hssi_avmm_if
+,,,,cal_done_deassert,1'b0
+,[7:2],RESERVED,,,,
+100,0,RESERVED,,,,
+,1,pll_calibration,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,[4:2],pll_dprio_fpll_vreg_boost,"",fpll_vreg_boost_1_step,3'b001,cmu_fpll
+,,,,fpll_vreg_boost_2_step,3'b010
+,,,,fpll_vreg_boost_3_step,3'b011
+,,,,fpll_vreg_boost_4_step,3'b100
+,,,,fpll_vreg_boost_5_step,3'b101
+,,,,fpll_vreg_boost_6_step,3'b110
+,,,,fpll_vreg_boost_7_step,3'b111
+,,,,fpll_vreg_no_voltage_boost,3'b000
+,[7:5],pll_dprio_fpll_vreg1_boost,"",fpll_vreg1_boost_1_step,3'b001,cmu_fpll
+,,,,fpll_vreg1_boost_2_step,3'b010
+,,,,fpll_vreg1_boost_3_step,3'b011
+,,,,fpll_vreg1_boost_4_step,3'b100
+,,,,fpll_vreg1_boost_5_step,3'b101
+,,,,fpll_vreg1_boost_6_step,3'b110
+,,,,fpll_vreg1_boost_7_step,3'b111
+,,,,fpll_vreg1_no_voltage_boost,3'b000
+101,0,RESERVED,,,,
+,1,pll_cal_status,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+,2,pll_lpf_rstn_value,"10A|123",lpf_normal,1'b1,cmu_fpll
+,,,,lpf_reset0,1'b0
+,,,,lpf_reset1,1'b1
+,,,,lpf_reset2,1'b0
+,3,pll_cmu_rstn_value,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,[6:4],pll_dprio_clk_vreg_boost,"",clk_fpll_vreg_boost_1_step,3'b001,cmu_fpll
+,,,,clk_fpll_vreg_boost_2_step,3'b010
+,,,,clk_fpll_vreg_boost_3_step,3'b011
+,,,,clk_fpll_vreg_boost_4_step,3'b100
+,,,,clk_fpll_vreg_boost_5_step,3'b101
+,,,,clk_fpll_vreg_boost_6_step,3'b110
+,,,,clk_fpll_vreg_boost_7_step,3'b111
+,,,,clk_fpll_vreg_no_voltage_boost,3'b000
+,7,pll_rstn_override,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+102,0,pll_vccr_pd_en,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+,1,pll_test_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,[3:2],pll_self_reset,"",false,2'b00,cmu_fpll
+,,,,true,2'b11
+,4,pll_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,5,pll_nreset_invert,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,6,pll_ctrl_override_setting,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+,7,pll_cp_testmode,"128|133",cp_normal,1'b0,cmu_fpll
+,,,,cp_test_dn,1'b0
+,,,,cp_test_up,1'b1
+,,,,cp_tristate,1'b0
+103,[1:0],pll_c_counter_3_fine_dly,"",0 ps,2'b00,cmu_fpll
+,,,,100 ps,2'b10
+,,,,150 ps,2'b11
+,,,,50 ps,2'b01
+,[4:2],pll_c_counter_3_coarse_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b101
+,,,,200 ps,3'b001
+,,,,400 ps,3'b010
+,,,,600 ps,3'b011
+,,,,800 ps,3'b100
+,[6:5],pll_c_counter_3_in_src,"",m_cnt_in_src_cscd_clk,2'b01,cmu_fpll
+,,,,m_cnt_in_src_ph_mux_clk,2'b00
+,,,,m_cnt_in_src_test_clk,2'b1x
+,7,pll_c_counter_3_min_tco_enable,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+104,[7:0],pll_c_counter_3_prst,"",pll_c_counter_3_prst[7:0],DIRECT MAPPED,cmu_fpll
+105,[1:0],pll_c_counter_2_fine_dly,"",0 ps,2'b00,cmu_fpll
+,,,,100 ps,2'b10
+,,,,150 ps,2'b11
+,,,,50 ps,2'b01
+,[4:2],pll_c_counter_2_coarse_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b101
+,,,,200 ps,3'b001
+,,,,400 ps,3'b010
+,,,,600 ps,3'b011
+,,,,800 ps,3'b100
+,[6:5],pll_c_counter_2_in_src,"",m_cnt_in_src_cscd_clk,2'b01,cmu_fpll
+,,,,m_cnt_in_src_ph_mux_clk,2'b00
+,,,,m_cnt_in_src_test_clk,2'b1x
+,7,pll_c_counter_2_min_tco_enable,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+106,[7:0],pll_c_counter_2_prst,"",pll_c_counter_2_prst[7:0],DIRECT MAPPED,cmu_fpll
+107,[1:0],pll_c_counter_1_fine_dly,"",0 ps,2'b00,cmu_fpll
+,,,,100 ps,2'b10
+,,,,150 ps,2'b11
+,,,,50 ps,2'b01
+,[4:2],pll_c_counter_1_coarse_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b101
+,,,,200 ps,3'b001
+,,,,400 ps,3'b010
+,,,,600 ps,3'b011
+,,,,800 ps,3'b100
+,[6:5],pll_c_counter_1_in_src,"",m_cnt_in_src_cscd_clk,2'b01,cmu_fpll
+,,,,m_cnt_in_src_ph_mux_clk,2'b00
+,,,,m_cnt_in_src_test_clk,2'b1x
+,7,pll_c_counter_1_min_tco_enable,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+108,[7:0],pll_c_counter_1_prst,"",pll_c_counter_1_prst[7:0],DIRECT MAPPED,cmu_fpll
+109,[1:0],pll_c_counter_0_fine_dly,"",0 ps,2'b00,cmu_fpll
+,,,,100 ps,2'b10
+,,,,150 ps,2'b11
+,,,,50 ps,2'b01
+,[4:2],pll_c_counter_0_coarse_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b101
+,,,,200 ps,3'b001
+,,,,400 ps,3'b010
+,,,,600 ps,3'b011
+,,,,800 ps,3'b100
+,[6:5],pll_c_counter_0_in_src,"",m_cnt_in_src_cscd_clk,2'b01,cmu_fpll
+,,,,m_cnt_in_src_ph_mux_clk,2'b00
+,,,,m_cnt_in_src_test_clk,2'b1x
+,7,pll_c_counter_0_min_tco_enable,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+10A,[4:0],pll_vco_freq_band_0_fix,"",pll_vco_freq_band_0_fix[4:0],DIRECT MAPPED,cmu_fpll
+,5,pll_lpf_rstn_value,"101|123",lpf_normal,1'b1,cmu_fpll
+,,,,lpf_reset0,1'b0
+,,,,lpf_reset1,1'b0
+,,,,lpf_reset2,1'b1
+,6,pll_core_cali_vco_off,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,7,pll_core_cali_ref_off,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+10B,[2:0],pll_core_vreg1_atbsel,"",atb_disabled1,3'b000,cmu_fpll
+,,,,atbsel0_1,3'b001
+,,,,atbsel1_1,3'b010
+,,,,atbsel2_1,3'b100
+,[5:3],pll_vco_freq_band_0_dyn_low_bits,"",pll_vco_freq_band_0_dyn_low_bits[2:0],DIRECT MAPPED,cmu_fpll
+,[7:6],pll_vco_freq_band_0_dyn_high_bits,"",pll_vco_freq_band_0_dyn_high_bits[1:0],DIRECT MAPPED,cmu_fpll
+10C,[7:0],pll_c_counter_0_prst,"",pll_c_counter_0_prst[7:0],DIRECT MAPPED,cmu_fpll
+10D,[7:0],pll_c_counter_3,"",pll_c_counter_3[7:0],DIRECT MAPPED,cmu_fpll
+10E,[7:0],pll_c_counter_2,"",pll_c_counter_2[7:0],DIRECT MAPPED,cmu_fpll
+10F,[7:0],pll_c_counter_1,"",pll_c_counter_1[7:0],DIRECT MAPPED,cmu_fpll
+110,[7:0],pll_c_counter_0,"",pll_c_counter_0[7:0],DIRECT MAPPED,cmu_fpll
+111,0,pll_c_counter_3,"",pll_c_counter_3[8],DIRECT MAPPED,cmu_fpll
+,1,pll_c_counter_2,"",pll_c_counter_2[8],DIRECT MAPPED,cmu_fpll
+,2,pll_c_counter_1,"",pll_c_counter_1[8],DIRECT MAPPED,cmu_fpll
+,3,pll_c_counter_0,"",pll_c_counter_0[8],DIRECT MAPPED,cmu_fpll
+,4,pll_c0_pllcout_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,5,pll_c1_pllcout_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,6,pll_c2_pllcout_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,7,pll_c3_pllcout_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+112,0,pll_clk_loss_sw_en,"",false,1'b0,cmu_fpll_refclk_select
+,,,,true,1'b1
+,1,pll_auto_clk_sw_en,"",false,1'b0,cmu_fpll_refclk_select
+,,,,true,1'b1
+,2,pll_manu_clk_sw_en,"",false,1'b0,cmu_fpll_refclk_select
+,,,,true,1'b1
+,[5:3],pll_clk_sw_dly,"",pll_clk_sw_dly[2:0],DIRECT MAPPED,cmu_fpll_refclk_select
+,6,pll_sw_refclk_src,"",pll_sw_refclk_src_clk_0,1'b0,cmu_fpll_refclk_select
+,,,,pll_sw_refclk_src_clk_1,1'b1
+,7,pll_clk_loss_edge,"",pll_clk_loss_both_edges,1'b0,cmu_fpll_refclk_select
+,,,,pll_clk_loss_rising_edge,1'b1
+113,[2:0],pll_core_vreg0_atbsel,"",atb_disabled,3'b000,cmu_fpll
+,,,,atbsel0,3'b001
+,,,,atbsel1,3'b010
+,,,,atbsel2,3'b100
+,3,pll_l_counter_enable,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,4,pll_m_counter_min_tco_enable,"",false,1'b1,cmu_fpll
+,,,,true,1'b0
+,5,fpll_cas_out_enable,"",fpll_cas_out_disable,1'b0,cmu_fpll
+,,,,fpll_cas_out_enable,1'b1
+,6,fpll_iqtxrxclk_out_enable,"",fpll_iqtxrxclk_out_disable,1'b0,cmu_fpll
+,,,,fpll_iqtxrxclk_out_enable,1'b1
+,7,fpll_hclk_out_enable,"",fpll_hclk_out_disable,1'b0,cmu_fpll
+,,,,fpll_hclk_out_enable,1'b1
+114,[4:0],xpm_iqref_mux0_iqclk_sel,"",iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,iqtxrxclk1,5'b01101
+,,,,iqtxrxclk2,5'b01110
+,,,,iqtxrxclk3,5'b01111
+,,,,iqtxrxclk4,5'b10000
+,,,,iqtxrxclk5,5'b10001
+,,,,power_down,5'b11111
+,,,,ref_iqclk0,5'b00000
+,,,,ref_iqclk1,5'b00001
+,,,,ref_iqclk10,5'b01010
+,,,,ref_iqclk11,5'b01011
+,,,,ref_iqclk2,5'b00010
+,,,,ref_iqclk3,5'b00011
+,,,,ref_iqclk4,5'b00100
+,,,,ref_iqclk5,5'b00101
+,,,,ref_iqclk6,5'b00110
+,,,,ref_iqclk7,5'b00111
+,,,,ref_iqclk8,5'b01000
+,,,,ref_iqclk9,5'b01001
+,[7:5],pll_clkin_0_src,"",pll_clkin_0_src_adj_pll_clk,3'b100,cmu_fpll_refclk_select
+,,,,pll_clkin_0_src_core_ref_clk,3'b001
+,,,,pll_clkin_0_src_lvpecl,3'b101
+,,,,pll_clkin_0_src_ref_clk,3'b011
+,,,,pll_clkin_0_src_tx_rx_core_ref_clk,3'b010
+,,,,pll_clkin_0_src_vss,3'b000
+115,[1:0],pll_c_counter_0_ph_mux_prst,"",pll_c_counter_0_ph_mux_prst[1:0],DIRECT MAPPED,cmu_fpll
+,[3:2],pll_c_counter_1_ph_mux_prst,"",pll_c_counter_1_ph_mux_prst[1:0],DIRECT MAPPED,cmu_fpll
+,[5:4],pll_c_counter_2_ph_mux_prst,"",pll_c_counter_2_ph_mux_prst[1:0],DIRECT MAPPED,cmu_fpll
+,[7:6],pll_c_counter_3_ph_mux_prst,"",pll_c_counter_3_ph_mux_prst[1:0],DIRECT MAPPED,cmu_fpll
+117,[4:0],xpm_iqref_mux0_scratch0_src,"",scratch0_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch0_iqtxrxclk1,5'b01101
+,,,,scratch0_iqtxrxclk2,5'b01110
+,,,,scratch0_iqtxrxclk3,5'b01111
+,,,,scratch0_iqtxrxclk4,5'b10000
+,,,,scratch0_iqtxrxclk5,5'b10001
+,,,,scratch0_power_down,5'b11111
+,,,,scratch0_ref_iqclk0,5'b00000
+,,,,scratch0_ref_iqclk1,5'b00001
+,,,,scratch0_ref_iqclk10,5'b01010
+,,,,scratch0_ref_iqclk11,5'b01011
+,,,,scratch0_ref_iqclk2,5'b00010
+,,,,scratch0_ref_iqclk3,5'b00011
+,,,,scratch0_ref_iqclk4,5'b00100
+,,,,scratch0_ref_iqclk5,5'b00101
+,,,,scratch0_ref_iqclk6,5'b00110
+,,,,scratch0_ref_iqclk7,5'b00111
+,,,,scratch0_ref_iqclk8,5'b01000
+,,,,scratch0_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_0_scratch0_src,"",pll_clkin_0_scratch0_src_adj_pll_clk,3'b100,cmu_fpll_refclk_select
+,,,,pll_clkin_0_scratch0_src_core_ref_clk,3'b001
+,,,,pll_clkin_0_scratch0_src_lvpecl,3'b101
+,,,,pll_clkin_0_scratch0_src_ref_clk,3'b011
+,,,,pll_clkin_0_scratch0_src_tx_rx_core_ref_clk,3'b010
+,,,,pll_clkin_0_scratch0_src_vss,3'b000
+118,[4:0],xpm_iqref_mux0_scratch1_src,"",scratch1_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch1_iqtxrxclk1,5'b01101
+,,,,scratch1_iqtxrxclk2,5'b01110
+,,,,scratch1_iqtxrxclk3,5'b01111
+,,,,scratch1_iqtxrxclk4,5'b10000
+,,,,scratch1_iqtxrxclk5,5'b10001
+,,,,scratch1_power_down,5'b11111
+,,,,scratch1_ref_iqclk0,5'b00000
+,,,,scratch1_ref_iqclk1,5'b00001
+,,,,scratch1_ref_iqclk10,5'b01010
+,,,,scratch1_ref_iqclk11,5'b01011
+,,,,scratch1_ref_iqclk2,5'b00010
+,,,,scratch1_ref_iqclk3,5'b00011
+,,,,scratch1_ref_iqclk4,5'b00100
+,,,,scratch1_ref_iqclk5,5'b00101
+,,,,scratch1_ref_iqclk6,5'b00110
+,,,,scratch1_ref_iqclk7,5'b00111
+,,,,scratch1_ref_iqclk8,5'b01000
+,,,,scratch1_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_0_scratch1_src,"",pll_clkin_0_scratch1_src_adj_pll_clk,3'b100,cmu_fpll_refclk_select
+,,,,pll_clkin_0_scratch1_src_core_ref_clk,3'b001
+,,,,pll_clkin_0_scratch1_src_lvpecl,3'b101
+,,,,pll_clkin_0_scratch1_src_ref_clk,3'b011
+,,,,pll_clkin_0_scratch1_src_tx_rx_core_ref_clk,3'b010
+,,,,pll_clkin_0_scratch1_src_vss,3'b000
+119,[4:0],xpm_iqref_mux0_scratch2_src,"",scratch2_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch2_iqtxrxclk1,5'b01101
+,,,,scratch2_iqtxrxclk2,5'b01110
+,,,,scratch2_iqtxrxclk3,5'b01111
+,,,,scratch2_iqtxrxclk4,5'b10000
+,,,,scratch2_iqtxrxclk5,5'b10001
+,,,,scratch2_power_down,5'b11111
+,,,,scratch2_ref_iqclk0,5'b00000
+,,,,scratch2_ref_iqclk1,5'b00001
+,,,,scratch2_ref_iqclk10,5'b01010
+,,,,scratch2_ref_iqclk11,5'b01011
+,,,,scratch2_ref_iqclk2,5'b00010
+,,,,scratch2_ref_iqclk3,5'b00011
+,,,,scratch2_ref_iqclk4,5'b00100
+,,,,scratch2_ref_iqclk5,5'b00101
+,,,,scratch2_ref_iqclk6,5'b00110
+,,,,scratch2_ref_iqclk7,5'b00111
+,,,,scratch2_ref_iqclk8,5'b01000
+,,,,scratch2_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_0_scratch2_src,"",pll_clkin_0_scratch2_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_0_scratch2_src_core_ref_clk,3'b001
+,,,,pll_clkin_0_scratch2_src_lvpecl,3'b010
+,,,,pll_clkin_0_scratch2_src_ref_clk,3'b011
+,,,,pll_clkin_0_scratch2_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_0_scratch2_src_vss,3'b101
+11A,[4:0],xpm_iqref_mux0_scratch3_src,"",scratch3_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch3_iqtxrxclk1,5'b01101
+,,,,scratch3_iqtxrxclk2,5'b01110
+,,,,scratch3_iqtxrxclk3,5'b01111
+,,,,scratch3_iqtxrxclk4,5'b10000
+,,,,scratch3_iqtxrxclk5,5'b10001
+,,,,scratch3_power_down,5'b11111
+,,,,scratch3_ref_iqclk0,5'b00000
+,,,,scratch3_ref_iqclk1,5'b00001
+,,,,scratch3_ref_iqclk10,5'b01010
+,,,,scratch3_ref_iqclk11,5'b01011
+,,,,scratch3_ref_iqclk2,5'b00010
+,,,,scratch3_ref_iqclk3,5'b00011
+,,,,scratch3_ref_iqclk4,5'b00100
+,,,,scratch3_ref_iqclk5,5'b00101
+,,,,scratch3_ref_iqclk6,5'b00110
+,,,,scratch3_ref_iqclk7,5'b00111
+,,,,scratch3_ref_iqclk8,5'b01000
+,,,,scratch3_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_0_scratch3_src,"",pll_clkin_0_scratch3_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_0_scratch3_src_core_ref_clk,3'b001
+,,,,pll_clkin_0_scratch3_src_lvpecl,3'b010
+,,,,pll_clkin_0_scratch3_src_ref_clk,3'b011
+,,,,pll_clkin_0_scratch3_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_0_scratch3_src_vss,3'b101
+11B,[4:0],xpm_iqref_mux0_scratch4_src,"",scratch4_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch4_iqtxrxclk1,5'b01101
+,,,,scratch4_iqtxrxclk2,5'b01110
+,,,,scratch4_iqtxrxclk3,5'b01111
+,,,,scratch4_iqtxrxclk4,5'b10000
+,,,,scratch4_iqtxrxclk5,5'b10001
+,,,,scratch4_power_down,5'b11111
+,,,,scratch4_ref_iqclk0,5'b00000
+,,,,scratch4_ref_iqclk1,5'b00001
+,,,,scratch4_ref_iqclk10,5'b01010
+,,,,scratch4_ref_iqclk11,5'b01011
+,,,,scratch4_ref_iqclk2,5'b00010
+,,,,scratch4_ref_iqclk3,5'b00011
+,,,,scratch4_ref_iqclk4,5'b00100
+,,,,scratch4_ref_iqclk5,5'b00101
+,,,,scratch4_ref_iqclk6,5'b00110
+,,,,scratch4_ref_iqclk7,5'b00111
+,,,,scratch4_ref_iqclk8,5'b01000
+,,,,scratch4_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_0_scratch4_src,"",pll_clkin_0_scratch4_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_0_scratch4_src_core_ref_clk,3'b001
+,,,,pll_clkin_0_scratch4_src_lvpecl,3'b010
+,,,,pll_clkin_0_scratch4_src_ref_clk,3'b011
+,,,,pll_clkin_0_scratch4_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_0_scratch4_src_vss,3'b101
+11C,[4:0],xpm_iqref_mux1_iqclk_sel,"",iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,iqtxrxclk1,5'b01101
+,,,,iqtxrxclk2,5'b01110
+,,,,iqtxrxclk3,5'b01111
+,,,,iqtxrxclk4,5'b10000
+,,,,iqtxrxclk5,5'b10001
+,,,,power_down,5'b11111
+,,,,ref_iqclk0,5'b00000
+,,,,ref_iqclk1,5'b00001
+,,,,ref_iqclk10,5'b01010
+,,,,ref_iqclk11,5'b01011
+,,,,ref_iqclk2,5'b00010
+,,,,ref_iqclk3,5'b00011
+,,,,ref_iqclk4,5'b00100
+,,,,ref_iqclk5,5'b00101
+,,,,ref_iqclk6,5'b00110
+,,,,ref_iqclk7,5'b00111
+,,,,ref_iqclk8,5'b01000
+,,,,ref_iqclk9,5'b01001
+,[7:5],pll_clkin_1_src,"",pll_clkin_1_src_adj_pll_clk,3'b100,cmu_fpll_refclk_select
+,,,,pll_clkin_1_src_core_ref_clk,3'b001
+,,,,pll_clkin_1_src_lvpecl,3'b101
+,,,,pll_clkin_1_src_ref_clk,3'b011
+,,,,pll_clkin_1_src_tx_rx_core_ref_clk,3'b010
+,,,,pll_clkin_1_src_vss,3'b000
+11D,[4:0],xpm_iqref_mux1_scratch0_src,"",scratch0_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch0_iqtxrxclk1,5'b01101
+,,,,scratch0_iqtxrxclk2,5'b01110
+,,,,scratch0_iqtxrxclk3,5'b01111
+,,,,scratch0_iqtxrxclk4,5'b10000
+,,,,scratch0_iqtxrxclk5,5'b10001
+,,,,scratch0_power_down,5'b11111
+,,,,scratch0_ref_iqclk0,5'b00000
+,,,,scratch0_ref_iqclk1,5'b00001
+,,,,scratch0_ref_iqclk10,5'b01010
+,,,,scratch0_ref_iqclk11,5'b01011
+,,,,scratch0_ref_iqclk2,5'b00010
+,,,,scratch0_ref_iqclk3,5'b00011
+,,,,scratch0_ref_iqclk4,5'b00100
+,,,,scratch0_ref_iqclk5,5'b00101
+,,,,scratch0_ref_iqclk6,5'b00110
+,,,,scratch0_ref_iqclk7,5'b00111
+,,,,scratch0_ref_iqclk8,5'b01000
+,,,,scratch0_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_1_scratch0_src,"",pll_clkin_1_scratch0_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_1_scratch0_src_core_ref_clk,3'b001
+,,,,pll_clkin_1_scratch0_src_lvpecl,3'b010
+,,,,pll_clkin_1_scratch0_src_ref_clk,3'b011
+,,,,pll_clkin_1_scratch0_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_1_scratch0_src_vss,3'b101
+11E,[4:0],xpm_iqref_mux1_scratch1_src,"",scratch1_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch1_iqtxrxclk1,5'b01101
+,,,,scratch1_iqtxrxclk2,5'b01110
+,,,,scratch1_iqtxrxclk3,5'b01111
+,,,,scratch1_iqtxrxclk4,5'b10000
+,,,,scratch1_iqtxrxclk5,5'b10001
+,,,,scratch1_power_down,5'b11111
+,,,,scratch1_ref_iqclk0,5'b00000
+,,,,scratch1_ref_iqclk1,5'b00001
+,,,,scratch1_ref_iqclk10,5'b01010
+,,,,scratch1_ref_iqclk11,5'b01011
+,,,,scratch1_ref_iqclk2,5'b00010
+,,,,scratch1_ref_iqclk3,5'b00011
+,,,,scratch1_ref_iqclk4,5'b00100
+,,,,scratch1_ref_iqclk5,5'b00101
+,,,,scratch1_ref_iqclk6,5'b00110
+,,,,scratch1_ref_iqclk7,5'b00111
+,,,,scratch1_ref_iqclk8,5'b01000
+,,,,scratch1_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_1_scratch1_src,"",pll_clkin_1_scratch1_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_1_scratch1_src_core_ref_clk,3'b001
+,,,,pll_clkin_1_scratch1_src_lvpecl,3'b010
+,,,,pll_clkin_1_scratch1_src_ref_clk,3'b011
+,,,,pll_clkin_1_scratch1_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_1_scratch1_src_vss,3'b101
+11F,[4:0],xpm_iqref_mux1_scratch2_src,"",scratch2_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch2_iqtxrxclk1,5'b01101
+,,,,scratch2_iqtxrxclk2,5'b01110
+,,,,scratch2_iqtxrxclk3,5'b01111
+,,,,scratch2_iqtxrxclk4,5'b10000
+,,,,scratch2_iqtxrxclk5,5'b10001
+,,,,scratch2_power_down,5'b11111
+,,,,scratch2_ref_iqclk0,5'b00000
+,,,,scratch2_ref_iqclk1,5'b00001
+,,,,scratch2_ref_iqclk10,5'b01010
+,,,,scratch2_ref_iqclk11,5'b01011
+,,,,scratch2_ref_iqclk2,5'b00010
+,,,,scratch2_ref_iqclk3,5'b00011
+,,,,scratch2_ref_iqclk4,5'b00100
+,,,,scratch2_ref_iqclk5,5'b00101
+,,,,scratch2_ref_iqclk6,5'b00110
+,,,,scratch2_ref_iqclk7,5'b00111
+,,,,scratch2_ref_iqclk8,5'b01000
+,,,,scratch2_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_1_scratch2_src,"",pll_clkin_1_scratch2_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_1_scratch2_src_core_ref_clk,3'b001
+,,,,pll_clkin_1_scratch2_src_lvpecl,3'b010
+,,,,pll_clkin_1_scratch2_src_ref_clk,3'b011
+,,,,pll_clkin_1_scratch2_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_1_scratch2_src_vss,3'b101
+120,[4:0],xpm_iqref_mux1_scratch3_src,"",scratch3_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch3_iqtxrxclk1,5'b01101
+,,,,scratch3_iqtxrxclk2,5'b01110
+,,,,scratch3_iqtxrxclk3,5'b01111
+,,,,scratch3_iqtxrxclk4,5'b10000
+,,,,scratch3_iqtxrxclk5,5'b10001
+,,,,scratch3_power_down,5'b11111
+,,,,scratch3_ref_iqclk0,5'b00000
+,,,,scratch3_ref_iqclk1,5'b00001
+,,,,scratch3_ref_iqclk10,5'b01010
+,,,,scratch3_ref_iqclk11,5'b01011
+,,,,scratch3_ref_iqclk2,5'b00010
+,,,,scratch3_ref_iqclk3,5'b00011
+,,,,scratch3_ref_iqclk4,5'b00100
+,,,,scratch3_ref_iqclk5,5'b00101
+,,,,scratch3_ref_iqclk6,5'b00110
+,,,,scratch3_ref_iqclk7,5'b00111
+,,,,scratch3_ref_iqclk8,5'b01000
+,,,,scratch3_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_1_scratch3_src,"",pll_clkin_1_scratch3_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_1_scratch3_src_core_ref_clk,3'b001
+,,,,pll_clkin_1_scratch3_src_lvpecl,3'b010
+,,,,pll_clkin_1_scratch3_src_ref_clk,3'b011
+,,,,pll_clkin_1_scratch3_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_1_scratch3_src_vss,3'b101
+121,[4:0],xpm_iqref_mux1_scratch4_src,"",scratch4_iqtxrxclk0,5'b01100,cmu_fpll_refclk_select
+,,,,scratch4_iqtxrxclk1,5'b01101
+,,,,scratch4_iqtxrxclk2,5'b01110
+,,,,scratch4_iqtxrxclk3,5'b01111
+,,,,scratch4_iqtxrxclk4,5'b10000
+,,,,scratch4_iqtxrxclk5,5'b10001
+,,,,scratch4_power_down,5'b11111
+,,,,scratch4_ref_iqclk0,5'b00000
+,,,,scratch4_ref_iqclk1,5'b00001
+,,,,scratch4_ref_iqclk10,5'b01010
+,,,,scratch4_ref_iqclk11,5'b01011
+,,,,scratch4_ref_iqclk2,5'b00010
+,,,,scratch4_ref_iqclk3,5'b00011
+,,,,scratch4_ref_iqclk4,5'b00100
+,,,,scratch4_ref_iqclk5,5'b00101
+,,,,scratch4_ref_iqclk6,5'b00110
+,,,,scratch4_ref_iqclk7,5'b00111
+,,,,scratch4_ref_iqclk8,5'b01000
+,,,,scratch4_ref_iqclk9,5'b01001
+,[7:5],pll_clkin_1_scratch4_src,"",pll_clkin_1_scratch4_src_adj_pll_clk,3'b000,cmu_fpll_refclk_select
+,,,,pll_clkin_1_scratch4_src_core_ref_clk,3'b001
+,,,,pll_clkin_1_scratch4_src_lvpecl,3'b010
+,,,,pll_clkin_1_scratch4_src_ref_clk,3'b011
+,,,,pll_clkin_1_scratch4_src_tx_rx_core_ref_clk,3'b100
+,,,,pll_clkin_1_scratch4_src_vss,3'b101
+122,[2:0],pll_iqclk_mux_sel,"",iqtxrxclk0,3'b010,cmu_fpll
+,,,,iqtxrxclk1,3'b0x1
+,,,,iqtxrxclk2,3'b100
+,,,,iqtxrxclk3,3'b101
+,,,,iqtxrxclk4,3'b110
+,,,,iqtxrxclk5,3'b111
+,,,,power_down,3'b000
+,[4:3],pll_fbclk_mux_1,"",pll_fbclk_mux_1_fbclk_pll,2'b11,cmu_fpll
+,,,,pll_fbclk_mux_1_glb,2'b00
+,,,,pll_fbclk_mux_1_lvds,2'b10
+,,,,pll_fbclk_mux_1_zbd,2'b01
+,[7:5],pll_cmp_buf_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b001
+,,,,2000 ps,3'b010
+,,,,3000 ps,3'b011
+,,,,4000 ps,3'b100
+,,,,5000 ps,3'b101
+123,[4:0],pll_vco_freq_band_1_fix,"",pll_vco_freq_band_1_fix[4:0],DIRECT MAPPED,cmu_fpll
+,5,pll_lpf_rstn_value,"101|10A",lpf_normal,1'b1,cmu_fpll
+,,,,lpf_reset0,1'b0
+,,,,lpf_reset1,1'b0
+,,,,lpf_reset2,1'b1
+,[7:6],RESERVED,,,,
+124,[2:0],RESERVED,,,,
+,[5:3],pll_vco_freq_band_1_dyn_low_bits,"",pll_vco_freq_band_1_dyn_low_bits[2:0],DIRECT MAPPED,cmu_fpll
+,[7:6],pll_vco_freq_band_1_dyn_high_bits,"",pll_vco_freq_band_1_dyn_high_bits[1:0],DIRECT MAPPED,cmu_fpll
+125,[4:0],pll_core_vccdreg_fb,"",vreg_f3,5'b00011,cmu_fpll
+,,,,vreg_fb0,5'b00000
+,,,,vreg_fb1,5'b00001
+,,,,vreg_fb10,5'b01010
+,,,,vreg_fb11,5'b01011
+,,,,vreg_fb12,5'b01100
+,,,,vreg_fb13,5'b01101
+,,,,vreg_fb14,5'b01110
+,,,,vreg_fb15,5'b01111
+,,,,vreg_fb16,5'b10000
+,,,,vreg_fb17,5'b10001
+,,,,vreg_fb18,5'b10010
+,,,,vreg_fb19,5'b10011
+,,,,vreg_fb2,5'b00010
+,,,,vreg_fb20,5'b10100
+,,,,vreg_fb21,5'b10101
+,,,,vreg_fb22,5'b10110
+,,,,vreg_fb23,5'b10111
+,,,,vreg_fb24,5'b11000
+,,,,vreg_fb25,5'b11001
+,,,,vreg_fb26,5'b11010
+,,,,vreg_fb27,5'b11011
+,,,,vreg_fb28,5'b11100
+,,,,vreg_fb29,5'b11101
+,,,,vreg_fb30,5'b11110
+,,,,vreg_fb31,5'b11111
+,,,,vreg_fb4,5'b00100
+,,,,vreg_fb5,5'b00101
+,,,,vreg_fb6,5'b00110
+,,,,vreg_fb7,5'b00111
+,,,,vreg_fb8,5'b01000
+,,,,vreg_fb9,5'b01001
+,[7:5],RESERVED,,,,
+126,0,pll_fbclk_mux_2,"",pll_fbclk_mux_2_fb_1,1'b0,cmu_fpll
+,,,,pll_fbclk_mux_2_m_cnt,1'b1
+,[5:1],pll_core_vccdreg_fw,"",vreg_fw0,5'b00000,cmu_fpll
+,,,,vreg_fw1,5'b00001
+,,,,vreg_fw10,5'b01010
+,,,,vreg_fw11,5'b01011
+,,,,vreg_fw12,5'b01100
+,,,,vreg_fw13,5'b01101
+,,,,vreg_fw14,5'b01110
+,,,,vreg_fw15,5'b01111
+,,,,vreg_fw16,5'b10000
+,,,,vreg_fw17,5'b10001
+,,,,vreg_fw18,5'b10010
+,,,,vreg_fw19,5'b10011
+,,,,vreg_fw2,5'b00010
+,,,,vreg_fw20,5'b10100
+,,,,vreg_fw21,5'b10101
+,,,,vreg_fw22,5'b10110
+,,,,vreg_fw23,5'b10111
+,,,,vreg_fw24,5'b11000
+,,,,vreg_fw25,5'b11001
+,,,,vreg_fw26,5'b11010
+,,,,vreg_fw27,5'b11011
+,,,,vreg_fw28,5'b11100
+,,,,vreg_fw29,5'b11101
+,,,,vreg_fw3,5'b00011
+,,,,vreg_fw30,5'b11110
+,,,,vreg_fw31,5'b11111
+,,,,vreg_fw4,5'b00100
+,,,,vreg_fw5,5'b00101
+,,,,vreg_fw6,5'b00110
+,,,,vreg_fw7,5'b00111
+,,,,vreg_fw8,5'b01000
+,,,,vreg_fw9,5'b01001
+,[7:6],RESERVED,,,,
+127,[2:0],pll_ref_buf_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b001
+,,,,2000 ps,3'b010
+,,,,3000 ps,3'b011
+,,,,4000 ps,3'b100
+,,,,5000 ps,3'b101
+,[4:3],pll_n_counter_fine_dly,"",0 ps,2'b00,cmu_fpll
+,,,,100 ps,2'b10
+,,,,150 ps,2'b11
+,,,,50 ps,2'b01
+,[7:5],pll_n_counter_coarse_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b101
+,,,,200 ps,3'b001
+,,,,400 ps,3'b010
+,,,,600 ps,3'b011
+,,,,800 ps,3'b100
+128,[1:0],pll_m_counter_fine_dly,"",0 ps,2'b00,cmu_fpll
+,,,,100 ps,2'b10
+,,,,150 ps,2'b11
+,,,,50 ps,2'b01
+,[4:2],pll_m_counter_coarse_dly,"",0 ps,3'b000,cmu_fpll
+,,,,1000 ps,3'b101
+,,,,200 ps,3'b001
+,,,,400 ps,3'b010
+,,,,600 ps,3'b011
+,,,,800 ps,3'b100
+,[6:5],pll_m_counter_in_src,"",m_cnt_in_src_cscd_clk,2'b01,cmu_fpll
+,,,,m_cnt_in_src_ph_mux_clk,2'b00
+,,,,m_cnt_in_src_test_clk,2'b1x
+,7,pll_test_enable,"102",false,1'b0,cmu_fpll
+,,,,true,1'b1
+129,[7:0],pll_m_counter_prst,"",pll_m_counter_prst[7:0],DIRECT MAPPED,cmu_fpll
+12A,[1:0],pll_m_counter_ph_mux_prst,"",pll_m_counter_ph_mux_prst[1:0],DIRECT MAPPED,cmu_fpll
+,2,pll_dsm_fractional_value_ready,"",pll_k_not_ready,1'b0,cmu_fpll
+,,,,pll_k_ready,1'b1
+,3,pll_dsm_ecn_test_en,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,4,pll_dsm_ecn_bypass,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,5,pll_dsm_mode,"",dsm_mode_integer,1'b0,cmu_fpll
+,,,,dsm_mode_phase,1'b1
+,[7:6],pll_dsm_out_sel,"",pll_dsm_1st_order,2'b01,cmu_fpll
+,,,,pll_dsm_2nd_order,2'b10
+,,,,pll_dsm_3rd_order,2'b11
+,,,,pll_dsm_disable,2'b00
+12B,[7:0],pll_m_counter,"",pll_m_counter[7:0],DIRECT MAPPED,cmu_fpll
+12C,0,pll_m_counter,"",pll_m_counter[8],DIRECT MAPPED,cmu_fpll
+,[2:1],pll_l_counter,"",1,2'b00,cmu_fpll
+,,,,2,2'b01
+,,,,4,2'b10
+,,,,8,2'b11
+,[7:3],pll_n_counter,"",pll_n_counter[4:0],DIRECT MAPPED,cmu_fpll
+12D,[7:0],pll_dsm_fractional_division,"",pll_dsm_fractional_division[7:0],DIRECT MAPPED,cmu_fpll
+12E,[7:0],pll_dsm_fractional_division,"",pll_dsm_fractional_division[15:8],DIRECT MAPPED,cmu_fpll
+12F,[7:0],pll_dsm_fractional_division,"",pll_dsm_fractional_division[23:16],DIRECT MAPPED,cmu_fpll
+130,[7:0],pll_dsm_fractional_division,"",pll_dsm_fractional_division[31:24],DIRECT MAPPED,cmu_fpll
+133,0,pll_cp_testmode,"102|128",cp_normal,1'b0,cmu_fpll
+,,,,cp_test_dn,1'b1
+,,,,cp_test_up,1'b0
+,,,,cp_tristate,1'b0
+,1,pll_cp_compensation,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,[3:2],pll_lf_resistance,"",lf_res_setting0,2'b00,cmu_fpll
+,,,,lf_res_setting1,2'b01
+,,,,lf_res_setting2,2'b10
+,,,,lf_res_setting3,2'b11
+,[5:4],pll_lf_ripplecap,"",lf_no_ripple,2'b00,cmu_fpll
+,,,,lf_ripple_enabled_0,2'b01
+,,,,lf_ripple_enabled_1,2'b11
+,6,pll_cp_lf_order,"",lf_2nd_order,1'b1,cmu_fpll
+,,,,lf_3rd_order,1'b0
+,7,RESERVED,,,,
+134,[1:0],RESERVED,,,,
+,[3:2],pll_cp_lf_3rd_pole_freq,"",lf_3rd_pole_setting0,2'b00,cmu_fpll
+,,,,lf_3rd_pole_setting1,2'b01
+,,,,lf_3rd_pole_setting2,2'b10
+,,,,lf_3rd_pole_setting3,2'b11
+,[6:4],pll_cp_current_setting,"135",cp_current_setting0,3'b000,cmu_fpll
+,,,,cp_current_setting1,3'b001
+,,,,cp_current_setting10,3'b011
+,,,,cp_current_setting11,3'b100
+,,,,cp_current_setting12,3'b101
+,,,,cp_current_setting13,3'b110
+,,,,cp_current_setting14,3'b000
+,,,,cp_current_setting15,3'b001
+,,,,cp_current_setting16,3'b010
+,,,,cp_current_setting17,3'b011
+,,,,cp_current_setting18,3'b100
+,,,,cp_current_setting19,3'b101
+,,,,cp_current_setting2,3'b010
+,,,,cp_current_setting20,3'b110
+,,,,cp_current_setting21,3'b000
+,,,,cp_current_setting22,3'b001
+,,,,cp_current_setting23,3'b010
+,,,,cp_current_setting24,3'b011
+,,,,cp_current_setting25,3'b100
+,,,,cp_current_setting26,3'b101
+,,,,cp_current_setting27,3'b110
+,,,,cp_current_setting28,3'b000
+,,,,cp_current_setting29,3'b001
+,,,,cp_current_setting3,3'b011
+,,,,cp_current_setting30,3'b010
+,,,,cp_current_setting31,3'b011
+,,,,cp_current_setting32,3'b100
+,,,,cp_current_setting33,3'b101
+,,,,cp_current_setting34,3'b110
+,,,,cp_current_setting35,3'b000
+,,,,cp_current_setting36,3'b001
+,,,,cp_current_setting37,3'b010
+,,,,cp_current_setting38,3'b011
+,,,,cp_current_setting39,3'b100
+,,,,cp_current_setting4,3'b100
+,,,,cp_current_setting40,3'b101
+,,,,cp_current_setting41,3'b110
+,,,,cp_current_setting5,3'b101
+,,,,cp_current_setting6,3'b110
+,,,,cp_current_setting7,3'b000
+,,,,cp_current_setting8,3'b001
+,,,,cp_current_setting9,3'b010
+,7,RESERVED,,,,
+135,[2:0],pll_cp_current_setting,"134",cp_current_setting0,3'b000,cmu_fpll
+,,,,cp_current_setting1,3'b000
+,,,,cp_current_setting10,3'b001
+,,,,cp_current_setting11,3'b001
+,,,,cp_current_setting12,3'b001
+,,,,cp_current_setting13,3'b001
+,,,,cp_current_setting14,3'b010
+,,,,cp_current_setting15,3'b010
+,,,,cp_current_setting16,3'b010
+,,,,cp_current_setting17,3'b010
+,,,,cp_current_setting18,3'b010
+,,,,cp_current_setting19,3'b010
+,,,,cp_current_setting2,3'b000
+,,,,cp_current_setting20,3'b010
+,,,,cp_current_setting21,3'b011
+,,,,cp_current_setting22,3'b011
+,,,,cp_current_setting23,3'b011
+,,,,cp_current_setting24,3'b011
+,,,,cp_current_setting25,3'b011
+,,,,cp_current_setting26,3'b011
+,,,,cp_current_setting27,3'b011
+,,,,cp_current_setting28,3'b100
+,,,,cp_current_setting29,3'b100
+,,,,cp_current_setting3,3'b000
+,,,,cp_current_setting30,3'b100
+,,,,cp_current_setting31,3'b100
+,,,,cp_current_setting32,3'b100
+,,,,cp_current_setting33,3'b100
+,,,,cp_current_setting34,3'b100
+,,,,cp_current_setting35,3'b101
+,,,,cp_current_setting36,3'b101
+,,,,cp_current_setting37,3'b101
+,,,,cp_current_setting38,3'b101
+,,,,cp_current_setting39,3'b101
+,,,,cp_current_setting4,3'b000
+,,,,cp_current_setting40,3'b101
+,,,,cp_current_setting41,3'b101
+,,,,cp_current_setting5,3'b000
+,,,,cp_current_setting6,3'b000
+,,,,cp_current_setting7,3'b001
+,,,,cp_current_setting8,3'b001
+,,,,cp_current_setting9,3'b001
+,[7:3],pll_atb,"",atb_select0,5'b00001,cmu_fpll
+,,,,atb_select1,5'b00010
+,,,,atb_select10,5'b01011
+,,,,atb_select11,5'b01100
+,,,,atb_select12,5'b01101
+,,,,atb_select13,5'b01110
+,,,,atb_select14,5'b01111
+,,,,atb_select15,5'b10000
+,,,,atb_select16,5'b10001
+,,,,atb_select17,5'b10010
+,,,,atb_select18,5'b10011
+,,,,atb_select19,5'b10100
+,,,,atb_select2,5'b00011
+,,,,atb_select20,5'b10101
+,,,,atb_select21,5'b10110
+,,,,atb_select22,5'b10111
+,,,,atb_select23,5'b11000
+,,,,atb_select24,5'b11001
+,,,,atb_select25,5'b11010
+,,,,atb_select26,5'b11011
+,,,,atb_select27,5'b11100
+,,,,atb_select28,5'b11101
+,,,,atb_select29,5'b11110
+,,,,atb_select3,5'b00100
+,,,,atb_select30,5'b11111
+,,,,atb_select4,5'b00101
+,,,,atb_select5,5'b00110
+,,,,atb_select6,5'b00111
+,,,,atb_select7,5'b01000
+,,,,atb_select8,5'b01001
+,,,,atb_select9,5'b01010
+,,,,atb_selectdisable,5'b00000
+136,0,pll_vco_ph0_en,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,1,pll_vco_ph1_en,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,2,pll_vco_ph2_en,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,3,pll_vco_ph3_en,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,4,pll_tclk_mux_en,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,5,pll_tclk_sel,"",pll_tclk_m_src,1'b1,cmu_fpll
+,,,,pll_tclk_n_src,1'b0
+,6,pll_clk_sel_override_value,"",select_clk0,1'b0,cmu_fpll_refclk_select
+,,,,select_clk1,1'b1
+,7,pll_clk_sel_override,"",normal,1'b0,cmu_fpll_refclk_select
+,,,,override_clksel,1'b1
+137,[7:0],pll_lock_fltr_cfg,"",pll_lock_fltr_cfg[7:0],DIRECT MAPPED,cmu_fpll
+138,[3:0],pll_lock_fltr_cfg,"",pll_lock_fltr_cfg[11:8],DIRECT MAPPED,cmu_fpll
+,[6:4],pll_unlock_fltr_cfg,"",pll_unlock_fltr_cfg[2:0],DIRECT MAPPED,cmu_fpll
+,7,pll_lock_fltr_test,"",pll_lock_fltr_nrm,1'b0,cmu_fpll
+,,,,pll_lock_fltr_test,1'b1
+139,[4:0],RESERVED,,,,
+,[7:5],pll_dprio_status_select,"",dprio_normal_status,3'b000,cmu_fpll
+,,,,dsm_dft_out,3'b001
+,,,,dsm_lsb_out,3'b010
+,,,,dsm_msb_out,3'b011
+,,,,fbclk_counter_out,3'b100
+,,,,refclk_counter_out,3'b101
+13F,[3:0],RESERVED,,,,
+,4,pll_vco_ph0_value,"",pll_vco_ph0_vcc,1'b1,cmu_fpll
+,,,,pll_vco_ph0_vss,1'b0
+,5,pll_vco_ph1_value,"",pll_vco_ph1_vcc,1'b1,cmu_fpll
+,,,,pll_vco_ph1_vss,1'b0
+,6,pll_vco_ph2_value,"",pll_vco_ph2_vcc,1'b1,cmu_fpll
+,,,,pll_vco_ph2_vss,1'b0
+,7,pll_vco_ph3_value,"",pll_vco_ph3_vcc,1'b1,cmu_fpll
+,,,,pll_vco_ph3_vss,1'b0
+140,[2:0],pll_ppm_clk0_src,"",ppm_clk0_c0_cnt,3'b100,cmu_fpll
+,,,,ppm_clk0_c1_cnt,3'b101
+,,,,ppm_clk0_c2_cnt,3'b110
+,,,,ppm_clk0_c3_cnt,3'b111
+,,,,ppm_clk0_fbclk,3'b011
+,,,,ppm_clk0_n_cnt,3'b010
+,,,,ppm_clk0_refclk,3'b001
+,,,,ppm_clk0_vss,3'b000
+,[5:3],pll_ppm_clk1_src,"",ppm_clk1_c0_cnt,3'b100,cmu_fpll
+,,,,ppm_clk1_c1_cnt,3'b101
+,,,,ppm_clk1_c2_cnt,3'b110
+,,,,ppm_clk1_c3_cnt,3'b111
+,,,,ppm_clk1_fbclk,3'b011
+,,,,ppm_clk1_n_cnt,3'b010
+,,,,ppm_clk1_refclk,3'b001
+,,,,ppm_clk1_vss,3'b000
+,6,pll_l_counter_bypass,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+,7,pll_ctrl_plniotri_override,"",false,1'b0,cmu_fpll
+,,,,true,1'b1
+141,[3:0],pll_lf_cbig,"",lf_cbig_setting0,4'b0000,cmu_fpll
+,,,,lf_cbig_setting1,4'b0001
+,,,,lf_cbig_setting2,4'b0011
+,,,,lf_cbig_setting3,4'b0111
+,,,,lf_cbig_setting4,4'b1111
+,4,xpm_cmu_fpll_core_fpll_refclk_source,"",lc_dedicated_refclk,1'b1,cmu_fpll
+,,,,normal_refclk,1'b0
+,5,xpm_cmu_fpll_core_xpm_cpvco_fpll_xpm_chgpmplf_fpll_cp_current_boost,"",boost_setting,1'b1,cmu_fpll
+,,,,normal_setting,1'b0
+,6,xpm_cmu_fpll_core_fpll_vco_div_by_2_sel,"",bypass_divide_by_2,1'b0,cmu_fpll
+,,,,divide_by_2,1'b1
+,7,RESERVED,,,,
+142,[1:0],xpm_cmu_fpll_core_pfd_pulse_width,"",pulse_width_setting0,2'b00,cmu_fpll
+,,,,pulse_width_setting1,2'b01
+,,,,pulse_width_setting2,2'b10
+,,,,pulse_width_setting3,2'b11
+,[3:2],xpm_cmu_fpll_core_pfd_delay_compensation,"",fb_compensated_delay,2'b10,cmu_fpll
+,,,,normal_delay,2'b00
+,,,,ref_compensated_delay,2'b01
+,,,,unused_delay,2'b11
+,4,pll_vco_freq_band_0_fix_high,"",pll_vco_freq_band_0_fix_high_0,1'b0,cmu_fpll
+,,,,pll_vco_freq_band_0_fix_high_1,1'b1
+,5,pll_vco_freq_band_1_fix_high,"",pll_vco_freq_band_1_fix_high_0,1'b0,cmu_fpll
+,,,,pll_vco_freq_band_1_fix_high_1,1'b1
+,6,xpm_cmu_fpll_core_cal_vco_count_length,"",sel_12b_count,1'b1,cmu_fpll
+,,,,sel_8b_count,1'b0
+,7,fpll_cal_test_sel,"",sel_cal_out_11_to_8,1'b1,cmu_fpll
+,,,,sel_cal_out_7_to_0,1'b0
+143,[7:0],set_fpll_input_freq_range,"",set_fpll_input_freq_range[7:0],DIRECT MAPPED,cmu_fpll
+
+

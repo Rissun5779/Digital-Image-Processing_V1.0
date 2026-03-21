@@ -1,0 +1,706 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// IP Name: altera_xcvr_cdr_pll_s10
+// This IP instantiates the following atoms
+// -- ct1_hssi_avmm1_if
+// -- ct1_xcvr_avmm1
+// -- ct1_hssi_pma_cdr_refclk_select_mux
+// -- ct1_hssi_pma_channel_pll
+// -- ct1_hssi_pma_channel_pll_pld_adapt
+
+`timescale 1ps/1ps
+module ${module_name}
+#(
+  //-----------------------------------------------------------------------------------------------
+  // CDR PLL Atom Parameters
+  //-----------------------------------------------------------------------------------------------
+  parameter [7:0] cdr_pll_mcnt_div                  = 8'd1,			 
+  parameter [5:0] cdr_pll_n_counter                 = 6'd1,			 
+  parameter [4:0] cdr_pll_lpd_counter               = 5'd0,		   
+  parameter [4:0] cdr_pll_lpfd_counter              = 5'd1 ,		   
+  parameter [7:0] cdr_pll_set_cdr_input_freq_range  = 8'b11111111,
+  parameter [4:0] cdr_pll_set_cdr_vco_speed         = 5'd1,
+  parameter [7:0] cdr_pll_set_cdr_vco_speed_fix     = 8'd0,
+
+  parameter cdr_pll_out_freq                        = "0",
+  parameter cdr_pll_reference_clock_frequency       = "0",
+  
+  //Note: These are derived parameters that shouldn't be set by the IP
+  //      However, due to the current BCM, they are exposed and need to be
+  //      set in order for simulation models to work
+  parameter cdr_pll_pfd_l_counter                   = 1,
+  parameter cdr_pll_pd_l_counter                    = 1,
+  parameter cdr_pll_ncnt_div                        = 1,
+
+  parameter cdr_pll_cgb_div                         = 1,															
+  parameter cdr_pll_fref_clklow_div                 = 1,
+
+  parameter cdr_pll_prot_mode                       = "basic_rx", 
+  parameter cdr_pll_bw_mode                         = "low_bw",	 
+  parameter cdr_pll_pma_width                       = 8,
+   
+  parameter cdr_pll_chgpmp_current_dn_trim          = "cp_current_trimming_dn_setting0",
+  parameter cdr_pll_chgpmp_up_pd_trim_double        = "normal_up_trim_current",
+  parameter cdr_pll_chgpmp_current_up_pd            = "cp_current_pd_up_setting0",
+  parameter cdr_pll_chgpmp_current_up_trim          = "cp_current_trimming_up_setting0",
+  parameter cdr_pll_chgpmp_dn_pd_trim_double        = "normal_dn_trim_current",
+  parameter cdr_pll_chgpmp_current_dn_pd            = "cp_current_pd_dn_setting0",
+  parameter cdr_pll_chgpmp_current_pfd              = "cp_current_pfd_setting0",
+  parameter cdr_pll_chgpmp_replicate                = "true",
+  parameter cdr_pll_chgpmp_testmode                 = "cp_test_disable",
+  parameter cdr_pll_cal_vco_count_length            = "select_8b_count",
+
+  parameter cdr_pll_iqclk_sel                       = "power_down",
+  parameter cdr_pll_txpll_hclk_driver_enable        = "false",			
+  parameter cdr_pll_direct_fb                       = "direct_fb",							
+  parameter cdr_pll_atb_select_control              = "atb_off",
+  parameter cdr_pll_auto_reset_on                   = "auto_reset_on", 
+  parameter cdr_pll_bbpd_data_pattern_filter_select = "bbpd_data_pat_off",
+  parameter cdr_pll_cdr_odi_select                  = "sel_cdr",
+  parameter cdr_pll_cdr_phaselock_mode              = "no_ignore_lock",
+  parameter cdr_pll_cdr_powerdown_mode              = "power_up", 
+  parameter cdr_pll_clklow_mux_select               = "clklow_mux_cdr_fbclk",
+  parameter cdr_pll_diag_loopback_enable            = "false",
+  parameter cdr_pll_disable_up_dn                   = "true",
+  parameter cdr_pll_fref_mux_select                 = "fref_mux_cdr_refclk",
+  parameter cdr_pll_gpon_lck2ref_control            = "gpon_lck2ref_off",
+  parameter cdr_pll_initial_settings                = "false",
+  parameter cdr_pll_lck2ref_delay_control           = "lck2ref_delay_off",
+  parameter cdr_pll_lf_resistor_pd                  = "lf_pd_setting0",
+  parameter cdr_pll_lf_resistor_pfd                 = "lf_pfd_setting0",
+  parameter cdr_pll_lf_ripple_cap                   = "lf_no_ripple",
+  parameter cdr_pll_loop_filter_bias_select         = "lpflt_bias_off",
+  parameter cdr_pll_loopback_mode                   = "loopback_disabled",
+  parameter cdr_pll_ltd_ltr_micro_controller_select = "ltd_ltr_pcs",
+  parameter cdr_pll_pd_fastlock_mode                = "false",
+  parameter cdr_pll_reverse_serial_loopback         = "no_loopback",
+  parameter cdr_pll_set_cdr_v2i_enable              = "true",
+  parameter cdr_pll_set_cdr_vco_reset               = "false",
+  parameter cdr_pll_set_cdr_vco_speed_pciegen3      = "cdr_vco_max_speedbin_pciegen3",
+  parameter cdr_pll_is_cascaded_pll                 = "false",
+  parameter cdr_pll_optimal                         = "true",
+  parameter cdr_pll_primary_use                     = "cmu",
+  parameter cdr_pll_sup_mode                        = "user_mode",
+  parameter cdr_pll_tx_pll_prot_mode                = "txpll_unused",
+  parameter cdr_pll_datarate_bps                    = "0",
+  parameter cdr_pll_vco_freq                        = "0",
+  parameter cdr_pll_pcie_gen                        = "non_pcie",
+  parameter cdr_pll_uc_ro_cal                       = "uc_ro_cal_off",
+  parameter cdr_pll_vco_underrange_voltage          = "vco_underange_off",
+  parameter cdr_pll_vco_overrange_voltage           = "vco_overrange_off",
+  parameter cdr_pll_silicon_rev                     = "14nm5",          
+  parameter cdr_pll_vco_bypass                      = "false",
+  
+  //-----------------------------------------------------------------------------------------------
+  // Adding the following parameters as an addendum following switching their
+  // resolution stage to IPGEN.  IS mentioned that we are no longer concerned
+  // about matching order or parameters in terp vs tcl so will simply collect
+  // them here
+  //-----------------------------------------------------------------------------------------------
+  parameter cdr_pll_bandwidth_range_high            = "1",
+  parameter cdr_pll_bandwidth_range_low             = "1",
+  parameter cdr_pll_f_max_cmu_out_freq              = "1",
+  parameter cdr_pll_f_max_m_counter                 = "1",
+  parameter cdr_pll_f_max_pfd                       = "1",
+  parameter cdr_pll_f_max_ref                       = "1",
+  parameter cdr_pll_f_max_vco                       = "1",
+  parameter cdr_pll_f_min_gt_channel                = "1",
+  parameter cdr_pll_f_min_pfd                       = "1",
+  parameter cdr_pll_f_min_ref                       = "1",
+  parameter cdr_pll_f_min_vco                       = "1",
+  parameter cdr_pll_analog_mode                     = "user_custom",
+  parameter cdr_pll_chgpmp_vccreg                   = "vreg_fw0",
+  parameter cdr_pll_enable_idle_rx_channel_support  = "false",
+  parameter cdr_pll_position                        = "position_unknown",
+  parameter cdr_pll_power_mode                      = "low_power",
+  parameter cdr_pll_requires_gt_capable_channel     = "false",
+  parameter cdr_pll_side                            = "side_unknown",
+  parameter cdr_pll_speed_grade                     = "e2",
+  parameter cdr_pll_top_or_bottom                   = "tb_unknown",
+
+  //-----------------------------------------------------------------------------------------------
+  // Refclk Select Mux Atom Parameters
+  //-----------------------------------------------------------------------------------------------
+  parameter pma_cdr_refclk_select_mux_silicon_rev                        = "14nm5",								             
+  parameter pma_cdr_refclk_select_mux_refclk_select                      = "ref_iqclk0",						             
+  parameter pma_cdr_refclk_select_mux_powerdown_mode                     = "powerdown",                        
+  parameter pma_cdr_refclk_select_mux_inclk0_logical_to_physical_mapping = "ref_iqclk0",   
+  parameter pma_cdr_refclk_select_mux_inclk1_logical_to_physical_mapping = "ref_iqclk1",   
+  parameter pma_cdr_refclk_select_mux_inclk2_logical_to_physical_mapping = "ref_iqclk2",   
+  parameter pma_cdr_refclk_select_mux_inclk3_logical_to_physical_mapping = "ref_iqclk3",   
+  parameter pma_cdr_refclk_select_mux_inclk4_logical_to_physical_mapping = "ref_iqclk4",   
+
+  //-----------------------------------------------------------------------------------------------
+  // AVMM1 Atom Parameters
+  //-----------------------------------------------------------------------------------------------
+  parameter rcfg_enable             = 0,
+  parameter rcfg_jtag_enable        = 0,
+  parameter rcfg_profile_cnt        = 0,
+  parameter rcfg_emb_strm_enable    = 0,
+  parameter rcfg_separate_avmm_busy = 0, 
+  parameter enable_analog_resets    = 0,      
+  parameter          hssi_avmm1_if_calibration_type                           = "one_time" ,//"continuous" "one_time"
+  parameter          hssi_avmm1_if_hssiadapt_avmm_osc_clock_setting           = "osc_clk_div_by1" ,//"osc_clk_div_by1" "osc_clk_div_by2" "osc_clk_div_by4"
+  parameter          hssi_avmm1_if_hssiadapt_avmm_testbus_sel                 = "avmm1_transfer_testbus" ,//"avmm1_cmn_intf_testbus" "avmm1_transfer_testbus" "avmm2_transfer_testbus" "avmm_clk_dcg_testbus"
+  parameter          hssi_avmm1_if_hssiadapt_hip_mode                         = "disable_hip",//"debug_chnl" "disable_hip" "user_chnl"
+  parameter          hssi_avmm1_if_hssiadapt_nfhssi_calibratio_feature_en     = "disable",//"disable" "enable"
+  parameter          hssi_avmm1_if_hssiadapt_read_blocking_enable             = "enable" ,//"disable" "enable"
+  parameter          hssi_avmm1_if_hssiadapt_uc_blocking_enable               = "enable" ,//"disable" "enable"
+  parameter          hssi_avmm1_if_pcs_arbiter_ctrl                           = "avmm1_arbiter_uc_sel",//"avmm1_arbiter_pld_sel" "avmm1_arbiter_uc_sel"
+  parameter          hssi_avmm1_if_pcs_cal_done                               = "avmm1_cal_done_assert",//"avmm1_cal_done_assert" "avmm1_cal_done_deassert"
+  parameter [4:0]    hssi_avmm1_if_pcs_cal_reserved                           = 5'd0 ,//0:31
+  parameter          hssi_avmm1_if_pcs_calibration_feature_en                 = "avmm1_pcs_calibration_dis",//"avmm1_pcs_calibration_dis" "avmm1_pcs_calibration_en"
+  parameter          hssi_avmm1_if_pcs_hip_cal_en                             = "disable"                  ,//"disable" "enable"
+  parameter          hssi_avmm1_if_pldadapt_avmm_osc_clock_setting            = "osc_clk_div_by1"          ,//"osc_clk_div_by1" "osc_clk_div_by2" "osc_clk_div_by4"
+  parameter          hssi_avmm1_if_pldadapt_avmm_testbus_sel                  = "avmm1_transfer_testbus"   ,//"avmm1_cmn_intf_testbus" "avmm1_transfer_testbus" "avmm2_transfer_testbus" "unused_testbus"
+  parameter          hssi_avmm1_if_pldadapt_gate_dis                          = "disable"                  ,//"disable" "enable"
+  parameter          hssi_avmm1_if_pldadapt_hip_mode                          = "disable_hip"              ,//"debug_chnl" "disable_hip" "user_chnl"
+  parameter          hssi_avmm1_if_pldadapt_nfhssi_calibratio_feature_en      = "disable"                  ,//"disable" "enable"
+  parameter          hssi_avmm1_if_pldadapt_read_blocking_enable              = "enable"                   ,//"disable" "enable"
+  parameter          hssi_avmm1_if_pldadapt_uc_blocking_enable                = "enable"                   ,//"disable" "enable"
+  parameter          hssi_avmm1_if_silicon_rev                                = "14nm5"                    ,//"14nm5"
+	 
+  //-----------------------------------------------------------------------------------------------
+  // ADME Parameters
+  //-----------------------------------------------------------------------------------------------
+  parameter calibration_en              = "disable",
+  parameter dbg_embedded_debug_enable   = 0,
+  parameter dbg_capability_reg_enable   = 0,
+  parameter dbg_user_identifier         = 0,
+  parameter dbg_stat_soft_logic_enable  = 0,
+  parameter dbg_ctrl_soft_logic_enable  = 0
+
+)
+(
+     
+  // Reset
+  input wire pll_powerdown,
+
+  // Refclk Select Mux I/O 
+  input wire 			    pll_refclk0,
+  input wire 			    pll_refclk1,
+  input wire 			    pll_refclk2,
+  input wire 			    pll_refclk3,
+  input wire 			    pll_refclk4,
+  
+  // PLL I/O
+  output wire 			  tx_serial_clk,
+  output wire 			  pll_locked,                           
+  
+  // AVMM Reconfiguration Interface I/O
+  input wire 			   reconfig_clk0,
+  input wire 			   reconfig_reset0,
+  input wire 			   reconfig_write0,
+  input wire 			   reconfig_read0,
+  input wire  [10:0] reconfig_address0, 
+  input wire  [31:0] reconfig_writedata0,
+  output wire [31:0] reconfig_readdata0,
+  output 				     reconfig_waitrequest0,
+  
+  // Reconfiguration Status Outputs
+  output 				     avmm_busy0,
+  output 				     pll_cal_busy,
+  output 				     hip_cal_done
+
+);
+
+
+//---------------------------------------------------------------------------------------
+// String to binary conversion utility
+// TODO: can this be made a common function across PLLs?
+//---------------------------------------------------------------------------------------
+
+localparam  MAX_CONVERSION_SIZE_ALT_XCVR_CDR_S10 = 128;
+localparam  MAX_STRING_CHARS_ALT_XCVR_CDR_S10  = 64;
+
+function automatic [MAX_CONVERSION_SIZE_ALT_XCVR_CDR_S10-1:0] str_2_bin_altera_xcvr_cdr_pll_s10;
+  input [MAX_STRING_CHARS_ALT_XCVR_CDR_S10*8-1:0] instring;
+  integer this_char;
+  integer i;
+  
+  begin
+    // Initialize accumulator
+    str_2_bin_altera_xcvr_cdr_pll_s10 = {MAX_CONVERSION_SIZE_ALT_XCVR_CDR_S10{1'b0}};
+    
+    for(i=MAX_STRING_CHARS_ALT_XCVR_CDR_S10-1;i>=0;i=i-1) begin
+      this_char = instring[i*8+:8];
+      // Add value of this digit
+      if(this_char >= 48 && this_char <= 57)
+        str_2_bin_altera_xcvr_cdr_pll_s10 = (str_2_bin_altera_xcvr_cdr_pll_s10 * 10) + (this_char - 48);
+    end
+
+  end
+
+endfunction
+   
+// Convert the following parameters from string to bitvec
+localparam [127:0] temp_cdr_pll_datarate_bps		          = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_datarate_bps);
+localparam [127:0] temp_cdr_pll_out_freq                  = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_out_freq);
+localparam [127:0] temp_cdr_pll_reference_clock_frequency = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_reference_clock_frequency);
+localparam [127:0] temp_cdr_pll_vco_freq                  = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_vco_freq);
+localparam [127:0] temp_cdr_pll_f_max_pfd                 = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_max_pfd);
+localparam [127:0] temp_cdr_pll_f_max_ref                 = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_max_ref);
+localparam [127:0] temp_cdr_pll_f_max_vco                 = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_max_vco);
+localparam [127:0] temp_cdr_pll_f_min_gt_channel          = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_min_gt_channel);
+localparam [127:0] temp_cdr_pll_f_min_pfd                 = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_min_pfd);
+localparam [127:0] temp_cdr_pll_f_min_vco                 = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_min_vco);
+localparam [127:0] temp_cdr_pll_f_min_ref                 = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_min_ref);
+localparam [127:0] temp_cdr_pll_bandwidth_range_high      = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_bandwidth_range_high);
+localparam [127:0] temp_cdr_pll_bandwidth_range_low       = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_bandwidth_range_low );
+localparam [127:0] temp_cdr_pll_f_max_cmu_out_freq        = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_max_cmu_out_freq  );
+localparam [127:0] temp_cdr_pll_f_max_m_counter           = str_2_bin_altera_xcvr_cdr_pll_s10(cdr_pll_f_max_m_counter     );
+
+//The parameters are defined as 36-bit values
+localparam [35:0] bin_cdr_pll_datarate_bps              = temp_cdr_pll_datarate_bps[35:0];
+localparam [35:0] bin_cdr_pll_out_freq                  = temp_cdr_pll_out_freq[35:0];   
+localparam [35:0] bin_cdr_pll_reference_clock_frequency = temp_cdr_pll_reference_clock_frequency[35:0];
+localparam [35:0] bin_cdr_pll_vco_freq                  = temp_cdr_pll_vco_freq[35:0];
+localparam [35:0] bin_cdr_pll_f_max_pfd                 = temp_cdr_pll_f_max_pfd[35:0];
+localparam [35:0] bin_cdr_pll_f_max_ref                 = temp_cdr_pll_f_max_ref[35:0];
+localparam [35:0] bin_cdr_pll_f_max_vco                 = temp_cdr_pll_f_max_vco[35:0];
+localparam [35:0] bin_cdr_pll_f_min_gt_channel          = temp_cdr_pll_f_min_gt_channel[35:0];
+localparam [35:0] bin_cdr_pll_f_min_pfd                 = temp_cdr_pll_f_min_pfd[35:0];
+localparam [35:0] bin_cdr_pll_f_min_vco                 = temp_cdr_pll_f_min_vco[35:0];
+localparam [35:0] bin_cdr_pll_f_min_ref                 = temp_cdr_pll_f_min_ref[35:0];
+localparam [35:0] bin_cdr_pll_bandwidth_range_high      = temp_cdr_pll_bandwidth_range_high[35:0];
+localparam [35:0] bin_cdr_pll_bandwidth_range_low       = temp_cdr_pll_bandwidth_range_low [35:0];
+localparam [35:0] bin_cdr_pll_f_max_cmu_out_freq        = temp_cdr_pll_f_max_cmu_out_freq  [35:0];
+localparam [35:0] bin_cdr_pll_f_max_m_counter           = temp_cdr_pll_f_max_m_counter     [35:0];
+
+
+// Reconfig logic connectivity signals
+wire        avmm_arb_clk;
+wire        avmm_arb_reset;
+wire        avmm_arb_write;
+wire        avmm_arb_read;
+wire        avmm_arb_busy;
+wire        avmm_arb_waitrequest;
+wire [10:0] avmm_arb_address; 
+wire [7:0]  avmm_arb_writedata;
+wire [7:0]  avmm_arb_readdata;
+
+// AVMM1 atom sideband connectivity signals
+wire avmm1_if_sb_cmdfifo_wr_pfull       ;
+wire avmm1_if_sb_readdatavalid          ;
+wire avmm1_if_sb_busy                   ;
+wire avmm1_if_sb_pld_cal_done           ;
+wire avmm1_if_sb_hip_cal_done           ;
+wire avmm1_if_sb_request                ;
+
+// AVMM1 atom protocol connectivity signals 
+wire        avmm1_if_clk                 ;
+wire        avmm1_if_read                ;
+wire        avmm1_if_write               ;
+wire [10:0] avmm1_if_address             ;
+wire [7:0]  avmm1_if_readdata            ;
+wire [7:0]  avmm1_if_writedata           ;
+wire [7:0]  avmm1_if_readdata_refclk_mux ; 
+wire [7:0]  avmm1_if_readdata_cdr_pll    ;
+
+// Miscellaneous connectivity signals
+wire pll_powerdown_stat;
+wire pld_adapt_pll_powerdown;
+wire pld_adapt_pll_locked;
+wire csr_in_pll_powerdown;
+wire csr_in_pll_cal_busy;
+wire csr_in_pll_locked;
+wire csr_in_avmm_busy0;
+wire refclk_mux_out;
+wire lcl_pll_powerdown;
+
+//This is a provision to allow users to connect the pll_powerdown 
+// input. If "enable_analog_resets" is selected from the IP GUI, 
+// then the pll_powerdown input is connected through the design. 
+// Otherwise, the pll_powerdown input is disconnected.
+generate
+  if(enable_analog_resets == 1) begin
+    assign lcl_pll_powerdown = pll_powerdown;
+  end else begin
+    assign lcl_pll_powerdown = 1'b0;
+  end
+endgenerate
+
+// Connection to the reconfig csr logic
+assign csr_in_pll_powerdown = lcl_pll_powerdown;
+
+//Output AVMM busy status signals
+assign pll_cal_busy        = ~avmm1_if_sb_pld_cal_done;
+assign hip_cal_done        = ~avmm1_if_sb_hip_cal_done;
+assign avmm_busy0          = avmm1_if_sb_busy;
+
+//Output pll_locked
+assign pll_locked   = csr_in_pll_locked;	
+
+// Route AVMM status signals to CSRs
+assign csr_in_pll_cal_busy = ~avmm1_if_sb_pld_cal_done;
+assign csr_in_avmm_busy0   = avmm1_if_sb_busy;
+
+
+//---------------------------------------------------------------------------------------
+// Reconfiguration Logic Wrapper
+//  This wrapper contains CSR soft registers (user AVMM), a reconfig streamer, 
+//  an ADME, and the arbiter for these three agents
+//---------------------------------------------------------------------------------------
+//TODO: check if this is set correctly
+//TODO: check if RECONFIG_SHARED is set correctly
+localparam lcl_adme_assgn_map = {" assignments {device_revision ",cdr_pll_silicon_rev,"}"};
+localparam rcfg_shared        = 0;
+
+alt_xcvr_pll_rcfg_opt_logic_${random_str} 
+#(
+  .dbg_user_identifier          (dbg_user_identifier                ),
+  .dbg_embedded_debug_enable    (dbg_embedded_debug_enable          ),
+  .dbg_capability_reg_enable    (dbg_capability_reg_enable          ),
+  .dbg_stat_soft_logic_enable   (dbg_stat_soft_logic_enable         ),
+  .dbg_ctrl_soft_logic_enable   (dbg_ctrl_soft_logic_enable         ),
+  .en_master_cgb                (0                                  ),
+  .INTERFACES                   (1                                  ),
+  .ADDR_BITS                    (11                                 ),
+  .ADME_SLAVE_MAP               ("altera_xcvr_cdr_pll_s10"          ),
+  .ADME_ASSGN_MAP               (lcl_adme_assgn_map                 ),
+  .RECONFIG_SHARED              (rcfg_enable && rcfg_shared         ),
+  .JTAG_ENABLED                 (rcfg_enable && rcfg_jtag_enable    ),
+  .RCFG_EMB_STRM_ENABLED        (rcfg_enable && rcfg_emb_strm_enable),
+  .RCFG_PROFILE_CNT             (rcfg_profile_cnt                   )
+) 
+alt_xcvr_pll_optional_rcfg_logic 
+(
+  //User AVMM Interface
+  .reconfig_clk                 (reconfig_clk0        ), //Input 
+  .reconfig_reset               (reconfig_reset0      ), //Input
+  .reconfig_write               (reconfig_write0      ), //Input
+  .reconfig_read                (reconfig_read0       ), //Input
+  .reconfig_address             (reconfig_address0    ), //Input
+  .reconfig_writedata           (reconfig_writedata0  ), //Input
+  .reconfig_readdata            (reconfig_readdata0   ), //Output 
+  .reconfig_waitrequest         (reconfig_waitrequest0), //Output
+  
+  // Arbiter AVMM Master Interface (to PLL IPs)                     
+  .avmm_clk                     (avmm_arb_clk           ), //Output
+  .avmm_reset                   (avmm_arb_reset         ), //Output
+  .avmm_write                   (avmm_arb_write         ), //Output
+  .avmm_read                    (avmm_arb_read          ), //Output
+  .avmm_address                 (avmm_arb_address[10:0] ), //Output
+  .avmm_writedata               (avmm_arb_writedata     ), //Output
+  .avmm_readdata                (avmm_arb_readdata      ), //Input
+  .avmm_waitrequest             (avmm_arb_waitrequest   ), //Input
+  
+  // CSR soft register status inputs 
+  .in_pll_powerdown             (csr_in_pll_powerdown ),
+  .in_pll_locked                (csr_in_pll_locked    ),
+  .in_pll_cal_busy              (csr_in_pll_cal_busy  ),
+  .in_avmm_busy                 (csr_in_avmm_busy0    ),
+  
+  // CSR soft register status outputs 
+  .out_pll_powerdown            (pld_adapt_pll_powerdown   )
+
+);
+
+//---------------------------------------------------------------------------------------
+// AVMM1 Atom 
+//---------------------------------------------------------------------------------------
+ct1_hssi_avmm1_if 
+ #(
+	.calibration_type                       ( hssi_avmm1_if_calibration_type                       ),
+	.hssiadapt_avmm_osc_clock_setting       ( hssi_avmm1_if_hssiadapt_avmm_osc_clock_setting       ),
+    .hssiadapt_avmm_testbus_sel             ( hssi_avmm1_if_hssiadapt_avmm_testbus_sel             ),
+    .hssiadapt_hip_mode                     ( hssi_avmm1_if_hssiadapt_hip_mode                     ),
+    .hssiadapt_nfhssi_calibratio_feature_en ( hssi_avmm1_if_hssiadapt_nfhssi_calibratio_feature_en ),
+    .hssiadapt_read_blocking_enable         ( hssi_avmm1_if_hssiadapt_read_blocking_enable         ),
+    .hssiadapt_uc_blocking_enable           ( hssi_avmm1_if_hssiadapt_uc_blocking_enable           ),
+    .pcs_arbiter_ctrl                       ( hssi_avmm1_if_pcs_arbiter_ctrl                       ),
+    .pcs_cal_done                           ( hssi_avmm1_if_pcs_cal_done                           ),
+    .pcs_cal_reserved                       ( hssi_avmm1_if_pcs_cal_reserved                       ),
+    .pcs_calibration_feature_en             ( hssi_avmm1_if_pcs_calibration_feature_en             ),
+    .pcs_hip_cal_en                         ( hssi_avmm1_if_pcs_hip_cal_en                         ),
+    .pldadapt_avmm_osc_clock_setting        ( hssi_avmm1_if_pldadapt_avmm_osc_clock_setting        ),
+    .pldadapt_avmm_testbus_sel              ( hssi_avmm1_if_pldadapt_avmm_testbus_sel              ),
+    .pldadapt_gate_dis                      ( hssi_avmm1_if_pldadapt_gate_dis                      ),
+    .pldadapt_hip_mode                      ( hssi_avmm1_if_pldadapt_hip_mode                      ),
+    .pldadapt_nfhssi_calibratio_feature_en  ( hssi_avmm1_if_pldadapt_nfhssi_calibratio_feature_en  ),
+    .pldadapt_read_blocking_enable          ( hssi_avmm1_if_pldadapt_read_blocking_enable          ),
+    .pldadapt_uc_blocking_enable            ( hssi_avmm1_if_pldadapt_uc_blocking_enable            ),
+    .silicon_rev                            ( hssi_avmm1_if_silicon_rev                            )
+) 
+inst_ct1_hssi_avmm1_if 
+(
+	// OUTPUTS
+	.avmm_cmdfifo_wr_pfull ( avmm1_if_sb_cmdfifo_wr_pfull ),
+	.avmm_readdatavalid    ( avmm1_if_sb_readdatavalid    ),
+	.avmmbusy              ( avmm1_if_sb_busy             ),
+	.pldcaldone            ( avmm1_if_sb_pld_cal_done     ),
+	.hipcaldone            ( avmm1_if_sb_hip_cal_done     ),
+	.avmmreaddata          ( avmm1_if_readdata            ),
+	.clkchnl               ( avmm1_if_clk                 ),
+	.regaddrchnl           ( avmm1_if_address[9:0]        ),
+	.readchnl              ( avmm1_if_read                ),
+	.writechnl             ( avmm1_if_write               ),
+	.writedatachnl         ( avmm1_if_writedata           ),
+	// INPUTS
+	.avmmclk               ( avmm_arb_clk         ),
+	.avmmaddress           ( avmm_arb_address[9:0]),
+	.avmmread              ( avmm_arb_read        ),
+	.avmmwrite             ( avmm_arb_write       ),
+	.avmmwritedata         ( avmm_arb_writedata   ),
+	.avmmrequest           ( avmm1_if_sb_request  ),
+	.avmmreservedin        ( 9'b0                 ),
+  // Bit 8 is for cdr_pll; Bit 9 is for the refclk mux
+	.blockselect           ({ {60{1'b0}},  avmm1_if_bsel_refclk_mux,     avmm1_if_bsel_cdr_pll,     {8{1'b0}}  }),
+	.readdatachnl          ({ {60{8'h00}}, avmm1_if_readdata_refclk_mux, avmm1_if_readdata_cdr_pll, {8{8'h00}} })
+
+);
+
+//---------------------------------------------------------------------------------------
+// AVMM1 Soft Logic Wrapper Instantiation 
+//---------------------------------------------------------------------------------------
+ct1_xcvr_avmm1 
+#(  
+  .avmm_interfaces                          ( 1                                        ),
+  .rcfg_enable                              ( rcfg_enable                              ),
+  .calibration_type                         ( hssi_avmm1_if_calibration_type           ),
+  .hssi_avmm1_if_pcs_calibration_feature_en ( hssi_avmm1_if_pcs_calibration_feature_en )
+) 
+ct1_xcvr_avmm1_inst 
+(
+  //AVMM Inputs
+  .avmm_clk                            ( avmm_arb_clk          ),
+  .avmm_reset                          ( avmm_arb_reset        ),
+  .avmm_address                        ( avmm_arb_address[9:0] ),
+  .avmm_write                          ( avmm_arb_write        ),
+  .avmm_read                           ( avmm_arb_read         ),
+  .avmm_writedata                      ( avmm_arb_writedata    ),
+  .avmm_readdata_int                   ( avmm1_if_readdata     ), 
+  //AVMM Outputs
+  .avmm_readdata                       ( avmm_arb_readdata     ), 
+  .avmm_waitrequest                    ( avmm_arb_waitrequest  ), 
+  
+  //Sideband Input Signals
+  .avmm_busy                           ( avmm1_if_sb_busy             ),
+  .avmm_readdatavalid                  ( avmm1_if_sb_readdatavalid    ),
+  .avmm_cmdfifo_pfull                  ( avmm1_if_sb_cmdfifo_wr_pfull ),
+  //Sideband Output Signals                     
+  .avmm_request                        ( avmm1_if_sb_request          )
+
+);
+
+//---------------------------------------------------------------------------------------
+// AIB Adapter Atom
+//---------------------------------------------------------------------------------------
+ct1_hssi_pma_channel_pll_pld_adapt cdr_pll_pld_adapt_inst
+(
+
+  //INPUTS
+  .rst_n            (~pld_adapt_pll_powerdown),        //pll powerdown from PLD, make reset active high
+  .int_pfdmode_lock (pld_adapt_pll_locked),     //pll_locked from PLL to PLD adapter
+
+  //OUTPUTS
+  .int_rst_n        (pll_powerdown_stat),   
+  .pfdmode_lock     (csr_in_pll_locked),        //pll_locked to core
+  
+  //AVMM INPUTS
+  .avmmclk          (avmm1_if_clk)
+
+);
+
+//---------------------------------------------------------------------------------------
+// Refclk Select Mux Atom 
+//---------------------------------------------------------------------------------------
+  
+//The following parameters are auto-resolved in U2B2_MAPPING
+localparam pma_cdr_refclk_select_mux_xmux_refclk_src                    = "refclk_iqclk";					           
+localparam pma_cdr_refclk_select_mux_receiver_detect_src                = "iqclk_src";                   
+localparam pma_cdr_refclk_select_mux_xpm_iqref_mux_iqclk_sel            = "power_down";				       
+localparam pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch0_src         = "scratch0_power_down";  
+localparam pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch1_src         = "scratch1_power_down";  
+localparam pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch2_src         = "scratch2_power_down";  
+localparam pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch3_src         = "scratch3_power_down";  
+localparam pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch4_src         = "scratch4_power_down";  
+
+ct1_hssi_pma_cdr_refclk_select_mux 
+#(
+  .refclk_select						          (pma_cdr_refclk_select_mux_refclk_select),                      
+  .silicon_rev						            (pma_cdr_refclk_select_mux_silicon_rev),
+  .inclk0_logical_to_physical_mapping (pma_cdr_refclk_select_mux_inclk0_logical_to_physical_mapping), 
+  .inclk1_logical_to_physical_mapping (pma_cdr_refclk_select_mux_inclk1_logical_to_physical_mapping),
+  .inclk2_logical_to_physical_mapping (pma_cdr_refclk_select_mux_inclk2_logical_to_physical_mapping),
+  .inclk3_logical_to_physical_mapping (pma_cdr_refclk_select_mux_inclk3_logical_to_physical_mapping),
+  .inclk4_logical_to_physical_mapping (pma_cdr_refclk_select_mux_inclk4_logical_to_physical_mapping),
+  .powerdown_mode                     (pma_cdr_refclk_select_mux_powerdown_mode),
+  .receiver_detect_src                (pma_cdr_refclk_select_mux_receiver_detect_src),
+  .xmux_refclk_src                    (pma_cdr_refclk_select_mux_xmux_refclk_src),
+  .pm_cr_tx_rx_scratch0_src         (pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch0_src),
+  .pm_cr_tx_rx_scratch1_src	        (pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch1_src),
+  .pm_cr_tx_rx_scratch2_src	        (pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch2_src),
+  .pm_cr_tx_rx_scratch3_src	        (pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch3_src),
+  .pm_cr_tx_rx_scratch4_src	        (pma_cdr_refclk_select_mux_xpm_iqref_mux_scratch4_src),
+  .xpm_iqref_mux_iqclk_sel		        (pma_cdr_refclk_select_mux_xpm_iqref_mux_iqclk_sel)
+) 
+inst_ct1_hssi_pma_cdr_refclk_select_mux 
+(            
+  //INPUTS
+  .ref_iqclk          ({ 7'b0, pll_refclk4, pll_refclk3, pll_refclk2, pll_refclk1, pll_refclk0 }),  
+  .core_refclk        (1'b0),  
+  .iqtxrxclk          (1'b0),  
+  .avmmaddress        (avmm1_if_address[9:0] ),
+  .avmmclk            (avmm1_if_clk          ),
+  .avmmread           (avmm1_if_read         ),
+  .avmmwrite          (avmm1_if_write        ),
+  .avmmwritedata      (avmm1_if_writedata    ),  
+  .avmmreaddata		    (avmm1_if_readdata_refclk_mux),
+  
+  //OUTPUTS
+  .blockselect        (avmm1_if_bsel_refclk_mux), 
+  .refclk             (refclk_mux_out)
+
+);
+   
+//---------------------------------------------------------------------------------------
+// CDR PLL Atom
+//---------------------------------------------------------------------------------------
+
+// The following parameters are auto-resolved by FITTER_ATOM_SOLVER or FITTER_OTHER 
+localparam cdr_pll_uc_ro_cal_status   = "uc_ro_cal_notdone";
+localparam cdr_pll_rstb               = "cdr_lf_reset_off";
+
+ct1_hssi_pma_channel_pll 
+#(
+  .analog_mode                       (cdr_pll_analog_mode                    ),
+  .chgpmp_vccreg                     (cdr_pll_chgpmp_vccreg                  ),
+  .enable_idle_rx_channel_support    (cdr_pll_enable_idle_rx_channel_support ),
+  .position                          (cdr_pll_position                       ),
+  .power_mode                        (cdr_pll_power_mode                     ),
+  .requires_gt_capable_channel       (cdr_pll_requires_gt_capable_channel    ),
+  .side                              (cdr_pll_side                           ),
+  .speed_grade                       (cdr_pll_speed_grade                    ),
+  .top_or_bottom                     (cdr_pll_top_or_bottom                  ),
+  .bandwidth_range_high              (bin_cdr_pll_bandwidth_range_high       ),
+  .bandwidth_range_low               (bin_cdr_pll_bandwidth_range_low        ),
+  .f_max_cmu_out_freq                (bin_cdr_pll_f_max_cmu_out_freq         ),
+  .f_max_m_counter                   (bin_cdr_pll_f_max_m_counter            ),
+  .f_max_pfd                         (bin_cdr_pll_f_max_pfd                  ),
+  .f_max_ref                         (bin_cdr_pll_f_max_ref                  ),
+  .f_max_vco                         (bin_cdr_pll_f_max_vco                  ),
+  .f_min_gt_channel                  (bin_cdr_pll_f_min_gt_channel           ),
+  .f_min_pfd                         (bin_cdr_pll_f_min_pfd                  ),
+  .f_min_ref                         (bin_cdr_pll_f_min_ref                  ),
+  .f_min_vco                         (bin_cdr_pll_f_min_vco                  ),
+  .reference_clock_frequency         (bin_cdr_pll_reference_clock_frequency  ),          
+  .out_freq                          (bin_cdr_pll_out_freq),   
+  .vco_freq		                       (bin_cdr_pll_vco_freq),
+  .datarate_bps		                   (bin_cdr_pll_datarate_bps),
+  .silicon_rev	                     (cdr_pll_silicon_rev),
+  .mcnt_div                          (cdr_pll_mcnt_div),     
+  .ncnt_div		                       (cdr_pll_ncnt_div),
+  .n_counter                         (cdr_pll_n_counter),    
+  .pfd_l_counter                     (cdr_pll_pfd_l_counter),
+  .pd_l_counter                      (cdr_pll_pd_l_counter),
+  .lpd_counter                       (cdr_pll_lpd_counter),
+  .lpfd_counter                      (cdr_pll_lpfd_counter),
+  .prot_mode                         (cdr_pll_prot_mode),
+  .bw_mode	                         (cdr_pll_bw_mode),
+  .cgb_div                           (cdr_pll_cgb_div),                
+  .txpll_hclk_driver_enable          (cdr_pll_txpll_hclk_driver_enable),  
+  .direct_fb                         (cdr_pll_direct_fb),                
+  .iqclk_sel                         (cdr_pll_iqclk_sel),
+  .set_cdr_input_freq_range          (cdr_pll_set_cdr_input_freq_range),
+  .chgpmp_current_dn_trim            (cdr_pll_chgpmp_current_dn_trim),
+  .chgpmp_up_pd_trim_double          (cdr_pll_chgpmp_up_pd_trim_double),
+  .chgpmp_current_up_pd              (cdr_pll_chgpmp_current_up_pd),
+  .chgpmp_current_up_trim            (cdr_pll_chgpmp_current_up_trim),
+  .chgpmp_dn_pd_trim_double          (cdr_pll_chgpmp_dn_pd_trim_double),
+  .chgpmp_current_dn_pd              (cdr_pll_chgpmp_current_dn_pd),
+  .cal_vco_count_length              (cdr_pll_cal_vco_count_length),
+  .atb_select_control	               (cdr_pll_atb_select_control),
+  .auto_reset_on                     (cdr_pll_auto_reset_on), 
+  .bbpd_data_pattern_filter_select	 (cdr_pll_bbpd_data_pattern_filter_select),
+  .cdr_odi_select		                 (cdr_pll_cdr_odi_select),
+  .cdr_phaselock_mode                (cdr_pll_cdr_phaselock_mode),
+  .cdr_powerdown_mode                (cdr_pll_cdr_powerdown_mode),
+  .chgpmp_current_pfd	               (cdr_pll_chgpmp_current_pfd),
+  .chgpmp_replicate	                 (cdr_pll_chgpmp_replicate),
+  .chgpmp_testmode		               (cdr_pll_chgpmp_testmode),
+  .clklow_mux_select	               (cdr_pll_clklow_mux_select),
+  .diag_loopback_enable	             (cdr_pll_diag_loopback_enable),
+  .disable_up_dn		                 (cdr_pll_disable_up_dn),
+  .fref_clklow_div		               (cdr_pll_fref_clklow_div),
+  .fref_mux_select		               (cdr_pll_fref_mux_select),
+  .gpon_lck2ref_control	             (cdr_pll_gpon_lck2ref_control),
+  .initial_settings                  (cdr_pll_initial_settings),
+  .lck2ref_delay_control             (cdr_pll_lck2ref_delay_control),
+  .lf_resistor_pd		                 (cdr_pll_lf_resistor_pd),
+  .lf_resistor_pfd		               (cdr_pll_lf_resistor_pfd),
+  .lf_ripple_cap		                 (cdr_pll_lf_ripple_cap),
+  .loop_filter_bias_select	         (cdr_pll_loop_filter_bias_select),
+  .loopback_mode		                 (cdr_pll_loopback_mode),
+  .ltd_ltr_micro_controller_select	 (cdr_pll_ltd_ltr_micro_controller_select),
+  .pd_fastlock_mode	                 (cdr_pll_pd_fastlock_mode),
+  .reverse_serial_loopback	         (cdr_pll_reverse_serial_loopback),
+  .set_cdr_v2i_enable	               (cdr_pll_set_cdr_v2i_enable),
+  .set_cdr_vco_reset	               (cdr_pll_set_cdr_vco_reset),
+  .set_cdr_vco_speed	               (cdr_pll_set_cdr_vco_speed),
+  .set_cdr_vco_speed_fix             (cdr_pll_set_cdr_vco_speed_fix),
+  .set_cdr_vco_speed_pciegen3        (cdr_pll_set_cdr_vco_speed_pciegen3),
+  .pma_width		                     (cdr_pll_pma_width),
+  .is_cascaded_pll		               (cdr_pll_is_cascaded_pll),
+  .optimal			                     (cdr_pll_optimal),
+  .primary_use		                   (cdr_pll_primary_use),
+  .sup_mode		                       (cdr_pll_sup_mode),
+  .tx_pll_prot_mode                  (cdr_pll_tx_pll_prot_mode),
+  .pcie_gen		                       (cdr_pll_pcie_gen),
+  .rstb			                         (cdr_pll_rstb),
+  .uc_ro_cal			                   (cdr_pll_uc_ro_cal),
+  .uc_ro_cal_status		               (cdr_pll_uc_ro_cal_status),
+  .vco_overrange_voltage             (cdr_pll_vco_overrange_voltage),
+  .vco_underrange_voltage            (cdr_pll_vco_underrange_voltage),
+  .vco_bypass                        (cdr_pll_vco_bypass)
+     
+) 
+inst_ct1_hssi_pma_channel_pll 
+(
+	
+	//INPUTS
+	.refclk             (refclk_mux_out),
+  .rst_n              (pll_powerdown_stat),   
+	.ltr                (1'b1),
+	.ltd_b              (1'b1),
+  .sd                 (1'b1),    
+  .ppm_lock           (1'b1),    
+  .tx_ser_pclk_test   (1'b0),
+  .rx_deser_pclk_test (1'b0),
+  .pcie_sw_ret        (2'b0),
+  .adapt_en           (1'b0),
+  .dfe_test           (1'b1),
+  .early_eios         (1'b1),
+  .fpll_test0         (1'b0),
+  .fpll_test1         (1'b0),
+  .ibp50u             (6'h3f),
+	//OUTPUTS
+	.clk0_pfd           (tx_serial_clk),		 
+	.pfdmode_lock       (pld_adapt_pll_locked),
+	
+	//AVMM - INPUTS
+  .avmmaddress        (avmm1_if_address[9:0] ),
+  .avmmclk            (avmm1_if_clk          ),
+  .avmmread           (avmm1_if_read         ),
+  .avmmwrite          (avmm1_if_write        ),
+  .avmmwritedata      (avmm1_if_writedata    ),
+  //AVMM - OUTPUT
+	.avmmreaddata		    (avmm1_if_readdata_cdr_pll),
+	.blockselect        (avmm1_if_bsel_cdr_pll)
+  	
+);
+   
+
+
+endmodule

@@ -1,0 +1,36 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+package require -exact qsys 16.0
+
+create_system {pll_148}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$param0}
+set_project_property HIDE_FROM_IP_CATALOG {true}
+
+# Instances and instance parameters
+add_instance iopll_0 altera_iopll
+set_instance_parameter_value iopll_0 {gui_reference_clock_frequency} {270.0}
+set_instance_parameter_value iopll_0 {gui_output_clock_frequency0} {148.5}
+
+# exported interfaces
+set_instance_property iopll_0 AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {pll_148.qsys}

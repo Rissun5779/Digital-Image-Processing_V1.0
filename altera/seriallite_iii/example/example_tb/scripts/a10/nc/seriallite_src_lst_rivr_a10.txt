@@ -1,0 +1,19 @@
+
+
+// Infrastructure components
+../../demo/src/dp_sync.v
+../../demo/src/dp_hs_req.v
+../../demo/src/dp_hs_resp.v
+
+// Demo Components
+../../demo/src/traffic_gen.sv
+../../demo/src/prbs_generator.v
+../../demo/src/prbs_poly.v
+../../demo/src/traffic_check.v
+../../demo/src/source_reconfig.v
+../../demo/src/sink_reconfig.v
+
+// Testbench Components
+../skew_insertion.v
+../testbench.sv
+../test_env.v

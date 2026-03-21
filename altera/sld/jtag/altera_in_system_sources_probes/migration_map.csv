@@ -1,0 +1,14 @@
+CONDITION,DO
+,set_new_param device_family [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param source_width [get_old_param SOURCE_WIDTH]
+,set_new_param probe_width [get_old_param PROBE_WIDTH]
+,set_new_param sld_instance_index [get_old_param SLD_INSTANCE_INDEX]
+,set_new_param instance_id [get_old_param INSTANCE_ID]
+,set_new_param source_initial_value [string trim [get_old_param SOURCE_INITIAL_VALUE]]
+,set_new_param enable_metastability [get_old_param ENABLE_METASTABILITY]
+"[get_old_param SLD_AUTO_INSTANCE_INDEX] == ""YES""","set_new_param gui_use_auto_index ""true"""
+"[get_old_param SLD_AUTO_INSTANCE_INDEX] == ""NO""","set_new_param gui_use_auto_index ""false"""
+[exists_old_param USED_PORT_source_ena] == 1,"set_new_param create_source_clock_enable ""true"""
+[exists_old_param USED_PORT_source_ena] == 0,"set_new_param create_source_clock_enable ""false"""
+"[get_old_param ENABLE_METASTABILITY] == ""YES""","set_new_param create_source_clock ""true"""
+"[get_old_param ENABLE_METASTABILITY] == ""NO""","set_new_param create_source_clock ""false"""

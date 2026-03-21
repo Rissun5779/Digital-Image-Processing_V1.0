@@ -1,0 +1,14 @@
+CONDITION,DO
+,"set_new_param design_env ""NATIVE"""
+,"set_new_param selected_device_family [get_old_param ""INTENDED_DEVICE_FAMILY""]"
+"[get_old_param ""SINGLE_PRECISION_INTERNAL""] == ""true""","set_new_param PRECISION ""SINGLE"""
+"[get_old_param ""SINGLE_PRECISION_INTERNAL""] == ""false""","set_new_param PRECISION ""DOUBLE"""
+,"set_new_param VECTOR_SIZE [get_old_param ""VECTORSIZE""]"
+,"set_new_param BLOCK_SIZE [get_old_param ""BLOCKS""]"
+,"set_new_param AA_COLUMNS [get_old_param ""COLUMNSAA""]"
+,"set_new_param AA_ROWS [get_old_param ""ROWSAA""]"
+,"set_new_param BB_COLUMNS [get_old_param ""COLUMNSBB""]"
+"[get_old_param ""reset"" ] == ""false""",set_new_param RESET_PORT 0
+"[get_old_param ""reset"" ] == ""true""",set_new_param RESET_PORT 1
+"[get_old_param ""enable""] == ""false""",set_new_param ENABLE_PORT 0
+"[get_old_param ""enable""] == ""true""",set_new_param ENABLE_PORT 1

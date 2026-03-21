@@ -1,0 +1,271 @@
+
+array unset createdGroup
+array set createdGroup {}
+#
+# Groups
+#
+if {[catch {group get -using [list Clock]}]} {
+set createdGroup([list Clock]) 1
+catch {group new -name Clock -overlay 0}
+}
+if {[catch {group get -using [list Reset]}]} {
+set createdGroup([list Reset]) 1
+catch {group new -name Reset -overlay 0}
+}
+if {[catch {group get -using [list MAC Avalon-MM CSR]}]} {
+set createdGroup([list MAC Avalon-MM CSR]) 1
+catch {group new -name {MAC Avalon-MM CSR} -overlay 0}
+}
+if {[catch {group get -using [list MAC Avalon-ST TX]}]} {
+set createdGroup([list MAC Avalon-ST TX]) 1
+catch {group new -name {MAC Avalon-ST TX} -overlay 0}
+}
+if {[catch {group get -using [list MAC Avalon-ST RX]}]} {
+set createdGroup([list MAC Avalon-ST RX]) 1
+catch {group new -name {MAC Avalon-ST RX} -overlay 0}
+}
+if {[catch {group get -using [list MAC TX Status]}]} {
+set createdGroup([list MAC TX Status]) 1
+catch {group new -name {MAC TX Status} -overlay 0}
+}
+if {[catch {group get -using [list MAC RX Status]}]} {
+set createdGroup([list MAC RX Status]) 1
+catch {group new -name {MAC RX Status} -overlay 0}
+}
+if {[catch {group get -using [list XGMII TX]}]} {
+set createdGroup([list XGMII TX]) 1
+catch {group new -name {XGMII TX} -overlay 0}
+}
+if {[catch {group get -using [list XGMII RX]}]} {
+set createdGroup([list XGMII RX]) 1
+catch {group new -name {XGMII RX} -overlay 0}
+}
+if {[catch {group get -using [list PHY Avalon-MM CSR]}]} {
+set createdGroup([list PHY Avalon-MM CSR]) 1
+catch {group new -name {PHY Avalon-MM CSR} -overlay 0}
+}
+if {[catch {group get -using [list PHY Speed]}]} {
+set createdGroup([list PHY Speed]) 1
+catch {group new -name {PHY Speed} -overlay 0}
+}
+if {[catch {group get -using [list PHY Serial Interface]}]} {
+set createdGroup([list PHY Serial Interface]) 1
+catch {group new -name {PHY Serial Interface} -overlay 0}
+}
+if {[catch {group get -using [list PHY Status]}]} {
+set createdGroup([list PHY Status]) 1
+catch {group new -name {PHY Status} -overlay 0}
+}
+if {[info exists createdGroup([list Clock])]} {
+group using Clock
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.csr_clk}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac32b_clk}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac64b_clk}]} ]
+}
+
+if {[info exists createdGroup([list Reset])]} {
+group using Reset
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.reset}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.tx_digitalreset}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.rx_digitalreset}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.tx_analogreset}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.rx_analogreset}]} ]
+}
+
+if {[info exists createdGroup([list MAC Avalon-MM CSR])]} {
+group using {MAC Avalon-MM CSR}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.csr_address[9:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.csr_read}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.csr_write}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.csr_writedata[31:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.csr_readdata[31:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.csr_waitrequest}]} ]
+}
+
+if {[info exists createdGroup([list MAC Avalon-ST TX])]} {
+group using {MAC Avalon-ST TX}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_valid}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_ready}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_startofpacket}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_endofpacket}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_data[63:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_empty[2:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_tx_error}]} ]
+}
+
+if {[info exists createdGroup([list MAC Avalon-ST RX])]} {
+group using {MAC Avalon-ST RX}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_valid}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_ready}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_startofpacket}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_endofpacket}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_data[63:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_empty[2:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rx_error[5:0]}]} ]
+}
+
+if {[info exists createdGroup([list MAC TX Status])]} {
+group using {MAC TX Status}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_txstatus_valid}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_txstatus_data[39:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_txstatus_error[6:0]}]} ]
+}
+
+if {[info exists createdGroup([list MAC RX Status])]} {
+group using {MAC RX Status}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rxstatus_valid}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rxstatus_data[39:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.avalon_st_rxstatus_error[6:0]}]} ]
+}
+
+if {[info exists createdGroup([list XGMII TX])]} {
+group using {XGMII TX}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.xgmii_tx_valid}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.xgmii_tx_control[3:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.xgmii_tx_data[31:0]}]} ]
+}
+
+if {[info exists createdGroup([list XGMII RX])]} {
+group using {XGMII RX}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.xgmii_rx_valid}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.xgmii_rx_control[3:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.mac.xgmii_rx_data[31:0]}]} ]
+}
+
+if {[info exists createdGroup([list PHY Avalon-MM CSR])]} {
+group using {PHY Avalon-MM CSR}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.csr_address[10:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.csr_read}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.csr_write}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.csr_writedata[31:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.csr_readdata[31:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.csr_waitrequest}]} ]
+}
+
+if {[info exists createdGroup([list PHY Speed])]} {
+group using {PHY Speed}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.operating_speed[2:0]}]} ]
+}
+
+if {[info exists createdGroup([list PHY Serial Interface])]} {
+group using {PHY Serial Interface}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.tx_serial_clk[0:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.rx_cdr_refclk_1}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.tx_serial_data[0:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.rx_serial_data[0:0]}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.rx_pma_clkout}]} ]
+}
+
+if {[info exists createdGroup([list PHY Status])]} {
+group using {PHY Status}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.rx_block_lock}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.led_an}]} ] \
+    [subst  {[format {tb_top.DUT.CHANNEL_GEN[0].genblk1.u_channel.phy.rx_is_lockedtodata[0:0]}]} ]
+}
+
+
+set groupId0 [waveform add -groups Clock]
+
+
+set groupId0 [waveform add -groups Reset]
+
+
+set groupId0 [waveform add -groups {{MAC Avalon-MM CSR}}]
+
+
+set groupId0 [waveform add -groups {{MAC Avalon-ST TX}}]
+
+
+set groupId0 [waveform add -groups {{MAC Avalon-ST RX}}]
+
+
+set groupId0 [waveform add -groups {{MAC TX Status}}]
+
+
+set groupId0 [waveform add -groups {{MAC RX Status}}]
+
+
+set groupId0 [waveform add -groups {{XGMII TX}}]
+
+
+set groupId0 [waveform add -groups {{XGMII RX}}]
+
+
+set groupId0 [waveform add -groups {{PHY Avalon-MM CSR}}]
+
+
+set groupId0 [waveform add -groups {{PHY Speed}}]
+
+
+set groupId0 [waveform add -groups {{PHY Serial Interface}}]
+
+
+set groupId0 [waveform add -groups {{PHY Status}}]
+
+
+waveform xview limits 72876000000fs 72876002000fs

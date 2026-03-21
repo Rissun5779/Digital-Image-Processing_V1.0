@@ -1,0 +1,77 @@
+PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,DISPLAY_UNITS,DISPLAY_HINT,ALLOWED_RANGES,WIDTH,DESCRIPTION,VISIBLE,SYSTEM_INFO,ENABLED,HDL_PARAMETER,DERIVED,AFFECTS_GENERATION,TAB,UPDATE_CALLBACK,IS_HDL_PARAM
+INTENDED_DEVICE_FAMILY,STRING,,,,,,,,FALSE,{DEVICE_FAMILY},,,,,,update_device_family,
+operating_mode_combo,STRING,Flash Programming,What operating mode will be used?,,,,,"""Select operating mode""",,,,,,TRUE,General,update_ui_settings,
+flash_type_combo,STRING,CFI Parallel Flash,What is the targeted flash?,,,,,"""Select flash memory devices""",,,,,,TRUE,General,update_ui_settings,
+TRISTATE_CHECKBOX,BOOLEAN,0,Set flash bus pins to tri-state when not in use,,,,,"""Select to tri-state all pins interfacing with flash memory device when PFL megafunction does not require an access to the flash memory""",,,,TRUE,,TRUE,General,,
+num_flash_combo,INTEGER,1,How many flash devices will be used?,,,,,"""Select number of flash devices""",,,,,,TRUE,Flash Interface Setting,update_ui_settings,
+flash_device_combo,STRING,CFI 8 Mbit,What's the largest flash device that will be used?,,,,,"""Select largest density of flash devices""",,,,,,TRUE,Flash Interface Setting,,
+flash_data_width_combo,STRING,16 bits,What is the flash interface data width?,,,,,"""Select flash data width in bits""",,,,,,TRUE,Flash Interface Setting,,
+flash_nreset_check,BOOLEAN,0,Allow user to control the flash_nreset pin,,,,,"""Select to connect reset pin of flash memory device""",,,,,,TRUE,Flash Interface Setting,,
+num_qflash_combo,INTEGER,4,How many flash devices will be used?,,,,,"""Select number of flash devices""",,,,,,TRUE,Flash Interface Setting,,
+qflash_size_combo,STRING,EPCQ 16 Mbit,What's the flash device density?,,,,,"""Select density of flash devices""",,,,,,TRUE,Flash Interface Setting,,
+qflash_mfc_combo,STRING,Macronix,What's the Quad SPI flash device manufacturer?,,,,,"""Select device manufacturer of the quad SPI flash""",,,,,,TRUE,Flash Interface Setting,update_ui_settings,
+QFLASH_FAST_SPEED,BOOLEAN,0,Flash support fast speed read,,,,,"""Select for devices that support fast speed read""",,,,,,TRUE,Flash Interface Setting,,TRUE
+qspi_size_combo,STRING,QSPI 8 Mbit,What's the Quad SPI flash device density?,,,,,"""Select density of flash devices""",,,,,,TRUE,Flash Interface Setting,,
+num_nflash_combo,INTEGER,1,How many flash devices will be used?,,,1,,"""Select number of flash devices""",,,FALSE,,,TRUE,Flash Interface Setting,,
+nflash_mfc_combo,STRING,Micron(NAND),What's the NAND flash device manufacturer?,,,,,"""Select device manufacturer of the NAND flash""",,,,,,TRUE,Flash Interface Setting,update_ui_settings,
+nflash_device_combo,STRING,NAND 512 Mbit,What's the largest flash device that will be used?,,,,,"""Select density of flash devices""",,,,,,TRUE,Flash Interface Setting,,
+nflash_data_width_combo,STRING,8 bits,What is the flash interface data width?,,,,,"""Select flash data width in bits""",,,,,,TRUE,Flash Interface Setting,,
+nflash_rb_edit,LONG,0,"What is the byte address for reserved block area, in hex?",,HEXADECIMAL,{0:4294967295},32,"""Specifies the start address of the reserved block area for bad block management""",,,,,,TRUE,Flash Interface Setting,,
+FLASH_ECC_CHECKBOX,BOOLEAN,0,Enable ECC checking for NAND flash operation,,,,,"""Enables the support for on-die ECC""",,,,,,TRUE,Flash Interface Setting,update_ui_settings,TRUE
+enhanced_flash_programming_combo,STRING,Area,Flash programming IP optimization target,,,,,"""Select  flash programming IP optimization""",,,,,,TRUE,Flash Programming,,
+fifo_size_combo,INTEGER,16,Flash programming IP FIFO size,words,,,,"""Select the FIFO size if you select Speed for flash programming IP optimization""",,,,,,TRUE,Flash Programming,,
+disable_crc_check,BOOLEAN,1,Add Block-CRC verification acceleration support,,,,,"""Select to add a block to accelerate verification""",,,,,,TRUE,Flash Programming,,
+clock_frequency,FLOAT,100,What is the external clock frequency?,MHz,,,,"""Specify the user-supplied clock frequency for the megafunction to configure the FPGA""",,,,,,TRUE,FPGA Configuration,,
+flash_access_time,INTEGER,100,What is the flash access time?,ns,,,,"""Specify the access time of the CFI flash, in ns""",,,,,,TRUE,FPGA Configuration,,
+nflash_access_time,INTEGER,100,What is the flash random page read access time?,us,,,,"""Specify NAND flash random page read access time, in us""",,,,,,TRUE,FPGA Configuration,,
+option_bit_address,LONG,,"What is the byte address of the option bits, in hex?",,HEXADECIMAL,{0:4294967295},32,"""Specify the start address in which option bits are stored in the flash""",,,,,,TRUE,FPGA Configuration,,
+fpga_conf_scheme_combo,STRING,PS (passive serial),Which FPGA configuration scheme will be used?,,,,,"""Select FPGA configuration scheme""",,,,,,TRUE,FPGA Configuration,,
+safe_mode_combo,STRING,Halt,What should occur on configuration failure?,,,,,"""Select configuration behavior after configuration failure""",,,,,,TRUE,FPGA Configuration,update_ui_settings,
+safe_mode_revert_edit,LONG,,What is the byte address to retry from on failure?,,HEXADECIMAL,{0:4294967295},32,"""Specify the flash address for the PFL megafunction to read from reconfiguration for a configuration failure""",,,,,,TRUE,FPGA Configuration,,
+reconfigure_checkbox,BOOLEAN,0,Include input to force reconfiguration,,,,,"""Select to enable optional pin for FPGA reconfiguration""",,,,,,TRUE,FPGA Configuration,,
+rsu_watchdog_checkbox,BOOLEAN,0,Enable watchdog timer on Remote System Update support,,,,,"""Select to enable watchdog timer for remote system upgrade support""",,,,,,TRUE,FPGA Configuration,,
+rsu_watchdog_counter_edit,FLOAT,100,Time period before watchdog timed out,ms,,{0:9999.99},,"""Specify time out period of the watchdog timer""",,,,,,TRUE,FPGA Configuration,,
+dclk_divisor_combo,INTEGER,1,Ratio between input clock and DCLK output?,,,,,"""Select ratio between the input clock and DCLK""",,,,,,TRUE,FPGA Configuration,,
+read_modes_combo,STRING,Normal Mode,Use advance read mode?,,,,,"""Select option to improve overall flash access time for the read process during the FPGA configuration""",,,,,,TRUE,FPGA Configuration,,
+decompressor_combo,STRING,None,Enable the enhanced bitstream-decompression block?,,,,,"""Select to enable or diable the enhanced bitstream decompression block""",,,,,,TRUE,FPGA Configuration,update_ui_settings,
+FEATURES_PGM,INTEGER,1,,,,,,,FALSE,,TRUE,TRUE,TRUE,,,,
+FEATURES_CFG,INTEGER,0,,,,,,,FALSE,,TRUE,TRUE,TRUE,,,,
+FLASH_TYPE,STRING,CFI_FLASH,,,,,,,FALSE,,TRUE,TRUE,TRUE,,,,
+ADDR_WIDTH,INTEGER,20,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+FLASH_DATA_WIDTH,INTEGER,16,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+N_FLASH,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+FLASH_NRESET_CHECKBOX,BOOLEAN,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+QFLASH_MFC,STRING,ALTERA,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+EXTRA_ADDR_BYTE,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+NFLASH_MFC,STRING,NUMONYX,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+ENHANCED_FLASH_PROGRAMMING,BOOLEAN,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+FIFO_SIZE,INTEGER,16,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+DISABLE_CRC_CHECKBOX,BOOLEAN,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+CLK_DIVISOR,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+PAGE_CLK_DIVISOR,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+FLASH_NRESET_COUNTER,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+NORMAL_MODE,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+BURST_MODE,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+PAGE_MODE,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+MT28EW_PAGE_MODE,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+BURST_MODE_SPANSION,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+BURST_MODE_INTEL,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+BURST_MODE_LATENCY_COUNT,INTEGER,4,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+BURST_MODE_NUMONYX,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+FLASH_BURST_EXTRA_CYCLE,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+NRB_ADDR,INTEGER,65667072,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+US_UNIT_COUNTER,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+FLASH_STATIC_WAIT_WIDTH,INTEGER,15,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+CONF_DATA_WIDTH,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+OPTION_BITS_START_ADDRESS,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+CONF_WAIT_TIMER_WIDTH,INTEGER,16,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+DCLK_DIVISOR,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+DECOMPRESSOR_MODE,STRING,NONE,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+SAFE_MODE_HALT,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+SAFE_MODE_RETRY,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+SAFE_MODE_REVERT,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+SAFE_MODE_REVERT_ADDR,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+QSPI_DATA_DELAY,INTEGER,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+QSPI_DATA_DELAY_COUNT,INTEGER,1,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+PFL_RSU_WATCHDOG_ENABLED,BOOLEAN,0,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE
+RSU_WATCHDOG_COUNTER,INTEGER,100000000,,,,,,,FALSE,,TRUE,,TRUE,,,,TRUE

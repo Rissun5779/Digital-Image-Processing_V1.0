@@ -1,0 +1,35 @@
+{ 
+@@ set tab "  "
+$tab"configurations" : [
+@@ set profile_number 0 
+@@ foreach profile $list_of_profiles { 
+$tab$tab\{ 
+$tab$tab$tab"name" : "$profile",
+$tab$tab$tab"parameters" :\{
+@@ set list_of_params [dict get $dict_list_of_params $profile]
+@@ set list_of_values [dict get $dict_list_of_values $profile]
+@@ set param_number 0 
+@@   foreach parameter $list_of_params value $list_of_values {
+@@ #################################################
+@@ # the last param:value should not contain comma i.e ,
+@@     if {$param_number==[llength $list_of_params]-1} {
+$tab$tab$tab$tab"$parameter" : "$value"
+@@     } else {
+$tab$tab$tab$tab"$parameter" : "$value",
+@@     }
+@@ #################################################
+@@   incr param_number
+@@   }
+$tab$tab$tab\}
+@@ #################################################
+@@ # the last profile should not contain comma i.e ,
+@@ if {$profile_number==[llength $list_of_profiles]-1} {
+$tab$tab\}
+@@ } else { 
+$tab$tab\},
+@@ }
+@@ #################################################
+@@ incr profile_number 
+@@ }
+$tab]
+}

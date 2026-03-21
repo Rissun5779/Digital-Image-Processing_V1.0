@@ -4,26 +4,28 @@
 
 `timescale 1 ps / 1 ps
 module NiosV (
-		input  wire        clk_clk,          //        clk.clk
-		output wire [7:0]  pio_hex_0_export, //  pio_hex_0.export
-		output wire [7:0]  pio_hex_1_export, //  pio_hex_1.export
-		output wire [7:0]  pio_hex_2_export, //  pio_hex_2.export
-		output wire [7:0]  pio_hex_3_export, //  pio_hex_3.export
-		output wire [7:0]  pio_led_export,   //    pio_led.export
-		input  wire [7:0]  pio_sw_export,    //     pio_sw.export
-		input  wire        reset_reset_n,    //      reset.reset_n
-		output wire [11:0] sdram_wire_addr,  // sdram_wire.addr
-		output wire [1:0]  sdram_wire_ba,    //           .ba
-		output wire        sdram_wire_cas_n, //           .cas_n
-		output wire        sdram_wire_cke,   //           .cke
-		output wire        sdram_wire_cs_n,  //           .cs_n
-		inout  wire [15:0] sdram_wire_dq,    //           .dq
-		output wire [1:0]  sdram_wire_dqm,   //           .dqm
-		output wire        sdram_wire_ras_n, //           .ras_n
-		output wire        sdram_wire_we_n   //           .we_n
+		input  wire        clk_clk,             //          clk.clk
+		output wire        clk_sdram_clk,       //    clk_sdram.clk
+		output wire [7:0]  pio_hex_0_export,    //    pio_hex_0.export
+		output wire [7:0]  pio_hex_1_export,    //    pio_hex_1.export
+		output wire [7:0]  pio_hex_2_export,    //    pio_hex_2.export
+		output wire [7:0]  pio_hex_3_export,    //    pio_hex_3.export
+		output wire [7:0]  pio_led_export,      //      pio_led.export
+		input  wire [7:0]  pio_sw_export,       //       pio_sw.export
+		output wire        pll_0_locked_export, // pll_0_locked.export
+		input  wire        reset_reset_n,       //        reset.reset_n
+		output wire [12:0] sdram_addr,          //        sdram.addr
+		output wire [1:0]  sdram_ba,            //             .ba
+		output wire        sdram_cas_n,         //             .cas_n
+		output wire        sdram_cke,           //             .cke
+		output wire        sdram_cs_n,          //             .cs_n
+		inout  wire [15:0] sdram_dq,            //             .dq
+		output wire [1:0]  sdram_dqm,           //             .dqm
+		output wire        sdram_ras_n,         //             .ras_n
+		output wire        sdram_we_n           //             .we_n
 	);
 
-	wire         pll_0_outclk1_clk;                                         // pll_0:outclk_1 -> [SDRAM_0:clk, mm_interconnect_0:pll_0_outclk1_clk, rst_controller_001:clk]
+	wire         pll_0_outclk1_clk;                                         // pll_0:outclk_1 -> [SDRAM:clk, mm_interconnect_0:pll_0_outclk1_clk, rst_controller_001:clk]
 	wire  [31:0] niosv_data_manager_awaddr;                                 // NiosV:data_manager_awaddr -> mm_interconnect_0:NiosV_data_manager_awaddr
 	wire   [1:0] niosv_data_manager_bresp;                                  // mm_interconnect_0:NiosV_data_manager_bresp -> NiosV:data_manager_bresp
 	wire         niosv_data_manager_arready;                                // mm_interconnect_0:NiosV_data_manager_arready -> NiosV:data_manager_arready
@@ -80,7 +82,7 @@ module NiosV (
 	wire  [31:0] mm_interconnect_0_niosv_dm_agent_writedata;                // mm_interconnect_0:NiosV_dm_agent_writedata -> NiosV:dm_agent_writedata
 	wire         mm_interconnect_0_ram_s1_chipselect;                       // mm_interconnect_0:RAM_s1_chipselect -> RAM:chipselect
 	wire  [31:0] mm_interconnect_0_ram_s1_readdata;                         // RAM:readdata -> mm_interconnect_0:RAM_s1_readdata
-	wire  [14:0] mm_interconnect_0_ram_s1_address;                          // mm_interconnect_0:RAM_s1_address -> RAM:address
+	wire  [16:0] mm_interconnect_0_ram_s1_address;                          // mm_interconnect_0:RAM_s1_address -> RAM:address
 	wire   [3:0] mm_interconnect_0_ram_s1_byteenable;                       // mm_interconnect_0:RAM_s1_byteenable -> RAM:byteenable
 	wire         mm_interconnect_0_ram_s1_write;                            // mm_interconnect_0:RAM_s1_write -> RAM:write
 	wire  [31:0] mm_interconnect_0_ram_s1_writedata;                        // mm_interconnect_0:RAM_s1_writedata -> RAM:writedata
@@ -112,15 +114,15 @@ module NiosV (
 	wire   [1:0] mm_interconnect_0_pio_hex_3_s1_address;                    // mm_interconnect_0:PIO_HEX_3_s1_address -> PIO_HEX_3:address
 	wire         mm_interconnect_0_pio_hex_3_s1_write;                      // mm_interconnect_0:PIO_HEX_3_s1_write -> PIO_HEX_3:write_n
 	wire  [31:0] mm_interconnect_0_pio_hex_3_s1_writedata;                  // mm_interconnect_0:PIO_HEX_3_s1_writedata -> PIO_HEX_3:writedata
-	wire         mm_interconnect_0_sdram_0_s1_chipselect;                   // mm_interconnect_0:SDRAM_0_s1_chipselect -> SDRAM_0:az_cs
-	wire  [15:0] mm_interconnect_0_sdram_0_s1_readdata;                     // SDRAM_0:za_data -> mm_interconnect_0:SDRAM_0_s1_readdata
-	wire         mm_interconnect_0_sdram_0_s1_waitrequest;                  // SDRAM_0:za_waitrequest -> mm_interconnect_0:SDRAM_0_s1_waitrequest
-	wire  [21:0] mm_interconnect_0_sdram_0_s1_address;                      // mm_interconnect_0:SDRAM_0_s1_address -> SDRAM_0:az_addr
-	wire         mm_interconnect_0_sdram_0_s1_read;                         // mm_interconnect_0:SDRAM_0_s1_read -> SDRAM_0:az_rd_n
-	wire   [1:0] mm_interconnect_0_sdram_0_s1_byteenable;                   // mm_interconnect_0:SDRAM_0_s1_byteenable -> SDRAM_0:az_be_n
-	wire         mm_interconnect_0_sdram_0_s1_readdatavalid;                // SDRAM_0:za_valid -> mm_interconnect_0:SDRAM_0_s1_readdatavalid
-	wire         mm_interconnect_0_sdram_0_s1_write;                        // mm_interconnect_0:SDRAM_0_s1_write -> SDRAM_0:az_wr_n
-	wire  [15:0] mm_interconnect_0_sdram_0_s1_writedata;                    // mm_interconnect_0:SDRAM_0_s1_writedata -> SDRAM_0:az_data
+	wire         mm_interconnect_0_sdram_s1_chipselect;                     // mm_interconnect_0:SDRAM_s1_chipselect -> SDRAM:az_cs
+	wire  [15:0] mm_interconnect_0_sdram_s1_readdata;                       // SDRAM:za_data -> mm_interconnect_0:SDRAM_s1_readdata
+	wire         mm_interconnect_0_sdram_s1_waitrequest;                    // SDRAM:za_waitrequest -> mm_interconnect_0:SDRAM_s1_waitrequest
+	wire  [24:0] mm_interconnect_0_sdram_s1_address;                        // mm_interconnect_0:SDRAM_s1_address -> SDRAM:az_addr
+	wire         mm_interconnect_0_sdram_s1_read;                           // mm_interconnect_0:SDRAM_s1_read -> SDRAM:az_rd_n
+	wire   [1:0] mm_interconnect_0_sdram_s1_byteenable;                     // mm_interconnect_0:SDRAM_s1_byteenable -> SDRAM:az_be_n
+	wire         mm_interconnect_0_sdram_s1_readdatavalid;                  // SDRAM:za_valid -> mm_interconnect_0:SDRAM_s1_readdatavalid
+	wire         mm_interconnect_0_sdram_s1_write;                          // mm_interconnect_0:SDRAM_s1_write -> SDRAM:az_wr_n
+	wire  [15:0] mm_interconnect_0_sdram_s1_writedata;                      // mm_interconnect_0:SDRAM_s1_writedata -> SDRAM:az_data
 	wire  [31:0] mm_interconnect_0_niosv_timer_sw_agent_readdata;           // NiosV:timer_sw_agent_readdata -> mm_interconnect_0:NiosV_timer_sw_agent_readdata
 	wire         mm_interconnect_0_niosv_timer_sw_agent_waitrequest;        // NiosV:timer_sw_agent_waitrequest -> mm_interconnect_0:NiosV_timer_sw_agent_waitrequest
 	wire   [5:0] mm_interconnect_0_niosv_timer_sw_agent_address;            // mm_interconnect_0:NiosV_timer_sw_agent_address -> NiosV:timer_sw_agent_address
@@ -133,7 +135,7 @@ module NiosV (
 	wire  [15:0] niosv_platform_irq_rx_irq;                                 // irq_mapper:sender_irq -> NiosV:platform_irq_rx_irq
 	wire         rst_controller_reset_out_reset;                            // rst_controller:reset_out -> [JTAG_UART:rst_n, NiosV:reset_reset, PIO_HEX_0:reset_n, PIO_HEX_1:reset_n, PIO_HEX_2:reset_n, PIO_HEX_3:reset_n, PIO_LED:reset_n, PIO_SW:reset_n, RAM:reset, irq_mapper:reset, mm_interconnect_0:NiosV_reset_reset_bridge_in_reset_reset, rst_translator:in_reset, sysid_qsys_0:reset_n]
 	wire         rst_controller_reset_out_reset_req;                        // rst_controller:reset_req -> [RAM:reset_req, rst_translator:reset_req_in]
-	wire         rst_controller_001_reset_out_reset;                        // rst_controller_001:reset_out -> [SDRAM_0:reset_n, mm_interconnect_0:SDRAM_0_reset_reset_bridge_in_reset_reset]
+	wire         rst_controller_001_reset_out_reset;                        // rst_controller_001:reset_out -> [SDRAM:reset_n, mm_interconnect_0:SDRAM_reset_reset_bridge_in_reset_reset]
 
 	altera_avalon_jtag_uart #(
 		.readBufferDepth            (64),
@@ -300,35 +302,35 @@ module NiosV (
 		.freeze     (1'b0)                                 // (terminated)
 	);
 
-	NiosV_SDRAM_0 sdram_0 (
-		.clk            (pll_0_outclk1_clk),                          //   clk.clk
-		.reset_n        (~rst_controller_001_reset_out_reset),        // reset.reset_n
-		.az_addr        (mm_interconnect_0_sdram_0_s1_address),       //    s1.address
-		.az_be_n        (~mm_interconnect_0_sdram_0_s1_byteenable),   //      .byteenable_n
-		.az_cs          (mm_interconnect_0_sdram_0_s1_chipselect),    //      .chipselect
-		.az_data        (mm_interconnect_0_sdram_0_s1_writedata),     //      .writedata
-		.az_rd_n        (~mm_interconnect_0_sdram_0_s1_read),         //      .read_n
-		.az_wr_n        (~mm_interconnect_0_sdram_0_s1_write),        //      .write_n
-		.za_data        (mm_interconnect_0_sdram_0_s1_readdata),      //      .readdata
-		.za_valid       (mm_interconnect_0_sdram_0_s1_readdatavalid), //      .readdatavalid
-		.za_waitrequest (mm_interconnect_0_sdram_0_s1_waitrequest),   //      .waitrequest
-		.zs_addr        (sdram_wire_addr),                            //  wire.export
-		.zs_ba          (sdram_wire_ba),                              //      .export
-		.zs_cas_n       (sdram_wire_cas_n),                           //      .export
-		.zs_cke         (sdram_wire_cke),                             //      .export
-		.zs_cs_n        (sdram_wire_cs_n),                            //      .export
-		.zs_dq          (sdram_wire_dq),                              //      .export
-		.zs_dqm         (sdram_wire_dqm),                             //      .export
-		.zs_ras_n       (sdram_wire_ras_n),                           //      .export
-		.zs_we_n        (sdram_wire_we_n)                             //      .export
+	NiosV_SDRAM sdram (
+		.clk            (pll_0_outclk1_clk),                        //   clk.clk
+		.reset_n        (~rst_controller_001_reset_out_reset),      // reset.reset_n
+		.az_addr        (mm_interconnect_0_sdram_s1_address),       //    s1.address
+		.az_be_n        (~mm_interconnect_0_sdram_s1_byteenable),   //      .byteenable_n
+		.az_cs          (mm_interconnect_0_sdram_s1_chipselect),    //      .chipselect
+		.az_data        (mm_interconnect_0_sdram_s1_writedata),     //      .writedata
+		.az_rd_n        (~mm_interconnect_0_sdram_s1_read),         //      .read_n
+		.az_wr_n        (~mm_interconnect_0_sdram_s1_write),        //      .write_n
+		.za_data        (mm_interconnect_0_sdram_s1_readdata),      //      .readdata
+		.za_valid       (mm_interconnect_0_sdram_s1_readdatavalid), //      .readdatavalid
+		.za_waitrequest (mm_interconnect_0_sdram_s1_waitrequest),   //      .waitrequest
+		.zs_addr        (sdram_addr),                               //  wire.export
+		.zs_ba          (sdram_ba),                                 //      .export
+		.zs_cas_n       (sdram_cas_n),                              //      .export
+		.zs_cke         (sdram_cke),                                //      .export
+		.zs_cs_n        (sdram_cs_n),                               //      .export
+		.zs_dq          (sdram_dq),                                 //      .export
+		.zs_dqm         (sdram_dqm),                                //      .export
+		.zs_ras_n       (sdram_ras_n),                              //      .export
+		.zs_we_n        (sdram_we_n)                                //      .export
 	);
 
 	NiosV_pll_0 pll_0 (
-		.refclk   (clk_clk),           //  refclk.clk
-		.rst      (~reset_reset_n),    //   reset.reset
-		.outclk_0 (),                  // outclk0.clk
-		.outclk_1 (pll_0_outclk1_clk), // outclk1.clk
-		.locked   ()                   //  locked.export
+		.refclk   (clk_clk),             //  refclk.clk
+		.rst      (~reset_reset_n),      //   reset.reset
+		.outclk_0 (clk_sdram_clk),       // outclk0.clk
+		.outclk_1 (pll_0_outclk1_clk),   // outclk1.clk
+		.locked   (pll_0_locked_export)  //  locked.export
 	);
 
 	NiosV_sysid_qsys_0 sysid_qsys_0 (
@@ -339,115 +341,115 @@ module NiosV (
 	);
 
 	NiosV_mm_interconnect_0 mm_interconnect_0 (
-		.NiosV_data_manager_awaddr                 (niosv_data_manager_awaddr),                                 //                  NiosV_data_manager.awaddr
-		.NiosV_data_manager_awprot                 (niosv_data_manager_awprot),                                 //                                    .awprot
-		.NiosV_data_manager_awvalid                (niosv_data_manager_awvalid),                                //                                    .awvalid
-		.NiosV_data_manager_awready                (niosv_data_manager_awready),                                //                                    .awready
-		.NiosV_data_manager_wdata                  (niosv_data_manager_wdata),                                  //                                    .wdata
-		.NiosV_data_manager_wstrb                  (niosv_data_manager_wstrb),                                  //                                    .wstrb
-		.NiosV_data_manager_wvalid                 (niosv_data_manager_wvalid),                                 //                                    .wvalid
-		.NiosV_data_manager_wready                 (niosv_data_manager_wready),                                 //                                    .wready
-		.NiosV_data_manager_bresp                  (niosv_data_manager_bresp),                                  //                                    .bresp
-		.NiosV_data_manager_bvalid                 (niosv_data_manager_bvalid),                                 //                                    .bvalid
-		.NiosV_data_manager_bready                 (niosv_data_manager_bready),                                 //                                    .bready
-		.NiosV_data_manager_araddr                 (niosv_data_manager_araddr),                                 //                                    .araddr
-		.NiosV_data_manager_arprot                 (niosv_data_manager_arprot),                                 //                                    .arprot
-		.NiosV_data_manager_arvalid                (niosv_data_manager_arvalid),                                //                                    .arvalid
-		.NiosV_data_manager_arready                (niosv_data_manager_arready),                                //                                    .arready
-		.NiosV_data_manager_rdata                  (niosv_data_manager_rdata),                                  //                                    .rdata
-		.NiosV_data_manager_rresp                  (niosv_data_manager_rresp),                                  //                                    .rresp
-		.NiosV_data_manager_rvalid                 (niosv_data_manager_rvalid),                                 //                                    .rvalid
-		.NiosV_data_manager_rready                 (niosv_data_manager_rready),                                 //                                    .rready
-		.NiosV_instruction_manager_awaddr          (niosv_instruction_manager_awaddr),                          //           NiosV_instruction_manager.awaddr
-		.NiosV_instruction_manager_awprot          (niosv_instruction_manager_awprot),                          //                                    .awprot
-		.NiosV_instruction_manager_awvalid         (niosv_instruction_manager_awvalid),                         //                                    .awvalid
-		.NiosV_instruction_manager_awready         (niosv_instruction_manager_awready),                         //                                    .awready
-		.NiosV_instruction_manager_wdata           (niosv_instruction_manager_wdata),                           //                                    .wdata
-		.NiosV_instruction_manager_wstrb           (niosv_instruction_manager_wstrb),                           //                                    .wstrb
-		.NiosV_instruction_manager_wvalid          (niosv_instruction_manager_wvalid),                          //                                    .wvalid
-		.NiosV_instruction_manager_wready          (niosv_instruction_manager_wready),                          //                                    .wready
-		.NiosV_instruction_manager_bresp           (niosv_instruction_manager_bresp),                           //                                    .bresp
-		.NiosV_instruction_manager_bvalid          (niosv_instruction_manager_bvalid),                          //                                    .bvalid
-		.NiosV_instruction_manager_bready          (niosv_instruction_manager_bready),                          //                                    .bready
-		.NiosV_instruction_manager_araddr          (niosv_instruction_manager_araddr),                          //                                    .araddr
-		.NiosV_instruction_manager_arprot          (niosv_instruction_manager_arprot),                          //                                    .arprot
-		.NiosV_instruction_manager_arvalid         (niosv_instruction_manager_arvalid),                         //                                    .arvalid
-		.NiosV_instruction_manager_arready         (niosv_instruction_manager_arready),                         //                                    .arready
-		.NiosV_instruction_manager_rdata           (niosv_instruction_manager_rdata),                           //                                    .rdata
-		.NiosV_instruction_manager_rresp           (niosv_instruction_manager_rresp),                           //                                    .rresp
-		.NiosV_instruction_manager_rvalid          (niosv_instruction_manager_rvalid),                          //                                    .rvalid
-		.NiosV_instruction_manager_rready          (niosv_instruction_manager_rready),                          //                                    .rready
-		.CLK_clk_clk                               (clk_clk),                                                   //                             CLK_clk.clk
-		.pll_0_outclk1_clk                         (pll_0_outclk1_clk),                                         //                       pll_0_outclk1.clk
-		.NiosV_reset_reset_bridge_in_reset_reset   (rst_controller_reset_out_reset),                            //   NiosV_reset_reset_bridge_in_reset.reset
-		.SDRAM_0_reset_reset_bridge_in_reset_reset (rst_controller_001_reset_out_reset),                        // SDRAM_0_reset_reset_bridge_in_reset.reset
-		.JTAG_UART_avalon_jtag_slave_address       (mm_interconnect_0_jtag_uart_avalon_jtag_slave_address),     //         JTAG_UART_avalon_jtag_slave.address
-		.JTAG_UART_avalon_jtag_slave_write         (mm_interconnect_0_jtag_uart_avalon_jtag_slave_write),       //                                    .write
-		.JTAG_UART_avalon_jtag_slave_read          (mm_interconnect_0_jtag_uart_avalon_jtag_slave_read),        //                                    .read
-		.JTAG_UART_avalon_jtag_slave_readdata      (mm_interconnect_0_jtag_uart_avalon_jtag_slave_readdata),    //                                    .readdata
-		.JTAG_UART_avalon_jtag_slave_writedata     (mm_interconnect_0_jtag_uart_avalon_jtag_slave_writedata),   //                                    .writedata
-		.JTAG_UART_avalon_jtag_slave_waitrequest   (mm_interconnect_0_jtag_uart_avalon_jtag_slave_waitrequest), //                                    .waitrequest
-		.JTAG_UART_avalon_jtag_slave_chipselect    (mm_interconnect_0_jtag_uart_avalon_jtag_slave_chipselect),  //                                    .chipselect
-		.NiosV_dm_agent_address                    (mm_interconnect_0_niosv_dm_agent_address),                  //                      NiosV_dm_agent.address
-		.NiosV_dm_agent_write                      (mm_interconnect_0_niosv_dm_agent_write),                    //                                    .write
-		.NiosV_dm_agent_read                       (mm_interconnect_0_niosv_dm_agent_read),                     //                                    .read
-		.NiosV_dm_agent_readdata                   (mm_interconnect_0_niosv_dm_agent_readdata),                 //                                    .readdata
-		.NiosV_dm_agent_writedata                  (mm_interconnect_0_niosv_dm_agent_writedata),                //                                    .writedata
-		.NiosV_dm_agent_readdatavalid              (mm_interconnect_0_niosv_dm_agent_readdatavalid),            //                                    .readdatavalid
-		.NiosV_dm_agent_waitrequest                (mm_interconnect_0_niosv_dm_agent_waitrequest),              //                                    .waitrequest
-		.NiosV_timer_sw_agent_address              (mm_interconnect_0_niosv_timer_sw_agent_address),            //                NiosV_timer_sw_agent.address
-		.NiosV_timer_sw_agent_write                (mm_interconnect_0_niosv_timer_sw_agent_write),              //                                    .write
-		.NiosV_timer_sw_agent_read                 (mm_interconnect_0_niosv_timer_sw_agent_read),               //                                    .read
-		.NiosV_timer_sw_agent_readdata             (mm_interconnect_0_niosv_timer_sw_agent_readdata),           //                                    .readdata
-		.NiosV_timer_sw_agent_writedata            (mm_interconnect_0_niosv_timer_sw_agent_writedata),          //                                    .writedata
-		.NiosV_timer_sw_agent_byteenable           (mm_interconnect_0_niosv_timer_sw_agent_byteenable),         //                                    .byteenable
-		.NiosV_timer_sw_agent_readdatavalid        (mm_interconnect_0_niosv_timer_sw_agent_readdatavalid),      //                                    .readdatavalid
-		.NiosV_timer_sw_agent_waitrequest          (mm_interconnect_0_niosv_timer_sw_agent_waitrequest),        //                                    .waitrequest
-		.PIO_HEX_0_s1_address                      (mm_interconnect_0_pio_hex_0_s1_address),                    //                        PIO_HEX_0_s1.address
-		.PIO_HEX_0_s1_write                        (mm_interconnect_0_pio_hex_0_s1_write),                      //                                    .write
-		.PIO_HEX_0_s1_readdata                     (mm_interconnect_0_pio_hex_0_s1_readdata),                   //                                    .readdata
-		.PIO_HEX_0_s1_writedata                    (mm_interconnect_0_pio_hex_0_s1_writedata),                  //                                    .writedata
-		.PIO_HEX_0_s1_chipselect                   (mm_interconnect_0_pio_hex_0_s1_chipselect),                 //                                    .chipselect
-		.PIO_HEX_1_s1_address                      (mm_interconnect_0_pio_hex_1_s1_address),                    //                        PIO_HEX_1_s1.address
-		.PIO_HEX_1_s1_write                        (mm_interconnect_0_pio_hex_1_s1_write),                      //                                    .write
-		.PIO_HEX_1_s1_readdata                     (mm_interconnect_0_pio_hex_1_s1_readdata),                   //                                    .readdata
-		.PIO_HEX_1_s1_writedata                    (mm_interconnect_0_pio_hex_1_s1_writedata),                  //                                    .writedata
-		.PIO_HEX_1_s1_chipselect                   (mm_interconnect_0_pio_hex_1_s1_chipselect),                 //                                    .chipselect
-		.PIO_HEX_2_s1_address                      (mm_interconnect_0_pio_hex_2_s1_address),                    //                        PIO_HEX_2_s1.address
-		.PIO_HEX_2_s1_write                        (mm_interconnect_0_pio_hex_2_s1_write),                      //                                    .write
-		.PIO_HEX_2_s1_readdata                     (mm_interconnect_0_pio_hex_2_s1_readdata),                   //                                    .readdata
-		.PIO_HEX_2_s1_writedata                    (mm_interconnect_0_pio_hex_2_s1_writedata),                  //                                    .writedata
-		.PIO_HEX_2_s1_chipselect                   (mm_interconnect_0_pio_hex_2_s1_chipselect),                 //                                    .chipselect
-		.PIO_HEX_3_s1_address                      (mm_interconnect_0_pio_hex_3_s1_address),                    //                        PIO_HEX_3_s1.address
-		.PIO_HEX_3_s1_write                        (mm_interconnect_0_pio_hex_3_s1_write),                      //                                    .write
-		.PIO_HEX_3_s1_readdata                     (mm_interconnect_0_pio_hex_3_s1_readdata),                   //                                    .readdata
-		.PIO_HEX_3_s1_writedata                    (mm_interconnect_0_pio_hex_3_s1_writedata),                  //                                    .writedata
-		.PIO_HEX_3_s1_chipselect                   (mm_interconnect_0_pio_hex_3_s1_chipselect),                 //                                    .chipselect
-		.PIO_LED_s1_address                        (mm_interconnect_0_pio_led_s1_address),                      //                          PIO_LED_s1.address
-		.PIO_LED_s1_write                          (mm_interconnect_0_pio_led_s1_write),                        //                                    .write
-		.PIO_LED_s1_readdata                       (mm_interconnect_0_pio_led_s1_readdata),                     //                                    .readdata
-		.PIO_LED_s1_writedata                      (mm_interconnect_0_pio_led_s1_writedata),                    //                                    .writedata
-		.PIO_LED_s1_chipselect                     (mm_interconnect_0_pio_led_s1_chipselect),                   //                                    .chipselect
-		.PIO_SW_s1_address                         (mm_interconnect_0_pio_sw_s1_address),                       //                           PIO_SW_s1.address
-		.PIO_SW_s1_readdata                        (mm_interconnect_0_pio_sw_s1_readdata),                      //                                    .readdata
-		.RAM_s1_address                            (mm_interconnect_0_ram_s1_address),                          //                              RAM_s1.address
-		.RAM_s1_write                              (mm_interconnect_0_ram_s1_write),                            //                                    .write
-		.RAM_s1_readdata                           (mm_interconnect_0_ram_s1_readdata),                         //                                    .readdata
-		.RAM_s1_writedata                          (mm_interconnect_0_ram_s1_writedata),                        //                                    .writedata
-		.RAM_s1_byteenable                         (mm_interconnect_0_ram_s1_byteenable),                       //                                    .byteenable
-		.RAM_s1_chipselect                         (mm_interconnect_0_ram_s1_chipselect),                       //                                    .chipselect
-		.RAM_s1_clken                              (mm_interconnect_0_ram_s1_clken),                            //                                    .clken
-		.SDRAM_0_s1_address                        (mm_interconnect_0_sdram_0_s1_address),                      //                          SDRAM_0_s1.address
-		.SDRAM_0_s1_write                          (mm_interconnect_0_sdram_0_s1_write),                        //                                    .write
-		.SDRAM_0_s1_read                           (mm_interconnect_0_sdram_0_s1_read),                         //                                    .read
-		.SDRAM_0_s1_readdata                       (mm_interconnect_0_sdram_0_s1_readdata),                     //                                    .readdata
-		.SDRAM_0_s1_writedata                      (mm_interconnect_0_sdram_0_s1_writedata),                    //                                    .writedata
-		.SDRAM_0_s1_byteenable                     (mm_interconnect_0_sdram_0_s1_byteenable),                   //                                    .byteenable
-		.SDRAM_0_s1_readdatavalid                  (mm_interconnect_0_sdram_0_s1_readdatavalid),                //                                    .readdatavalid
-		.SDRAM_0_s1_waitrequest                    (mm_interconnect_0_sdram_0_s1_waitrequest),                  //                                    .waitrequest
-		.SDRAM_0_s1_chipselect                     (mm_interconnect_0_sdram_0_s1_chipselect),                   //                                    .chipselect
-		.sysid_qsys_0_control_slave_address        (mm_interconnect_0_sysid_qsys_0_control_slave_address),      //          sysid_qsys_0_control_slave.address
-		.sysid_qsys_0_control_slave_readdata       (mm_interconnect_0_sysid_qsys_0_control_slave_readdata)      //                                    .readdata
+		.NiosV_data_manager_awaddr               (niosv_data_manager_awaddr),                                 //                NiosV_data_manager.awaddr
+		.NiosV_data_manager_awprot               (niosv_data_manager_awprot),                                 //                                  .awprot
+		.NiosV_data_manager_awvalid              (niosv_data_manager_awvalid),                                //                                  .awvalid
+		.NiosV_data_manager_awready              (niosv_data_manager_awready),                                //                                  .awready
+		.NiosV_data_manager_wdata                (niosv_data_manager_wdata),                                  //                                  .wdata
+		.NiosV_data_manager_wstrb                (niosv_data_manager_wstrb),                                  //                                  .wstrb
+		.NiosV_data_manager_wvalid               (niosv_data_manager_wvalid),                                 //                                  .wvalid
+		.NiosV_data_manager_wready               (niosv_data_manager_wready),                                 //                                  .wready
+		.NiosV_data_manager_bresp                (niosv_data_manager_bresp),                                  //                                  .bresp
+		.NiosV_data_manager_bvalid               (niosv_data_manager_bvalid),                                 //                                  .bvalid
+		.NiosV_data_manager_bready               (niosv_data_manager_bready),                                 //                                  .bready
+		.NiosV_data_manager_araddr               (niosv_data_manager_araddr),                                 //                                  .araddr
+		.NiosV_data_manager_arprot               (niosv_data_manager_arprot),                                 //                                  .arprot
+		.NiosV_data_manager_arvalid              (niosv_data_manager_arvalid),                                //                                  .arvalid
+		.NiosV_data_manager_arready              (niosv_data_manager_arready),                                //                                  .arready
+		.NiosV_data_manager_rdata                (niosv_data_manager_rdata),                                  //                                  .rdata
+		.NiosV_data_manager_rresp                (niosv_data_manager_rresp),                                  //                                  .rresp
+		.NiosV_data_manager_rvalid               (niosv_data_manager_rvalid),                                 //                                  .rvalid
+		.NiosV_data_manager_rready               (niosv_data_manager_rready),                                 //                                  .rready
+		.NiosV_instruction_manager_awaddr        (niosv_instruction_manager_awaddr),                          //         NiosV_instruction_manager.awaddr
+		.NiosV_instruction_manager_awprot        (niosv_instruction_manager_awprot),                          //                                  .awprot
+		.NiosV_instruction_manager_awvalid       (niosv_instruction_manager_awvalid),                         //                                  .awvalid
+		.NiosV_instruction_manager_awready       (niosv_instruction_manager_awready),                         //                                  .awready
+		.NiosV_instruction_manager_wdata         (niosv_instruction_manager_wdata),                           //                                  .wdata
+		.NiosV_instruction_manager_wstrb         (niosv_instruction_manager_wstrb),                           //                                  .wstrb
+		.NiosV_instruction_manager_wvalid        (niosv_instruction_manager_wvalid),                          //                                  .wvalid
+		.NiosV_instruction_manager_wready        (niosv_instruction_manager_wready),                          //                                  .wready
+		.NiosV_instruction_manager_bresp         (niosv_instruction_manager_bresp),                           //                                  .bresp
+		.NiosV_instruction_manager_bvalid        (niosv_instruction_manager_bvalid),                          //                                  .bvalid
+		.NiosV_instruction_manager_bready        (niosv_instruction_manager_bready),                          //                                  .bready
+		.NiosV_instruction_manager_araddr        (niosv_instruction_manager_araddr),                          //                                  .araddr
+		.NiosV_instruction_manager_arprot        (niosv_instruction_manager_arprot),                          //                                  .arprot
+		.NiosV_instruction_manager_arvalid       (niosv_instruction_manager_arvalid),                         //                                  .arvalid
+		.NiosV_instruction_manager_arready       (niosv_instruction_manager_arready),                         //                                  .arready
+		.NiosV_instruction_manager_rdata         (niosv_instruction_manager_rdata),                           //                                  .rdata
+		.NiosV_instruction_manager_rresp         (niosv_instruction_manager_rresp),                           //                                  .rresp
+		.NiosV_instruction_manager_rvalid        (niosv_instruction_manager_rvalid),                          //                                  .rvalid
+		.NiosV_instruction_manager_rready        (niosv_instruction_manager_rready),                          //                                  .rready
+		.CLK_clk_clk                             (clk_clk),                                                   //                           CLK_clk.clk
+		.pll_0_outclk1_clk                       (pll_0_outclk1_clk),                                         //                     pll_0_outclk1.clk
+		.NiosV_reset_reset_bridge_in_reset_reset (rst_controller_reset_out_reset),                            // NiosV_reset_reset_bridge_in_reset.reset
+		.SDRAM_reset_reset_bridge_in_reset_reset (rst_controller_001_reset_out_reset),                        // SDRAM_reset_reset_bridge_in_reset.reset
+		.JTAG_UART_avalon_jtag_slave_address     (mm_interconnect_0_jtag_uart_avalon_jtag_slave_address),     //       JTAG_UART_avalon_jtag_slave.address
+		.JTAG_UART_avalon_jtag_slave_write       (mm_interconnect_0_jtag_uart_avalon_jtag_slave_write),       //                                  .write
+		.JTAG_UART_avalon_jtag_slave_read        (mm_interconnect_0_jtag_uart_avalon_jtag_slave_read),        //                                  .read
+		.JTAG_UART_avalon_jtag_slave_readdata    (mm_interconnect_0_jtag_uart_avalon_jtag_slave_readdata),    //                                  .readdata
+		.JTAG_UART_avalon_jtag_slave_writedata   (mm_interconnect_0_jtag_uart_avalon_jtag_slave_writedata),   //                                  .writedata
+		.JTAG_UART_avalon_jtag_slave_waitrequest (mm_interconnect_0_jtag_uart_avalon_jtag_slave_waitrequest), //                                  .waitrequest
+		.JTAG_UART_avalon_jtag_slave_chipselect  (mm_interconnect_0_jtag_uart_avalon_jtag_slave_chipselect),  //                                  .chipselect
+		.NiosV_dm_agent_address                  (mm_interconnect_0_niosv_dm_agent_address),                  //                    NiosV_dm_agent.address
+		.NiosV_dm_agent_write                    (mm_interconnect_0_niosv_dm_agent_write),                    //                                  .write
+		.NiosV_dm_agent_read                     (mm_interconnect_0_niosv_dm_agent_read),                     //                                  .read
+		.NiosV_dm_agent_readdata                 (mm_interconnect_0_niosv_dm_agent_readdata),                 //                                  .readdata
+		.NiosV_dm_agent_writedata                (mm_interconnect_0_niosv_dm_agent_writedata),                //                                  .writedata
+		.NiosV_dm_agent_readdatavalid            (mm_interconnect_0_niosv_dm_agent_readdatavalid),            //                                  .readdatavalid
+		.NiosV_dm_agent_waitrequest              (mm_interconnect_0_niosv_dm_agent_waitrequest),              //                                  .waitrequest
+		.NiosV_timer_sw_agent_address            (mm_interconnect_0_niosv_timer_sw_agent_address),            //              NiosV_timer_sw_agent.address
+		.NiosV_timer_sw_agent_write              (mm_interconnect_0_niosv_timer_sw_agent_write),              //                                  .write
+		.NiosV_timer_sw_agent_read               (mm_interconnect_0_niosv_timer_sw_agent_read),               //                                  .read
+		.NiosV_timer_sw_agent_readdata           (mm_interconnect_0_niosv_timer_sw_agent_readdata),           //                                  .readdata
+		.NiosV_timer_sw_agent_writedata          (mm_interconnect_0_niosv_timer_sw_agent_writedata),          //                                  .writedata
+		.NiosV_timer_sw_agent_byteenable         (mm_interconnect_0_niosv_timer_sw_agent_byteenable),         //                                  .byteenable
+		.NiosV_timer_sw_agent_readdatavalid      (mm_interconnect_0_niosv_timer_sw_agent_readdatavalid),      //                                  .readdatavalid
+		.NiosV_timer_sw_agent_waitrequest        (mm_interconnect_0_niosv_timer_sw_agent_waitrequest),        //                                  .waitrequest
+		.PIO_HEX_0_s1_address                    (mm_interconnect_0_pio_hex_0_s1_address),                    //                      PIO_HEX_0_s1.address
+		.PIO_HEX_0_s1_write                      (mm_interconnect_0_pio_hex_0_s1_write),                      //                                  .write
+		.PIO_HEX_0_s1_readdata                   (mm_interconnect_0_pio_hex_0_s1_readdata),                   //                                  .readdata
+		.PIO_HEX_0_s1_writedata                  (mm_interconnect_0_pio_hex_0_s1_writedata),                  //                                  .writedata
+		.PIO_HEX_0_s1_chipselect                 (mm_interconnect_0_pio_hex_0_s1_chipselect),                 //                                  .chipselect
+		.PIO_HEX_1_s1_address                    (mm_interconnect_0_pio_hex_1_s1_address),                    //                      PIO_HEX_1_s1.address
+		.PIO_HEX_1_s1_write                      (mm_interconnect_0_pio_hex_1_s1_write),                      //                                  .write
+		.PIO_HEX_1_s1_readdata                   (mm_interconnect_0_pio_hex_1_s1_readdata),                   //                                  .readdata
+		.PIO_HEX_1_s1_writedata                  (mm_interconnect_0_pio_hex_1_s1_writedata),                  //                                  .writedata
+		.PIO_HEX_1_s1_chipselect                 (mm_interconnect_0_pio_hex_1_s1_chipselect),                 //                                  .chipselect
+		.PIO_HEX_2_s1_address                    (mm_interconnect_0_pio_hex_2_s1_address),                    //                      PIO_HEX_2_s1.address
+		.PIO_HEX_2_s1_write                      (mm_interconnect_0_pio_hex_2_s1_write),                      //                                  .write
+		.PIO_HEX_2_s1_readdata                   (mm_interconnect_0_pio_hex_2_s1_readdata),                   //                                  .readdata
+		.PIO_HEX_2_s1_writedata                  (mm_interconnect_0_pio_hex_2_s1_writedata),                  //                                  .writedata
+		.PIO_HEX_2_s1_chipselect                 (mm_interconnect_0_pio_hex_2_s1_chipselect),                 //                                  .chipselect
+		.PIO_HEX_3_s1_address                    (mm_interconnect_0_pio_hex_3_s1_address),                    //                      PIO_HEX_3_s1.address
+		.PIO_HEX_3_s1_write                      (mm_interconnect_0_pio_hex_3_s1_write),                      //                                  .write
+		.PIO_HEX_3_s1_readdata                   (mm_interconnect_0_pio_hex_3_s1_readdata),                   //                                  .readdata
+		.PIO_HEX_3_s1_writedata                  (mm_interconnect_0_pio_hex_3_s1_writedata),                  //                                  .writedata
+		.PIO_HEX_3_s1_chipselect                 (mm_interconnect_0_pio_hex_3_s1_chipselect),                 //                                  .chipselect
+		.PIO_LED_s1_address                      (mm_interconnect_0_pio_led_s1_address),                      //                        PIO_LED_s1.address
+		.PIO_LED_s1_write                        (mm_interconnect_0_pio_led_s1_write),                        //                                  .write
+		.PIO_LED_s1_readdata                     (mm_interconnect_0_pio_led_s1_readdata),                     //                                  .readdata
+		.PIO_LED_s1_writedata                    (mm_interconnect_0_pio_led_s1_writedata),                    //                                  .writedata
+		.PIO_LED_s1_chipselect                   (mm_interconnect_0_pio_led_s1_chipselect),                   //                                  .chipselect
+		.PIO_SW_s1_address                       (mm_interconnect_0_pio_sw_s1_address),                       //                         PIO_SW_s1.address
+		.PIO_SW_s1_readdata                      (mm_interconnect_0_pio_sw_s1_readdata),                      //                                  .readdata
+		.RAM_s1_address                          (mm_interconnect_0_ram_s1_address),                          //                            RAM_s1.address
+		.RAM_s1_write                            (mm_interconnect_0_ram_s1_write),                            //                                  .write
+		.RAM_s1_readdata                         (mm_interconnect_0_ram_s1_readdata),                         //                                  .readdata
+		.RAM_s1_writedata                        (mm_interconnect_0_ram_s1_writedata),                        //                                  .writedata
+		.RAM_s1_byteenable                       (mm_interconnect_0_ram_s1_byteenable),                       //                                  .byteenable
+		.RAM_s1_chipselect                       (mm_interconnect_0_ram_s1_chipselect),                       //                                  .chipselect
+		.RAM_s1_clken                            (mm_interconnect_0_ram_s1_clken),                            //                                  .clken
+		.SDRAM_s1_address                        (mm_interconnect_0_sdram_s1_address),                        //                          SDRAM_s1.address
+		.SDRAM_s1_write                          (mm_interconnect_0_sdram_s1_write),                          //                                  .write
+		.SDRAM_s1_read                           (mm_interconnect_0_sdram_s1_read),                           //                                  .read
+		.SDRAM_s1_readdata                       (mm_interconnect_0_sdram_s1_readdata),                       //                                  .readdata
+		.SDRAM_s1_writedata                      (mm_interconnect_0_sdram_s1_writedata),                      //                                  .writedata
+		.SDRAM_s1_byteenable                     (mm_interconnect_0_sdram_s1_byteenable),                     //                                  .byteenable
+		.SDRAM_s1_readdatavalid                  (mm_interconnect_0_sdram_s1_readdatavalid),                  //                                  .readdatavalid
+		.SDRAM_s1_waitrequest                    (mm_interconnect_0_sdram_s1_waitrequest),                    //                                  .waitrequest
+		.SDRAM_s1_chipselect                     (mm_interconnect_0_sdram_s1_chipselect),                     //                                  .chipselect
+		.sysid_qsys_0_control_slave_address      (mm_interconnect_0_sysid_qsys_0_control_slave_address),      //        sysid_qsys_0_control_slave.address
+		.sysid_qsys_0_control_slave_readdata     (mm_interconnect_0_sysid_qsys_0_control_slave_readdata)      //                                  .readdata
 	);
 
 	NiosV_irq_mapper irq_mapper (

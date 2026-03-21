@@ -1,0 +1,180 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part  $param0
+@@ set vid_std      $param1
+@@ set ed_variant   $param2
+@@ set ed_txpll     $param3
+@@ set rx_crc       $param4
+@@ set err_tol      $param5
+@@ set pid_xtrct    $param6
+@@ set pid_ins      $param7
+@@ set sd_bitw      $param8
+@@ set txclk_sw     $param9
+
+package require -exact qsys 16.0
+
+create_system {sdi_tx_sys}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {false}
+
+# Instances and instance parameters
+add_instance tx_core_rst altera_reset_bridge
+set_instance_parameter_value tx_core_rst {SYNCHRONOUS_EDGES} {none}
+add_instance tx_phy_reset altera_reset_bridge
+set_instance_parameter_value tx_phy_reset {SYNCHRONOUS_EDGES} {none}
+
+@@ if { $txclk_sw == 1 } {
+add_instance reconfig_rst altera_reset_bridge
+set_instance_parameter_value reconfig_rst {SYNCHRONOUS_EDGES} {none}
+
+add_instance reconfig_clk altera_clock_bridge
+set_instance_parameter_value reconfig_clk {EXPLICIT_CLOCK_RATE} {100000000.0}
+@@ }
+@@ # Reset input to PHY Reset controller doesn't have any clock domain assigned.
+@@ # Hence, an extra altera_reset_bridge has to be created.
+add_instance tx_phy_reset_0 altera_reset_bridge
+set_instance_parameter_value tx_phy_reset_0 {SYNCHRONOUS_EDGES} {deassert}
+
+add_instance tx_phy_rst_ctrl_clk altera_clock_bridge
+set_instance_parameter_value tx_phy_rst_ctrl_clk {EXPLICIT_CLOCK_RATE} {100000000.0}
+add_instance tx_sdi_clkout altera_clock_bridge
+@@ if { $vid_std == "hd" } {
+set_instance_parameter_value tx_sdi_clkout {EXPLICIT_CLOCK_RATE} {74250000.0}
+@@ } else {
+set_instance_parameter_value tx_sdi_clkout {EXPLICIT_CLOCK_RATE} {148500000.0}
+@@ }
+
+add_instance tx_phy altera_xcvr_native_a10
+set_instance_parameter_value tx_phy {duplex_mode} {tx}
+@@ if { $txclk_sw == 1 } {
+set_instance_parameter_value tx_phy {plls} {2}
+set_instance_parameter_value tx_phy {rcfg_enable} {1}
+set_instance_parameter_value tx_phy {enable_port_tx_analog_reset_ack} {1}
+@@ }
+@@ if { $vid_std == "mr" } {
+set_instance_parameter_value tx_phy {anlg_voltage} {1_0V}
+set_instance_parameter_value tx_phy {set_data_rate} {11880}
+set_instance_parameter_value tx_phy {protocol_mode} {basic_enh}
+set_instance_parameter_value tx_phy {enable_port_tx_pma_div_clkout} {1}
+set_instance_parameter_value tx_phy {tx_pma_div_clkout_divider} {2}
+set_instance_parameter_value tx_phy {enh_rxtxfifo_double_width} {1}
+@@ } else {
+set_instance_parameter_value tx_phy {anlg_voltage} {0_9V}
+@@      if { $vid_std == "hd" } {
+set_instance_parameter_value tx_phy {set_data_rate} {1485}
+@@      } else {
+set_instance_parameter_value tx_phy {set_data_rate} {2970}
+@@      }
+set_instance_parameter_value tx_phy {enable_simple_interface} {1}
+set_instance_parameter_value tx_phy {std_tx_byte_ser_mode} {Serialize x2}
+@@      if { $ed_txpll == "CMU" && $vid_std == "hd" } {
+set_instance_parameter_value tx_phy {tx_pma_clk_div} {4}
+@@      } elseif { $ed_txpll == "CMU" || $vid_std == "hd" } {
+set_instance_parameter_value tx_phy {tx_pma_clk_div} {2}
+@@      }
+@@ }
+
+add_instance tx_phy_rst_ctrl altera_xcvr_reset_control
+@@ if { $txclk_sw == 1 } {
+set_instance_parameter_value tx_phy_rst_ctrl {PLLS} {2}
+@@ }
+set_instance_parameter_value tx_phy_rst_ctrl {SYS_CLK_IN_MHZ} {100}
+set_instance_parameter_value tx_phy_rst_ctrl {SYNCHRONIZE_RESET} {0}
+set_instance_parameter_value tx_phy_rst_ctrl {TX_PLL_ENABLE} {1}
+set_instance_parameter_value tx_phy_rst_ctrl {SYNCHRONIZE_PLL_RESET} {0}
+set_instance_parameter_value tx_phy_rst_ctrl {TX_ENABLE} {1}
+set_instance_parameter_value tx_phy_rst_ctrl {TX_PER_CHANNEL} {1}
+set_instance_parameter_value tx_phy_rst_ctrl {gui_tx_auto_reset} {0}
+set_instance_parameter_value tx_phy_rst_ctrl {T_TX_ANALOGRESET} {70000}
+set_instance_parameter_value tx_phy_rst_ctrl {T_TX_DIGITALRESET} {70000}
+set_instance_parameter_value tx_phy_rst_ctrl {RX_ENABLE} {0}
+
+add_instance tx_sdi sdi_ii
+set_instance_parameter_value tx_sdi {VIDEO_STANDARD} {$vid_std}
+set_instance_parameter_value tx_sdi {DIRECTION} {tx}
+set_instance_parameter_value tx_sdi {SD_BIT_WIDTH} {$sd_bitw}
+set_instance_parameter_value tx_sdi {TX_EN_VPID_INSERT}  {$pid_ins}
+set_instance_parameter_value tx_sdi {ED_TXPLL_TYPE} {$ed_txpll}
+set_instance_parameter_value tx_sdi {ED_TXPLL_SWITCH} {0}
+set_instance_parameter_value tx_sdi {SELECT_SUPPORTED_VARIANT} {1}
+set_instance_parameter_value tx_sdi {ENABLE_ED_FILESET_SYNTHESIS} {1}
+set_instance_parameter_value tx_sdi {ENABLE_ED_FILESET_SIM} {1}
+set_instance_parameter_value tx_sdi {SELECT_ED_FILESET} {VERILOG}
+set_instance_parameter_value tx_sdi {SELECT_TARGETED_BOARD} {1}
+set_instance_parameter_value tx_sdi {SELECT_CUSTOM_DEVICE} {0}
+
+# connections and connection parameters
+@@ if { $txclk_sw == 1 } {
+add_connection reconfig_rst.out_reset tx_phy.reconfig_reset
+add_connection reconfig_clk.out_clk tx_phy.reconfig_clk
+@@ }
+@@ if { $vid_std == "mr" } {
+add_connection tx_phy.tx_pma_div_clkout tx_phy.tx_coreclkin
+add_connection tx_phy.tx_pma_div_clkout tx_sdi_clkout.in_clk
+add_connection tx_phy.tx_pma_div_clkout tx_sdi.tx_pclk
+@@ } else {
+add_connection tx_phy.tx_clkout tx_phy.tx_coreclkin
+add_connection tx_phy.tx_clkout tx_sdi_clkout.in_clk
+add_connection tx_phy.tx_clkout tx_sdi.tx_pclk
+
+add_connection tx_phy.tx_parallel_data tx_sdi.tx_dataout
+set_connection_parameter_value tx_phy.tx_parallel_data/tx_sdi.tx_dataout endPort {}
+set_connection_parameter_value tx_phy.tx_parallel_data/tx_sdi.tx_dataout endPortLSB {0}
+set_connection_parameter_value tx_phy.tx_parallel_data/tx_sdi.tx_dataout startPort {}
+set_connection_parameter_value tx_phy.tx_parallel_data/tx_sdi.tx_dataout startPortLSB {0}
+set_connection_parameter_value tx_phy.tx_parallel_data/tx_sdi.tx_dataout width {0}
+@@ }
+
+add_connection tx_phy_rst_ctrl.tx_analogreset tx_phy.tx_analogreset
+set_connection_parameter_value tx_phy_rst_ctrl.tx_analogreset/tx_phy.tx_analogreset endPort {}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_analogreset/tx_phy.tx_analogreset endPortLSB {0}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_analogreset/tx_phy.tx_analogreset startPort {}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_analogreset/tx_phy.tx_analogreset startPortLSB {0}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_analogreset/tx_phy.tx_analogreset width {0}
+
+add_connection tx_phy_rst_ctrl.tx_digitalreset tx_phy.tx_digitalreset
+set_connection_parameter_value tx_phy_rst_ctrl.tx_digitalreset/tx_phy.tx_digitalreset endPort {}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_digitalreset/tx_phy.tx_digitalreset endPortLSB {0}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_digitalreset/tx_phy.tx_digitalreset startPort {}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_digitalreset/tx_phy.tx_digitalreset startPortLSB {0}
+set_connection_parameter_value tx_phy_rst_ctrl.tx_digitalreset/tx_phy.tx_digitalreset width {0}
+
+add_connection tx_phy_rst_ctrl_clk.out_clk tx_phy_rst_ctrl.clock
+add_connection tx_phy_rst_ctrl_clk.out_clk tx_phy_reset_0.clk
+add_connection tx_phy_reset.out_reset tx_phy_reset_0.in_reset
+add_connection tx_phy_reset_0.out_reset tx_phy_rst_ctrl.reset
+add_connection tx_core_rst.out_reset tx_sdi.tx_rst
+
+@@ if { $txclk_sw == 1 } {
+set_instance_property reconfig_rst AUTO_EXPORT {true}
+set_instance_property reconfig_clk AUTO_EXPORT {true}
+@@ }
+set_instance_property tx_core_rst AUTO_EXPORT {true}
+set_instance_property tx_phy_rst_ctrl AUTO_EXPORT {true}
+set_instance_property tx_phy AUTO_EXPORT {true}
+set_instance_property tx_phy_reset AUTO_EXPORT {true}
+set_instance_property tx_phy_reset_0 AUTO_EXPORT {true}
+set_instance_property tx_sdi AUTO_EXPORT {true}
+set_instance_property tx_phy_rst_ctrl_clk AUTO_EXPORT {true}
+set_instance_property tx_sdi_clkout AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {sdi_tx_sys.qsys}

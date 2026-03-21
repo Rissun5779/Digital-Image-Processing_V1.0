@@ -1,0 +1,90 @@
+clearbox <cbx_dll_name or mf_name> [options] param1=value param2=value ... port1 port2 ...
+  options:
+The first argument to clearbox can either be a clearbox DLL name or the megafunction name.
+  -different_files  Forces the generator to use separate files for subdesigns.
+                    Default is single file. Valid only for VHDL and Verilog.
+  -f <param_file>   Get parameter assignments and port selections from the given file.
+  -r <source_file>  Get parameter assignments and port selections from the
+                    clearbox generated source file and regenerate the file.
+  -resc_count       Displays the estimated hardware resources used by the
+                    Clearbox generated design. No HDL file is generated.
+  -gen_stubs        Generates TDF, INC stub files & VHDL component declaration
+                    of the clearbox generator. The stubs are useful for handling 
+                    clearbox generated designs, that have no TDF equivalent.
+  -version          Returns the version of the specified DLL.
+                    Version of a DLL is the timestamp of the last file changed
+                    in the DLL with the timestamp of all the DLLs it depends on.
+  -quartus_version  Returns the Quartus build version of the specified DLL.
+  -greybox          Generates a greybox version of the file if clearbox is not available or is incomplete.
+					 Greybox option can be used to even generate greybox outputs for functions without clearbox.
+  -greybox_only     Always generates a greybox output.
+
+  Required ports are assumed to be connected, but optional ports must be
+  listed as arguments to be considered by the generator.
+
+The list of valid parameters for this megafunction are
+	BLOCKS
+	CBX_MODULE_PREFIX=UNUSED
+	CBX_REMOVE_OPTIONAL_WIRES=ON|OFF
+	CBXI_INSTANCE_NAME=UNUSED
+	CLUSTER
+	COLUMNSAA
+	COLUMNSBB
+	DEVICE_FAMILY
+	ROWSAA
+	VC_LATENCY
+	VEC_SIZE
+	VECTOR_FILE=UNUSED
+	VECTORSIZE
+	WIDTH_EXP
+	WIDTH_MAN
+	ACF_BLOCK_RAM_AND_MLAB_EQUIVALENT_PAUSED_READ_CAPABILITIES=DONT CARE|CARE
+	ACF_BLOCK_RAM_AND_MLAB_EQUIVALENT_POWER_UP_CONDITIONS=AUTO|DONT CARE|CARE
+	ACF_DISABLE_MLAB_RAM_USE=TRUE|FALSE
+	ACF_IMPLEMENT_MLAB_IN_16_BIT_DEEP_MODE=TRUE|FALSE
+	CARRY_CHAIN=MANUAL|AUTO|IGNORE
+	CARRY_CHAIN_LENGTH
+	CLOCK_DUTY_CYCLE_DEPENDENCE=ON|OFF|AUTO
+	CYCLONEII_M4K_COMPATIBILITY=ON|OFF
+	CYCLONEII_SAFE_WRITE=NO_CHANGE(NONE)|PORT_SWAP(SDP_ONLY)|RESTRUCTURE(ALL_DP)|VERIFIED_SAFE(DONT_TOUCH)
+	LOW_POWER_MODE=NONE|AUTO|ALL|BALANCER
+	MAXIMUM_DEPTH
+	RAM_BLOCK_TYPE=AUTO|M-RAM(MEGARAM)|M4K|M512|M9K|M144K|M20K|M10K|MLAB(LUTRAM)
+	USE_WYS=ON|OFF|OPERATORS
+
+The list of valid ports for this megafunction are
+	calcmatrix
+	done
+	enable
+	loadaa
+	loadbb
+	loaddata
+	loaddataimag
+	loaddatareal
+	outdata
+	outdataimag
+	outdatareal
+	outvalid
+	ready
+	reset
+	result
+	selbus
+	sysclk
+	vector_l_data
+	vector_m_data
+The list of hidden/advanced parameters for this megafunction are
+	CBX_AUTO_BLACKBOX=ON|OFF|ALL
+	CBX_BLACKBOX_LIST=NONE
+	CBX_DECLARE_ALL_CONNECTED_PORTS=ON|OFF
+	CBX_EDA_PLANB=ON|OFF
+	CBX_FILE
+	CBX_FORCE_HDL_GENERATION=ON|OFF
+	CBX_HDL_LANGUAGE=AHDL|VHDL|Verilog|TCL
+	CBX_LIBRARY_PATH=.
+	CBX_MAX_ERROR_MESSAGES
+	CBX_NO_VHDL_SUBDES_CONCAT_WIRES=ON|OFF
+	CBX_OUTPUT_DIRECTORY=.
+	CBX_SINGLE_OUTPUT_FILE=ON|OFF
+	CBX_STRUCTURAL_NETLIST=ON|OFF
+	CBX_THROW_EXCEPTION_ON_ERROR=ON|OFF
+	CBX_VHDL_WRAPPERS=ON|OFF

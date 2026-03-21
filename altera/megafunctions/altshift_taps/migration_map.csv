@@ -1,0 +1,17 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_WIDTH [get_old_param WIDTH]
+,set_new_param GUI_NUMBER_OF_TAPS [get_old_param NUMBER_OF_TAPS]
+,set_new_param GUI_TAP_DISTANCE [get_old_param TAP_DISTANCE]
+"[get_old_param ACLR] == "1"","set_new_param GUI_USE_ACLR "true""
+"[get_old_param ACLR] == "0"","set_new_param GUI_USE_ACLR "false""
+"[get_old_param CLKEN] == "1"","set_new_param GUI_USE_CLKEN "true""
+"[get_old_param CLKEN] == "0"","set_new_param GUI_USE_CLKEN "false""
+"[get_old_param GROUP_TAPS] == "1"","set_new_param GUI_GROUP_TAPS "true""
+"[get_old_param GROUP_TAPS] == "0"","set_new_param GUI_GROUP_TAPS "false""
+"[get_old_param RAM_BLOCK_TYPE] == "0"","set_new_param GUI_RAM_BLOCK_TYPE "MLAB""
+"[get_old_param RAM_BLOCK_TYPE] == "1" && [string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param GUI_RAM_BLOCK_TYPE "M20K""
+"[get_old_param RAM_BLOCK_TYPE] == "1" && ![string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param GUI_RAM_BLOCK_TYPE "AUTO""
+"[get_old_param RAM_BLOCK_TYPE] == "2"","set_new_param GUI_RAM_BLOCK_TYPE "M144K""
+"[get_old_param RAM_BLOCK_TYPE] == "3"","set_new_param GUI_RAM_BLOCK_TYPE "AUTO""
+,ignore_new_param SYNTH_WRAPPER_GEN_POSTFIX

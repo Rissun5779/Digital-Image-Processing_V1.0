@@ -1,0 +1,128 @@
+// Copyright (C) 2018 Intel Corporation. All rights reserved.
+// This simulation model contains highly confidential and
+// proprietary information of Intel and is being provided
+// in accordance with and subject to the protections of the
+// applicable Intel Program License Subscription Agreement
+// which governs its use and disclosure. Your use of Intel
+// Corporation's design tools, logic functions and other
+// software and tools, and its AMPP partner logic functions,
+// and any output files any of the foregoing (including device
+// programming or simulation files), and any associated
+// documentation or information are expressly subject to the
+// terms and conditions of the Intel Program License Subscription
+// Agreement, the Intel Quartus Prime License Agreement, the
+// Intel FPGA IP License Agreement, or other applicable license
+// agreement, including, without limitation, that your use is 
+// for the sole purpose of simulating designs for use exclusively
+// in logic devices manufactured by Intel and sold by Intel or 
+// its authorized distributors. Please refer to the applicable
+// agreement for further details. Intel products and services
+// are protected under numerous U.S. and foreign patents, 
+// maskwork rights, copyrights and other intellectual property laws.
+// Intel assumes no responsibility or liability arising out of the
+// application or use of this simulation model.
+// ACDS 18.1std
+// ALTERA_TIMESTAMP:Thu Sep 13 01:34:49 PDT 2018
+// encrypted_file_type : local_encrypted
+`pragma protect begin_protected
+`pragma protect version = 1
+`pragma protect encrypt_agent = "Model Technology", encrypt_agent_info = "6.6e"
+`pragma protect author = "Altera"
+`pragma protect data_method = "aes128-cbc"
+`pragma protect key_keyowner = "MTI" , key_keyname = "MGC-DVT-MTI" , key_method = "rsa"
+`pragma protect key_block encoding = (enctype = "base64", line_length = 64, bytes = 128)
+B63JZf62wux91NBALwnxI05CPo2CMCBoyq4BV6zP7xgZG1NIAAbXCduoo4OhDgJd
+YFyjRr76lM45LnlBIUWhbiK4bKePV6dWwwWvHISdoRYyW3kty+0AML4wQdJWywrD
+6xtNZkITm3ClTKPMezfVRfvqoxGvNksw30heEyMjzCw=
+`pragma protect data_block encoding = (enctype = "base64", line_length = 64, bytes = 4320)
+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
+`pragma protect end_protected

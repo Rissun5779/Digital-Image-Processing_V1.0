@@ -1,0 +1,49 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part          $param0
+@@ set symbols_per_clock    $param1
+@@ set support_aux          $param2
+@@ set support_aud          $param3
+@@ set support_deep_color   $param4
+
+package require -exact qsys 16.0
+
+
+create_system {hdmi_rx}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE $device_part
+set_project_property HIDE_FROM_IP_CATALOG {true}
+
+add_instance      hdmi_0   altera_hdmi 
+set_instance_parameter_value hdmi_0 FAMILY {Arria 10}
+set_instance_parameter_value hdmi_0 DIRECTION {rx}
+set_instance_parameter_value hdmi_0 SUPPORT_AUXILIARY $support_aux
+set_instance_parameter_value hdmi_0 SUPPORT_AUDIO $support_aud
+set_instance_parameter_value hdmi_0 SUPPORT_DEEP_COLOR $support_deep_color
+set_instance_parameter_value hdmi_0 SYMBOLS_PER_CLOCK $symbols_per_clock
+
+#add_hdmi_rx_export_interface2  hdmi_0
+# exported interfaces
+set_instance_property hdmi_0 AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {hdmi_rx.qsys}
+
+

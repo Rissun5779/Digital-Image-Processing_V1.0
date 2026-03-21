@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element $${FILENAME}
+   {
+   }
+   element clk_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+   element mgc_axi4_inline_monitor_0
+   {
+      datum _sortIndex
+      {
+         value = "2";
+         type = "int";
+      }
+   }
+   element mgc_axi4_master_0
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element mgc_axi4_slave_0
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="Unknown" />
+ <parameter name="deviceFamily" value="Cyclone IV GX" />
+ <parameter name="deviceSpeedGrade" value="Unknown" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
+ <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <module kind="clock_source" version="14.0" enabled="1" name="clk_0">
+  <parameter name="clockFrequency" value="50000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module
+   kind="mgc_axi4_slave"
+   version="10.4.3.0"
+   enabled="1"
+   name="mgc_axi4_slave_0">
+  <parameter name="AXI4_ADDRESS_WIDTH" value="32" />
+  <parameter name="AXI4_RDATA_WIDTH" value="32" />
+  <parameter name="AXI4_WDATA_WIDTH" value="32" />
+  <parameter name="AXI4_ID_WIDTH" value="18" />
+  <parameter name="AXI4_USER_WIDTH" value="8" />
+  <parameter name="AXI4_REGION_MAP_SIZE" value="16" />
+  <parameter name="index" value="1" />
+  <parameter name="READ_ACCEPTANCE_CAPABILITY" value="16" />
+  <parameter name="WRITE_ACCEPTANCE_CAPABILITY" value="16" />
+  <parameter name="COMBINED_ACCEPTANCE_CAPABILITY" value="16" />
+  <parameter name="READ_DATA_REORDERING_DEPTH" value="1" />
+  <parameter name="USE_AWREGION" value="1" />
+  <parameter name="USE_AWLOCK" value="1" />
+  <parameter name="USE_AWCACHE" value="1" />
+  <parameter name="USE_AWQOS" value="1" />
+  <parameter name="USE_AWPROT" value="1" />
+  <parameter name="USE_WLAST" value="1" />
+  <parameter name="USE_BRESP" value="1" />
+  <parameter name="USE_ARREGION" value="1" />
+  <parameter name="USE_ARLOCK" value="1" />
+  <parameter name="USE_ARCACHE" value="1" />
+  <parameter name="USE_ARQOS" value="1" />
+  <parameter name="USE_ARPROT" value="1" />
+  <parameter name="USE_RRESP" value="1" />
+  <parameter name="USE_AWUSER" value="1" />
+  <parameter name="USE_ARUSER" value="1" />
+  <parameter name="USE_WUSER" value="1" />
+  <parameter name="USE_RUSER" value="1" />
+  <parameter name="USE_BUSER" value="1" />
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="50000000" />
+ </module>
+ <module
+   kind="mgc_axi4_inline_monitor"
+   version="10.4.3.0"
+   enabled="1"
+   name="mgc_axi4_inline_monitor_0">
+  <parameter name="AXI4_ADDRESS_WIDTH" value="32" />
+  <parameter name="AXI4_RDATA_WIDTH" value="32" />
+  <parameter name="AXI4_WDATA_WIDTH" value="32" />
+  <parameter name="AXI4_ID_WIDTH" value="18" />
+  <parameter name="AXI4_USER_WIDTH" value="8" />
+  <parameter name="AXI4_REGION_MAP_SIZE" value="16" />
+  <parameter name="index" value="2" />
+  <parameter name="READ_ACCEPTANCE_CAPABILITY" value="16" />
+  <parameter name="WRITE_ACCEPTANCE_CAPABILITY" value="16" />
+  <parameter name="COMBINED_ACCEPTANCE_CAPABILITY" value="16" />
+  <parameter name="USE_AWID" value="1" />
+  <parameter name="USE_AWREGION" value="1" />
+  <parameter name="USE_AWLEN" value="1" />
+  <parameter name="USE_AWSIZE" value="1" />
+  <parameter name="USE_AWBURST" value="1" />
+  <parameter name="USE_AWLOCK" value="1" />
+  <parameter name="USE_AWCACHE" value="1" />
+  <parameter name="USE_AWQOS" value="1" />
+  <parameter name="USE_WSTRB" value="1" />
+  <parameter name="USE_BID" value="1" />
+  <parameter name="USE_AWPROT" value="1" />
+  <parameter name="USE_WLAST" value="1" />
+  <parameter name="USE_BRESP" value="1" />
+  <parameter name="USE_ARID" value="1" />
+  <parameter name="USE_ARREGION" value="1" />
+  <parameter name="USE_ARLEN" value="1" />
+  <parameter name="USE_ARSIZE" value="1" />
+  <parameter name="USE_ARBURST" value="1" />
+  <parameter name="USE_ARLOCK" value="1" />
+  <parameter name="USE_ARCACHE" value="1" />
+  <parameter name="USE_ARQOS" value="1" />
+  <parameter name="USE_RID" value="1" />
+  <parameter name="USE_RRESP" value="1" />
+  <parameter name="USE_RLAST" value="1" />
+  <parameter name="USE_ARPROT" value="1" />
+  <parameter name="USE_AWUSER" value="1" />
+  <parameter name="USE_ARUSER" value="1" />
+  <parameter name="USE_WUSER" value="1" />
+  <parameter name="USE_RUSER" value="1" />
+  <parameter name="USE_BUSER" value="1" />
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="50000000" />
+ </module>
+ <module
+   kind="mgc_axi4_master"
+   version="10.4.3.0"
+   enabled="1"
+   name="mgc_axi4_master_0">
+  <parameter name="AXI4_ADDRESS_WIDTH" value="32" />
+  <parameter name="AXI4_RDATA_WIDTH" value="32" />
+  <parameter name="AXI4_WDATA_WIDTH" value="32" />
+  <parameter name="AXI4_ID_WIDTH" value="18" />
+  <parameter name="AXI4_USER_WIDTH" value="8" />
+  <parameter name="AXI4_REGION_MAP_SIZE" value="16" />
+  <parameter name="index" value="0" />
+  <parameter name="READ_ISSUING_CAPABILITY" value="16" />
+  <parameter name="WRITE_ISSUING_CAPABILITY" value="16" />
+  <parameter name="COMBINED_ISSUING_CAPABILITY" value="16" />
+  <parameter name="USE_AWID" value="1" />
+  <parameter name="USE_AWREGION" value="1" />
+  <parameter name="USE_AWLEN" value="1" />
+  <parameter name="USE_AWSIZE" value="1" />
+  <parameter name="USE_AWBURST" value="1" />
+  <parameter name="USE_AWLOCK" value="1" />
+  <parameter name="USE_AWCACHE" value="1" />
+  <parameter name="USE_AWQOS" value="1" />
+  <parameter name="USE_WSTRB" value="1" />
+  <parameter name="USE_BID" value="1" />
+  <parameter name="USE_BRESP" value="1" />
+  <parameter name="USE_ARID" value="1" />
+  <parameter name="USE_ARREGION" value="1" />
+  <parameter name="USE_ARLEN" value="1" />
+  <parameter name="USE_ARSIZE" value="1" />
+  <parameter name="USE_ARBURST" value="1" />
+  <parameter name="USE_ARLOCK" value="1" />
+  <parameter name="USE_ARCACHE" value="1" />
+  <parameter name="USE_ARQOS" value="1" />
+  <parameter name="USE_RID" value="1" />
+  <parameter name="USE_RRESP" value="1" />
+  <parameter name="USE_RLAST" value="1" />
+  <parameter name="USE_AWUSER" value="1" />
+  <parameter name="USE_ARUSER" value="1" />
+  <parameter name="USE_WUSER" value="1" />
+  <parameter name="USE_RUSER" value="1" />
+  <parameter name="USE_BUSER" value="1" />
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="50000000" />
+ </module>
+ <connection
+   kind="avalon"
+   version="14.0"
+   start="mgc_axi4_inline_monitor_0.altera_axi4_master"
+   end="mgc_axi4_slave_0.altera_axi4_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_0.clk_reset"
+   end="mgc_axi4_slave_0.reset_sink" />
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_0.clk_reset"
+   end="mgc_axi4_inline_monitor_0.reset_sink" />
+ <connection
+   kind="clock"
+   version="14.0"
+   start="clk_0.clk"
+   end="mgc_axi4_inline_monitor_0.clock_sink" />
+ <connection
+   kind="clock"
+   version="14.0"
+   start="clk_0.clk"
+   end="mgc_axi4_slave_0.clock_sink" />
+ <connection
+   kind="clock"
+   version="14.0"
+   start="clk_0.clk"
+   end="mgc_axi4_master_0.clock_sink" />
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_0.clk_reset"
+   end="mgc_axi4_master_0.reset_sink" />
+ <connection
+   kind="avalon"
+   version="14.0"
+   start="mgc_axi4_master_0.altera_axi4_master"
+   end="mgc_axi4_inline_monitor_0.altera_axi4_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

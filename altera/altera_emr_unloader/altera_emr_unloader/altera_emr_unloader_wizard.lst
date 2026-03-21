@@ -1,0 +1,15 @@
+[I/O]
+Altera Error Message Register Unloader v18.1= "%t" "%w/../../common/lib/megawizard.pl" --wizard:altera_emr_unloader  --early_gen:on --wizard_file:"%w/altera_emr_unloader_hw.tcl" --family_parameter:device_family %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Stratix IV | Arria II GZ | Arria II GX | Stratix V | Arria V | Arria V GZ | Cyclone V | Arria 10"   SUPPORT_CHECK="ON" /> 
+<VISIBILITY FOR_CREATE="OFF"/>
+<LANGUAGES   AHDL="OFF"   VHDL="OFF"/>
+<PINPLAN SUPPORTED="ON"/>
+<ALIAS>Altera EMR Unloader</ALIAS>
+<ALIAS>Altera Error Message Register Unloader v14.0</ALIAS>
+<ALIAS>Altera Error Message Register Unloader v14.1</ALIAS>
+<ALIAS>Altera Error Message Register Unloader v15.0</ALIAS>
+<ALIAS>Altera Error Message Register Unloader v15.1</ALIAS>
+</INFO>

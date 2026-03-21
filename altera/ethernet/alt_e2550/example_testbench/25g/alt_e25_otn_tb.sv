@@ -1,0 +1,192 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+
+`timescale 1ps/1ps
+
+module alt_e25_otn_tb ();
+
+localparam SYNOPT_OTN = 1'b1;
+localparam SYNOPT_RSFEC = 1'b0;
+localparam SIM_HURRY = 1'b1;
+localparam SIM_SIMPLE_RATE = 1'b1;
+localparam SIM_SHORT_AM = 1'b1;
+localparam SIM_EMULATE = 1'b0;
+
+reg              csr_rst_n;
+reg              tx_rst_n;
+reg              rx_rst_n;
+wire             tx_sync_reset;
+
+// tx interface
+reg   [65:0]    tx_pcs_66b_d = 66'h0;
+reg             tx_pcs_66b_am = 1'b0;
+reg             tx_pcs_66b_valid;
+wire            tx_pcs_66b_ready;
+
+// rx interface
+wire [65:0]   rx_pcs_66b_d;
+wire          rx_pcs_66b_valid;
+    
+
+   // Clocks & Clock Status
+reg             tx_clk = 1'b0;
+reg            rx_clk ;//= 1'b0;
+reg              tx_serial_clk;
+wire             pll_locked;
+wire             rx_cdr_refclk;
+wire             tx_pma_clk;       // @ 390.625 (ref)
+wire             tx_pma_clk_stable;     
+wire             rx_pma_clk;         // @ 390.625 (remote)
+wire             rx_pma_clk_stable;
+wire             tx_out_of_rst;
+wire             rx_out_of_rst;
+
+// high speed serial
+wire            tx_serial_data; 
+wire            rx_serial_data = tx_serial_data;
+
+   // Avalon MM Interface
+wire            avmm_clk;
+wire            avmm_clk_stable = 1'b1;
+reg             avmm_reset;
+reg             avmm_write;
+reg             avmm_read;
+reg   [15:0]    avmm_address;
+reg   [31:0]    avmm_write_data;
+wire  [31:0]    avmm_read_data;
+wire            avmm_read_data_valid;
+wire            avmm_waitrequest;
+  // Reconfig Interface
+reg             reconfig_clk;
+reg             reconfig_reset;
+reg             reconfig_write;
+reg             reconfig_read;
+reg   [10:0]    reconfig_address;
+reg   [31:0]    reconfig_write_data;
+wire  [31:0]    reconfig_read_data;
+wire            reconfig_waitrequest;
+
+   // status
+wire            rx_block_lock;
+wire            rx_am_lock;
+wire            rx_pcs_ready;
+
+ex_25g dut (
+    .*
+    );
+defparam dut .SYNOPT_OTN = SYNOPT_OTN;
+defparam dut .SYNOPT_RSFEC = SYNOPT_RSFEC;
+defparam dut .SIM_HURRY = SIM_HURRY;
+defparam dut .SIM_SIMPLE_RATE = SIM_SIMPLE_RATE;
+defparam dut .SIM_SHORT_AM = SIM_SHORT_AM;
+defparam dut .SIM_EMULATE = SIM_EMULATE;
+
+wire    tx_pll_locked;
+reg     clk_ref = 1'b0;
+reg     clk_status = 1'b0;
+
+// 625, simple rate version - div33 clock ~379 MHz
+always begin
+    #800 clk_ref = ~clk_ref;
+end
+assign  rx_cdr_refclk = clk_ref;
+
+always begin
+    #5000 clk_status = ~clk_status;
+end
+assign  avmm_clk = clk_status;
+
+// 400 MHz - overclocking pcs clocks
+always begin
+    #1250 tx_clk = ~tx_clk;
+    
+end
+
+always @(tx_clk) begin
+    rx_clk =  tx_clk;
+end
+
+atx_pll_e50g atx (
+        .pll_cal_busy       (),
+        .pll_locked         (tx_pll_locked),
+        .pll_powerdown      (1'b0),
+        .pll_refclk0        (clk_ref),
+        .tx_serial_clk_gt   (tx_serial_clk)
+);
+assign  pll_locked = tx_pll_locked;
+
+initial begin
+    csr_rst_n = 1;
+    tx_rst_n = 1;
+    rx_rst_n = 1;
+    reconfig_reset = 0;
+    repeat (10) @(posedge clk_status);
+    csr_rst_n = 0;
+    tx_rst_n = 0;
+    rx_rst_n = 0;
+    reconfig_reset = 1;
+    repeat (10) @(posedge clk_status);
+    csr_rst_n = 1;
+    tx_rst_n = 1;
+    rx_rst_n = 1;
+    reconfig_reset = 0;
+end
+
+//assign  tx_clk = tx_pma_clk;
+//assign  rx_clk  = rx_pma_clk;
+
+reg [63:0]  data = 64'h0;
+always @(posedge tx_clk) begin
+    tx_pcs_66b_valid <= tx_pcs_66b_ready;
+    tx_pcs_66b_d <= {2'b10, data};
+end
+
+
+  
+  // wait for RX alignment then enable TX
+initial begin
+    @(negedge clk_status);
+    @(negedge clk_status);
+    $display ("Waiting for RX alignment");
+    while (!rx_pcs_ready) @(negedge clk_status);
+    $display ("RX deskew locked");
+    $display ("RX lane aligmnent locked");
+    @(posedge tx_clk);
+    $display ("TX enabled");
+    //send_packets_25g_avl(10);
+
+    $display("**");
+    $display("** Testbench complete.");
+    $display("**");
+    $display("*****************************************");
+    #1000000;
+    $finish();
+end
+
+always @(posedge tx_clk) begin
+
+    if (rx_pcs_ready) begin
+        if (tx_pcs_66b_ready) begin
+            data <= data + 1;
+            if (data == 64'd10)
+                data <= 0;        
+        end
+    end
+
+end
+
+
+
+
+endmodule

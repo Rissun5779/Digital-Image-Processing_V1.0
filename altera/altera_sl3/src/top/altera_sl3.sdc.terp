@@ -1,0 +1,133 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+
+#--Set Clock Constraints--
+@@ if { $direction == "Tx" } {
+   create_clock -period "$user_clock_freq MHz" -name user_clock_tx [get_ports user_clock_tx] 
+   create_clock -period "100 MHz" -name phy_mgmt_clk [get_ports phy_mgmt_clk]
+
+@@ } elseif { $direction == "Rx" } {
+   create_clock -period "$user_clock_freq MHz" -name user_clock_rx [get_ports user_clock_rx] 
+   create_clock -period "100 MHz" -name phy_mgmt_clk [get_ports phy_mgmt_clk]
+   create_clock -period "$cdr_refclk_freq MHz" -name xcvr_pll_ref_clk [get_ports xcvr_pll_ref_clk]
+
+@@ } else {
+   create_clock -period "$user_clock_freq MHz" -name user_clock_tx [get_ports user_clock_tx] 
+   create_clock -period "$user_clock_freq MHz" -name user_clock_rx [get_ports user_clock_rx] 
+   create_clock -period "100 MHz" -name phy_mgmt_clk [get_ports phy_mgmt_clk]
+   create_clock -period "$cdr_refclk_freq MHz" -name xcvr_pll_ref_clk [get_ports xcvr_pll_ref_clk]
+@@ }
+
+@@ if { $direction == "Tx" } {
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_tx.counter_tx_ready|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|txcore_clock_reset_sync|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_tx.counter_tx_ready|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|txcore_clock_reset_sync|dreg[0]}
+
+   set_false_path -from {*inst_tx_mac|tx_sync_done_int} -to {*inst_tx_mac|stdsync_tx_sync_done|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|and_tx_ready} -to {*inst_sl3_phy|inst_interlaken_soft_phy|stdsync_tx_ready|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|and_tx_ready} -to {*inst_sl3_phy|inst_interlaken_soft_phy|stdsync_tx_ready|dreg[0]}
+
+   @@ if { $ecc_mode == "true" } {
+   set_min_delay -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -100
+   set_min_delay -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -100
+   set_max_delay -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} 100
+   set_max_delay -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} 100
+
+   set_net_delay -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -max 2
+   set_net_delay -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -max 2
+   	
+   set wclk_period "$user_clock_freq MHz"
+   set rclk_period "$rclk MHz"
+
+   if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {
+      set_max_skew -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} \$rclk_period
+      set_max_skew -from {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_s5m20k:dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} \$wclk_period
+   }
+   @@ }
+
+@@ } elseif { $direction == "Rx" } {
+
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_csr_inst|generic_csr|csr_reset_or_reset_rx_digital} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_csr_inst|generic_csr|csr_reset_or_reset_rx_digital} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|dreg[0]}
+	
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_csr_inst|generic_csr|csr_reset_ch_bitmask[0]} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_csr_inst|generic_csr|csr_reset_ch_bitmask[0]} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|dreg[0]}
+	
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*counter_rx_digitalreset|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|dreg[0]}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_rx.counter_rx_digitalreset|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|din_s1}
+
+   @@ if { $ecc_mode == "true" && $acm_mode == "false" } {
+   set_min_delay -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -100
+   set_min_delay -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -100
+   set_max_delay -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} 100
+   set_max_delay -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} 100
+
+   set_net_delay -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -max 2
+   set_net_delay -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -max 2
+   
+   set rclk_period_rx "$user_clock_freq MHz"
+   set wclk_period_rx "$rclk MHz"
+   
+   if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {
+      set_max_skew -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} \$rclk_period_rx
+      set_max_skew -from {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_s5m20k*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} \$wclk_period_rx
+   }
+   @@ }
+
+@@ } else {
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_rx.counter_rx_ready|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_rx.counter_rx_ready|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|rxcore_clock_reset_sync|dreg[0]}
+   
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_tx.counter_tx_ready|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|txcore_clock_reset_sync|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|xcvr_reset_controller|*g_tx.counter_tx_ready|r_reset} -to {*inst_sl3_phy|inst_interlaken_soft_phy|altera_sl3_clk_rst_inst|txcore_clock_reset_sync|dreg[0]}
+
+   set_false_path -from {*inst_tx_mac|tx_sync_done_int} -to {*inst_tx_mac|stdsync_tx_sync_done|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|and_tx_ready} -to {*inst_sl3_phy|inst_interlaken_soft_phy|stdsync_tx_ready|din_s1}
+   set_false_path -from {*inst_sl3_phy|inst_interlaken_soft_phy|and_tx_ready} -to {*inst_sl3_phy|inst_interlaken_soft_phy|stdsync_tx_ready|dreg[0]}
+
+@@ if { $ecc_mode == "true"} {
+   set_min_delay -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -100
+   set_min_delay -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -100
+   set_max_delay -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} 100
+   set_max_delay -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} 100
+
+   set_net_delay -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -max 2
+   set_net_delay -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -max 2
+   	
+   set wclk_period "$user_clock_freq MHz"
+   set rclk_period "$rclk MHz"
+
+   if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {
+      set_max_skew -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|raddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} \$rclk_period
+      set_max_skew -from {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|waddr_g_completed*} -to {*source_adaptation_ecc|dcfifo_inst*dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} \$wclk_period
+   }
+   
+   @@ if { $acm_mode == "false" } {
+   set_min_delay -from {*sink_adaptation|dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -100
+   set_min_delay -from {*sink_adaptation|dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -100
+   set_max_delay -from {*sink_adaptation|dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} 100
+   set_max_delay -from {*sink_adaptation|dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} 100
+
+   set_net_delay -from {*sink_adaptation|dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} -max 2
+   set_net_delay -from {*sink_adaptation|dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} -max 2
+   
+   set rclk_period_rx "$user_clock_freq MHz"
+   set wclk_period_rx "$rclk MHz"
+   
+   if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {
+      set_max_skew -from {*sink_adaptation|dcfifo_ecc|raddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr1|din_meta*} \$rclk_period_rx
+      set_max_skew -from {*sink_adaptation|dcfifo_ecc|waddr_g_completed*} -to {*sink_adaptation|dcfifo_ecc|sync_regs_aclr_m2:sr0|din_meta*} \$wclk_period_rx
+   }
+   @@ }
+@@ }
+@@ }

@@ -1,0 +1,109 @@
+# Makefile for generating the On-Chip Debug Port example software
+# Replace $SOPCINFO with the .sopcinfo file containing the On-Chip Debug Nios.
+SOPCINFO := dut.sopcinfo
+
+APP := emif_export
+
+APP_OBJDUMP_INCLUDE_SOURCE := 1
+
+APP_CFLAGS_DEFINED_SYMBOLS :=
+
+APP_CFLAGS_OPTIMIZATION := \
+	-O0
+
+APP_CFLAGS_WARNINGS := \
+	-Winline \
+	-Werror \
+	-Wall \
+	-Wextra \
+	-Wno-unused-parameter
+
+BSP_TYPE := hello_world_small
+
+FILES := emif_export.h emif_export.c main.c
+SRC_FILES := $(filter %.c,$(FILES))
+HEADER_FILES := $(filter %.h,$(FILES))
+INC_DIRS := $(foreach HEADER_FILE,$(HEADER_FILES),$(shell dirname $(shell readlink -e $(HEADER_FILE))))
+
+APP_SRC_FILES := $(SRC_FILES)
+APP_INC_DIRS := $(addprefix --inc-dir ,$(INC_DIRS))
+
+ELF := $(APP).elf
+HEX := $(HEX_FILENAME).hex
+
+SW_DIR := software
+APP_DIR := $(SW_DIR)/$(APP)_app
+BSP_DIR := $(SW_DIR)/$(APP)_bsp
+
+APP_MAKEFILE := $(APP_DIR)/Makefile
+BSP_MAKEFILE := $(BSP_DIR)/Makefile
+THIS_MAKEFILE := Makefile
+
+.PHONY: all
+all: elf
+
+.PHONY: elf
+elf: $(APP_DIR)/$(ELF)
+
+$(APP_DIR)/$(ELF): $(APP_MAKEFILE) $(FILES)
+	@echo "Building ELF file ..."
+	$(MAKE) -C $(@D)
+
+.PHONY: app
+app: $(APP_MAKEFILE)
+
+$(APP_MAKEFILE): $(BSP_MAKEFILE)
+	@echo "Creating app Makefile ..."
+	nios2-app-generate-makefile \
+		--bsp-dir $(BSP_DIR) \
+		--app-dir $(@D) \
+		--elf-name $(ELF) \
+		--set OBJDUMP_INCLUDE_SOURCE $(APP_OBJDUMP_INCLUDE_SOURCE) \
+		--set APP_CFLAGS_DEFINED_SYMBOLS $(APP_CFLAGS_DEFINED_SYMBOLS) \
+		--set APP_CFLAGS_OPTIMIZATION "$(APP_CFLAGS_OPTIMIZATION)" \
+		--set APP_CFLAGS_WARNINGS $(APP_CFLAGS_WARNINGS) \
+		--src-files $(APP_SRC_FILES) \
+		$(APP_INC_DIRS)
+
+.PHONY: bsp
+bsp: $(BSP_MAKEFILE)
+
+$(BSP_MAKEFILE): $(SOPCINFO) $(THIS_MAKEFILE)
+	make mrproper
+	@echo "Creating $(BSP_TYPE) create-this-bsp ..."
+	nios2-swexample-create \
+		--sopc-file=$(SOPCINFO) \
+		--type=$(BSP_TYPE) \
+		--bsp-dir=$(@D) \
+		--no-app
+
+	@echo "Creating settings.bsp & generating files ..."
+	cd $(@D) && ./create-this-bsp --no-make
+
+	cd $(@D) && nios2-bsp-update-settings \
+		--bsp-dir . \
+		--settings settings.bsp \
+		$(BSP_EXTRA_SETTINGS)
+
+.PHONY: prog
+prog:
+	nios2-download --cable $(CABLE) --device $(DEVICE) -g $(APP_DIR)/$(ELF)
+	nios2-terminal --cable $(CABLE) --device $(DEVICE) > $(APP)_log.txt
+
+.PHONY: clean
+clean:
+ifneq ($(wildcard $(APP_MAKEFILE)),)
+	$(MAKE) -C $(APP_DIR) clean
+endif
+
+.PHONY: clean_all
+clean_all:
+ifneq ($(wildcard $(APP_MAKEFILE)),)
+	$(MAKE) -C $(APP_DIR) clean_all
+endif
+
+.PHONY: mrproper
+mrproper:
+	@echo "Deleting $(SW_DIR) ..."
+	rm -rf $(SW_DIR)
+

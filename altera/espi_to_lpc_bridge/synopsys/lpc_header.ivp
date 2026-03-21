@@ -1,0 +1,49 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// This simulation model contains highly confidential and
+// proprietary information of Intel and is being provided
+// in accordance with and subject to the protections of the
+// applicable Intel Program License Subscription Agreement
+// which governs its use and disclosure. Your use of Intel
+// Corporation's design tools, logic functions and other
+// software and tools, and its AMPP partner logic functions,
+// and any output files from any of the foregoing (including device
+// programming or simulation files), and any associated
+// documentation or information are expressly subject to the
+// terms and conditions of the Intel Program License Subscription
+// Agreement, Intel FPGA IP License Agreement, or other
+// applicable license agreement, including, without limitation,
+// that your use is for the sole purpose of simulating designs
+// for use exclusively in logic devices manufactured by Intel and sold
+// by Intel or its authorized distributors. Please refer to the
+// applicable agreement for further details. Intel products and
+// services are protected under numerous U.S. and foreign patents,
+// maskwork rights, copyrights and other intellectual property laws.
+// Intel assumes no responsibility or liability arising out of the
+// application or use of this simulation model.
+// ACDS 18.1
+`pragma protect begin_protected
+`pragma protect author="Altera"
+`pragma protect key_keyowner="VCS"
+`pragma protect key_keyname="VCS001"
+`pragma protect key_method="VCS003"
+`pragma protect encoding=(enctype="uuencode",bytes=200         )
+`pragma protect key_block
+HQ;'UWF,M<4KC<Q.'W2(H^TQB=L^4=%;,2WN@]YY\2!,R+6$AIN/*3   
+H\0=Z7K/ CD^J;":Q&RNJYFYTCJA@+<SA[HA,JH+EC$^CN U]=N=6%   
+H47G(L0@2_K63_YL*^>!:,N69''\4!*AJ8( 6>/_"AG:L\]]"BZT)'@  
+HM\\(VE\\17M9A W1]$/5L7"&>_WIM+Y"8ITI6-L8P!,)7B2>NK('VP  
+HQ:4^6[>?' MMA:I]Z!@Y[JV8^$)0ZN_Y1$N9K;V-)EU/K.KB-Y,\I   
+`pragma protect encoding=(enctype="uuencode",bytes=304         )
+`pragma protect data_method="aes128-cbc"
+`pragma protect data_block
+@5WGHR/9::4;P_DM%]DF%9QVW!FH_M>DDB_;M(F+D\]X 
+@E3]"0:G*.)^OQ_^%HYV\65I'>$L3F+%J(.B*4*>Z-%X 
+@^_, KO%RV.9$%!-*YIXW-4Z.\Z\/V&'%@3P!='['$T< 
+@\93#J $\CMLRRP4LAVF)K.FP=!8WBF[+6UJ"@KS\P3H 
+@+/#,O8M#2$V;V*%(^]&QT70S5@LLX9G8QR8FR& PBSH 
+@^9$);D4C $A2,X5_P8Z^$G44O/?\8WT2ML1:EHD=I], 
+@=<2 9A/_Z*!D"B";+PCDTFR-*MNNZ_=D,AM;6?A@GJ0 
+@4B?VEF-8WX0%+%JL98H_IH"LCHY)&>(JWG<YA6!1C6@ 
+@J GN48YH6J'F&$$EE4HDJE1<H>LM%A-\G/J/G=,^H*@ 
+0RG)G"&VN1YM;XDQ%TB-S.0  
+`pragma protect end_protected

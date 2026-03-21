@@ -1,0 +1,4 @@
+#comment: example of PLL TYPE assignment for TX PLL. This assignment is needed for every TX PLL that exist in the design
+
+# For Stratix V Soft XAUI:
+#set_instance_assignment -name PLL_TYPE ATX -to "*sv_xcvr_xaui:alt_xaui_phy*alt_pma_0*sv_xcvr_native_insts*pll*.tx_pll"

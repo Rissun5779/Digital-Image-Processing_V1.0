@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <system.h>
+
+
+int main()
+{
+    printf("Hello, World Nios !\n");
+    return 0;
+}

@@ -1,0 +1,484 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #
+@@ # Variables used for TERP:
+@@ # top_level_name:  dynamically generated top level file name (based on parameterization)
+@@ # altera_xcvr_name: name of the altera_xcvr module
+@@ # altera_hmcc_xcvr_reset_name: dynamicly generated name of the altera_hmcc_xcvr_reset module
+
+// For benchmarking
+// set_global_assignment -name SEARCH_PATH ../../src
+// set_global_assignment -name SEARCH_PATH ../../src/hsl
+// set_global_assignment -name SEARCH_PATH ../../src/xcvr
+// set_global_assignment -name SEARCH_PATH ../../src/xcvr/altera_hmcc_xcvr
+// set_global_assignment -name SEARCH_PATH ../../src/xcvr/altera_hmcc_xcvr_reset
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_lxrxps
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_lxtxps
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ferr_n
+// set_instance_assignment -name VIRTUAL_PIN ON -to hmc_p_rst_n
+// set_instance_assignment -name VIRTUAL_PIN ON -to i2c_load_registers
+// set_instance_assignment -name VIRTUAL_PIN ON -to i2c_registers_loaded
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_ready
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_tag
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_cube
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_addr
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_cmd
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_sop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_eop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_data
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_req_valid
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_tag
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_size
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_cmd
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_sop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_eop
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_error
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_data
+// set_instance_assignment -name VIRTUAL_PIN ON -to dp_rsp_valid
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_address
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_read
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_write
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_writedata
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_readdatavalid
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_readdata
+// set_instance_assignment -name VIRTUAL_PIN ON -to csr_irq
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_clk,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_reset,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_write,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_read,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_address,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_writedata,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_readdata,
+// set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_waitrequest
+
+`timescale 1ps/1ps
+
+module $top_level_name
+#(
+    parameter   DEVICE_FAMILY        = "Arria 10",
+    parameter   CHANNELS             = 16,
+    parameter   DATA_RATE            = "10000 Mbps",
+    parameter   ENABLE_ECC           = "TRUE",
+    parameter   RESPONSE_REORDERING  = 0,
+    parameter   PORTS                = 1,
+    parameter   ENABLE_SCRAM         = "TRUE",
+    parameter   BYPASS_LINK_INIT     = 0,
+    parameter   RETRY_TIMEOUT_PERIOD = 5,
+    parameter   RETRY_LIMIT          = 3,
+    parameter   IRTRY_INSERT_COUNT   = 8,
+    parameter   IRTRY_DETECT_COUNT   = 4,
+    parameter   RX_MAPPING           = 64'hFEDC_BA98_7654_3210, // To compensate for PCB wiring.
+    parameter   TX_MAPPING           = 64'hFEDC_BA98_7654_3210
+) (
+    // Clock and Reset
+   input                           rst_n,
+   input                           rx_cdr_refclk0,
+   input [CHANNELS*6-1:0]          tx_bonding_clocks,
+   output wire                     pll_powerdown,
+   input                           pll_cal_busy,
+   input                           pll_locked, // Must be externally ANDed into a single bit.
+   output logic                    core_rst_n,
+   output wire                     core_clk,
+
+    // HMC interface
+   input [CHANNELS-1:0]            hmc_lxrx,
+   output wire [CHANNELS-1:0]      hmc_lxtx,
+   input                           hmc_lxrxps,
+   output wire                     hmc_lxtxps,
+   input                           hmc_ferr_n,
+   output wire                     hmc_p_rst_n,
+
+    // HMC I2C interface
+   input                           i2c_registers_loaded,
+   output wire                     i2c_load_registers,
+ 
+    // User Request interface
+   output wire                     dp_req_ready,
+   input [8:0]                     dp_req_tag,
+   input [2:0]                     dp_req_cube,
+   input [33:0]                    dp_req_addr,
+   input [5:0]                     dp_req_cmd,
+   input                           dp_req_sop,
+   input                           dp_req_eop,
+   input [(CHANNELS*32)-1:0]       dp_req_data,
+   input                           dp_req_valid,
+
+    // User Response interface
+   output wire [8:0]               dp_rsp_tag,
+   output wire [2:0]               dp_rsp_size,
+   output wire [5:0]               dp_rsp_cmd,
+   output wire                     dp_rsp_sop,
+   output wire                     dp_rsp_eop,
+   output wire                     dp_rsp_error,
+   output wire [(CHANNELS*32)-1:0] dp_rsp_data,
+   output wire                     dp_rsp_valid,
+ 
+    // Control/Status AVMM Interface
+   input [5:0]                     csr_address,
+   input                           csr_read,
+   input                           csr_write,
+   input [31:0]                    csr_writedata,
+   output wire                     csr_readdatavalid,
+   output wire [31:0]              csr_readdata,
+   output wire                     csr_irq,
+
+    // debug/status output signals 
+   output wire                     link_init_complete,
+
+   output wire [(CHANNELS*32)-1:0] debug_tx_data,
+   output wire [(CHANNELS*32)-1:0] debug_rx_data,
+
+    // Transceiver Reconfiguration
+   input                           reconfig_clk,
+   input                           reconfig_reset,
+   input                           reconfig_write,
+   input                           reconfig_read,
+   input [((CHANNELS==16)?13:12):0]reconfig_address,
+   input [31:0]                    reconfig_writedata,
+   output wire [31:0]              reconfig_readdata,
+   output wire                     reconfig_waitrequest
+);
+
+`ifdef ALTERA_RESERVED_QIS
+   localparam       SIMULATION_SPEEDUP = 0;   // affects Tinit time
+`else
+   localparam       SIMULATION_SPEEDUP = 1;
+`endif
+
+
+   // signals between altera_hmcc_dcore and altera_hmcc_xcvr
+   wire    [CHANNELS-1:0]          tx_clkout;
+   
+   // signals between altera_hmcc_dcore and altera_hmcc_lane_swapper
+   wire    [CHANNELS*32-1:0]       dcore_tx_parallel_data;
+   wire    [CHANNELS*32-1:0]       dcore_rx_parallel_data;
+   wire    [CHANNELS-1:0]          dcore_rx_10g_bitslip;
+   wire    [CHANNELS-1:0]          dcore_rx_10g_fifo_rd_en;
+   wire    [CHANNELS-1:0]          dcore_rx_is_lockedtodata;
+   wire    [CHANNELS-1:0]          dcore_loopback;
+   
+   // signals between altera_hmcc_lane_swapper and altera_hmcc_xcvr
+   wire    [CHANNELS*32-1:0]       xcvr_tx_parallel_data;
+   wire    [CHANNELS*32-1:0]       xcvr_rx_parallel_data;
+   wire    [CHANNELS-1:0]          xcvr_rx_10g_bitslip;
+   wire    [CHANNELS-1:0]          xcvr_rx_10g_fifo_rd_en;
+   wire    [CHANNELS-1:0]          xcvr_rx_is_lockedtodata;
+   wire    [CHANNELS-1:0]          xcvr_loopback;
+   
+   // signals between altera_hmcc_xcvr and altera_hmcc_xcvr_reset 
+   wire    [CHANNELS-1:0]          tx_analogreset;
+   wire    [CHANNELS-1:0]          tx_digitalreset;
+   wire    [CHANNELS-1:0]          tx_cal_busy;
+   wire    [CHANNELS-1:0]          rx_analogreset;
+   wire    [CHANNELS-1:0]          rx_digitalreset;
+   wire    [CHANNELS-1:0]          rx_cal_busy;
+   
+   // signals between altera_hmcc_xcvr_reset and altera_hmcc_dcore 
+   wire    [CHANNELS-1:0]          tx_ready;
+   wire                            xcvr_ready; // Essentially ~rx_digitalreset[0] crossed into clk clock domain.
+   wire                            i2c_registers_loaded_hard ; // Safely crossed into the clk clock domain.
+
+   // Potentially metastable version of core_rst_n
+   logic   [15:0]                  core_rst_n_meta;
+
+
+   //assign clk = tx_clkout[CHANNELS>>1]; // Use a clock close to the middle as the common clock.
+   assign core_clk = tx_clkout[0]; // Use a clock from channel 0
+   
+/*
+   // Synchronize the csr reset to clk
+   // Use four synchronizing flops to make sure csr_rst_n is de-asserted after signals such as ferr_n are synchronized.
+   logic                           csr_rst_n;
+   logic                           csr_rst_n_p4;
+   logic                           csr_rst_n_p3;
+   logic                           csr_rst_n_p2;
+   logic                           csr_rst_n_p1;
+   
+   always_ff @( posedge clk or negedge rst_n )begin
+      if( !rst_n )begin
+         csr_rst_n_p4 <= 1'b0;
+         csr_rst_n_p3 <= 1'b0;
+         csr_rst_n_p2 <= 1'b0;
+         csr_rst_n_p1 <= 1'b0;
+         csr_rst_n    <= 1'b0;
+      end else begin
+         csr_rst_n_p4 <= 1'b1;
+         csr_rst_n_p3 <= csr_rst_n_p4;
+         csr_rst_n_p2 <= csr_rst_n_p3;
+         csr_rst_n_p1 <= csr_rst_n_p2;
+         csr_rst_n    <= csr_rst_n_p1;
+         
+      end
+   end // always_ff @
+*/
+   
+   altera_hmcc_dcore #(
+      .DEVICE_FAMILY          ( DEVICE_FAMILY ),
+      .CHANNELS               ( CHANNELS ),
+      .DATA_RATE              ( DATA_RATE ),
+      .ENABLE_ECC             ( ENABLE_ECC ),
+      .ENABLE_SCRAM           ( ENABLE_SCRAM ),
+      .SIMULATION_SPEEDUP     ( SIMULATION_SPEEDUP ),
+      .BYPASS_LINK_INIT       ( BYPASS_LINK_INIT ),
+      .RETRY_TIMEOUT_PERIOD   ( RETRY_TIMEOUT_PERIOD ),
+      .RETRY_LIMIT            ( RETRY_LIMIT ),
+      .IRTRY_INSERT_COUNT     ( IRTRY_INSERT_COUNT ),
+      .IRTRY_DETECT_COUNT     ( IRTRY_DETECT_COUNT )
+   ) dcore (
+      .clk                    ( core_clk ),
+      .rst_n                  ( core_rst_n_meta[15] ),
+      .csr_rst_n              ( core_rst_n_meta[15] ), // core_clk is only valid once core_rst_n_pre1 is de-asseretd so registers cannot be accessed before the rest of the core is out of reset.
+//    .csr_rst_n              ( csr_rst_n ), // Registers can be accessed before the rest of the core is out of reset.
+      .dp_req_ready           ( dp_req_ready ),
+      .dp_req_tag             ( dp_req_tag ),
+      .dp_req_cube            ( dp_req_cube ),
+      .dp_req_addr            ( dp_req_addr ),
+      .dp_req_cmd             ( dp_req_cmd ),
+      .dp_req_sop             ( dp_req_sop ),
+      .dp_req_eop             ( dp_req_eop ),
+      .dp_req_data            ( dp_req_data ),
+      .dp_req_valid           ( dp_req_valid ),
+
+      .dp_rsp_tag             ( dp_rsp_tag ),
+      .dp_rsp_size            ( dp_rsp_size ),
+      .dp_rsp_cmd             ( dp_rsp_cmd ),
+      .dp_rsp_sop             ( dp_rsp_sop ),
+      .dp_rsp_eop             ( dp_rsp_eop ),
+      .dp_rsp_error           ( dp_rsp_error ),
+      .dp_rsp_data            ( dp_rsp_data ),
+      .dp_rsp_valid           ( dp_rsp_valid ),
+
+      .csr_address            ( csr_address ),
+      .csr_read               ( csr_read ),
+      .csr_write              ( csr_write ),
+      .csr_writedata          ( csr_writedata ),
+      .csr_readdatavalid      ( csr_readdatavalid ),
+      .csr_readdata           ( csr_readdata ),
+      .csr_irq                ( csr_irq ),
+
+      .xcvr_ready             ( xcvr_ready ),
+      .tx_parallel_data       ( dcore_tx_parallel_data ),
+      .rx_parallel_data       ( dcore_rx_parallel_data ),
+      .rx_10g_bitslip         ( dcore_rx_10g_bitslip ),
+      .rx_10g_fifo_rd_en      ( dcore_rx_10g_fifo_rd_en ),
+      .pll_locked             ( /*pll_locked*/ 1'b1 ), // Only used to set a value in the CSRs, but registers can only be read once core_clk is stable and thus pll_locked will always be set by then.
+      .rx_is_lockedtodata     ( dcore_rx_is_lockedtodata ),
+      .loopback               ( dcore_loopback ),
+
+      .hmc_ferr_n             ( hmc_ferr_n ),
+      .hmc_lxrxps             ( hmc_lxrxps ),
+      .hmc_lxtxps             ( hmc_lxtxps ),
+      .hmc_p_rst_n            ( hmc_p_rst_n ),
+
+      .link_init_complete     ( link_init_complete ),
+             
+      .i2c_load_registers     ( i2c_load_registers ),
+      .i2c_registers_loaded   ( i2c_registers_loaded_hard ),
+      .debug_tx_data          ( debug_tx_data ),
+      .debug_rx_data          ( debug_rx_data )
+   );
+
+   altera_hmcc_lane_swapper
+   #(
+      .CHANNELS   ( CHANNELS   ),
+      .RX_MAPPING ( RX_MAPPING ),
+      .TX_MAPPING ( TX_MAPPING )
+   ) lane_swapper (
+      .dcore_tx_parallel_data   ( dcore_tx_parallel_data   ),
+      .dcore_rx_parallel_data   ( dcore_rx_parallel_data   ),
+      .dcore_rx_10g_bitslip     ( dcore_rx_10g_bitslip     ),
+      .dcore_rx_10g_fifo_rd_en  ( dcore_rx_10g_fifo_rd_en  ),
+      .dcore_rx_is_lockedtodata ( dcore_rx_is_lockedtodata ), 
+      .dcore_loopback           ( dcore_loopback           ),
+      .xcvr_tx_parallel_data    ( xcvr_tx_parallel_data    ),
+      .xcvr_rx_parallel_data    ( xcvr_rx_parallel_data    ),
+      .xcvr_rx_10g_bitslip      ( xcvr_rx_10g_bitslip      ),
+      .xcvr_rx_10g_fifo_rd_en   ( xcvr_rx_10g_fifo_rd_en   ),
+      .xcvr_rx_is_lockedtodata  ( xcvr_rx_is_lockedtodata  ),
+      .xcvr_loopback            ( xcvr_loopback            )
+   );
+   
+   $altera_xcvr_name xcvr (
+      .tx_analogreset           (tx_analogreset           ), // input  wire [CHANNELS-1:0]
+      .tx_digitalreset          (tx_digitalreset          ), // input  wire [CHANNELS-1:0]
+      .rx_analogreset           (rx_analogreset           ), // input  wire [CHANNELS-1:0]
+      .rx_digitalreset          (rx_digitalreset          ), // input  wire [CHANNELS-1:0]
+      .tx_cal_busy              (tx_cal_busy              ), // output wire [CHANNELS-1:0]
+      .rx_cal_busy              (rx_cal_busy              ), // output wire [CHANNELS-1:0]
+      .rx_cdr_refclk0           (rx_cdr_refclk0           ), // input  wire          
+      .tx_serial_data           (hmc_lxtx                 ), // output wire [CHANNELS-1:0]
+      .rx_serial_data           (hmc_lxrx                 ), // input  wire [CHANNELS-1:0]
+      .rx_is_lockedtodata       (xcvr_rx_is_lockedtodata  ), // output wire [CHANNELS-1:0]
+      .tx_coreclkin             ({CHANNELS{core_clk}}     ), // input  wire [CHANNELS-1:0]
+      .rx_coreclkin             ({CHANNELS{core_clk}}     ), // input  wire [CHANNELS-1:0]
+      .tx_clkout                (tx_clkout                ), // output wire [CHANNELS-1:0]
+      .rx_clkout                (                         ), // output wire [CHANNELS-1:0]
+      .tx_parallel_data         (xcvr_tx_parallel_data    ), // input  wire [(CHANNELS*32)-1:0]
+      .rx_parallel_data         (xcvr_rx_parallel_data    ), // output wire [(CHANNELS*32)-1:0]  
+      .tx_enh_data_valid        ({CHANNELS{1'b1}}         ), // input  wire [CHANNELS-1:0]   
+      .unused_tx_parallel_data  ({CHANNELS{96'b0}}        ), // input  wire [(CHANNELS*96)-1:0] 
+      .unused_rx_parallel_data  (                         ), // output wire [(CHANNELS*96)-1:0] 
+      .tx_bonding_clocks        (tx_bonding_clocks        ), // input  wire [(CHANNELS*6)-1:0]
+      .rx_seriallpbken          ({CHANNELS{1'b0}}         ), // input  wire [CHANNELS-1:0]
+      .rx_enh_fifo_full         (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_pfull        (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_empty        (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_pempty       (                         ), // output wire [CHANNELS-1:0]
+      .rx_enh_fifo_rd_en        (xcvr_rx_10g_fifo_rd_en   ), // input  wire [CHANNELS-1:0]
+      .rx_bitslip               (xcvr_rx_10g_bitslip      ), // input  wire [CHANNELS-1:0]
+      .reconfig_clk             (reconfig_clk             ), // input  wire [0:0]    
+      .reconfig_reset           (reconfig_reset           ), // input  wire [0:0]    
+      .reconfig_write           (reconfig_write           ), // input  wire [0:0]    
+      .reconfig_read            (reconfig_read            ), // input  wire [0:0]    
+      .reconfig_address         (reconfig_address         ), // input  wire [13:0]   
+      .reconfig_writedata       (reconfig_writedata       ), // input  wire [31:0]   
+      .reconfig_readdata        (reconfig_readdata        ), // output wire [31:0]   
+      .reconfig_waitrequest     (reconfig_waitrequest     )  // output wire [0:0]    
+         );
+
+   
+   assign pll_powerdown = 1'b0; // Force low, in case future releases re-enable the effect of pll_powerdown which is ignored as of 15.1
+
+   // Create a version rx_is_lockedtodata gated by the PLL locked signal 
+   // to prevent de-assertion of rx_digitalreset before tx_clkout is stable (case:322113).
+   // - synchronize xcvr_rx_is_lockedtodata into the rx_cdr_refclk0 clock domain 
+   // - debounce pll_locked 
+   // - AND those signals together and use that as the reset controller's rx_is_lockedtodata. 
+
+   reg [11:0]         pll_locked_count; // Count to 2048: at least 6.5us for 312.5MHz, (longer for slower cdr_refclk0).
+   wire               debounced_pll_locked;
+   reg [CHANNELS-1:0] xcvr_rx_is_lockedtodata_meta;
+   reg [CHANNELS-1:0] xcvr_rx_is_lockedtodata_hard;
+   reg [CHANNELS-1:0] gated_xcvr_rx_is_lockedtodata; // ANDed with debounced PLL locked signal 
+
+   always_ff @( posedge rx_cdr_refclk0 or negedge pll_locked ) begin
+      if( !pll_locked  )begin
+	 pll_locked_count              <=  'd0;
+         xcvr_rx_is_lockedtodata_meta  <= 1'b0;
+         xcvr_rx_is_lockedtodata_hard  <= 1'b0;
+         gated_xcvr_rx_is_lockedtodata <=  'd0;
+      end else begin
+	 if( !debounced_pll_locked ) begin
+   	    pll_locked_count <= pll_locked_count + 1'd1;
+         end
+	 // OK to metastable harden this bus with a pair of flops because the signals are independent and just later ANDed together.
+         xcvr_rx_is_lockedtodata_meta  <= xcvr_rx_is_lockedtodata; 
+         xcvr_rx_is_lockedtodata_hard  <= xcvr_rx_is_lockedtodata_meta;
+
+         gated_xcvr_rx_is_lockedtodata <= xcvr_rx_is_lockedtodata_hard & { CHANNELS { debounced_pll_locked } } ;
+      end
+   end
+  
+   assign debounced_pll_locked = SIMULATION_SPEEDUP ? pll_locked_count[5] : pll_locked_count[11];
+
+   $altera_hmcc_xcvr_reset_name xrst (
+      .clock                    ( rx_cdr_refclk0 ),
+      .reset                    ( ~rst_n ),
+      .pll_powerdown            ( /*pll_powerdown*/ ), // output wire [0:0]
+      .tx_analogreset           ( tx_analogreset ), // all bits have same source
+      .tx_digitalreset          ( tx_digitalreset ), // all bits have same source
+      .tx_ready                 ( tx_ready ), // all bits have same source
+      .pll_locked               ( debounced_pll_locked ), // input
+      .pll_select               ( 1'b0 ),
+      .tx_cal_busy              ( tx_cal_busy | { { (CHANNELS-1) {1'b0} }, pll_cal_busy } ),
+      .rx_analogreset           ( rx_analogreset ), // all bits have same source
+      .rx_digitalreset          ( rx_digitalreset ), // all bits have same source
+      .rx_ready                 (  ), // all bits have same source
+      .rx_is_lockedtodata       ( gated_xcvr_rx_is_lockedtodata ), // input internally ANDed
+      .rx_cal_busy              ( rx_cal_busy )
+   );
+
+   
+   // Wait for tx_ready as indication that core clock is stable.
+   // Don't wait for rx_ready because HMC device may not be driving
+   // our receiver while it is in reset.
+   // tx_ready is only asserted after pll_locked is asserted.
+/*
+   altera_hmcc_sync_regs_aclr #( .WIDTH( 1 ) ) core_rst_sync (
+      .clk                    ( core_clk     ),
+      .aclr                   ( ~tx_ready[0] ), // all bits have same source
+      .din                    ( 1'b1         ),
+      .dout                   ( core_rst_n   )
+   );
+*/
+   
+   // Synchronize core_rst_n but also delay it one cycle to match the reset delay in dcore (rx, tx, init_sm, retry_sm, registers)
+   always_ff @( posedge core_clk or negedge tx_ready[0] )begin
+      if( !tx_ready[0] )begin
+         core_rst_n_meta   <= 16'b0;
+         core_rst_n        <= 1'b0;
+      end else begin
+         core_rst_n_meta   <= {core_rst_n_meta[14:0], 1'b1};  // extend reset to allow clock to be alive
+         core_rst_n        <= core_rst_n_meta[15];  // Output signal, delayed one cycle to match the piped resets in dcore.
+      end
+   end
+
+   
+   // Create an xcvr_ready signal in the core_clk clock doamin.
+   // rx_digitalreset looks like it is the last reset to be released.
+   altera_hmcc_sync_regs_aclr #( .WIDTH( 1 ) ) xcvr_ready_sync (
+      .clk                    ( core_clk           ),
+      .aclr                   ( rx_digitalreset[0] ),
+      .din                    ( 1'b1               ),
+      .dout                   ( xcvr_ready         )
+   );
+
+   altera_std_synchronizer 
+   #(
+      .depth          ( 2 )
+   ) registers_loaded (
+      .clk            ( core_clk                  ),
+      .reset_n        ( core_rst_n                ),
+      .din            ( i2c_registers_loaded      ),
+      .dout           ( i2c_registers_loaded_hard )
+   );
+
+   
+   // Parameter validation
+   // --------------------
+   
+   // synthesis translate_off
+   initial begin : parameter_check
+      bit invalid_parameter;
+  
+      if( ( DEVICE_FAMILY != "Stratix V" ) && ( DEVICE_FAMILY != "Arria 10" ) ) begin
+          \$display( "FATAL ERROR: Invalid DEVICE_FAMILY %s", DEVICE_FAMILY );
+          invalid_parameter = 1'b1;
+      end
+  
+      if( ( CHANNELS != 16 ) && ( CHANNELS != 8 ) ) begin
+          \$display( "FATAL_ERROR: Invalid CHANNELS %d", CHANNELS );
+          invalid_parameter = 1'b1;
+      end
+  
+      if( ( DATA_RATE != "10000 Mbps" ) && ( DATA_RATE != "12500 Mbps" ) ) begin
+          \$display( "FATAL_ERROR: Invalid DATA_RATE %s", DATA_RATE );
+          invalid_parameter = 1'b1;
+      end
+  
+      if( ( ENABLE_SCRAM != "TRUE" ) && ( ENABLE_SCRAM != "FALSE" ) ) begin
+          \$display( "FATAL_ERROR: Invalid ENABLE_SCRAM %s", ENABLE_SCRAM );
+          invalid_parameter = 1'b1;
+      end
+  
+      if( ( ENABLE_ECC != "TRUE" ) && ( ENABLE_ECC != "FALSE" ) ) begin
+          \$display( "FATAL_ERROR: Invalid ENABLE_ECC %s", ENABLE_ECC );
+          invalid_parameter = 1'b1;
+      end
+  
+      if( invalid_parameter ) \$stop;
+   end
+   // synthesis translate_on
+
+endmodule

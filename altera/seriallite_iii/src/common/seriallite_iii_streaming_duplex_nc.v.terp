@@ -1,0 +1,447 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1 ps / 1 ps 
+
+module ${module_name} #
+(   
+   parameter                     DEVICE_FAMILY              = "$device_family",
+   parameter                     ADDR_WIDTH                 = $addr_width,
+   parameter                     lanes                      = $lanes,
+   parameter                     enable_tx_pll              = $enable_tx_pll,
+   parameter                     adaptation_fifo_depth      = $fifo_depth, 
+   parameter                     pll_ref_freq               = "$freq",
+   parameter                     data_rate                  = "$data_rate",
+   parameter                     meta_frame_length          = $mf_length,
+   parameter                     BURST_GAP                  = $burst_gap,
+   parameter                     reference_clock_frequency  = "$ref_freq",
+   parameter                     coreclkin_frequency        = "$cclk_freq",
+   parameter                     user_clock_frequency       = "$user_freq",
+   parameter                     pll_type                   = "$pll_type",
+   parameter                     ecc_enable                 = $enable_ecc,
+   parameter                     enable_seventeeng          = 0
+)
+(
+   // Clocks and reset
+   input                         core_reset /* synthesis altera_attribute="disable_da_rule=r102" */,
+   input  [lanes-1:0]            tx_serial_clk,
+   input                         tx_pll_locked,
+   output                        user_clock_reset_tx,
+   output                        user_clock_tx,
+   output                        user_clock_reset_rx,
+   output                        user_clock_rx,
+
+   // Source User Interface
+   input       [(lanes*64)-1:0]  data_tx,
+   input       [7:0]             sync_tx,
+   input                         valid_tx,
+   input                         start_of_burst_tx,
+   input                         end_of_burst_tx,
+   output                        link_up_tx,
+   output      [3:0]             error_tx,
+   input                         crc_error_inject,
+
+
+   // Sink User Interface
+   output   [(lanes*64)-1:0]  data_rx,
+   output   [7:0]             sync_rx,
+   output                     valid_rx,
+   output                     start_of_burst_rx,
+   output                     end_of_burst_rx,
+   output                     link_up_rx,
+   output   [(lanes+5)-1:0]   error_rx,
+
+
+   // Interlaken PHY IP management interface
+   input                         phy_mgmt_clk,
+   input                         phy_mgmt_clk_reset,   // externally synchronized phy_mgmt_clk_reset
+   input       [ADDR_WIDTH-1:0]  phy_mgmt_address,
+   input                         phy_mgmt_read,
+   output      [31:0]            phy_mgmt_readdata,
+   input                         phy_mgmt_write,
+   input       [31:0]            phy_mgmt_writedata,
+   output                        phy_mgmt_waitrequest,
+
+   // Transceiver clock and data
+   input                         xcvr_pll_ref_clk,
+   output      [lanes-1:0]       tx_serial_data,
+   input       [lanes-1:0]       rx_serial_data,
+
+   // Transceiver reconfiguration interface
+   input                         reconfig_busy,
+   input       [(lanes*140)-1:0] reconfig_to_xcvr,
+   output      [(lanes*92)-1:0]  reconfig_from_xcvr
+	
+);
+
+   localparam   ACM_CLOCKING = 0;
+
+   wire                          core_reset_phy_clk_sync;
+
+   wire                          xcvr_pll_locked;
+   wire        [lanes-1:0]       tx_datain_bp;
+   wire        [lanes-1:0]       tx_fifo_pfull;
+   wire        [lanes-1:0]       tx_clkout;
+   wire                          tx_ready;
+   wire                          tx_sync_done;
+
+   wire        [lanes-1:0]       tx_datavalid;
+   wire        [lanes-1:0]       tx_ctrlin;
+   wire        [(lanes*64)-1:0]  tx_parallel_data;
+
+   wire        [lanes-1:0]       rx_datavalid;
+   wire        [lanes-1:0]       rx_crc32err; 
+   wire        [lanes-1:0]       rx_frame_lock;
+   wire        [lanes-1:0]       rx_ctrlout;
+   wire        [lanes-1:0]       rx_fifopfull;
+   wire        [lanes-1:0]       rx_fifopempty;
+   wire        [(lanes*64)-1:0]  rx_parallel_data;
+   wire        [lanes-1:0]       rx_dataout_bp;
+   wire        [lanes-1:0]       rx_fifo_clr;
+   wire        [lanes-1:0]       rx_clkout;
+   wire                          rx_ready;
+
+   wire                          sync_crc_err;
+   
+   wire                          interface_clock_tx;
+   wire        [lanes-1:0]       rx_frame_lock_sync;
+   wire        [lanes-1:0]       rx_crc32err_sync;
+   
+   wire                          interface_clock_reset_tx;
+   wire                          interface_clock_reset_rx;
+   wire                          interface_clock_rx;
+   wire                          rx_clkout_buf;
+
+   //
+   // Clocking and reset assignments
+   //
+
+ 
+   //
+   // Reconfig reset synchronizer
+   //
+   dp_sync #
+   (
+      .dp_width(1),
+      .dp_reset(1'b1)
+   )
+   core_reset_phy_clk
+   (
+      .async_reset_n(~core_reset),
+      .sync_reset_n(1'b1),
+      .clk(phy_mgmt_clk),
+      .sync_ctrl(2'd2),
+      .d(1'b0),
+      .o(core_reset_phy_clk_sync)
+   );
+
+   //
+   // CRC Error Inject Synchronizer
+   //
+   altera_std_synchronizer #(
+      .depth (2)
+   ) stdsync_framelock ( 
+      .clk(interface_clock_tx),
+      .din(crc_error_inject),
+      .dout(sync_crc_err),
+      .reset_n(1'b1)
+   );
+
+
+
+generate 
+  
+  if (DEVICE_FAMILY == "Arria 10")  begin: A10_ILK_PHY_DPLX
+      
+       interlaken_native_wrapper_duplex$instance_name #
+       (
+         .ADDR_WIDTH       (ADDR_WIDTH       ),      
+         .lanes            (lanes            ),
+         .data_rate        (data_rate        ),
+         .pll_ref_freq     (pll_ref_freq     ),
+         .enable_tx_pll    (enable_tx_pll    ),
+         .meta_frame_length(meta_frame_length)
+       ) 
+       interlaken_native_wrapper_duplex 
+       (
+        .phy_mgmt_address       (phy_mgmt_address        ),
+        .phy_mgmt_clk           (phy_mgmt_clk            ),
+        .phy_mgmt_clk_reset     (phy_mgmt_clk_reset      ),
+        .phy_mgmt_read          (phy_mgmt_read           ),
+        .phy_mgmt_readdata      (phy_mgmt_readdata       ),
+        .phy_mgmt_waitrequest   (phy_mgmt_waitrequest    ),
+        .phy_mgmt_write         (phy_mgmt_write          ),
+        .phy_mgmt_writedata     (phy_mgmt_writedata      ),
+        .tx_serial_clk          (tx_serial_clk          ),    
+        .tx_pll_locked          (tx_pll_locked          ),  
+        .pll_powerdown          (/* unused*/            ),
+        .tx_pcs_ready           (tx_ready               ),
+        .rx_pcs_ready           (rx_ready               ),
+        .rx_cdr_refclk          (xcvr_pll_ref_clk       ),       
+        .tx_serial_data         (tx_serial_data         ),       
+        .rx_serial_data         (rx_serial_data         ),       
+        .tx_coreclkin           (interface_clock_tx     ),         
+        .rx_coreclkin           (interface_clock_rx     ),         
+        .tx_clkout              (tx_clkout              ),            
+        .rx_clkout              (rx_clkout              ),            
+        .tx_sync_done           (tx_sync_done           ),
+        .tx_enh_data_valid      (tx_datavalid           ),    
+        .tx_fifo_pempty         (tx_datain_bp           ),   
+        .tx_fifo_pfull          (tx_fifo_pfull          ), 
+        .rx_enh_fifo_rd_en      (rx_dataout_bp          ), 
+        .rx_enh_data_valid      (rx_datavalid           ),    
+        .rx_enh_fifo_full       (/*rx_fifofull*/            ),     
+        .rx_enh_fifo_pfull      (rx_fifopfull           ),    
+        .rx_enh_fifo_pempty     (rx_fifopempty          ),   
+        .rx_block_frame_lock    (/*rx_block_frame_lock*/    ),
+        .rx_align_val           (/*rx_align_val*/           ),
+        .rx_enh_fifo_align_clr  (rx_fifo_clr        ),
+        .rx_frame_lock          (rx_frame_lock          ),     
+        .rx_crc32err            (rx_crc32err            ),      
+        .tx_parallel_data       (tx_parallel_data       ),      
+        .tx_control             (tx_ctrlin              ),            
+        .tx_err_ins             ({lanes{sync_crc_err}}),            
+        .rx_parallel_data       (rx_parallel_data       ),      
+        .rx_control             (rx_ctrlout             )
+     );
+   
+   assign xcvr_pll_locked = tx_pll_locked ;  
+   assign reconfig_from_xcvr = {(92*lanes){1'b0}};
+   end 
+   else begin : SV_ILK_PHY_DPLX
+
+       interlaken_phy_ip_duplex #
+       (
+          .lanes(lanes),
+          .pll_ref_freq(pll_ref_freq),
+          .data_rate(data_rate),
+          .meta_frame_length(meta_frame_length),
+          .pll_type(pll_type)
+       )
+       interlaken_phy_ip_duplex
+       (
+          .phy_mgmt_address(phy_mgmt_address),
+          .phy_mgmt_clk(phy_mgmt_clk),
+          .phy_mgmt_clk_reset(phy_mgmt_clk_reset),
+          .phy_mgmt_read(phy_mgmt_read),
+          .phy_mgmt_readdata(phy_mgmt_readdata),
+          .phy_mgmt_waitrequest(phy_mgmt_waitrequest),
+          .phy_mgmt_write(phy_mgmt_write),
+          .phy_mgmt_writedata(phy_mgmt_writedata),
+          .pll_locked(xcvr_pll_locked),
+          .pll_ref_clk(xcvr_pll_ref_clk),
+          .reconfig_from_xcvr(reconfig_from_xcvr),
+          .reconfig_to_xcvr(reconfig_to_xcvr),
+          
+          .tx_clkout(tx_clkout),
+          .tx_coreclkin(interface_clock_tx),
+          .tx_datain_bp(tx_datain_bp),
+          .tx_fifo_pfull(tx_fifo_pfull),
+          .tx_datavalid(tx_datavalid),
+          .tx_ctrlin(tx_ctrlin),
+          .tx_crcerr({lanes{sync_crc_err}}),
+          .tx_parallel_data(tx_parallel_data),
+          .tx_ready(tx_ready),
+          .tx_serial_data(tx_serial_data),
+          .tx_sync_done(tx_sync_done),
+         
+          .rx_clkout(rx_clkout),
+          .rx_coreclkin(interface_clock_rx),
+          .rx_dataout_bp(rx_dataout_bp),
+          .rx_fifo_clr(rx_fifo_clr),
+          .rx_datavalid(rx_datavalid),
+          .rx_crc32err(rx_crc32err), 
+          .rx_frame_lock(rx_frame_lock),
+          .rx_align_val(/*rx_align_val*/),
+          .rx_ctrlout(rx_ctrlout),
+          .rx_fifofull(/*rx_fifofull*/),
+          .rx_fifopfull(rx_fifopfull),
+          .rx_fifopempty(rx_fifopempty),
+          .rx_block_frame_lock(/*rx_block_frame_lock*/),
+          .rx_parallel_data(rx_parallel_data),
+          .rx_ready(rx_ready),
+          .rx_serial_data(rx_serial_data)
+
+       );
+ end	 
+ endgenerate 
+
+
+   //
+   // Clock and reset generator for source
+   //
+   clock_gen #
+   (
+      .DEVICE_FAMILY(DEVICE_FAMILY),         
+      .lanes(lanes),
+      .reference_clock_frequency(reference_clock_frequency),
+      .coreclkin_frequency(coreclkin_frequency),
+      .user_clock_frequency(user_clock_frequency)
+   )
+   source_clock_gen
+   (
+      .xcvr_pll_locked(xcvr_pll_locked),
+      .reconfig_clk(phy_mgmt_clk),
+      .reconfig_clk_reset(phy_mgmt_clk_reset),  
+      .reconfig_busy(reconfig_busy),
+      .reconfig_clk_core_reset(core_reset_phy_clk_sync),
+      .clkout(tx_clkout),
+      .coreclkin(interface_clock_tx),
+      .coreclkin_reset(interface_clock_reset_tx),
+
+      .user_clock(user_clock_tx),
+      .user_clock_reset(user_clock_reset_tx)
+
+   );
+
+   //
+   // Clock and reset generator for sink
+   //
+   clock_gen #
+   (
+      .DEVICE_FAMILY(DEVICE_FAMILY),         
+      .lanes(lanes),
+      .reference_clock_frequency(reference_clock_frequency),
+      .coreclkin_frequency(coreclkin_frequency),
+      .user_clock_frequency(user_clock_frequency)
+   )
+   sink_clock_gen
+   (
+      .xcvr_pll_locked(rx_ready),
+      .reconfig_clk(phy_mgmt_clk),
+      .reconfig_clk_reset(phy_mgmt_clk_reset),  
+      .reconfig_busy(reconfig_busy),
+      .reconfig_clk_core_reset(core_reset_phy_clk_sync),
+      .clkout({lanes{rx_clkout_buf}}),
+      .coreclkin(interface_clock_rx),
+      .coreclkin_reset(interface_clock_reset_rx),
+      .user_clock(user_clock_rx),
+      .user_clock_reset(user_clock_reset_rx)
+
+   );
+
+  generate 
+    if (DEVICE_FAMILY == "Arria 10") begin :NO_CLK_CTRL       
+        assign rx_clkout_buf = rx_clkout[0];
+    end
+    else begin : CLK_CTRL
+      clkctrl clkctrl_inst
+      (
+        .inclk 		(rx_clkout[0]),
+        .outclk 	(rx_clkout_buf)  
+      );
+    end
+  endgenerate
+
+
+   altera_sl3_source_mac #
+   (
+      .DEVICE_FAMILY(DEVICE_FAMILY),         
+      .LANES(lanes),
+      .BURST_GAP(BURST_GAP),
+      .ECC_ENABLE(ecc_enable),
+      .STREAM("FULL")
+   )
+   altera_sl3_source_mac_inst
+   (
+      .tx_user_clock       (user_clock_tx),
+      .tx_user_clock_reset (user_clock_reset_tx),
+      .txcore_clock        (interface_clock_tx),
+      .txcore_clock_reset  (interface_clock_reset_tx),
+      .phy_mgmt_clk        (phy_mgmt_clk),
+      .phy_mgmt_clk_reset  (phy_mgmt_clk_reset),
+      // Source User Interface
+      .tx_data            (data_tx),
+      .tx_sync            (sync_tx),
+      .tx_empty           (sync_tx),
+      .tx_valid           (valid_tx),
+      .tx_start_of_burst  (start_of_burst_tx),
+      .tx_end_of_burst    (end_of_burst_tx),
+      .tx_link_up         (link_up_tx),
+      .tx_error           (error_tx),
+      // PHY
+      .tx_sync_done(tx_sync_done),
+      .tx_parallel_data(tx_parallel_data),
+      .tx_control(tx_ctrlin),
+      .tx_data_valid(tx_datavalid),
+      .tx_fifo_pempty(tx_datain_bp),
+      .tx_fifo_pfull(tx_fifo_pfull),
+      .tx_sl3_interrupt_src(/*NC*/)
+   );
+
+   altera_sl3_sink_mac #
+   (
+      .LANES(lanes),
+      .ADVANCED_CLOCKING(ACM_CLOCKING),
+      .STREAM("FULL"),
+      .BURST_GAP(BURST_GAP),
+      .ECC_ENABLE(ecc_enable),
+      .DEVICE_FAMILY(DEVICE_FAMILY)
+   )
+   altera_sl3_sink_mac_inst
+   (
+      .rxcore_clock(interface_clock_rx),
+      .rxcore_clock_reset(interface_clock_reset_rx),
+      .rx_user_clock(user_clock_rx),
+      .rx_user_clock_reset(user_clock_reset_rx),
+      //from/to Avalon-ST interface
+      .rx_ready(1'b1),
+      .rx_link_up(link_up_rx),
+      .rx_data(data_rx),
+      .rx_valid(valid_rx),
+      .rx_start_of_burst(start_of_burst_rx),
+      .rx_end_of_burst(end_of_burst_rx),
+      .rx_sync(sync_rx),
+      .rx_empty(/*NC*/),
+      .rx_error(error_rx),
+      .rx_sl3_interrupt_src(/*NC*/),
+      .rxcore_clock_out(/*NC*/),
+      .rxcore_clock_reset_out(/*NC*/),
+      .rx_sl3_csr_control(16'd0),
+      //from transceiver
+      .rx_data_valid(rx_datavalid),
+      .rx_parallel_data(rx_parallel_data),
+      .rx_control(rx_ctrlout),
+      .rx_frame_lock(rx_frame_lock_sync),
+      .rx_pcs_err(rx_crc32err_sync),
+      .rx_fifo_pfull(rx_fifopfull),
+      .rx_fifo_pempty(rx_fifopempty),
+      .rx_sync_word(),
+      .rx_scrm_word(),
+      .rx_skip_word(),
+      .rx_diag_word(),
+      .rx_fifo_rden(rx_dataout_bp),
+      .rx_fifo_align_clr(rx_fifo_clr)
+   );
+
+   altera_std_synchronizer_bundle # (
+      .width(lanes),
+      .depth(2)
+   ) stdsync_frame_lock ( 
+      .clk(interface_clock_rx),
+      .din(rx_frame_lock),
+      .dout(rx_frame_lock_sync),
+      .reset_n(1'b1)
+   );
+
+   altera_std_synchronizer_bundle # (
+      .width(lanes),
+      .depth(2)
+   ) stdsync_rx_crc32err ( 
+      .clk(interface_clock_rx),
+      .din(rx_crc32err),
+      .dout(rx_crc32err_sync),
+      .reset_n(1'b1)
+   );
+       
+endmodule  // seriallite_iii_streaming_source

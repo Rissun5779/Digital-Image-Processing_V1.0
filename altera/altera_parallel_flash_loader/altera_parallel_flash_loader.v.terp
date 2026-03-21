@@ -1,0 +1,325 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+module altera_parallel_flash_loader (
+@@ if {$is_cfg_mode} {
+	pfl_clk,
+	fpga_pgm,
+	fpga_conf_done,
+	fpga_nstatus,
+	fpga_data,
+	fpga_dclk,
+	fpga_nconfig,
+@@ }    
+
+@@ if {$reconfigure_port} {
+	pfl_nreconfigure,
+@@ } 
+
+@@ if {$rsu_watchdog_enable_port} {
+	pfl_reset_watchdog,
+	pfl_watchdog_error,
+@@ } 
+
+@@ if {$is_cfi_flash} {
+	flash_addr,
+	flash_data,
+@@ }
+
+@@ if {$is_nand_flash} {
+	flash_io,
+	flash_ale,
+	flash_cle,    
+@@ }
+
+@@ if {$is_cfi_nand_flash} {
+	flash_nce,
+	flash_noe,
+	flash_nwe,   
+@@ }
+
+@@ if {$cfi_burst} {
+	flash_clk,
+	flash_nadv,   
+@@ }
+
+@@ if {$flash_nreset_port_gen} {
+	flash_nreset,   
+@@ }
+
+@@ if {$is_asc_qspi_flash} {
+	flash_ncs,
+	flash_sck, 
+	flash_io0,
+	flash_io1,
+	flash_io2,
+	flash_io3,
+@@ }
+
+	pfl_flash_access_granted,
+	pfl_flash_access_request,
+	pfl_nreset);
+	
+	parameter
+		// General
+		FLASH_TYPE = "CFI_FLASH",
+		N_FLASH = 1,
+		FLASH_DATA_WIDTH = 16,
+		ADDR_WIDTH = 20,
+		FEATURES_PGM = 1,
+		FEATURES_CFG = 0,
+		TRISTATE_CHECKBOX = 0,
+		
+		// General (Configuration)
+		OPTION_BITS_START_ADDRESS = 0,
+		SAFE_MODE_HALT = 0,
+		SAFE_MODE_RETRY = 1,
+		SAFE_MODE_REVERT = 0,
+		SAFE_MODE_REVERT_ADDR = 0,
+		CONF_DATA_WIDTH = 1,
+		DCLK_DIVISOR = 1,
+		CONF_WAIT_TIMER_WIDTH = 16,
+		DECOMPRESSOR_MODE = "NONE",
+		PFL_RSU_WATCHDOG_ENABLED = 0,
+		RSU_WATCHDOG_COUNTER = 100000000,
+		
+		// CFI Flash (Flash Programming)
+		ENHANCED_FLASH_PROGRAMMING = 0,
+		FIFO_SIZE = 16,
+		DISABLE_CRC_CHECKBOX = 0,
+		
+		// CFI Flash (Configuration)
+		CLK_DIVISOR = 1,
+		PAGE_CLK_DIVISOR = 1,
+		NORMAL_MODE = 1,
+		BURST_MODE = 0,
+		PAGE_MODE = 0,
+		MT28EW_PAGE_MODE = 0,
+		BURST_MODE_INTEL = 0,
+		BURST_MODE_SPANSION = 0,
+		BURST_MODE_NUMONYX = 0,
+		FLASH_NRESET_CHECKBOX = 0,
+		FLASH_NRESET_COUNTER = 1,
+		FLASH_BURST_EXTRA_CYCLE = 0,
+		BURST_MODE_LATENCY_COUNT = 4,
+		
+		// Quad Flash (General)
+		QFLASH_MFC = "ALTERA",
+		EXTRA_ADDR_BYTE = 0,
+		QSPI_DATA_DELAY = 0,
+		QSPI_DATA_DELAY_COUNT = 1,
+		QFLASH_FAST_SPEED = 0,
+		FLASH_STATIC_WAIT_WIDTH = 15,
+		
+		// NAND Flash General
+		NRB_ADDR = 65667072,
+		FLASH_ECC_CHECKBOX = 0,
+		NFLASH_MFC = "NUMONYX",
+		US_UNIT_COUNTER = 1;
+
+
+	// General
+	input	pfl_nreset;
+	input	pfl_flash_access_granted;
+	output	pfl_flash_access_request;
+
+@@ if {$is_cfg_mode} {
+	input	pfl_clk;
+	input	[2:0] fpga_pgm;    
+	input	fpga_conf_done;
+	input	fpga_nstatus;
+	output	[CONF_DATA_WIDTH-1:0] fpga_data;    
+	output	fpga_dclk;
+	output	fpga_nconfig;
+@@ }    
+
+@@ if {$reconfigure_port} {
+	input	pfl_nreconfigure;
+	tri1	pfl_nreconfigure;
+@@ } 
+
+@@ if {$rsu_watchdog_enable_port} {
+	input	pfl_reset_watchdog;
+	output	pfl_watchdog_error;
+	tri1	pfl_reset_watchdog;
+@@ } 
+
+@@ if {$is_cfi_flash} {
+	inout	[FLASH_DATA_WIDTH-1:0] flash_data;
+	output	[ADDR_WIDTH-1:0] flash_addr;
+@@ }
+
+@@ if {$is_nand_flash} {
+	inout	[7:0] flash_io;
+	output	flash_cle;
+	output	flash_ale;    
+@@ }
+
+@@ if {$is_cfi_nand_flash} {
+	output	[N_FLASH-1:0] flash_nce;
+	output	flash_noe;
+	output	flash_nwe;  
+@@ }
+
+@@ if {$cfi_burst} {
+	output	flash_clk;
+	output	flash_nadv;   
+@@ }
+
+@@ if {$flash_nreset_port_gen} {
+	output	flash_nreset;   
+@@ }
+
+@@ if {$is_asc_qspi_flash} {
+	output	[N_FLASH-1:0] flash_ncs;
+	output	[N_FLASH-1:0] flash_sck;
+	inout	[N_FLASH-1:0] flash_io0;
+	inout	[N_FLASH-1:0] flash_io1;
+	inout	[N_FLASH-1:0] flash_io2;
+	inout	[N_FLASH-1:0] flash_io3;
+@@ }
+    
+    altparallel_flash_loader #(
+        .ADDR_WIDTH                (ADDR_WIDTH),
+        .BURST_MODE                (BURST_MODE),
+        .BURST_MODE_INTEL          (BURST_MODE_INTEL),
+        .BURST_MODE_LATENCY_COUNT  (BURST_MODE_LATENCY_COUNT),
+        .BURST_MODE_NUMONYX        (BURST_MODE_NUMONYX),
+        .BURST_MODE_SPANSION       (BURST_MODE_SPANSION),
+        .CLK_DIVISOR               (CLK_DIVISOR),
+        .CONF_DATA_WIDTH           (CONF_DATA_WIDTH),
+        .CONF_WAIT_TIMER_WIDTH     (CONF_WAIT_TIMER_WIDTH),
+        .DCLK_DIVISOR              (DCLK_DIVISOR),
+        .DECOMPRESSOR_MODE         (DECOMPRESSOR_MODE),
+        .DISABLE_CRC_CHECKBOX      (DISABLE_CRC_CHECKBOX),
+        .ENHANCED_FLASH_PROGRAMMING(ENHANCED_FLASH_PROGRAMMING),
+        .EXTRA_ADDR_BYTE           (EXTRA_ADDR_BYTE),
+        .FEATURES_CFG              (FEATURES_CFG),
+        .FEATURES_PGM              (FEATURES_PGM),
+        .FIFO_SIZE                 (FIFO_SIZE),
+        .FLASH_BURST_EXTRA_CYCLE   (FLASH_BURST_EXTRA_CYCLE),
+        .FLASH_DATA_WIDTH          (FLASH_DATA_WIDTH),
+        .FLASH_ECC_CHECKBOX        (FLASH_ECC_CHECKBOX),
+        .FLASH_NRESET_CHECKBOX     (FLASH_NRESET_CHECKBOX),
+        .FLASH_NRESET_COUNTER      (FLASH_NRESET_COUNTER),
+        .FLASH_STATIC_WAIT_WIDTH   (FLASH_STATIC_WAIT_WIDTH),
+        .FLASH_TYPE                (FLASH_TYPE),
+        .NORMAL_MODE               (NORMAL_MODE),
+        .NFLASH_MFC                (NFLASH_MFC),
+        .NRB_ADDR                  (NRB_ADDR),
+        .N_FLASH                   (N_FLASH),
+        .OPTION_BITS_START_ADDRESS (OPTION_BITS_START_ADDRESS),
+        .PAGE_CLK_DIVISOR          (PAGE_CLK_DIVISOR),
+        .PAGE_MODE                 (PAGE_MODE),
+        .MT28EW_PAGE_MODE          (MT28EW_PAGE_MODE),
+        .PFL_RSU_WATCHDOG_ENABLED  (PFL_RSU_WATCHDOG_ENABLED),
+        .QFLASH_FAST_SPEED         (QFLASH_FAST_SPEED),
+        .QFLASH_MFC                (QFLASH_MFC),
+        .QSPI_DATA_DELAY           (QSPI_DATA_DELAY),
+        .QSPI_DATA_DELAY_COUNT     (QSPI_DATA_DELAY_COUNT),
+        .RSU_WATCHDOG_COUNTER      (RSU_WATCHDOG_COUNTER),
+        .SAFE_MODE_HALT            (SAFE_MODE_HALT),
+        .SAFE_MODE_RETRY           (SAFE_MODE_RETRY),
+        .SAFE_MODE_REVERT          (SAFE_MODE_REVERT),
+        .SAFE_MODE_REVERT_ADDR     (SAFE_MODE_REVERT_ADDR),
+        .TRISTATE_CHECKBOX         (TRISTATE_CHECKBOX),
+        .US_UNIT_COUNTER           (US_UNIT_COUNTER)
+    ) altparallel_flash_loader_component (
+        .flash_rdy (),
+
+@@ if {$is_cfg_mode} {        
+        .pfl_clk (pfl_clk),
+        .fpga_pgm (fpga_pgm),        
+        .fpga_conf_done (fpga_conf_done),
+        .fpga_nstatus (fpga_nstatus),
+        .fpga_data (fpga_data),
+        .fpga_dclk (fpga_dclk),
+        .fpga_nconfig (fpga_nconfig),
+@@ } else {
+        .pfl_clk (),
+        .fpga_pgm (),        
+        .fpga_conf_done (),
+        .fpga_nstatus (),
+        .fpga_data (),
+        .fpga_dclk (),
+        .fpga_nconfig (),
+@@ } 
+@@ if {$reconfigure_port} {
+        .pfl_nreconfigure (pfl_nreconfigure),
+@@ } else {     
+        .pfl_nreconfigure (),   
+@@ }
+@@ if {$rsu_watchdog_enable_port} {
+        .pfl_watchdog_error (pfl_watchdog_error),
+        .pfl_reset_watchdog (pfl_reset_watchdog),
+@@ } else {     
+        .pfl_watchdog_error (),
+        .pfl_reset_watchdog (),  
+@@ } 
+@@ if {$is_cfi_flash} {
+        .flash_addr (flash_addr),
+        .flash_data (flash_data),
+@@ } else {     
+        .flash_addr (),
+        .flash_data (),  
+@@ }
+@@ if {$is_nand_flash} {
+        .flash_io (flash_io),
+        .flash_ale (flash_ale),
+        .flash_cle (flash_cle),
+@@ } else {     
+        .flash_io (),
+        .flash_ale (),
+        .flash_cle (),  
+@@ }
+@@ if {$is_cfi_nand_flash} {
+        .flash_nce (flash_nce),
+        .flash_noe (flash_noe),
+        .flash_nwe (flash_nwe),
+@@ } else {     
+        .flash_nce (),
+        .flash_noe (),
+        .flash_nwe (),  
+@@ }      
+@@ if {$cfi_burst} {
+        .flash_clk (flash_clk),
+        .flash_nadv (flash_nadv),
+@@ } else {     
+        .flash_clk (),
+        .flash_nadv (),  
+@@ }
+@@ if {$flash_nreset_port_gen} {
+        .flash_nreset (flash_nreset),
+@@ } else {     
+        .flash_nreset (),  
+@@ }
+@@ if {$is_asc_qspi_flash} {
+        .flash_ncs (flash_ncs),
+        .flash_sck (flash_sck),
+        .flash_io0 (flash_io0),
+        .flash_io1 (flash_io1),
+        .flash_io2 (flash_io2),
+        .flash_io3 (flash_io3),
+@@ } else {     
+        .flash_ncs (),
+        .flash_sck (),
+        .flash_io0 (),
+        .flash_io1 (),
+        .flash_io2 (),
+        .flash_io3 (),  
+@@ }     
+        .pfl_flash_access_granted (pfl_flash_access_granted),
+        .pfl_flash_access_request (pfl_flash_access_request),
+        .pfl_nreset (pfl_nreset));
+
+endmodule 

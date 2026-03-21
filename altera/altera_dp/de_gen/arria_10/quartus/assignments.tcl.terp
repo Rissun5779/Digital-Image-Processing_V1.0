@@ -1,0 +1,465 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 15.1.0 Internal Build 162 08/17/2015 PN Standard Edition
+# Date created = 14:04:11  August 19, 2015
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		a10_dp_demo_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus Prime software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+@@ set device_part $param0
+@@ set ed_name $param1
+@@ set targeted_board $param2
+@@ append top_lvl_v $ed_name ".v"
+
+# Set the family, device, top-level entity
+set_global_assignment -name FAMILY "Arria 10"
+set_global_assignment -name DEVICE $device_part
+set_global_assignment -name TOP_LEVEL_ENTITY $ed_name
+
+# add files to the project
+set_global_assignment -name VERILOG_FILE ../rtl/$top_lvl_v
+set_global_assignment -name VERILOG_FILE ../rtl/rx_phy/rx_phy_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/tx_phy/tx_phy_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/bitec_reconfig_alt_a10.v
+set_global_assignment -name VERILOG_FILE ../rtl/altera_avalon_i2c/i2c_master_bit_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/altera_avalon_i2c/i2c_master_byte_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/altera_avalon_i2c/i2c_master_defines.v
+set_global_assignment -name VERILOG_FILE ../rtl/altera_avalon_i2c/i2c_master_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/altera_avalon_i2c/oc_i2c_master.v
+set_global_assignment -name VERILOG_FILE ../rtl/altera_avalon_i2c/timescale.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/a10_reconfig_arbiter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/reset_gen.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/reset_sync.sv
+set_global_assignment -name QIP_FILE ../rtl/core/dp_core/dp_core.qip
+#set_global_assignment -name QIP_FILE ../rtl/core/dp_tx/dp_tx.qip
+#set_global_assignment -name QIP_FILE ../rtl/core/dp_rx/dp_rx.qip
+set_global_assignment -name QIP_FILE ../rtl/tx_phy/gxb_tx/gxb_tx.qip
+set_global_assignment -name QIP_FILE ../rtl/tx_phy/gxb_tx_fpll/gxb_tx_fpll.qip
+set_global_assignment -name QIP_FILE ../rtl/tx_phy/gxb_tx_reset/gxb_tx_reset.qip
+set_global_assignment -name QIP_FILE ../rtl/rx_phy/gxb_rx_reset/gxb_rx_reset.qip
+set_global_assignment -name QIP_FILE ../rtl/rx_phy/gxb_rx/gxb_rx.qip
+set_global_assignment -name QIP_FILE ../rtl/video_pll_a10/video_pll_a10.qip
+#set_global_assignment -name QIP_FILE ../rtl/i2c_gpio_buf/i2c_gpio_buf.qip
+set_global_assignment -name QIP_FILE ../rtl/clkrec/bitec_clkrec.qip
+# Set various options
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "1.8 V"
+#set_global_assignment -name PROJECT_OUTPUT_DIRECTORY files
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name ECO_REGENERATE_REPORT ON
+
+# add the Nios SW HEX file to the project
+set_global_assignment -name QIP_FILE ../software/dp_demo/mem_init/meminit.qip
+
+# Add the example SDC last to not get overwritten by the IP ones
+set_global_assignment -name SDC_FILE ../rtl/example.sdc
+
+# Pin & Location Assignments
+# ==========================
+@@ if { $targeted_board == 0 } {
+set_instance_assignment -name VIRTUAL_PIN ON -to cpu_resetn
+#set_instance_assignment -name VIRTUAL_PIN ON -to refclk1_p
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_gbtclk_m2c_p[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_gbtclk_m2c_p[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_n[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_n[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_n[2]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_n[3]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_p[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_p[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_p[2]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_m2c_p[3]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_n[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_n[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_n[2]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_n[3]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_p[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_p[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_p[2]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmca_dp_c2m_p[3]
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_n_6
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_n_8
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_n_9
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_n_10
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_p_6
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_p_8
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_p_10
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_n_9
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_n_10
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_n_12
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_p_9
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_p_10
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_p_12
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_p_0
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_n_0
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_p_0
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_rx_n_0
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_p_1
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_n_1
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_p_2
+set_instance_assignment -name VIRTUAL_PIN ON -to fmca_la_tx_n_2
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[2]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[3]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[4]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[5]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[6]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[7]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[2]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[3]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[4]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[5]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[6]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[7]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb[2]
+@@ } elseif { $targeted_board == 2 } {
+set_location_assignment YOUR_PIN_LOCATION -to cpu_resetn
+set_location_assignment YOUR_PIN_LOCATION -to refclk1_p
+set_location_assignment YOUR_PIN_LOCATION -to fmca_gbtclk_m2c_p[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_gbtclk_m2c_p[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_n[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_n[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_n[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_n[3]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_p[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_p[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_p[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_m2c_p[3]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_n[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_n[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_n[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_n[3]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_p[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_p[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_p[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_dp_c2m_p[3]
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_n_6
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_n_8
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_n_9
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_n_10
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_p_6
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_p_8
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_p_10
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_n_9
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_n_10
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_n_12
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_p_9
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_p_10
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_p_12
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_p_0
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_n_0
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_p_0
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_rx_n_0
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_p_1
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_n_1
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_p_2
+set_location_assignment YOUR_PIN_LOCATION -to fmca_la_tx_n_2
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[0]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[1]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[2]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[3]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[4]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[5]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[6]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[7]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[0]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[1]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[2]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[3]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[4]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[5]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[6]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_r[7]
+set_location_assignment YOUR_PIN_LOCATION -to user_pb[0]
+set_location_assignment YOUR_PIN_LOCATION -to user_pb[1]
+set_location_assignment YOUR_PIN_LOCATION -to user_pb[2]
+@@ } else {
+set_location_assignment PIN_BD27 -to cpu_resetn
+set_location_assignment PIN_AG37 -to refclk1_p
+set_location_assignment PIN_AL8 -to fmca_gbtclk_m2c_p[0]
+set_location_assignment PIN_AJ8 -to fmca_gbtclk_m2c_p[1]
+set_location_assignment PIN_AW8 -to fmca_dp_m2c_n[0]
+set_location_assignment PIN_BA8 -to fmca_dp_m2c_n[1]
+set_location_assignment PIN_AY6 -to fmca_dp_m2c_n[2]
+set_location_assignment PIN_AV6 -to fmca_dp_m2c_n[3]
+#set_location_assignment PIN_AT6 -to fmca_dp_m2c_n[4]
+#set_location_assignment PIN_AP6 -to fmca_dp_m2c_n[5]
+#set_location_assignment PIN_AN4 -to fmca_dp_m2c_n[6]
+#set_location_assignment PIN_AM6 -to fmca_dp_m2c_n[7]
+#set_location_assignment PIN_AL4 -to fmca_dp_m2c_n[8]
+#set_location_assignment PIN_AK6 -to fmca_dp_m2c_n[9]
+#set_location_assignment PIN_AJ4 -to fmca_dp_m2c_n[10]
+#set_location_assignment PIN_AH6 -to fmca_dp_m2c_n[11]
+#set_location_assignment PIN_AG4 -to fmca_dp_m2c_n[12]
+#set_location_assignment PIN_AF6 -to fmca_dp_m2c_n[13]
+#set_location_assignment PIN_AE4 -to fmca_dp_m2c_n[14]
+#set_location_assignment PIN_AD6 -to fmca_dp_m2c_n[15]
+set_location_assignment PIN_AW7 -to fmca_dp_m2c_p[0]
+set_location_assignment PIN_BA7 -to fmca_dp_m2c_p[1]
+set_location_assignment PIN_AY5 -to fmca_dp_m2c_p[2]
+set_location_assignment PIN_AV5 -to fmca_dp_m2c_p[3]
+#set_location_assignment PIN_AT5 -to fmca_dp_m2c_p[4]
+#set_location_assignment PIN_AP5 -to fmca_dp_m2c_p[5]
+#set_location_assignment PIN_AN3 -to fmca_dp_m2c_p[6]
+#set_location_assignment PIN_AM5 -to fmca_dp_m2c_p[7]
+#set_location_assignment PIN_AL3 -to fmca_dp_m2c_p[8]
+#set_location_assignment PIN_AK5 -to fmca_dp_m2c_p[9]
+#set_location_assignment PIN_AJ3 -to fmca_dp_m2c_p[10]
+#set_location_assignment PIN_AH5 -to fmca_dp_m2c_p[11]
+#set_location_assignment PIN_AG3 -to fmca_dp_m2c_p[12]
+#set_location_assignment PIN_AF5 -to fmca_dp_m2c_p[13]
+#set_location_assignment PIN_AE3 -to fmca_dp_m2c_p[14]
+#set_location_assignment PIN_AD5 -to fmca_dp_m2c_p[15]
+set_location_assignment PIN_BC8 -to fmca_dp_c2m_n[0]
+set_location_assignment PIN_BD6 -to fmca_dp_c2m_n[1]
+set_location_assignment PIN_BB6 -to fmca_dp_c2m_n[2]
+set_location_assignment PIN_BC4 -to fmca_dp_c2m_n[3]
+#set_location_assignment PIN_BB2 -to fmca_dp_c2m_n[4]
+#set_location_assignment PIN_BA4 -to fmca_dp_c2m_n[5]
+#set_location_assignment PIN_AY2 -to fmca_dp_c2m_n[6]
+#set_location_assignment PIN_AW4 -to fmca_dp_c2m_n[7]
+#set_location_assignment PIN_AV2 -to fmca_dp_c2m_n[8]
+#set_location_assignment PIN_AU4 -to fmca_dp_c2m_n[9]
+#set_location_assignment PIN_AT2 -to fmca_dp_c2m_n[10]
+#set_location_assignment PIN_AR4 -to fmca_dp_c2m_n[11]
+#set_location_assignment PIN_AP2 -to fmca_dp_c2m_n[12]
+#set_location_assignment PIN_AM2 -to fmca_dp_c2m_n[13]
+#set_location_assignment PIN_AK2 -to fmca_dp_c2m_n[14]
+#set_location_assignment PIN_AH2 -to fmca_dp_c2m_n[15]
+set_location_assignment PIN_BC7 -to fmca_dp_c2m_p[0]
+set_location_assignment PIN_BD5 -to fmca_dp_c2m_p[1]
+set_location_assignment PIN_BB5 -to fmca_dp_c2m_p[2]
+set_location_assignment PIN_BC3 -to fmca_dp_c2m_p[3]
+#set_location_assignment PIN_BB1 -to fmca_dp_c2m_p[4]
+#set_location_assignment PIN_BA3 -to fmca_dp_c2m_p[5]
+#set_location_assignment PIN_AY1 -to fmca_dp_c2m_p[6]
+#set_location_assignment PIN_AW3 -to fmca_dp_c2m_p[7]
+#set_location_assignment PIN_AV1 -to fmca_dp_c2m_p[8]
+#set_location_assignment PIN_AU3 -to fmca_dp_c2m_p[9]
+#set_location_assignment PIN_AT1 -to fmca_dp_c2m_p[10]
+#set_location_assignment PIN_AR3 -to fmca_dp_c2m_p[11]
+#set_location_assignment PIN_AP1 -to fmca_dp_c2m_p[12]
+#set_location_assignment PIN_AM1 -to fmca_dp_c2m_p[13]
+#set_location_assignment PIN_AK1 -to fmca_dp_c2m_p[14]
+#set_location_assignment PIN_AH1 -to fmca_dp_c2m_p[15]
+#set_location_assignment PIN_AR19 -to fmca_la_rx_n_0
+#set_location_assignment PIN_AW14 -to fmca_la_rx_n_1
+#set_location_assignment PIN_AN19 -to fmca_la_rx_n_2
+#set_location_assignment PIN_AT15 -to fmca_la_rx_n_3
+#set_location_assignment PIN_AP16 -to fmca_la_rx_n_4
+#set_location_assignment PIN_AV18 -to fmca_la_rx_n_5
+set_location_assignment PIN_AU13 -to fmca_la_rx_n_6
+#set_location_assignment PIN_AV21 -to fmca_la_rx_n_7
+set_location_assignment PIN_AT8 -to fmca_la_rx_n_8
+set_location_assignment PIN_AY12 -to fmca_la_rx_n_9
+set_location_assignment PIN_AY14 -to fmca_la_rx_n_10
+#set_location_assignment PIN_AR21 -to fmca_la_rx_n_11
+#set_location_assignment PIN_BA14 -to fmca_la_rx_n_12
+#set_location_assignment PIN_BB18 -to fmca_la_rx_n_13
+#set_location_assignment PIN_AW17 -to fmca_la_rx_n_14
+#set_location_assignment PIN_AR20 -to fmca_la_rx_p_0
+#set_location_assignment PIN_AV14 -to fmca_la_rx_p_1
+#set_location_assignment PIN_AP18 -to fmca_la_rx_p_2
+#set_location_assignment PIN_AR15 -to fmca_la_rx_p_3
+#set_location_assignment PIN_AR16 -to fmca_la_rx_p_4
+#set_location_assignment PIN_AW18 -to fmca_la_rx_p_5
+set_location_assignment PIN_AT13 -to fmca_la_rx_p_6
+#set_location_assignment PIN_AU21 -to fmca_la_rx_p_7
+set_location_assignment PIN_AU8 -to fmca_la_rx_p_8
+#set_location_assignment PIN_AW12 -to fmca_la_rx_p_9
+set_location_assignment PIN_AY15 -to fmca_la_rx_p_10
+#set_location_assignment PIN_AP21 -to fmca_la_rx_p_11
+#set_location_assignment PIN_BA15 -to fmca_la_rx_p_12
+#set_location_assignment PIN_BB17 -to fmca_la_rx_p_13
+#set_location_assignment PIN_AY17 -to fmca_la_rx_p_14
+#set_location_assignment PIN_AT22 -to fmca_la_tx_n_0
+#set_location_assignment PIN_AP19 -to fmca_la_tx_n_1
+#set_location_assignment PIN_AW11 -to fmca_la_tx_n_2
+#set_location_assignment PIN_AU17 -to fmca_la_tx_n_3
+#set_location_assignment PIN_AV13 -to fmca_la_tx_n_4
+#set_location_assignment PIN_AR14 -to fmca_la_tx_n_5
+#set_location_assignment PIN_AP17 -to fmca_la_tx_n_6
+#set_location_assignment PIN_AT9 -to fmca_la_tx_n_7
+#set_location_assignment PIN_AW19 -to fmca_la_tx_n_8
+set_location_assignment PIN_AU12 -to fmca_la_tx_n_9
+set_location_assignment PIN_AY11 -to fmca_la_tx_n_10
+#set_location_assignment PIN_AT18 -to fmca_la_tx_n_11
+set_location_assignment PIN_BC15 -to fmca_la_tx_n_12
+#set_location_assignment PIN_AT20 -to fmca_la_tx_n_13
+#set_location_assignment PIN_AW16 -to fmca_la_tx_n_14
+#set_location_assignment PIN_BD18 -to fmca_la_tx_n_15
+#set_location_assignment PIN_AU20 -to fmca_la_tx_n_16
+#set_location_assignment PIN_AR22 -to fmca_la_tx_p_0
+#set_location_assignment PIN_AN20 -to fmca_la_tx_p_1
+#set_location_assignment PIN_AV11 -to fmca_la_tx_p_2
+#set_location_assignment PIN_AT17 -to fmca_la_tx_p_3
+#set_location_assignment PIN_AW13 -to fmca_la_tx_p_4
+#set_location_assignment PIN_AT14 -to fmca_la_tx_p_5
+#set_location_assignment PIN_AR17 -to fmca_la_tx_p_6
+#set_location_assignment PIN_AR9 -to fmca_la_tx_p_7
+#set_location_assignment PIN_AV19 -to fmca_la_tx_p_8
+set_location_assignment PIN_AU11 -to fmca_la_tx_p_9
+set_location_assignment PIN_AY10 -to fmca_la_tx_p_10
+#set_location_assignment PIN_AU18 -to fmca_la_tx_p_11
+set_location_assignment PIN_BB15 -to fmca_la_tx_p_12
+#set_location_assignment PIN_AT19 -to fmca_la_tx_p_13
+#set_location_assignment PIN_AY16 -to fmca_la_tx_p_14
+#set_location_assignment PIN_BC18 -to fmca_la_tx_p_15
+#set_location_assignment PIN_AV20 -to fmca_la_tx_p_16
+set_location_assignment PIN_AR22 -to fmca_la_tx_p_0
+set_location_assignment PIN_AT22 -to fmca_la_tx_n_0
+set_location_assignment PIN_AR20 -to fmca_la_rx_p_0
+set_location_assignment PIN_AR19 -to fmca_la_rx_n_0
+set_location_assignment PIN_AN20 -to fmca_la_tx_p_1
+set_location_assignment PIN_AP19 -to fmca_la_tx_n_1
+set_location_assignment PIN_AV11 -to fmca_la_tx_p_2
+set_location_assignment PIN_AW11 -to fmca_la_tx_n_2
+set_location_assignment PIN_L28 -to user_led_g[0]
+set_location_assignment PIN_K26 -to user_led_g[1]
+set_location_assignment PIN_K25 -to user_led_g[2]
+set_location_assignment PIN_L25 -to user_led_g[3]
+set_location_assignment PIN_J24 -to user_led_g[4]
+set_location_assignment PIN_A19 -to user_led_g[5]
+set_location_assignment PIN_C18 -to user_led_g[6]
+set_location_assignment PIN_D18 -to user_led_g[7]
+set_location_assignment PIN_L27 -to user_led_r[0]
+set_location_assignment PIN_J26 -to user_led_r[1]
+set_location_assignment PIN_K24 -to user_led_r[2]
+set_location_assignment PIN_L23 -to user_led_r[3]
+set_location_assignment PIN_B20 -to user_led_r[4]
+set_location_assignment PIN_C19 -to user_led_r[5]
+set_location_assignment PIN_D19 -to user_led_r[6]
+set_location_assignment PIN_M23 -to user_led_r[7]
+set_location_assignment PIN_T12 -to user_pb[0]
+set_location_assignment PIN_U12 -to user_pb[1]
+set_location_assignment PIN_U11 -to user_pb[2]
+@@ }
+
+# Analysis & Synthesis Assignments
+# ================================
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_global_assignment -name SEED 1
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON
+
+# Fitter Assignments
+# ==================
+set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*bitec_dp_tx_encoder*reset_0_cc|gen_rst_clk_reg_async.rst_clk_reg1"
+set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*bitec_dp_rx_decoder*reset_stream_sink[0].reset_casc_cc|gen_rst_clk_reg_async.rst_clk_reg1"
+set_instance_assignment -name IO_STANDARD LVDS -to refclk1_p
+set_instance_assignment -name IO_STANDARD LVDS -to fmca_gbtclk_m2c_p[0]
+set_instance_assignment -name IO_STANDARD LVDS -to fmca_gbtclk_m2c_p[1]
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmca_la_rx_p_8
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmca_la_tx_n_10
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmca_la_rx_p_8
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmca_la_tx_n_10
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[7]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_c2m_p[3]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_c2m_p[2]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_c2m_p[1]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_c2m_p[0]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_m2c_p[0]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_m2c_p[1]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_m2c_p[2]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmca_dp_m2c_p[3]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 1 -to fmca_dp_c2m_p[0]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 1 -to fmca_dp_m2c_p[0]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 2 -to fmca_dp_c2m_p[1]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 2 -to fmca_dp_m2c_p[1]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 3 -to fmca_dp_c2m_p[2]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 3 -to fmca_dp_m2c_p[2]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 4 -to fmca_dp_c2m_p[3]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 4 -to fmca_dp_m2c_p[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_m2c_p[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_m2c_p[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_m2c_p[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_m2c_p[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_c2m_p[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_c2m_p[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_c2m_p[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmca_dp_c2m_p[3]
+
+# Pin Input Termination 
+# ======================
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to fmca_gbtclk_m2c_p[0]
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to fmca_gbtclk_m2c_p[1]
+
+# Set VOD = 400mV and Pre-emphasis = 9.5dB
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmca_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmca_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmca_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmca_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_NEG -to fmca_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_NEG -to fmca_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_NEG -to fmca_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_NEG -to fmca_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 16 -to fmca_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 16 -to fmca_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 16 -to fmca_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 16 -to fmca_dp_c2m_p[3]
+
+#### DP RX PMA settings in QSF
+#### set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmca_dp_m2c_p[0]
+#### set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmca_dp_m2c_p[1]
+#### set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmca_dp_m2c_p[2]
+#### set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmca_dp_m2c_p[3]
+#### set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmca_dp_m2c_p[0]
+#### set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmca_dp_m2c_p[1]
+#### set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmca_dp_m2c_p[2]
+#### set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmca_dp_m2c_p[3]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_10 -to fmca_dp_m2c_p[0]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_10 -to fmca_dp_m2c_p[1]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_10 -to fmca_dp_m2c_p[2]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_10 -to fmca_dp_m2c_p[3]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_7 -to fmca_dp_m2c_p[0]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_7 -to fmca_dp_m2c_p[1]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_7 -to fmca_dp_m2c_p[2]
+#### set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_7 -to fmca_dp_m2c_p[3]

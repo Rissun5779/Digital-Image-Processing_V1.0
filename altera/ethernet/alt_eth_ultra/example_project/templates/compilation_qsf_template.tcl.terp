@@ -1,0 +1,68 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+project_new -overwrite -part $device -family "${family}" ${dst_path}/${project_name}
+set_global_assignment -name VERILOG_FILE ${project_name}.v
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name SIP_FILE ../${variant}/${variant}.sip
+set_global_assignment -name QIP_FILE ../${variant}/${variant}.qip
+set_global_assignment -name SDC_FILE ./${project_name}.sdc
+
+set_instance_assignment -name IO_STANDARD "CURRENT MODE LOGIC (CML)" -to rx_serial[*]
+set_instance_assignment -name IO_STANDARD "HSSI DIFFERENTIAL I/O" -to tx_serial[*]
+set_instance_assignment -name IO_STANDARD LVDS -to clk_ref
+
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON
+
+@@ if {$caui4} {
+@@     set xcvr_voltage 1_1V
+@@ } else {
+@@     set xcvr_voltage 1_0V
+@@ }
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE ${xcvr_voltage} -to rx_serial[*]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE ${xcvr_voltage} -to tx_serial[*]
+
+@@ if {$ptp} {
+set_global_assignment -name SEARCH_PATH ./common/tod
+@@ }
+
+@@ if {$caui4} {
+set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|caui4_e100_pma:iof|caui4_xcvr:xcvr|altera_xcvr_native_a10:caui4_xcvr|twentynm_xcvr_native:g_xcvr_native_insts[*].twentynm_xcvr_native_inst|twentynm_pcs:inst_twentynm_pcs|twentynm_pcs_ch:ch[0].inst_twentynm_pcs_ch*pld_pcs_rx_clk_out*"
+@@ }
+
+@@ if {$kr4} {
+set_instance_assignment -name GLOBAL_SIGNAL PERIPHERY_CLOCK -to *e40_inst*g_xcvr_native_insts[*]*twentynm_xcvr_native_inst*inst_twentynm_pcs*_pld_pcs_tx_clk_out
+set_instance_assignment -name GLOBAL_SIGNAL PERIPHERY_CLOCK -to *e40_inst*g_xcvr_native_insts[*]*twentynm_xcvr_native_inst*inst_twentynm_pcs*_pld_pcs_rx_clk_out
+@@ }
+
+@@ if {$c4_fec} {
+set_instance_assignment -name GLOBAL_SIGNAL OFF            -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|alt_aeu_100_rs_rx:rsfec.rx_rsfec|rst_vdc"
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|caui4_rxrs_fpll:PLLS.rxfpll|altera_xcvr_fpll_a10:caui4_rxrs_fpll|outclk0"
+@@ }
+
+# Disable warning about pins stuck at VCC and GND
+set_instance_assignment -name MESSAGE_DISABLE 13410 -to reconfig_readdata[31..8]
+
+# Preliminary info warnings
+set_global_assignment -name MESSAGE_DISABLE 332158
+set_global_assignment -name MESSAGE_DISABLE 18291
+
+# TODO: Verify this setting
+set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION OFF
+
+@@ foreach port $ports {
+set_instance_assignment -name VIRTUAL_PIN ON -to $port
+@@ }
+
+export_assignments -reorganize
+project_close

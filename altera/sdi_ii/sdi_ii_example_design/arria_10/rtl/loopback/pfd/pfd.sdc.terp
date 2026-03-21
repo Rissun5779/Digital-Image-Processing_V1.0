@@ -1,0 +1,50 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set direction    $param0
+@@ if { $direction == "du" } {
+@@      set rx_name "du"
+@@      set tx_name "du"
+@@ } else {
+@@      set rx_name "rx"
+@@      set tx_name "tx"
+@@ }
+#**************************************************************
+# Create generated clock
+#**************************************************************
+create_generated_clock -name {${rx_name}_inst|sdi_${rx_name}_sys_inst|H_sync} -source [get_pins {${rx_name}_inst|sdi_${rx_name}_sys_inst|${rx_name}_phy|g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pcs|gen_twentynm_hssi_8g_rx_pcs.inst_twentynm_hssi_8g_rx_pcs|sta_rx_clk2_by2_2_out}] -divide_by 2200 -multiply_by 1 -duty_cycle 50.000 [get_registers { ${rx_name}_top:${rx_name}_inst|sdi_${rx_name}_sys:sdi_${rx_name}_sys_inst|*${rx_name}_sdi|sdi_ii_rx_protocol:u_rx_protocol|sdi_ii_receive:sdi_receive_gen[0].u_receive|sdi_ii_trsmatch:u_trs|H }]
+create_generated_clock -name {loopback_inst|pfd_inst|tx_clkdiv} -source [get_pins {${tx_name}_inst|sdi_${tx_name}_sys_inst|${tx_name}_phy|g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pcs|gen_twentynm_hssi_8g_tx_pcs.inst_twentynm_hssi_8g_tx_pcs|sta_tx_clk2_by2_1_out}] -divide_by 2200 -multiply_by 1 -duty_cycle 50.000 [get_registers { loopback_top:loopback_inst*|pfd:pfd_inst|vcoclk_div }]
+
+#**************************************************************
+# False path for frame_locked as it is a pseudostatic signal
+#**************************************************************
+set_false_path -from [get_keepers -no_case *u_receive|*u_format|trs_locked] -to [get_keepers -no_case *pfd_inst|qvco] 
+set_false_path -from [get_keepers -no_case *u_receive|*u_format|trs_locked] -to [get_keepers -no_case *pfd_inst|qref] 
+set_false_path -from [get_keepers -no_case *u_receive|*u_format|frame_locked] -to [get_keepers -no_case *pfd_inst|qvco] 
+set_false_path -from [get_keepers -no_case *u_receive|*u_format|frame_locked] -to [get_keepers -no_case *pfd_inst|qref]
+
+# false path to these aclr/clrn signals as these are expected to be async resets.
+set pfd_aclr_counter 0
+set pfd_clrn_counter 0
+set pfd_aclr_collection [get_pins -compatibility_mode -nocase -nowarn *pfd_inst|q*|aclr]
+set pfd_clrn_collection [get_pins -compatibility_mode -nocase -nowarn *pfd_inst|q*|clrn]
+set pfd_aclr_counter [get_collection_size \$pfd_aclr_collection]
+set pfd_clrn_counter [get_collection_size \$pfd_clrn_collection]
+
+if {\$pfd_aclr_counter > 0} {
+    set_false_path -to [get_pins -compatibility_mode -nocase *pfd_inst|q*|aclr]
+}
+
+if {\$pfd_clrn_counter > 0} {
+    set_false_path -to [get_pins -compatibility_mode -nocase *pfd_inst|q*|clrn]
+}

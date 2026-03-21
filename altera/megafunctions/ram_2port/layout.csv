@@ -1,0 +1,99 @@
+tab: General,,,
+,group: How will you be using the dual port RAM?,,
+,,param: GUI_MODE,
+,group: How do you want to specify the memory size?,,
+,,param: GUI_MEM_IN_BITS,
+,,,
+tab: Widths/Blk Type,,,
+,param: GUI_MEMSIZE_BITS,,
+,param: GUI_MEMSIZE_WORDS,,
+,param: GUI_VAR_WIDTH,,
+,group: Read/Write Ports,,
+,,param: GUI_QA_WIDTH,
+,,param: GUI_DATAA_WIDTH,
+,,param: GUI_QB_WIDTH,
+,group: What should the memory block type be?,,
+,,param: GUI_RAM_BLOCK_TYPE,
+,,param: GUI_MAX_DEPTH,
+,,group: LCs Additional Options,
+,,,param: GUI_LC_IMPLEMENTION_OPTIONS
+,group:Resource Estimation,,
+,,param:GUI_RESOURCE_USAGE,
+,,,
+"tab: Clks/Rd, Byte En",,,
+,param: GUI_CLOCK_TYPE,,
+,param: GUI_RDEN_SINGLE,,
+,param: GUI_RDEN_DOUBLE,,
+,group: Byte Enable Ports,,
+,,param: GUI_BYTE_ENABLE_A,
+,,param: GUI_BYTE_ENABLE_B,
+,,param: GUI_BYTE_ENABLE_WIDTH,
+,group: ECC Checking,,
+,,param: GUI_ECC_DOUBLE,
+,,param: GUI_ECC_TRIPLE,
+,,param: GUI_ECC_PIPELINE,
+,,param:GUI_ECCENCBYPASS,
+,,param:GUI_WIDTH_ECCENCPARITY,
+,group:Coherent Read,,
+,,param:GUI_COHERENT_READ,
+,group:Force To Zero,,
+,,param:GUI_FORCE_TO_ZERO,
+,,,
+tab: Reg/Clkens/Aclrs,,,
+,group: Which ports should be registered?,,
+,,group: Input Registers,
+,,,param: GUI_WRITE_INPUT_PORTS
+,,,param: GUI_READ_INPUT_RDADDRESS
+,,group: Output Registers,
+,,,param: GUI_READ_OUTPUT_QA
+,,,param: GUI_READ_OUTPUT_QB
+,group: Clken Options,,
+,,group: Clock Enables,
+,,,param: GUI_DIFFERENT_CLKENS
+,,,param: GUI_CLKEN_WRITE_INPUT_REG
+,,,param: GUI_CLKEN_READ_INPUT_REG
+,,,param: GUI_CLKEN_READ_OUTPUT_REG
+,,,param: GUI_CLKEN_INPUT_REG_A
+,,,param: GUI_CLKEN_OUTPUT_REG_A
+,,,param: GUI_CLKEN_INPUT_REG_B
+,,,param: GUI_CLKEN_OUTPUT_REG_B
+,,group: Addressstalls,
+,,,param: GUI_CLKEN_ADDRESS_STALL_A
+,,,param: GUI_CLKEN_ADDRESS_STALL_B
+,,,param: GUI_CLKEN_WRADDRESSSTALL
+,,,param: GUI_CLKEN_RDADDRESSSTALL
+,group: Aclr Options,,
+,,group: Read Input Aclrs ,
+,,,param: GUI_ACLR_READ_INPUT_RDADDRESS
+,,group: Output Aclrs,
+,,,param: GUI_ACLR_READ_OUTPUT_QA
+,,,param: GUI_ACLR_READ_OUTPUT_QB
+,group:Sclr Options,,
+,,group:Output Sclrs,
+,,,param:GUI_SCLR_READ_OUTPUT_QA
+,,,param:GUI_SCLR_READ_OUTPUT_QB
+,,,
+tab: Output1,,,
+,group: Mixed Port Read-During-Write for Single Input Clock RAM,,
+,,param: GUI_Q_PORT_MODE,
+,,param: GUI_CONSTRAINED_DONT_CARE,
+,,,
+tab: Output2,,,
+,group: Port A Read-During-Write Option,,
+,,param: GUI_RDW_A_MODE,
+,,param: GUI_NBE_A,
+,group: Port B Read-During-Write Option,,
+,,param: GUI_RDW_B_MODE,
+,,param: GUI_NBE_B,
+,,,
+tab: Mem Init,,,
+,group: Do you want to specify the initial content of the memory?,,
+,,param: GUI_BLANK_MEMORY,
+,,param: GUI_INIT_SIM_TO_X,
+,,param: GUI_FILE_REFERENCE,
+,,param: GUI_MIF_FILENAME,
+,,param: GUI_INIT_FILE_LAYOUT,
+,,,
+tab:Performance Optimization,,,
+,group: Force To Zero,,
+,,param:GUI_FORCE_TO_ZERO,

@@ -1,0 +1,29 @@
+[Interfaces|PCI Express]
+Arria V GZ Hard IP for PCI Express Intel FPGA IP = "%t" "%w/../../common/lib/megawizard.pl" --wizard_file:"%w/altera_pcie_avgz_hip_ast_hw.tcl" --wizard:altera_pcie_avgz_hip_ast --cusp_ip:true --familyparameter:INTENDED_DEVICE_FAMILY --early_gen:on %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<VISIBILITY FOR_CREATE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Arria V GZ"   SUPPORT_CHECK="ON" />
+<LANGUAGES AHDL="OFF" />
+<PINPLAN SUPPORTED="OFF"/>
+<ALIAS>Arria V GZ Hard IP for PCI Express v13.0</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v13.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v14.0</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v14.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v14.0.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v14.0.2</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v13.1.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v13.1.2</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v13.1.3</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v15.0</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v15.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v15.0.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v15.0.2</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v16.0</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v16.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v17.0</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v17.1</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express v18.0</ALIAS>
+<ALIAS>Arria V GZ Hard IP for PCI Express Intel FPGA IP</ALIAS>
+</INFO>

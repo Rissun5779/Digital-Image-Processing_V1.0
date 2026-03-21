@@ -1,0 +1,44 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include "kissfft/kiss_fft.h"
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS       1000
+#define FFT_SIZE 8
+
+int main()
+{
+    alt_printf("--- KissFFT Nios V/g Example ----\n");
+
+    // FFT input/output buffer
+    kiss_fft_cpx in[FFT_SIZE];
+    kiss_fft_cpx out[FFT_SIZE];
+
+    // 建立簡單測試訊號：純實部
+    for(int i=0; i<FFT_SIZE; i++){
+        in[i].r = (float)i;  // 直接使用 float
+        in[i].i = 0.0f;
+    }
+
+    // 建立 FFT 配置 (forward FFT)
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg){
+        alt_printf("FFT allocation failed!\n");
+        return -1;
+    }
+
+    // 執行 FFT
+    kiss_fft(cfg, in, out);
+
+    // 印出結果
+    for(int i=0; i<FFT_SIZE; i++){
+        alt_printf("FFT[%d] = %f + %fi\n", i, out[i].r, out[i].i);
+    }
+
+    // 釋放資源
+    kiss_fft_free(cfg);
+    alt_printf("=== Done ===\n");
+
+    return 0;
+}

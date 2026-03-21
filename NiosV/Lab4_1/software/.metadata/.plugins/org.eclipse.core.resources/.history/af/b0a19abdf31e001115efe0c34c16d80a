@@ -1,0 +1,153 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include <stdarg.h>
+#include "kissfft/kiss_fft.h"
+
+#define FFT_SIZE 8
+
+// ===================== 自訂輕量化 printf 實作 =====================
+
+// 輸出整數
+void print_int(int n) {
+    char buf[12];
+    int i = 0;
+    if (n == 0) {
+        alt_putchar('0');
+        return;
+    }
+    if (n < 0) {
+        alt_putchar('-');
+        // 處理最小負數溢位問題
+        unsigned int un = (n == -2147483648) ? 2147483648U : (unsigned int)(-n);
+        while (un > 0) {
+            buf[i++] = (un % 10) + '0';
+            un /= 10;
+        }
+    } else {
+        while (n > 0) {
+            buf[i++] = (n % 10) + '0';
+            n /= 10;
+        }
+    }
+    while (i > 0) alt_putchar(buf[--i]);
+}
+
+// 輸出浮點數
+void print_float(float f, int precision) {
+    if (f < 0) {
+        alt_putchar('-');
+        f = -f;
+    }
+
+    // 四捨五入處理：根據精度加上 0.5 * 10^-precision
+    float rounding = 0.5f;
+    for (int i = 0; i < precision; i++) rounding /= 10.0f;
+    f += rounding;
+
+    // 印出整數部分
+    int integer_part = (int)f;
+    print_int(integer_part);
+
+    // 印出小數部分
+    if (precision > 0) {
+        alt_putchar('.');
+        float fractional_part = f - (float)integer_part;
+        for (int i = 0; i < precision; i++) {
+            fractional_part *= 10.0f;
+            int digit = (int)fractional_part;
+            alt_putchar(digit + '0');
+            fractional_part -= (float)digit;
+        }
+    }
+}
+
+// 核心解析函式：支援 %d, %f, %.3f, %s, %c
+void custom_printf(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    for (const char* p = format; *p != '\0'; p++) {
+        if (*p == '%') {
+            p++;
+            int precision = 6; // 預設精度
+
+            // 跳過寬度（例如 %10f 中的 10）
+            while (*p >= '0' && *p <= '9') p++;
+
+            // 解析精度（例如 %.3f）
+            if (*p == '.') {
+                p++;
+                int val = 0;
+                while (*p >= '0' && *p <= '9') {
+                    val = val * 10 + (*p - '0');
+                    p++;
+                }
+                precision = val;
+            }
+
+            switch (*p) {
+                case 'd':
+                    print_int(va_arg(args, int));
+                    break;
+                case 'f':
+                    // va_arg 中 float 會被自動提升為 double
+                    print_float((float)va_arg(args, double), precision);
+                    break;
+                case 's': {
+                    char* s = va_arg(args, char*);
+                    if (!s) s = "(null)";
+                    while (*s) alt_putchar(*s++);
+                    break;
+                }
+                case 'c':
+                    alt_putchar((char)va_arg(args, int));
+                    break;
+                case '%':
+                    alt_putchar('%');
+                    break;
+                default:
+                    // 不認識的格式，把原字元印出來
+                    alt_putchar('%');
+                    alt_putchar(*p);
+            }
+        } else {
+            alt_putchar(*p);
+        }
+    }
+    va_end(args);
+}
+// ===================== 自訂 printf 結束 =====================
+
+int main()
+{
+    custom_printf("--- KissFFT Nios V/g Example (Fixed Output) ---\n");
+
+    kiss_fft_cpx in[FFT_SIZE];
+    kiss_fft_cpx out[FFT_SIZE];
+
+    // 初始化：實部為 0-7，虛部為 0
+    for(int i=0; i<FFT_SIZE; i++){
+        in[i].r = (float)i;
+        in[i].i = 0.0f;
+    }
+
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg){
+        custom_printf("Error: FFT allocation failed!\n");
+        return -1;
+    }
+
+    kiss_fft(cfg, in, out);
+
+    // 印出結果
+    for(int i=0; i<FFT_SIZE; i++){
+        // 這裡現在會正確解析 %.3f 了
+        custom_printf("FFT[%d] = %.3f + %.3fi\n", i, out[i].r, out[i].i);
+    }
+
+    kiss_fft_free(cfg);
+    custom_printf("=== Done ===\n");
+
+    return 0;
+}

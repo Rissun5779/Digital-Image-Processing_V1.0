@@ -1,0 +1,373 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// (C) 2001-2014 Altera Corporation. All rights reserved.
+// Your use of Altera Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Altera Program License Subscription 
+// Agreement, Altera MegaCore Function License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Altera and sold by 
+// Altera or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+//****************************************
+//Purpose: 15.1 release present users a simple hard test enviroment
+//Function: 
+//         .internal loopback
+//         .generate 100 packets
+//         .check received packets for correctness
+//         .indicate test_done and test_fail/test_success on the A10 SI kit
+//         .test_done_n    --> USRLED0
+//         .test_success_n --> USRLED1
+//         .test_failed_n  --> USRLED2
+//         .sys_pll_reset  --> USR PUSH BUTTONS S1
+//Modules
+//         1) system_pll      : generate mm_clk and usr_clk
+//         2) example_pll     : generate tx_serial_clk (atx_pll)
+//         3) example_host    : program register for loopback and generate test_done etc signals
+//         4) example_gen     : pkt gen
+//         5) example_chk     : pkt chk
+//         6) ilk_core        : 
+//****************************************
+
+`timescale 1 ps / 1 ps
+module example_design #(
+   parameter DEVICE_FAMILY      = "Arria 10",     //do not modify
+   parameter INTERNAL_WORDS     =    8,
+   parameter NUM_LANES          =   12,
+   parameter SIM_MODE           = 1'b0,
+   parameter CNTR_BITS          = SIM_MODE ? 6 : 20,
+   parameter CALENDAR_PAGES     =    1,
+   parameter LOG_CALENDAR_PAGES =    1,
+   parameter DATA_RATE          = "10312.5 Mbps"
+)(
+  // Clock and reset
+  input                                pll_ref_clk,
+  input                                clk50,
+  input                                sys_pll_reset_n,  //async reset, can be connected to usr_pb_reset_n on the development board
+  // Serial interface signals
+  output [NUM_LANES-1:0]               tx_pin,
+  input  [NUM_LANES-1:0]               rx_pin,
+  // Test status indication
+  output                               test_failed_n,
+  output                               test_success_n,
+  output                               test_done_n
+);
+
+  // clock and reset
+  wire                               tx_clk;
+  wire                               tx_srst;
+  wire                               rx_clk;
+  wire                               rx_srst;
+
+  // TX User interface
+  wire  [3:0]                        tx_valid;
+  wire                               tx_sop;
+  wire  [3:0]                        tx_eopbits;
+  wire  [7:0]                        tx_chan;
+  wire  [INTERNAL_WORDS-1:0][63:0]   tx_data;
+  wire  [CALENDAR_PAGES*16-1:0]      tx_calendar;
+
+  // RX User Interface
+  wire  [3:0]                        rx_valid;
+  wire  [3:0]                        rx_valid_dummy;
+  wire                               rx_sop;
+  wire                               rx_sop_dummy;
+  wire  [3:0]                        rx_eopbits;
+  wire  [7:0]                        rx_chan;
+  wire  [INTERNAL_WORDS-1:0][63:0]   rx_data;
+  wire  [15:0]                       rx_calendar;
+
+
+  // Miscellaneous signals
+  wire                               tx_ready;
+  wire                               rx_crc24_err;
+  wire [NUM_LANES-1:0]               rx_crc32_err;
+
+  // Avalon-MM interface for Uflex Interlaken core CSR
+  wire                                mm_clk;
+  wire                                mm_read;
+  wire                                mm_write;
+  wire [15:0]                         mm_address;
+  wire [31:0]                         mm_readdata;
+  wire                                mm_readdatavalid;
+  wire  [31:0]                        mm_writedata;
+
+  // Avalon-MM interface for native PHY reconfiguration 
+  wire                                reconfig_clk = mm_clk;
+  wire                                reconfig_reset;
+  wire                                reconfig_read;
+  wire                                reconfig_write;
+  wire  [(9+clogb2(NUM_LANES-1)):0]   reconfig_address;
+  wire  [31:0]                        reconfig_readdata;
+  wire  [31:0]                        reconfig_writedata;
+  wire                                reconfig_waitrequest;
+
+  // Reconfiguration inteface for StratixV
+  wire  [NUM_LANES*70-1:0]            reconfig_to_xcvr;
+  wire [NUM_LANES*46-1:0]             reconfig_from_xcvr;
+
+  wire tx_serial_clk;
+  wire tx_pll_locked;
+  wire tx_pll_cal_busy;
+  wire tx_pll_powerdown;
+
+  wire sys_pll_locked;
+  wire clk_sys_ready;
+  wire usr_clk;
+  
+  assign tx_clk = usr_clk;
+  assign rx_clk = usr_clk;
+
+  wire tx_ready_host = tx_ready && !rx_srst;
+
+   // System Reset generator
+   ilk_reset_delay #(
+      .CNTR_BITS (CNTR_BITS)
+   ) rdy_sys (
+      .clk       (mm_clk),
+      .ready_in  (sys_pll_locked),
+      .ready_out (clk_sys_ready)
+   );
+
+  reg reset_n;
+  reg mm_reset_n;
+  always @(posedge clk50) begin
+    reset_n <= ~(sys_pll_locked & !clk_sys_ready);
+  end
+
+  altera_std_synchronizer #(.depth(8)) mm_reset_sync    (.clk(mm_clk),   .reset_n(reset_n),  .din(1'b1), .dout(mm_reset_n));
+
+//*************************************
+// System PLL: gen usr_clk and mm_clk
+//*************************************
+   altera_pll #(
+      .reference_clock_frequency ("50.0 MHz"),
+      .operation_mode            ("direct"),
+      .number_of_clocks          (2),
+
+      .output_clock_frequency0   ("100.0 MHz"),
+      .phase_shift0              ("0 ps"),
+      .duty_cycle0               (50),
+
+      .output_clock_frequency1   ("300.0 MHz"),
+      .phase_shift1              ("0 ps"),
+      .duty_cycle1               (50)
+   ) sys_pll (
+      .outclk   ({usr_clk, mm_clk}),
+      .locked   (sys_pll_locked),
+      .fboutclk (),
+      .fbclk    (1'b0),
+      .rst      (!sys_pll_reset_n),
+      .refclk   (clk50)
+   );
+//**********************
+// ATX pll: xN bonding
+//**********************
+  generate
+  if (DEVICE_FAMILY == "Arria 10") begin //xN bonding
+    atxpll ilk_pll (
+		    .pll_powerdown      (tx_pll_powerdown     ), // input  wire  pll_powerdown.pll_powerdown
+		    .mcgb_rst           (tx_pll_powerdown     ), // input  wire  pll_powerdown.pll_powerdown
+		    .pll_refclk0        (pll_ref_clk          ), // input  wire    pll_refclk0.clk
+		    .tx_serial_clk      (                     ), // output wire  tx_serial_clk.clk
+                    .mcgb_serial_clk    (tx_serial_clk), 
+		    .pll_locked         (tx_pll_locked        ), // output wire     pll_locked.pll_locked
+		    .pll_cal_busy       (tx_pll_cal_busy      )  // output wire   pll_cal_busy.pll_cal_busy
+	   );
+  end else begin
+    atxpll ilk_pll (
+		    .pll_powerdown      (tx_pll_powerdown     ), // input  wire             pll_powerdown.pll_powerdown
+		    .pll_refclk         (pll_ref_clk          ), // input  wire [0:0]          pll_refclk.pll_refclk
+		    .pll_fbclk          (1'b0                 ), // input  wire                 pll_fbclk.pll_fbclk
+		    .pll_clkout         (tx_serial_clk        ), // output wire                pll_clkout.pll_clkout
+		    .pll_locked         (tx_pll_locked        ), // output wire                pll_locked.pll_locked
+		    .reconfig_to_xcvr   (70'h0                ), // input  wire [69:0]   reconfig_to_xcvr.reconfig_to_xcvr
+		    .reconfig_from_xcvr (                     )  // output wire [45:0] reconfig_from_xcvr.reconfig_from_xcvr
+	   );
+    assign tx_pll_cal_busy = 1'b0;
+  end
+  endgenerate // ATX pll
+
+//***************************
+// example_host: csr access 
+//***************************
+  example_host #(
+    .NUM_LANES            (NUM_LANES        ) 
+  ) inst_example_host (
+    .mm_reset_n           (mm_reset_n       ),
+
+    .mm_clk               (mm_clk           ),
+    .mm_read              (mm_read          ), 
+    .mm_write             (mm_write         ),
+    .mm_address           (mm_address       ),
+    .mm_writedata         (mm_writedata     ),
+
+    .reconfig_reset       (reconfig_reset   ),
+    .reconfig_read        (reconfig_read    ),
+    .reconfig_write       (reconfig_write   ),
+    .reconfig_address     (reconfig_address ),
+    .reconfig_writedata   (reconfig_writedata)
+  ); //example_host
+
+//***********************
+// example_gen: pkt gen
+//***********************
+  example_gen #(
+    .DEVICE_FAMILY        (DEVICE_FAMILY        ), 
+    .CALENDAR_PAGES       (CALENDAR_PAGES       ), 
+    .INTERNAL_WORDS       (INTERNAL_WORDS       )
+  ) inst_example_gen (
+    .tx_valid             (tx_valid             ),
+    .tx_sop               (tx_sop               ),
+    .tx_eopbits           (tx_eopbits           ),
+    .tx_chan              (tx_chan              ),
+    .tx_data              (tx_data              ),
+    .tx_calendar          (tx_calendar          ),
+
+    .tx_ready             (tx_ready_host        ),
+    
+    .tx_clk               (tx_clk               ),
+    .tx_srst              (tx_srst              )
+
+   
+  ); //example_gen
+
+//***********************
+// example_chk: pkt chk
+//***********************
+  example_chk #(
+    .NUM_LANES            (NUM_LANES            ), 
+    .CALENDAR_PAGES       (CALENDAR_PAGES       ), 
+    .INTERNAL_WORDS       (INTERNAL_WORDS       )
+  ) inst_example_chk (
+    .rx_valid             (rx_valid             ),
+    .rx_sop               (rx_sop               ),
+    .rx_eopbits           (rx_eopbits           ),
+    .rx_chan              (rx_chan              ),
+    .rx_data              (rx_data              ),
+    .rx_calendar          (rx_calendar          ),
+
+    .rx_crc24_err         (rx_crc24_err         ),
+    .rx_crc32_err         (rx_crc32_err         ),
+
+    .test_failed_n        (test_failed_n        ),
+    .test_success_n       (test_success_n       ),
+    .test_done_n          (test_done_n          ),
+
+    .rx_clk               (rx_clk               ),
+    .rx_srst              (rx_srst              )
+  ); //example_chk
+
+//***********************
+// uflex_ilk_core
+//***********************
+  ${top_level_name} #(
+    .FAMILY             (DEVICE_FAMILY),
+    .NUM_LANES          (NUM_LANES),
+    .CALENDAR_PAGES     (CALENDAR_PAGES),
+    .LOG_CALENDAR_PAGES (LOG_CALENDAR_PAGES),
+    .INTERNAL_WORDS     (INTERNAL_WORDS),
+    .DATA_RATE          (DATA_RATE),
+    .RX_PKTMOD_ONLY     (1),            //do not modify
+    .TX_PKTMOD_ONLY     (1)             //do not modify
+  )core_inst (
+    .tx_usr_clk          (tx_clk),                 //  input
+    .rx_usr_clk          (rx_clk),                 //  input
+    .reset_n             (reset_n),                //  input
+    .pll_ref_clk         (pll_ref_clk),            //  input
+    .rx_pin              (rx_pin),                 //  input  [NUM_LANES-1:0]
+    .tx_pin              (tx_pin),                 //  output [NUM_LANES-1:0]
+    .sync_locked         (),                       //  output [NUM_LANES-1:0]
+    .word_locked         (),                       //  output [NUM_LANES-1:0]
+    .rx_lanes_aligned    (),                       //  output
+    .tx_lanes_aligned    (),                       //  output
+
+    .itx_din_words       (tx_data),                //  input  [64*INTERNAL_WORDS-1:0]
+    .itx_num_valid       ({tx_valid, 4'b0}),       //  input  [3:0]
+    .itx_chan            (tx_chan),                //  input  [7:0]
+    .itx_sop             ({tx_sop,1'b0}),          //  input
+    .itx_eopbits         (tx_eopbits),             //  input  [3:0]
+    .itx_sob             ({1'b0,1'b0}),            //  input
+    .itx_eob             (1'b0),                   //  input
+    .itx_calendar        (tx_calendar),            //  input  [CALENDAR_PAGES*16-1:0]
+
+    .burst_max_in        (4),                      //  input  [3:0]
+    .burst_short_in      (2),                      //  input  [3:0]
+    .burst_min_in        (2),                      //  input  [3:0]
+    .itx_ready           (tx_ready),               //  output
+    .itx_hungry          (),                       //  output
+    .itx_overflow        (),                       //  output
+    .itx_underflow       (),                       //  output
+    .crc24_err           (rx_crc24_err),              //  output
+    .crc32_err           (rx_crc32_err),              //  output [NUM_LANES-1:0]
+    .clk_tx_common       (),                       //  output
+    .srst_tx_common      (),                       //  output
+    .clk_rx_common       (),                       //  output
+    .srst_rx_common      (),                       //  output
+    .tx_mac_srst         (),                       //  output
+    .rx_mac_srst         (),                       //  output
+    .tx_usr_srst         (tx_srst),                //  output
+    .rx_usr_srst         (rx_srst),                //  output
+
+    .irx_dout_words      (rx_data),                //  output [64*INTERNAL_WORDS-1:0]
+    .irx_num_valid       ({rx_valid,rx_valid_dummy}) , //  output [3:0]
+    .irx_sop             ({rx_sop,rx_sop_dummy}),                 //  output [1:0]
+    .irx_sob             (),                       //  output [1:0]
+    .irx_eob             (),                       //  output
+    .irx_chan            (rx_chan),                //  output [7:0]
+    .irx_eopbits         (rx_eopbits),             //  output [3:0]
+
+    .irx_calendar        (rx_calendar),            //  output [CALENDAR_PAGES*16-1:0]
+    .irx_overflow        (),                       //  output
+    .rdc_overflow        (),                       //  output
+    .rg_overflow         (),                       //  output
+    .rxfifo_fill_level   (),                       //  output [RXFIFO_ADDR_WIDTH-1:0]
+
+    .mm_clk              (mm_clk),                 //  input
+    .mm_read             (mm_read),                //  input
+    .mm_write            (mm_write),               //  input
+    .mm_addr             (mm_address),             //  input  [15:0]
+    .mm_rdata            (),                       //  output [31:0]
+    .mm_rdata_valid      (),                       //  output
+    .mm_wdata            (mm_writedata),           //  input  [31:0]
+
+    .sop_cntr_inc        (),                       //  output
+    .eop_cntr_inc        (),                       //  output
+    .tx_pll_powerdown    (tx_pll_powerdown),
+    .tx_pll_locked       (tx_pll_locked),
+    .tx_serial_clk       ({NUM_LANES{tx_serial_clk}}),
+    
+    .reconfig_clk         (reconfig_clk     ), 
+    .reconfig_reset       (!mm_reset_n      ),
+    .reconfig_read        (reconfig_read    ),
+    .reconfig_write       (reconfig_write   ),
+    .reconfig_address     (reconfig_address ),
+    .reconfig_writedata   (reconfig_writedata)
+  );
+
+  function integer clogb2;
+    input integer input_num;
+    begin
+      for (clogb2=0; input_num>0; clogb2=clogb2+1)
+        input_num = input_num >> 1;
+      if(clogb2 == 0)
+        clogb2 = 1;
+    end
+  endfunction
+
+
+endmodule

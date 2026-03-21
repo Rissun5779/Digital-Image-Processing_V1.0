@@ -1,0 +1,238 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+# ------------------------------------------------ #
+# -
+# --- This is an auto generated file. Do not   --- # 
+# --- change the contents of this file         --- #
+# --- The changes will be lost once the IP     --- #
+# --- is regenerated                           --- #
+# - 
+# ------------------------------------------------ #
+
+
+# ------------------------------------------- #
+# -                                         - #
+# --- Some useful functions and variables --- #
+# -                                         - #
+# ------------------------------------------- #
+set script_dir [file dirname [info script]] 
+source "\${script_dir}/fpll_ip_parameters_${random_str}.tcl"
+source "\${script_dir}/alt_xcvr_fpll_helper_functions_${random_str}.tcl"
+
+# Debug switch. Change to 1 to get more run-time debug information
+if {![info exists fpll_sdc_debug]} {
+  global ::fpll_sdc_debug
+}
+
+# ---------------------------------------------------------------- #
+# -                                                              - #
+# --- Build cache for all pins and registers required to apply --- #
+# --- timing constraints                                       --- #
+# -                                                              - #
+# ---------------------------------------------------------------- #
+if { ! [ info exists fpll_sdc_cache_${random_str} ] && !\$fpll_sdc_debug } {
+   fpll_initialize_db_${random_str} fpll_db_${random_str}
+   set fpll_sdc_cache_${random_str} 1
+} else {
+  if { \$fpll_sdc_debug } {
+    fpll_initialize_db_${random_str} fpll_db_${random_str}
+    post_message -type info "IP SDC: reusing cached fPLL DB"
+  }
+}
+
+# ---------------------------------------------------------------- #
+# --- Set all the instances of this core                       --- #
+# ---------------------------------------------------------------- #
+set alt_xcvr_fpll_s10_instances [ dict keys \$fpll_db_${random_str} ]
+
+if {[info exists alt_xcvr_fpll_s10_pins]} {
+   unset alt_xcvr_fpll_s10_pins
+}
+set alt_xcvr_fpll_s10_pins [dict create]
+
+# ---------------------------------------------------------------- #
+# -                                                              - #
+# --- Iterate through each instance and apply the necessary    --- #
+# --- timing constraints                                       --- #
+# -                                                              - #
+# ---------------------------------------------------------------- #
+foreach inst \$alt_xcvr_fpll_s10_instances {
+
+  if { [ dict exists \$alt_xcvr_fpll_s10_pins \$inst ] } {
+    dict unset alt_xcvr_fpll_s10_pins \$inst
+    
+    if { \$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC: Array pins for instance \$inst existed before, unsetting them"
+    }
+
+  } 
+  dict set alt_xcvr_fpll_s10_pins \$inst [dict get \$fpll_db_${random_str} \$inst]
+
+  # Delete the clock names array if it exists 
+  if [info exists all_fpll_profile_clocks_names] {
+    unset all_fpll_profile_clocks_names
+  }
+  set all_fpll_profile_clocks_names [dict create]
+
+  # -------------------------------------------------------------- #
+  # --- Iterate over the profiles                              --- #
+  # -------------------------------------------------------------- #
+  set profile_cnt [dict get \$fpll_ip_params profile_cnt]
+  for {set i 0} {\$i < \$profile_cnt} {incr i} {
+
+    set fpll_output_freq [dict get \$fpll_ip_params output_clock_frequency_profile\$i] 
+
+    # ----------------------------------------------------------------------------- #
+    # --- Unset the profile_clocks dictionary if it exists                      --- #
+    # ----------------------------------------------------------------------------- #
+    if {[info exists profile_clocks]} {
+      unset profile_clocks
+    }
+    set profile_clocks [dict create]
+
+    if {[info exists freq]} {
+      unset freq
+    }
+    set freq [dict create]
+
+    # ----------------------------------------------------------------------------- #
+    # --- Create fPLL CLKDIV clocks and clock frequencies                       --- #
+    # ----------------------------------------------------------------------------- #
+    if {[dict get \$fpll_ip_params set_primary_use_profile\$i] == 0} {
+      #INCLK
+      dict set profile_clocks inclk clkdiv_inclk
+      dict set freq clkdiv_inclk \$fpll_output_freq
+  
+      #CLOCK_DIV OUTPUTS
+      if {[dict get \$fpll_ip_params set_x1_core_clock_profile\$i]} {
+        dict set profile_clocks clkdiv_output_clks clkdiv_output_div1
+        dict set freq clkdiv_output_div1 \$fpll_output_freq
+      } else {
+        post_message -type info "IP SDC: Dividy by 1 output core clock is not enabled. Check the Phase alighed core outputs."
+
+      }
+
+      if {[dict get \$fpll_ip_params set_x2_core_clock_profile\$i]} {
+        dict lappend profile_clocks clkdiv_output_clks clkdiv_output_div2
+        dict set freq clkdiv_output_div2 [expr {\$fpll_output_freq / 2 }]
+      }
+
+      if {[dict get \$fpll_ip_params set_x4_core_clock_profile\$i]} {
+        dict lappend profile_clocks clkdiv_output_clks clkdiv_output_div4
+        dict set freq clkdiv_output_div4 [expr {\$fpll_output_freq / 4 }]
+      }
+    } else {
+      post_message -type info "IP SDC: fPLL is not used as a core PLL."
+    }
+
+    # ----------------------------------------------------------------------------- #
+    # --- Round the clock frequencies to 6 decimal places or less               --- #
+    # ----------------------------------------------------------------------------- #
+    dict for {clk freq_clk} \$freq {
+      dict set freq \$clk [format %f \$freq_clk]
+    }
+
+    # ----------------------------------------------------------------------------- #
+    # --- Create clocks for each mode                                           --- #
+    # ----------------------------------------------------------------------------- #
+    dict for {mode mode_clks} \$profile_clocks {
+      set \${mode}_names ""
+      set list_of_clk_names [list]
+
+      foreach clk_group \$mode_clks { # Each mode can have multiple clocks; iterate over them
+        if { \$fpll_sdc_debug } {
+          post_message -type info "IP SDC: Mode: \$mode"
+          post_message -type info "IP SDC: Mode clocks is: \$mode_clks"
+          post_message -type info "IP SDC: Clock group in mode_clks is: \$clk_group"
+        }
+
+        if {[dict exists \$alt_xcvr_fpll_s10_pins \$inst \$clk_group]} {
+
+          set clk_pins [dict get \$alt_xcvr_fpll_s10_pins \$inst \$clk_group]
+
+          if { \$fpll_sdc_debug } {
+            post_message -type info "IP SDC: Pins for \$clk_group: \$clk_pins"
+          }
+
+          if { [llength \$clk_pins] > 0 } { # Check to see if the corresponding pins exists 
+            set channel_number 0 
+            set clk_freq [dict get \$freq \$clk_group]
+            # Create clks for a clk group in mode clk
+            if {\$mode == "inclk"} {
+              lappend list_of_clk_names [fpll_create_clocks_all_ch_${random_str} \$inst \$mode \$clk_group \$clk_freq \$clk_pins \$profile_cnt \$i [dict get \$fpll_ip_params set_refclk_cnt_profile\$i]]
+            } elseif {\$mode == "clkdiv_output_clks"} {
+              lappend list_of_clk_names [fpll_create_clocks_all_ch_${random_str} \$inst \$mode \$clk_group \$clk_freq \$clk_pins \$profile_cnt \$i [dict get \$fpll_ip_params set_refclk_cnt_profile\$i] [dict get \$alt_xcvr_fpll_s10_pins \$inst clkdiv_inclk]]
+            } else {
+              if {\$fpll_sdc_debug == 1} {
+                post_message -type info "IP SDC Error: Clock group \$clk_group did not match any expected clock group."
+              }
+            }
+          } else {
+            if {\$fpll_sdc_debug == 1} {
+              post_message -type info "IP SDC Error: No pins for \$clk_group"
+            }
+          }
+          dict lappend all_fpll_profile_clocks_names \$i \$mode \$list_of_clk_names
+
+          if {\$fpll_sdc_debug == 1} {
+            post_message -type info "IP SDC: All Profile clocks \$i,\$mode: [dcit get \$all_fpll_profile_clocks_names \$i \$mode]"
+          }
+        } else {
+          if {\$fpll_sdc_debug == 1} {
+            post_message -type info "IP SDC Error: \$clk_group key does not exist in pins dictionary"
+          }
+        }
+      }
+    }
+
+  }
+
+
+  #--------------------------------------------- #
+  #-                                         --- #
+  #--- ASYNC CLOCK GROUP FOR RECONFIGURATION --- #
+  #-                                         --- #
+  #--------------------------------------------- #
+  if {\$profile_cnt > 1 } {
+    set arg ""
+
+    for {set i 0} {\$i < \$profile_cnt} {incr i} {
+      set profile_clk_names ""
+
+      dict for {mode clk_name} \$profile_clocks {
+        # Construct the arguments for set_clock_groups 
+        # Template: set_clock_groups -asynchronous -group {<profile0 clks>} -group {<profile1 clks>} ... 
+        set profile_clk_names [concat \$profile_clk_names "[dict get \$all_fpll_profile_clocks_names \$i \$mode]"]
+      }
+
+      set group "-group "
+      set arg [concat \$arg \$group] 
+      set arg [concat \$arg "{\$profile_clk_names}"]
+
+      if { \$native_debug } {
+        post_message -type info "IP SDC: Profile \$i clocks: \$profile_clk_names"
+      }
+    }
+
+    set cmd ""
+    set cmd [concat \$cmd "set_clock_groups -asynchronous "]
+    set cmd [concat \$cmd \$arg]
+    eval \$cmd
+
+    if { \$native_debug } {
+      post_message -type info "IP SDC: Setting async clock groups for reconfiguration: \$cmd"
+    }
+  }
+
+}

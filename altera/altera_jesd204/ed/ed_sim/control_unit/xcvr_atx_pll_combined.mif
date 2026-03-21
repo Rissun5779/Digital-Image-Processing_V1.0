@@ -1,0 +1,51 @@
+-- Copyright (C) 1991-2014 Altera Corporation. All rights reserved.
+-- Your use of Altera Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Altera Program License 
+-- Subscription Agreement, the Altera Quartus II License Agreement,
+-- the Altera MegaCore Function License Agreement, or other 
+-- applicable license agreement, including, without limitation, 
+-- that your use is for the sole purpose of programming logic 
+-- devices manufactured by Altera and sold by Altera or its 
+-- authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+-- Quartus II generated Memory Initialization File (.mif)
+
+WIDTH=26;
+DEPTH=64;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	0   :   01000000100001111100000000;        -- START OF MIF (Data rate: 6144Mbps)
+	1   :   01000001010100000000000000;
+	2   :   01000001110001110000000100;
+	3   :   01000010000000011100000010;
+	4   :   01000010011111111101010000;
+	5   :   01000010110110000000000000;
+	6   :   01000011001111111100000001;
+	7   :   01000011011111111100000000;
+	8   :   01000011101111111100000000;
+	9   :   01000011111111111100000000;
+	10  :   01000100000000010000000100;
+	11  :   11111111111111111111111111;        -- END OF MIF
+	[12..19]  :   00000000000000000000000000;
+	20  :   01000000100001111100000000;        -- START OF MIF (Data rate: 3072Mbps)
+	21  :   01000001010100000000000000;
+	22  :   01000001110001110000000100;
+	23  :   01000010000000011100000011;
+	24  :   01000010011111111101010000;
+	25  :   01000010110110000000000000;
+	26  :   01000011001111111100000001;
+	27  :   01000011011111111100000000;
+	28  :   01000011101111111100000000;
+	29  :   01000011111111111100000000;
+	30  :   01000100000000010000000100;
+	31  :   11111111111111111111111111;        -- END OF MIF
+	[32..63]  :   00000000000000000000000000;
+END;

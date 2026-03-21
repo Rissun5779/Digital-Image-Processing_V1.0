@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element $${FILENAME}
+   {
+   }
+   element rx_sc_fifo
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+   element tx_sc_fifo
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10AX115R3F40I2SGES" />
+ <parameter name="deviceFamily" value="Arria 10" />
+ <parameter name="deviceSpeedGrade" value="2" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="tx_sc_fifo_csr"
+   internal="tx_sc_fifo.csr"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rx_sc_fifo_csr"
+   internal="rx_sc_fifo.csr"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="tx_sc_fifo_clk"
+   internal="tx_sc_fifo.clk"
+   type="clock"
+   dir="end" />
+ <interface
+   name="tx_sc_fifo_clk_reset"
+   internal="tx_sc_fifo.clk_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="tx_sc_fifo_in"
+   internal="tx_sc_fifo.in"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="tx_sc_fifo_out"
+   internal="tx_sc_fifo.out"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="rx_sc_fifo_clk"
+   internal="rx_sc_fifo.clk"
+   type="clock"
+   dir="end" />
+ <interface
+   name="rx_sc_fifo_clk_reset"
+   internal="rx_sc_fifo.clk_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="rx_sc_fifo_almost_full"
+   internal="rx_sc_fifo.almost_full"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="rx_sc_fifo_almost_empty"
+   internal="rx_sc_fifo.almost_empty"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="rx_sc_fifo_in"
+   internal="rx_sc_fifo.in"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="rx_sc_fifo_out"
+   internal="rx_sc_fifo.out"
+   type="avalon_streaming"
+   dir="start" />
+ <module
+   kind="altera_avalon_sc_fifo"
+   version="14.1"
+   enabled="1"
+   name="tx_sc_fifo">
+  <parameter name="SYMBOLS_PER_BEAT" value="8" />
+  <parameter name="BITS_PER_SYMBOL" value="8" />
+  <parameter name="FIFO_DEPTH" value="1024" />
+  <parameter name="CHANNEL_WIDTH" value="0" />
+  <parameter name="ERROR_WIDTH" value="1" />
+  <parameter name="USE_PACKETS" value="1" />
+  <parameter name="USE_FILL_LEVEL" value="1" />
+  <parameter name="EMPTY_LATENCY" value="3" />
+  <parameter name="USE_MEMORY_BLOCKS" value="1" />
+  <parameter name="USE_STORE_FORWARD" value="1" />
+  <parameter name="USE_ALMOST_FULL_IF" value="0" />
+  <parameter name="USE_ALMOST_EMPTY_IF" value="0" />
+  <parameter name="ENABLE_EXPLICIT_MAXCHANNEL" value="false" />
+  <parameter name="EXPLICIT_MAXCHANNEL" value="0" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Arria 10" />
+ </module>
+ <module
+   kind="altera_avalon_sc_fifo"
+   version="14.1"
+   enabled="1"
+   name="rx_sc_fifo">
+  <parameter name="SYMBOLS_PER_BEAT" value="8" />
+  <parameter name="BITS_PER_SYMBOL" value="8" />
+  <parameter name="FIFO_DEPTH" value="1024" />
+  <parameter name="CHANNEL_WIDTH" value="0" />
+  <parameter name="ERROR_WIDTH" value="6" />
+  <parameter name="USE_PACKETS" value="1" />
+  <parameter name="USE_FILL_LEVEL" value="1" />
+  <parameter name="EMPTY_LATENCY" value="3" />
+  <parameter name="USE_MEMORY_BLOCKS" value="1" />
+  <parameter name="USE_STORE_FORWARD" value="1" />
+  <parameter name="USE_ALMOST_FULL_IF" value="1" />
+  <parameter name="USE_ALMOST_EMPTY_IF" value="1" />
+  <parameter name="ENABLE_EXPLICIT_MAXCHANNEL" value="false" />
+  <parameter name="EXPLICIT_MAXCHANNEL" value="0" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Arria 10" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+</system>

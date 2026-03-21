@@ -4,10 +4,9 @@
  <systemtable filter="All Interfaces">
   <columns>
    <connections preferredWidth="143" />
-   <irq preferredWidth="34" />
+   <irq preferredWidth="47" />
   </columns>
  </systemtable>
- <library
-   expandedCategories="Library/Memory Interfaces and Controllers,Library/University Program/Clock,Library/Memory Interfaces and Controllers/Memory Interfaces with AltMemPHY,Library/Memories and Memory Controllers/External Memory Interfaces,Project,Library,Library/Memory Interfaces and Controllers/Memory Interfaces with UniPHY,Library/Memories and Memory Controllers/External Memory Interfaces/SDRAM Interfaces,Library/Memories and Memory Controllers,Library/University Program" />
- <window width="941" height="1011" x="38" y="69" />
+ <library expandedCategories="Library,Project" />
+ <window width="941" height="1011" x="979" y="69" />
 </preferences>

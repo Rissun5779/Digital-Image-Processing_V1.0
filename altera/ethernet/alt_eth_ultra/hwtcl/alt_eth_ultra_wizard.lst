@@ -1,0 +1,21 @@
+[Interface Protocols|Ethernet]
+Low Latency 40G/100G Ethernet Intel FPGA IP = "%t" "%w/../../../common/lib/megawizard.pl" --wizard:alt_eth_ultra --familyparameter:DEVICE_FAMILY --early_gen:on --wizard_file:"%w/alt_eth_ultra_hw.tcl" %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE|Stratix V"   SUPPORT_CHECK="ON" /> 
+<LANGUAGES   AHDL="OFF"/>
+<PINPLAN SUPPORTED="ON"/>
+<VISIBILITY FOR_CREATE="OFF"/> 
+<ALIAS>Low Latency 40G/100G Ethernet</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v13.1</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v14.0</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v14.1</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v15.0</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v15.1</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v16.0</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v16.1</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v17.0</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet v17.1</ALIAS>
+<ALIAS>Low Latency 40G/100G Ethernet Intel FPGA IP</ALIAS>
+</INFO>

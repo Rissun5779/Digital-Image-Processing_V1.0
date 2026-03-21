@@ -1,0 +1,513 @@
+/*
+ * system.h - SOPC Builder system and BSP software package information
+ *
+ * Machine generated for CPU 'NiosV' in SOPC Builder design 'NiosV'
+ * SOPC Builder design path: /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/NiosV.sopcinfo
+ *
+ * Generated: Sat Mar 21 20:50:41 CST 2026
+ */
+
+/*
+ * DO NOT MODIFY THIS FILE
+ *
+ * Changing this file will have subtle consequences
+ * which will almost certainly lead to a nonfunctioning
+ * system. If you do modify this file, be aware that your
+ * changes will be overwritten and lost when this file
+ * is generated again.
+ *
+ * DO NOT MODIFY THIS FILE
+ */
+
+/*
+ * License Agreement
+ *
+ * Copyright (c) 2008
+ * Altera Corporation, San Jose, California, USA.
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ * This agreement shall be governed in all respects by the laws of the State
+ * of California and by the laws of the United States of America.
+ */
+
+#ifndef __SYSTEM_H_
+#define __SYSTEM_H_
+
+/* Include definitions from linker script generator */
+#include "linker.h"
+
+
+/*
+ * CPU configuration
+ *
+ */
+
+#define ALT_CPU_ARCHITECTURE "intel_niosv_m"
+#define ALT_CPU_CPU_FREQ 50000000u
+#define ALT_CPU_DATA_ADDR_WIDTH 0x20
+#define ALT_CPU_DCACHE_LINE_SIZE 0
+#define ALT_CPU_DCACHE_LINE_SIZE_LOG2 0
+#define ALT_CPU_DCACHE_SIZE 0
+#define ALT_CPU_FREQ 50000000
+#define ALT_CPU_HAS_CSR_SUPPORT 1
+#define ALT_CPU_HAS_DEBUG_STUB
+#define ALT_CPU_ICACHE_LINE_SIZE 0
+#define ALT_CPU_ICACHE_LINE_SIZE_LOG2 0
+#define ALT_CPU_ICACHE_SIZE 0
+#define ALT_CPU_INST_ADDR_WIDTH 0x20
+#define ALT_CPU_INT_MODE 0
+#define ALT_CPU_MTIME_OFFSET 0x04090080
+#define ALT_CPU_NAME "NiosV"
+#define ALT_CPU_NIOSV_CORE_VARIANT 1
+#define ALT_CPU_NUM_GPR 32
+#define ALT_CPU_RESET_ADDR 0x04000000
+#define ALT_CPU_TICKS_PER_SEC NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND
+#define ALT_CPU_TIMER_DEVICE_TYPE 2
+
+
+/*
+ * CPU configuration (with legacy prefix - don't use these anymore)
+ *
+ */
+
+#define ABBOTTSLAKE_CPU_FREQ 50000000u
+#define ABBOTTSLAKE_DATA_ADDR_WIDTH 0x20
+#define ABBOTTSLAKE_DCACHE_LINE_SIZE 0
+#define ABBOTTSLAKE_DCACHE_LINE_SIZE_LOG2 0
+#define ABBOTTSLAKE_DCACHE_SIZE 0
+#define ABBOTTSLAKE_HAS_CSR_SUPPORT 1
+#define ABBOTTSLAKE_HAS_DEBUG_STUB
+#define ABBOTTSLAKE_ICACHE_LINE_SIZE 0
+#define ABBOTTSLAKE_ICACHE_LINE_SIZE_LOG2 0
+#define ABBOTTSLAKE_ICACHE_SIZE 0
+#define ABBOTTSLAKE_INST_ADDR_WIDTH 0x20
+#define ABBOTTSLAKE_INT_MODE 0
+#define ABBOTTSLAKE_MTIME_OFFSET 0x04090080
+#define ABBOTTSLAKE_NIOSV_CORE_VARIANT 1
+#define ABBOTTSLAKE_NUM_GPR 32
+#define ABBOTTSLAKE_RESET_ADDR 0x04000000
+#define ABBOTTSLAKE_TICKS_PER_SEC NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND
+#define ABBOTTSLAKE_TIMER_DEVICE_TYPE 2
+
+
+/*
+ * Define for each module class mastered by the CPU
+ *
+ */
+
+#define __ALTERA_AVALON_JTAG_UART
+#define __ALTERA_AVALON_NEW_SDRAM_CONTROLLER
+#define __ALTERA_AVALON_ONCHIP_MEMORY2
+#define __ALTERA_AVALON_PIO
+#define __ALTERA_AVALON_SYSID_QSYS
+#define __INTEL_NIOSV_M
+
+
+/*
+ * JTAG_UART configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_JTAG_UART altera_avalon_jtag_uart
+#define JTAG_UART_BASE 0x4090068
+#define JTAG_UART_IRQ 0
+#define JTAG_UART_IRQ_INTERRUPT_CONTROLLER_ID 0
+#define JTAG_UART_NAME "/dev/JTAG_UART"
+#define JTAG_UART_READ_DEPTH 64
+#define JTAG_UART_READ_THRESHOLD 8
+#define JTAG_UART_SPAN 8
+#define JTAG_UART_TYPE "altera_avalon_jtag_uart"
+#define JTAG_UART_WRITE_DEPTH 64
+#define JTAG_UART_WRITE_THRESHOLD 8
+
+
+/*
+ * NiosV_dm_agent configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_NiosV_dm_agent intel_niosv_m
+#define NIOSV_DM_AGENT_BASE 0x4080000
+#define NIOSV_DM_AGENT_CPU_FREQ 50000000u
+#define NIOSV_DM_AGENT_DATA_ADDR_WIDTH 0x20
+#define NIOSV_DM_AGENT_DCACHE_LINE_SIZE 0
+#define NIOSV_DM_AGENT_DCACHE_LINE_SIZE_LOG2 0
+#define NIOSV_DM_AGENT_DCACHE_SIZE 0
+#define NIOSV_DM_AGENT_HAS_CSR_SUPPORT 1
+#define NIOSV_DM_AGENT_HAS_DEBUG_STUB
+#define NIOSV_DM_AGENT_ICACHE_LINE_SIZE 0
+#define NIOSV_DM_AGENT_ICACHE_LINE_SIZE_LOG2 0
+#define NIOSV_DM_AGENT_ICACHE_SIZE 0
+#define NIOSV_DM_AGENT_INST_ADDR_WIDTH 0x20
+#define NIOSV_DM_AGENT_INTERRUPT_CONTROLLER_ID 0
+#define NIOSV_DM_AGENT_INT_MODE 0
+#define NIOSV_DM_AGENT_IRQ -1
+#define NIOSV_DM_AGENT_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define NIOSV_DM_AGENT_MTIME_OFFSET 0x04090080
+#define NIOSV_DM_AGENT_NAME "/dev/NiosV_dm_agent"
+#define NIOSV_DM_AGENT_NIOSV_CORE_VARIANT 1
+#define NIOSV_DM_AGENT_NUM_GPR 32
+#define NIOSV_DM_AGENT_RESET_ADDR 0x04000000
+#define NIOSV_DM_AGENT_SPAN 65536
+#define NIOSV_DM_AGENT_TICKS_PER_SEC NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND
+#define NIOSV_DM_AGENT_TIMER_DEVICE_TYPE 2
+#define NIOSV_DM_AGENT_TYPE "intel_niosv_m"
+
+
+/*
+ * NiosV_timer_sw_agent configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_NiosV_timer_sw_agent intel_niosv_m
+#define NIOSV_TIMER_SW_AGENT_BASE 0x4090080
+#define NIOSV_TIMER_SW_AGENT_CPU_FREQ 50000000u
+#define NIOSV_TIMER_SW_AGENT_DATA_ADDR_WIDTH 0x20
+#define NIOSV_TIMER_SW_AGENT_DCACHE_LINE_SIZE 0
+#define NIOSV_TIMER_SW_AGENT_DCACHE_LINE_SIZE_LOG2 0
+#define NIOSV_TIMER_SW_AGENT_DCACHE_SIZE 0
+#define NIOSV_TIMER_SW_AGENT_HAS_CSR_SUPPORT 1
+#define NIOSV_TIMER_SW_AGENT_HAS_DEBUG_STUB
+#define NIOSV_TIMER_SW_AGENT_ICACHE_LINE_SIZE 0
+#define NIOSV_TIMER_SW_AGENT_ICACHE_LINE_SIZE_LOG2 0
+#define NIOSV_TIMER_SW_AGENT_ICACHE_SIZE 0
+#define NIOSV_TIMER_SW_AGENT_INST_ADDR_WIDTH 0x20
+#define NIOSV_TIMER_SW_AGENT_INTERRUPT_CONTROLLER_ID 0
+#define NIOSV_TIMER_SW_AGENT_INT_MODE 0
+#define NIOSV_TIMER_SW_AGENT_IRQ -1
+#define NIOSV_TIMER_SW_AGENT_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define NIOSV_TIMER_SW_AGENT_MTIME_OFFSET 0x04090080
+#define NIOSV_TIMER_SW_AGENT_NAME "/dev/NiosV_timer_sw_agent"
+#define NIOSV_TIMER_SW_AGENT_NIOSV_CORE_VARIANT 1
+#define NIOSV_TIMER_SW_AGENT_NUM_GPR 32
+#define NIOSV_TIMER_SW_AGENT_RESET_ADDR 0x04000000
+#define NIOSV_TIMER_SW_AGENT_SPAN 64
+#define NIOSV_TIMER_SW_AGENT_TICKS_PER_SEC NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND
+#define NIOSV_TIMER_SW_AGENT_TIMER_DEVICE_TYPE 2
+#define NIOSV_TIMER_SW_AGENT_TYPE "intel_niosv_m"
+
+
+/*
+ * PIO_HEX_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_PIO_HEX_0 altera_avalon_pio
+#define PIO_HEX_0_BASE 0x4090030
+#define PIO_HEX_0_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_HEX_0_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PIO_HEX_0_CAPTURE 0
+#define PIO_HEX_0_DATA_WIDTH 8
+#define PIO_HEX_0_DO_TEST_BENCH_WIRING 0
+#define PIO_HEX_0_DRIVEN_SIM_VALUE 0
+#define PIO_HEX_0_EDGE_TYPE "NONE"
+#define PIO_HEX_0_FREQ 50000000
+#define PIO_HEX_0_HAS_IN 0
+#define PIO_HEX_0_HAS_OUT 1
+#define PIO_HEX_0_HAS_TRI 0
+#define PIO_HEX_0_IRQ -1
+#define PIO_HEX_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_HEX_0_IRQ_TYPE "NONE"
+#define PIO_HEX_0_NAME "/dev/PIO_HEX_0"
+#define PIO_HEX_0_RESET_VALUE 0
+#define PIO_HEX_0_SPAN 16
+#define PIO_HEX_0_TYPE "altera_avalon_pio"
+
+
+/*
+ * PIO_HEX_1 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_PIO_HEX_1 altera_avalon_pio
+#define PIO_HEX_1_BASE 0x4090020
+#define PIO_HEX_1_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_HEX_1_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PIO_HEX_1_CAPTURE 0
+#define PIO_HEX_1_DATA_WIDTH 8
+#define PIO_HEX_1_DO_TEST_BENCH_WIRING 0
+#define PIO_HEX_1_DRIVEN_SIM_VALUE 0
+#define PIO_HEX_1_EDGE_TYPE "NONE"
+#define PIO_HEX_1_FREQ 50000000
+#define PIO_HEX_1_HAS_IN 0
+#define PIO_HEX_1_HAS_OUT 1
+#define PIO_HEX_1_HAS_TRI 0
+#define PIO_HEX_1_IRQ -1
+#define PIO_HEX_1_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_HEX_1_IRQ_TYPE "NONE"
+#define PIO_HEX_1_NAME "/dev/PIO_HEX_1"
+#define PIO_HEX_1_RESET_VALUE 0
+#define PIO_HEX_1_SPAN 16
+#define PIO_HEX_1_TYPE "altera_avalon_pio"
+
+
+/*
+ * PIO_HEX_2 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_PIO_HEX_2 altera_avalon_pio
+#define PIO_HEX_2_BASE 0x4090010
+#define PIO_HEX_2_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_HEX_2_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PIO_HEX_2_CAPTURE 0
+#define PIO_HEX_2_DATA_WIDTH 8
+#define PIO_HEX_2_DO_TEST_BENCH_WIRING 0
+#define PIO_HEX_2_DRIVEN_SIM_VALUE 0
+#define PIO_HEX_2_EDGE_TYPE "NONE"
+#define PIO_HEX_2_FREQ 50000000
+#define PIO_HEX_2_HAS_IN 0
+#define PIO_HEX_2_HAS_OUT 1
+#define PIO_HEX_2_HAS_TRI 0
+#define PIO_HEX_2_IRQ -1
+#define PIO_HEX_2_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_HEX_2_IRQ_TYPE "NONE"
+#define PIO_HEX_2_NAME "/dev/PIO_HEX_2"
+#define PIO_HEX_2_RESET_VALUE 0
+#define PIO_HEX_2_SPAN 16
+#define PIO_HEX_2_TYPE "altera_avalon_pio"
+
+
+/*
+ * PIO_HEX_3 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_PIO_HEX_3 altera_avalon_pio
+#define PIO_HEX_3_BASE 0x4090000
+#define PIO_HEX_3_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_HEX_3_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PIO_HEX_3_CAPTURE 0
+#define PIO_HEX_3_DATA_WIDTH 8
+#define PIO_HEX_3_DO_TEST_BENCH_WIRING 0
+#define PIO_HEX_3_DRIVEN_SIM_VALUE 0
+#define PIO_HEX_3_EDGE_TYPE "NONE"
+#define PIO_HEX_3_FREQ 50000000
+#define PIO_HEX_3_HAS_IN 0
+#define PIO_HEX_3_HAS_OUT 1
+#define PIO_HEX_3_HAS_TRI 0
+#define PIO_HEX_3_IRQ -1
+#define PIO_HEX_3_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_HEX_3_IRQ_TYPE "NONE"
+#define PIO_HEX_3_NAME "/dev/PIO_HEX_3"
+#define PIO_HEX_3_RESET_VALUE 0
+#define PIO_HEX_3_SPAN 16
+#define PIO_HEX_3_TYPE "altera_avalon_pio"
+
+
+/*
+ * PIO_LED configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_PIO_LED altera_avalon_pio
+#define PIO_LED_BASE 0x4090040
+#define PIO_LED_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_LED_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PIO_LED_CAPTURE 0
+#define PIO_LED_DATA_WIDTH 8
+#define PIO_LED_DO_TEST_BENCH_WIRING 0
+#define PIO_LED_DRIVEN_SIM_VALUE 0
+#define PIO_LED_EDGE_TYPE "NONE"
+#define PIO_LED_FREQ 50000000
+#define PIO_LED_HAS_IN 0
+#define PIO_LED_HAS_OUT 1
+#define PIO_LED_HAS_TRI 0
+#define PIO_LED_IRQ -1
+#define PIO_LED_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_LED_IRQ_TYPE "NONE"
+#define PIO_LED_NAME "/dev/PIO_LED"
+#define PIO_LED_RESET_VALUE 0
+#define PIO_LED_SPAN 16
+#define PIO_LED_TYPE "altera_avalon_pio"
+
+
+/*
+ * PIO_SW configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_PIO_SW altera_avalon_pio
+#define PIO_SW_BASE 0x4090050
+#define PIO_SW_BIT_CLEARING_EDGE_REGISTER 0
+#define PIO_SW_BIT_MODIFYING_OUTPUT_REGISTER 0
+#define PIO_SW_CAPTURE 0
+#define PIO_SW_DATA_WIDTH 8
+#define PIO_SW_DO_TEST_BENCH_WIRING 0
+#define PIO_SW_DRIVEN_SIM_VALUE 0
+#define PIO_SW_EDGE_TYPE "NONE"
+#define PIO_SW_FREQ 50000000
+#define PIO_SW_HAS_IN 1
+#define PIO_SW_HAS_OUT 0
+#define PIO_SW_HAS_TRI 0
+#define PIO_SW_IRQ -1
+#define PIO_SW_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define PIO_SW_IRQ_TYPE "NONE"
+#define PIO_SW_NAME "/dev/PIO_SW"
+#define PIO_SW_RESET_VALUE 0
+#define PIO_SW_SPAN 16
+#define PIO_SW_TYPE "altera_avalon_pio"
+
+
+/*
+ * RAM configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_RAM altera_avalon_onchip_memory2
+#define RAM_ALLOW_IN_SYSTEM_MEMORY_CONTENT_EDITOR 0
+#define RAM_ALLOW_MRAM_SIM_CONTENTS_ONLY_FILE 0
+#define RAM_BASE 0x4000000
+#define RAM_CONTENTS_INFO ""
+#define RAM_DUAL_PORT 0
+#define RAM_GUI_RAM_BLOCK_TYPE "AUTO"
+#define RAM_INIT_CONTENTS_FILE "NiosV_RAM"
+#define RAM_INIT_MEM_CONTENT 1
+#define RAM_INSTANCE_ID "NONE"
+#define RAM_IRQ -1
+#define RAM_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define RAM_NAME "/dev/RAM"
+#define RAM_NON_DEFAULT_INIT_FILE_ENABLED 0
+#define RAM_RAM_BLOCK_TYPE "AUTO"
+#define RAM_READ_DURING_WRITE_MODE "DONT_CARE"
+#define RAM_SINGLE_CLOCK_OP 0
+#define RAM_SIZE_MULTIPLE 1
+#define RAM_SIZE_VALUE 491520
+#define RAM_SPAN 491520
+#define RAM_TYPE "altera_avalon_onchip_memory2"
+#define RAM_WRITABLE 1
+
+
+/*
+ * SDRAM configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_SDRAM altera_avalon_new_sdram_controller
+#define SDRAM_BASE 0x0
+#define SDRAM_CAS_LATENCY 3
+#define SDRAM_CONTENTS_INFO
+#define SDRAM_INIT_NOP_DELAY 0.0
+#define SDRAM_INIT_REFRESH_COMMANDS 2
+#define SDRAM_IRQ -1
+#define SDRAM_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define SDRAM_IS_INITIALIZED 1
+#define SDRAM_NAME "/dev/SDRAM"
+#define SDRAM_POWERUP_DELAY 100.0
+#define SDRAM_REFRESH_PERIOD 15.625
+#define SDRAM_REGISTER_DATA_IN 1
+#define SDRAM_SDRAM_ADDR_WIDTH 0x19
+#define SDRAM_SDRAM_BANK_WIDTH 2
+#define SDRAM_SDRAM_COL_WIDTH 10
+#define SDRAM_SDRAM_DATA_WIDTH 16
+#define SDRAM_SDRAM_NUM_BANKS 4
+#define SDRAM_SDRAM_NUM_CHIPSELECTS 1
+#define SDRAM_SDRAM_ROW_WIDTH 13
+#define SDRAM_SHARED_DATA 0
+#define SDRAM_SIM_MODEL_BASE 0
+#define SDRAM_SPAN 67108864
+#define SDRAM_STARVATION_INDICATOR 0
+#define SDRAM_TRISTATE_BRIDGE_SLAVE ""
+#define SDRAM_TYPE "altera_avalon_new_sdram_controller"
+#define SDRAM_T_AC 5.5
+#define SDRAM_T_MRD 3
+#define SDRAM_T_RCD 20.0
+#define SDRAM_T_RFC 70.0
+#define SDRAM_T_RP 20.0
+#define SDRAM_T_WR 14.0
+
+
+/*
+ * System configuration
+ *
+ */
+
+#define ALT_DEVICE_FAMILY "Cyclone V"
+#define ALT_ENHANCED_INTERRUPT_API_PRESENT
+#define ALT_IRQ_BASE NULL
+#define ALT_LOG_PORT "/dev/null"
+#define ALT_LOG_PORT_BASE 0x0
+#define ALT_LOG_PORT_DEV null
+#define ALT_LOG_PORT_TYPE ""
+#define ALT_NUM_EXTERNAL_INTERRUPT_CONTROLLERS 0
+#define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
+#define ALT_NUM_INTERRUPT_CONTROLLERS 1
+#define ALT_STDERR "/dev/JTAG_UART"
+#define ALT_STDERR_BASE 0x4090068
+#define ALT_STDERR_DEV JTAG_UART
+#define ALT_STDERR_IS_JTAG_UART
+#define ALT_STDERR_PRESENT
+#define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
+#define ALT_STDIN "/dev/JTAG_UART"
+#define ALT_STDIN_BASE 0x4090068
+#define ALT_STDIN_DEV JTAG_UART
+#define ALT_STDIN_IS_JTAG_UART
+#define ALT_STDIN_PRESENT
+#define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
+#define ALT_STDOUT "/dev/JTAG_UART"
+#define ALT_STDOUT_BASE 0x4090068
+#define ALT_STDOUT_DEV JTAG_UART
+#define ALT_STDOUT_IS_JTAG_UART
+#define ALT_STDOUT_PRESENT
+#define ALT_STDOUT_TYPE "altera_avalon_jtag_uart"
+#define ALT_SYSID_BASE SYSID_QSYS_0_BASE
+#define ALT_SYSID_ID SYSID_QSYS_0_ID
+#define ALT_SYSTEM_NAME "NiosV"
+#define ALT_SYS_CLK_TICKS_PER_SEC ALT_CPU_TICKS_PER_SEC
+#define ALT_TIMESTAMP_CLK_TIMER_DEVICE_TYPE ALT_CPU_TIMER_DEVICE_TYPE
+
+
+/*
+ * hal2 configuration
+ *
+ */
+
+#define ALT_MAX_FD 32
+#define ALT_SYS_CLK NIOSV
+#define ALT_TIMESTAMP_CLK NIOSV
+#define INTEL_FPGA_DFL_START_ADDRESS 0xffffffffffffffff
+#define INTEL_FPGA_USE_DFL_WALKER 0
+
+
+/*
+ * intel_niosv_m_hal_driver configuration
+ *
+ */
+
+#define NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND 1000
+
+
+/*
+ * sysid_qsys_0 configuration
+ *
+ */
+
+#define ALT_MODULE_CLASS_sysid_qsys_0 altera_avalon_sysid_qsys
+#define SYSID_QSYS_0_BASE 0x4090060
+#define SYSID_QSYS_0_ID 0
+#define SYSID_QSYS_0_IRQ -1
+#define SYSID_QSYS_0_IRQ_INTERRUPT_CONTROLLER_ID -1
+#define SYSID_QSYS_0_NAME "/dev/sysid_qsys_0"
+#define SYSID_QSYS_0_SPAN 8
+#define SYSID_QSYS_0_TIMESTAMP 1774097031
+#define SYSID_QSYS_0_TYPE "altera_avalon_sysid_qsys"
+
+#endif /* __SYSTEM_H_ */

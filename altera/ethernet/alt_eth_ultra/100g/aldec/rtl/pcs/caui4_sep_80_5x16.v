@@ -1,0 +1,87 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// This simulation model contains highly confidential and
+// proprietary information of Intel and is being provided
+// in accordance with and subject to the protections of the
+// applicable Intel Program License Subscription Agreement
+// which governs its use and disclosure. Your use of Intel
+// Corporation's design tools, logic functions and other
+// software and tools, and its AMPP partner logic functions,
+// and any output files from any of the foregoing (including device
+// programming or simulation files), and any associated
+// documentation or information are expressly subject to the
+// terms and conditions of the Intel Program License Subscription
+// Agreement, Intel FPGA IP License Agreement, or other
+// applicable license agreement, including, without limitation,
+// that your use is for the sole purpose of simulating designs
+// for use exclusively in logic devices manufactured by Intel and sold
+// by Intel or its authorized distributors. Please refer to the
+// applicable agreement for further details. Intel products and
+// services are protected under numerous U.S. and foreign patents,
+// maskwork rights, copyrights and other intellectual property laws.
+// Intel assumes no responsibility or liability arising out of the
+// application or use of this simulation model.
+// ACDS 18.1
+`pragma protect begin_protected
+`pragma protect version = 1
+`pragma protect encrypt_agent= "Aldec protectip", encrypt_agent_info= "Riviera-PRO 2015.06.92"
+`pragma protect data_method= "aes128-cbc"
+`pragma protect key_keyowner= "Aldec", key_keyname= "ALDEC15_001", key_method= "rsa"
+`pragma protect key_block encoding= (enctype="base64", line_length= 76, bytes= 256)
+xRQxzNkgI6MB9m9kAJkqPayThNFlkHXwmy5oGFLUuaI3T5xsLA8T54caK4P3ibwAS9z4Mnv70KZy
+04TmUNpNX5L6W9qfdkNUGXVgxjVkkjp+XHU7PorXWIpF8feaUO7v98Nbgopog/zywQlZ5fckFTS2
+Pa7v5dAXBXveEwacJS1DsqPFnm4QHqEbMQ0fmfObCnz+47glEbJ6QDbo/42caJVFVTLNxnj7Z8Bb
+zQ7/Z7nq16G4IJMG48djWj7NjQv9hUAgtIegqZOUYKZ2wqmBO3tM3iINAytNk87mC4zN5aeQQh7B
+W+S54toOB9KW5XprTTYDu4VUoc63dmNE+fPxdg==
+`pragma protect data_keyowner= "altera", data_keyname= "altera"
+`pragma protect data_block encoding= (enctype="base64", line_length= 76, bytes= 2800)
+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
+VtxFxn55NQ==
+`pragma protect end_protected

@@ -1,0 +1,87 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part  $param0
+@@ set vid_std      $param1
+@@ set ed_variant   $param2
+@@ set ed_txpll     $param3
+@@ set rx_crc       $param4
+@@ set err_tol      $param5
+@@ set pid_xtrct    $param6
+@@ set pid_ins      $param7
+@@ set sd_bitw      $param8
+@@ set txclk_sw     $param9
+package require -exact qsys 16.0
+
+create_system {tx_pll}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {true}
+
+@@ #-----------------------------------------------------------------------------------
+@@ # CMU PLL instantiaton
+@@ #-----------------------------------------------------------------------------------
+@@ if { $ed_txpll == "CMU" } {
+add_instance xcvr_cdr_pll_a10_0 altera_xcvr_cdr_pll_a10
+set_instance_parameter_value xcvr_cdr_pll_a10_0 {reference_clock_frequency} {148.5}
+set_instance_parameter_value xcvr_cdr_pll_a10_0 {output_clock_frequency} {2970}
+@@      if { $txclk_sw == 2 } {
+set_instance_parameter_value xcvr_cdr_pll_a10_0 {refclk_cnt} {2}
+set_instance_parameter_value xcvr_cdr_pll_a10_0 {enable_pll_reconfig} {1}
+set_instance_parameter_value xcvr_cdr_pll_a10_0 {rcfg_sv_file_enable} {1}
+@@      }
+# exported interfaces
+set_instance_property xcvr_cdr_pll_a10_0 AUTO_EXPORT {true}
+@@ } else {
+@@ #-----------------------------------------------------------------------------------
+@@ # fPLL instantiaton
+@@ #-----------------------------------------------------------------------------------
+add_instance xcvr_fpll_a10_0 altera_xcvr_fpll_a10
+@@      if { $vid_std == "mr" } {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_desired_refclk_frequency} {297.0}
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_hssi_output_clock_frequency} {5940.0}
+@@      } else {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_hssi_output_clock_frequency} {1485.0}
+@@          if { $ed_variant == 2 } {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_desired_refclk_frequency} {100.0}
+@@          } else {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_desired_refclk_frequency} {148.5}
+@@          }
+@@      }
+@@      if { $ed_variant == 2 } {
+@@      # Enable fractional mode and reconfiguration params for vcxoless designs
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_enable_fractional} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {enable_pll_reconfig} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {rcfg_sv_file_enable} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_bw_sel} {medium}
+@@      } elseif { $txclk_sw == 2 } {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_refclk_cnt} {2}
+set_instance_parameter_value xcvr_fpll_a10_0 {enable_pll_reconfig} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {rcfg_sv_file_enable} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_bw_sel} {high}
+
+@@      } else {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_bw_sel} {high}
+@@      }
+
+# exported interfaces
+set_instance_property xcvr_fpll_a10_0 AUTO_EXPORT {true}
+@@ }
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {tx_pll.qsys}

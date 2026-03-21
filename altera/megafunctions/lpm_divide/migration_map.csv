@@ -1,0 +1,18 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_LPM_WIDTHn [get_old_param LPM_WIDTHN]
+,set_new_param GUI_LPM_WIDTHd [get_old_param LPM_WIDTHD]
+"[get_old_param LPM_DREPRESENTATION] == ""SIGNED""","set_new_param GUI_LPM_dREPRESENTATION ""Signed"""
+"[get_old_param LPM_DREPRESENTATION] == ""UNSIGNED""","set_new_param GUI_LPM_dREPRESENTATION ""Unsigned"""
+"[get_old_param LPM_NREPRESENTATION] == ""SIGNED""","set_new_param GUI_LPM_nREPRESENTATION ""Signed"""
+"[get_old_param LPM_NREPRESENTATION] == ""UNSIGNED""","set_new_param GUI_LPM_nREPRESENTATION ""Unsigned"""
+"[get_old_param USING_PIPELINE] == "1"",set_new_param GUI_LPM_PIPELINE [get_old_param LPM_PIPELINE]
+"[exists_old_param USED_PORT_aclr] && [string equal [get_old_param USED_PORT_aclr] "true"]","set_new_param GUI_USE_ACLR ""true"""
+"[exists_old_param USED_PORT_clken] && [string equal [get_old_param USED_PORT_clken] "true"]","set_new_param GUI_USE_CLKEN ""true"""
+"![exists_old_param USED_PORT_aclr]","set_new_param GUI_USE_ACLR ""false"""
+"![exists_old_param USED_PORT_clken]","set_new_param GUI_USE_CLKEN ""false"""
+"[get_old_param PRIVATE_LPM_REMAINDERPOSITIVE] == ""TRUE""","set_new_param GUI_LPM_REMAINDERPOSITIVE ""Yes"""
+"[get_old_param PRIVATE_LPM_REMAINDERPOSITIVE] == ""FALSE""","set_new_param GUI_LPM_REMAINDERPOSITIVE ""No"""
+"[get_old_param PRIVATE_MAXIMIZE_SPEED] == "-1"","set_new_param GUI_MAXIMIZE_SPEED ""Default Optimization"""
+"[get_old_param PRIVATE_MAXIMIZE_SPEED] == "5"","set_new_param GUI_MAXIMIZE_SPEED ""Area"""
+"[get_old_param PRIVATE_MAXIMIZE_SPEED] == "6"","set_new_param GUI_MAXIMIZE_SPEED ""Speed"""

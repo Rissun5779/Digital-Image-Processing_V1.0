@@ -1,0 +1,56 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+if {[info exists freq]} {
+  unset freq
+}
+
+if {[info exists pins]} {
+  unset pins
+}
+
+@@if { $protocol_mode == "pipe_g1" } {
+set freq "125 Mhz"
+@@}
+@@if { $protocol_mode == "pipe_g2" } {
+@@  if { $used_channels == "16" } {
+set freq "250 Mhz"
+@@  } else {
+set freq "125 Mhz"
+@@  }
+@@}
+@@if { $protocol_mode == "pipe_g3" } {
+@@  if { $used_channels == "16" } {
+set freq "500 Mhz"
+@@  } elseif { $used_channels == "8" } {
+set freq "250 Mhz"
+@@  } else {
+set freq "125 Mhz"
+@@  }
+@@}
+
+set pins {
+  pld_pcs_tx_clk_out1_dcm 
+  pld_pcs_rx_clk_out1_dcm
+}
+  
+foreach clk_pin \$pins {
+  for { set channels 0 } { \$channels < $num_channels } { incr channels } {
+    set lcl_pins [get_pins -nowarn -compat *altera_xcvr_pcie_hip_native_s10*$random_str*altera_xcvr_hip_channel_s10_ch\${channels}*\$clk_pin]
+    foreach_in_collection ch_pin \$lcl_pins {
+      # figure out instance name
+      regexp {(^.*.)(?=altera_pcie_s10_hip_ast_pllnphy_inst)} [get_object_info -name \$ch_pin] ip_inst
+      create_clock -name "\${ip_inst}xcvr_hip_native|ch\${channels}" -period \$freq \$ch_pin
+    }
+  }
+}

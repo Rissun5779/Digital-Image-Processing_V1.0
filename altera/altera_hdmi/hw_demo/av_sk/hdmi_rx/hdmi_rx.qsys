@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags="INTERNAL_COMPONENT=true"
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element hdmi_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="Unknown" />
+ <parameter name="deviceFamily" value="Arria V" />
+ <parameter name="deviceSpeedGrade" value="Unknown" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="true" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="TMDS_Bit_clock_Ratio"
+   internal="hdmi_0.TMDS_Bit_clock_Ratio"
+   type="conduit"
+   dir="end">
+  <port name="TMDS_Bit_clock_Ratio" internal="TMDS_Bit_clock_Ratio" />
+ </interface>
+ <interface name="audio_CTS" internal="hdmi_0.audio_CTS" type="conduit" dir="end">
+  <port name="audio_CTS" internal="audio_CTS" />
+ </interface>
+ <interface name="audio_N" internal="hdmi_0.audio_N" type="conduit" dir="end">
+  <port name="audio_N" internal="audio_N" />
+ </interface>
+ <interface name="audio_clk" internal="hdmi_0.audio_clk" />
+ <interface
+   name="audio_data"
+   internal="hdmi_0.audio_data"
+   type="conduit"
+   dir="end">
+  <port name="audio_data" internal="audio_data" />
+ </interface>
+ <interface name="audio_de" internal="hdmi_0.audio_de" type="conduit" dir="end">
+  <port name="audio_de" internal="audio_de" />
+ </interface>
+ <interface
+   name="audio_format"
+   internal="hdmi_0.audio_format"
+   type="conduit"
+   dir="end">
+  <port name="audio_format" internal="audio_format" />
+ </interface>
+ <interface
+   name="audio_info_ai"
+   internal="hdmi_0.audio_info_ai"
+   type="conduit"
+   dir="end">
+  <port name="audio_info_ai" internal="audio_info_ai" />
+ </interface>
+ <interface
+   name="audio_metadata"
+   internal="hdmi_0.audio_metadata"
+   type="conduit"
+   dir="end">
+  <port name="audio_metadata" internal="audio_metadata" />
+ </interface>
+ <interface name="audio_mute" internal="hdmi_0.audio_mute" />
+ <interface name="audio_valid" internal="hdmi_0.audio_valid" />
+ <interface name="aux_data" internal="hdmi_0.aux_data" type="conduit" dir="end">
+  <port name="aux_data" internal="aux_data" />
+ </interface>
+ <interface name="aux_eop" internal="hdmi_0.aux_eop" type="conduit" dir="end">
+  <port name="aux_eop" internal="aux_eop" />
+ </interface>
+ <interface name="aux_error" internal="hdmi_0.aux_error" type="conduit" dir="end">
+  <port name="aux_error" internal="aux_error" />
+ </interface>
+ <interface
+   name="aux_pkt_addr"
+   internal="hdmi_0.aux_pkt_addr"
+   type="conduit"
+   dir="end">
+  <port name="aux_pkt_addr" internal="aux_pkt_addr" />
+ </interface>
+ <interface
+   name="aux_pkt_data"
+   internal="hdmi_0.aux_pkt_data"
+   type="conduit"
+   dir="end">
+  <port name="aux_pkt_data" internal="aux_pkt_data" />
+ </interface>
+ <interface
+   name="aux_pkt_wr"
+   internal="hdmi_0.aux_pkt_wr"
+   type="conduit"
+   dir="end">
+  <port name="aux_pkt_wr" internal="aux_pkt_wr" />
+ </interface>
+ <interface name="aux_ready" internal="hdmi_0.aux_ready" />
+ <interface name="aux_sop" internal="hdmi_0.aux_sop" type="conduit" dir="end">
+  <port name="aux_sop" internal="aux_sop" />
+ </interface>
+ <interface name="aux_valid" internal="hdmi_0.aux_valid" type="conduit" dir="end">
+  <port name="aux_valid" internal="aux_valid" />
+ </interface>
+ <interface name="ctrl" internal="hdmi_0.ctrl" type="conduit" dir="end">
+  <port name="ctrl" internal="ctrl" />
+ </interface>
+ <interface name="gcp" internal="hdmi_0.gcp" type="conduit" dir="end">
+  <port name="gcp" internal="gcp" />
+ </interface>
+ <interface name="gcp_Clear_AVMute" internal="hdmi_0.gcp_Clear_AVMute" />
+ <interface name="gcp_Set_AVMute" internal="hdmi_0.gcp_Set_AVMute" />
+ <interface
+   name="in_5v_power"
+   internal="hdmi_0.in_5v_power"
+   type="conduit"
+   dir="end">
+  <port name="in_5v_power" internal="in_5v_power" />
+ </interface>
+ <interface name="in_b" internal="hdmi_0.in_b" type="conduit" dir="end">
+  <port name="in_b" internal="in_b" />
+ </interface>
+ <interface name="in_g" internal="hdmi_0.in_g" type="conduit" dir="end">
+  <port name="in_g" internal="in_g" />
+ </interface>
+ <interface name="in_hpd" internal="hdmi_0.in_hpd" type="conduit" dir="end">
+  <port name="in_hpd" internal="in_hpd" />
+ </interface>
+ <interface name="in_lock" internal="hdmi_0.in_lock" type="conduit" dir="end">
+  <port name="in_lock" internal="in_lock" />
+ </interface>
+ <interface name="in_r" internal="hdmi_0.in_r" type="conduit" dir="end">
+  <port name="in_r" internal="in_r" />
+ </interface>
+ <interface name="info_avi" internal="hdmi_0.info_avi" type="conduit" dir="end">
+  <port name="info_avi" internal="info_avi" />
+ </interface>
+ <interface name="info_vsi" internal="hdmi_0.info_vsi" type="conduit" dir="end">
+  <port name="info_vsi" internal="info_vsi" />
+ </interface>
+ <interface name="locked" internal="hdmi_0.locked" type="conduit" dir="end">
+  <port name="locked" internal="locked" />
+ </interface>
+ <interface name="ls_clk" internal="hdmi_0.ls_clk" type="conduit" dir="end">
+  <port name="ls_clk" internal="ls_clk" />
+ </interface>
+ <interface name="mode" internal="hdmi_0.mode" type="conduit" dir="end">
+  <port name="mode" internal="mode" />
+ </interface>
+ <interface name="out_b" internal="hdmi_0.out_b" />
+ <interface name="out_c" internal="hdmi_0.out_c" />
+ <interface name="out_g" internal="hdmi_0.out_g" />
+ <interface name="out_r" internal="hdmi_0.out_r" />
+ <interface name="reset" internal="hdmi_0.reset" type="conduit" dir="end">
+  <port name="reset" internal="reset" />
+ </interface>
+ <interface
+   name="scdc_i2c_addr"
+   internal="hdmi_0.scdc_i2c_addr"
+   type="conduit"
+   dir="end">
+  <port name="scdc_i2c_addr" internal="scdc_i2c_addr" />
+ </interface>
+ <interface
+   name="scdc_i2c_clk"
+   internal="hdmi_0.scdc_i2c_clk"
+   type="clock"
+   dir="end">
+  <port name="scdc_i2c_clk" internal="scdc_i2c_clk" />
+ </interface>
+ <interface
+   name="scdc_i2c_r"
+   internal="hdmi_0.scdc_i2c_r"
+   type="conduit"
+   dir="end">
+  <port name="scdc_i2c_r" internal="scdc_i2c_r" />
+ </interface>
+ <interface
+   name="scdc_i2c_rdata"
+   internal="hdmi_0.scdc_i2c_rdata"
+   type="conduit"
+   dir="end">
+  <port name="scdc_i2c_rdata" internal="scdc_i2c_rdata" />
+ </interface>
+ <interface
+   name="scdc_i2c_w"
+   internal="hdmi_0.scdc_i2c_w"
+   type="conduit"
+   dir="end">
+  <port name="scdc_i2c_w" internal="scdc_i2c_w" />
+ </interface>
+ <interface
+   name="scdc_i2c_wdata"
+   internal="hdmi_0.scdc_i2c_wdata"
+   type="conduit"
+   dir="end">
+  <port name="scdc_i2c_wdata" internal="scdc_i2c_wdata" />
+ </interface>
+ <interface name="vid_clk" internal="hdmi_0.vid_clk" type="conduit" dir="end">
+  <port name="vid_clk" internal="vid_clk" />
+ </interface>
+ <interface name="vid_data" internal="hdmi_0.vid_data" type="conduit" dir="end">
+  <port name="vid_data" internal="vid_data" />
+ </interface>
+ <interface name="vid_de" internal="hdmi_0.vid_de" type="conduit" dir="end">
+  <port name="vid_de" internal="vid_de" />
+ </interface>
+ <interface name="vid_hsync" internal="hdmi_0.vid_hsync" type="conduit" dir="end">
+  <port name="vid_hsync" internal="vid_hsync" />
+ </interface>
+ <interface name="vid_lock" internal="hdmi_0.vid_lock" type="conduit" dir="end">
+  <port name="vid_lock" internal="vid_lock" />
+ </interface>
+ <interface name="vid_vsync" internal="hdmi_0.vid_vsync" type="conduit" dir="end">
+  <port name="vid_vsync" internal="vid_vsync" />
+ </interface>
+ <module
+   name="hdmi_0"
+   kind="altera_hdmi"
+   version="17.0"
+   enabled="1"
+   autoexport="1">
+  <parameter name="AUTO_DEVICE" value="Unknown" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="Unknown" />
+  <parameter name="DIRECTION" value="rx" />
+  <parameter name="DISABLE_ALIGN_DESKEW" value="0" />
+  <parameter name="FAMILY" value="Arria V" />
+  <parameter name="SCDC_DEVICE_STRING" value="0" />
+  <parameter name="SCDC_HW_REVISION" value="0" />
+  <parameter name="SCDC_IEEE_ID" value="0" />
+  <parameter name="SUPPORT_32CHAN_AUDIO" value="0" />
+  <parameter name="SUPPORT_8CHAN_AUDIO" value="1" />
+  <parameter name="SUPPORT_AUDIO" value="1" />
+  <parameter name="SUPPORT_AUXILIARY" value="1" />
+  <parameter name="SUPPORT_DEEP_COLOR" value="1" />
+  <parameter name="SYMBOLS_PER_CLOCK" value="2" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

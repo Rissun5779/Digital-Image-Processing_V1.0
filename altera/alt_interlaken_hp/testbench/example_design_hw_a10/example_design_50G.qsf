@@ -1,0 +1,164 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2015 Altera Corporation. All rights reserved.
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, the Altera Quartus II License Agreement,
+# the Altera MegaCore Function License Agreement, or other 
+# applicable license agreement, including, without limitation, 
+# that your use is for the sole purpose of programming logic 
+# devices manufactured by Altera and sold by Altera or its 
+# authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 15.1.0 Internal Build 59 04/29/2015 SJ Full Version
+# Date created = 11:16:12  May 07, 2015
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		example_design_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+
+# Project-Wide Assignments
+# ========================
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "12.0 SP2"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "00:01:56  OCTOBER 21, 2012"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name LAST_QUARTUS_VERSION 15.1.0
+set_global_assignment -name SMART_RECOMPILE OFF
+
+
+# Pin & Location Assignments
+# ==========================
+set_location_assignment PIN_AU22 -to sys_pll_reset_n
+set_location_assignment PIN_AP22 -to test_done_n
+set_location_assignment PIN_AP23 -to test_success_n
+set_location_assignment PIN_AT25 -to test_failed_n
+set_location_assignment PIN_AL37 -to pll_ref_clk
+set_location_assignment PIN_AU33 -to clk50
+set_location_assignment PIN_BC38 -to tx_pin[0]
+set_location_assignment PIN_BD40 -to tx_pin[1]
+set_location_assignment PIN_BB40 -to tx_pin[2]
+set_location_assignment PIN_BC42 -to tx_pin[3]
+set_location_assignment PIN_BB44 -to tx_pin[4]
+set_location_assignment PIN_BA42 -to tx_pin[5]
+set_location_assignment PIN_AY44 -to tx_pin[6]
+set_location_assignment PIN_AW42 -to tx_pin[7]
+
+# Classic Timing Assignments
+# ==========================
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+set_global_assignment -name TIMEQUEST_DO_REPORT_TIMING ON
+set_global_assignment -name TIMEQUEST_DO_CCPP_REMOVAL ON
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 100
+
+# Analysis & Synthesis Assignments
+# ================================
+set_global_assignment -name TOP_LEVEL_ENTITY example_design
+set_global_assignment -name FAMILY "Arria 10"
+set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
+set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name REMOVE_DUPLICATE_REGISTERS OFF
+set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION OFF
+
+# Fitter Assignments
+# ==================
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 4
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "1.8 V"
+set_global_assignment -name DEVICE 10AX115S3F45I2SG
+set_global_assignment -name AUTO_GLOBAL_CLOCK OFF
+set_global_assignment -name AUTO_GLOBAL_REGISTER_CONTROLS OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING OFF
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name SEED 133
+
+# EDA Netlist Writer Assignments
+# ==============================
+set_global_assignment -name EDA_SIMULATION_TOOL "<None>"
+
+# SignalTap II Assignments
+# ========================
+#set_global_assignment -name ENABLE_SIGNALTAP ON
+
+# Power Estimation Assignments
+# ============================
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+
+
+# EDA Netlist Writer Assignments
+# ==============================
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT NONE -section_id eda_simulation
+
+# Fitter Assignments
+# ==================
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to clk50
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to *tx_common
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to *rx_common
+set_instance_assignment -name GLOBAL_SIGNAL OFF -to *rxclkout
+set_instance_assignment -name GLOBAL_SIGNAL OFF -to *txclkout
+set_instance_assignment -name IO_STANDARD "HSSI DIFFERENTIAL I/O" -to tx_pin
+set_instance_assignment -name IO_STANDARD "HSSI DIFFERENTIAL I/O" -to rx_pin
+set_instance_assignment -name IO_STANDARD LVDS -to pll_ref_clk
+set_instance_assignment -name XCVR_REFCLK_PIN_TERMINATION AC_COUPLING -to pll_ref_clk
+set_instance_assignment -name IO_STANDARD "1.8 V" -to clk50
+set_instance_assignment -name XCVR_A10_RX_TERM_SEL R_R1 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP5 RADP_DFE_FXTAP5_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP4 RADP_DFE_FXTAP4_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP1 RADP_DFE_FXTAP1_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP7 RADP_DFE_FXTAP7_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP6 RADP_DFE_FXTAP6_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP3 RADP_DFE_FXTAP3_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_DFE_FXTAP2 RADP_DFE_FXTAP2_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_CTLE_ACGAIN_4S RADP_CTLE_ACGAIN_4S_0 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM STG1_GAIN7 -to rx_pin
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to rx_pin
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to tx_pin
+set_instance_assignment -name XCVR_A10_TX_COMPENSATION_EN ENABLE -to tx_pin
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 6 -to tx_pin
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to pll_ref_clk
+
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to rx_pin
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to tx_pin
+
+
+
+
+set_global_assignment -name QIP_FILE ../ilk_50g/ilk_50g.qip
+set_global_assignment -name SYSTEMVERILOG_FILE example_host.sv
+set_global_assignment -name SYSTEMVERILOG_FILE example_gen.sv
+set_global_assignment -name SYSTEMVERILOG_FILE example_design.sv
+set_global_assignment -name SYSTEMVERILOG_FILE example_chk.sv
+set_global_assignment -name SDC_FILE example_design.sdc
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

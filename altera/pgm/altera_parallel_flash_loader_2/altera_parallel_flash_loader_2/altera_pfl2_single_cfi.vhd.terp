@@ -1,0 +1,627 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions and other 
+-- software and tools, and its AMPP partner logic functions, and any output 
+-- files from any of the foregoing (including device programming or simulation 
+-- files), and any associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License Subscription 
+-- Agreement, Intel FPGA IP License Agreement, or other applicable 
+-- license agreement, including, without limitation, that your use is for the 
+-- sole purpose of programming logic devices manufactured by Intel and sold by 
+-- Intel or its authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+
+PACKAGE TOP_CONST is
+	CONSTANT PFL_IR_BITS		: NATURAL := 5;
+	CONSTANT N_FLASH_BITS		: NATURAL := 4;
+END PACKAGE TOP_CONST;
+
+-- suppress warnings for "object <foo> assigned a value but never read"
+-- altera message_off 10036
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.STD_LOGIC_ARITH.all;
+use IEEE.STD_LOGIC_SIGNED.all;
+use WORK.TOP_CONST.all;
+
+entity altera_parallel_flash_loader_2 is
+	generic 
+	(
+		-- General
+        AUTO_RESTART				: STRING := "OFF";
+		LPM_TYPE					: STRING := "altera_parallel_flash_loader_2";
+		ADDR_WIDTH					: natural:= 20;					-- from 19 for 8Mbits, up to 25 for 512Mbits
+		FLASH_DATA_WIDTH			: natural := 16;			-- valid values are 8, 16 or 32
+		TRISTATE_CHECKBOX			: natural := 0;
+		N_FLASH						: natural := 1;
+		N_FLASH_BITS				: natural := 4;
+		FLASH_NRESET_CHECKBOX 		: natural := 0;
+		FLASH_NRESET_COUNTER		: natural := 1;
+		
+		-- Programming
+		PFL_IR_BITS	                : natural := 5;
+		FIFO_SIZE		 			: natural := 16;
+		DISABLE_CRC_CHECKBOX		: natural := 0;
+		
+		-- Configuration
+		OPTION_START_ADDR			: natural:= 0;
+		CLK_DIVISOR					: natural := 1;
+		PAGE_CLK_DIVISOR			: natural := 1;
+		CONF_DATA_WIDTH				: natural := 1;		-- valid values are 1 (PS),  8 (FPP), 16 (FPPx16) or 32 (FPPx32)
+		-- Configuration (Error Handling)
+		SAFE_MODE_HALT				: natural := 0;
+		SAFE_MODE_RETRY				: natural := 1;
+		SAFE_MODE_REVERT			: natural := 0;
+		SAFE_MODE_REVERT_ADDR		: natural := 0;
+		-- Configuration (Read Mode)
+		NORMAL_MODE					: natural := 1;
+		BURST_MODE					: natural := 0;
+		PAGE_MODE					: natural := 0;
+		MT28EW_PAGE_MODE			: natural := 0;
+		BURST_MODE_INTEL			: natural := 0;
+		BURST_MODE_SPANSION			: natural := 0;
+		BURST_MODE_NUMONYX			: natural := 0;
+		FLASH_BURST_EXTRA_CYCLE		: NATURAL := 0;
+		CONF_WAIT_TIMER_WIDTH 		: natural := 16;
+		BURST_MODE_LATENCY_COUNT	: NATURAL := 4;
+		-- Configuration (RSU Watchdog)
+		PFL_RSU_WATCHDOG_ENABLED	: natural := 0;
+		RSU_WATCHDOG_COUNTER		: natural := 100000000;
+        READY_SYNC_STAGES           : natural := 2
+	);
+	port
+	(
+
+	
+		pfl_flash_access_granted	: in STD_LOGIC:= '0';
+		pfl_flash_access_request	: out STD_LOGIC;
+@@ if {$reconfigure_port} {
+		pfl_nreconfigure 			: in STD_LOGIC:= '1';
+@@ } 
+@@ if {$rsu_watchdog_enable_port} {
+		pfl_reset_watchdog			: in STD_LOGIC:= '0';
+		pfl_watchdog_error			: out STD_LOGIC;
+@@ } 
+
+		-- flash output
+		flash_addr					: out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+		flash_data					: inout STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+		flash_nce					: out STD_LOGIC;
+		flash_noe					: out STD_LOGIC;
+		flash_nwe					: out STD_LOGIC;
+@@ if {$cfi_burst} {
+		flash_clk					: out STD_LOGIC;
+		flash_nadv					: out STD_LOGIC; 
+@@ }
+
+@@ if {$flash_nreset_port_gen} {
+		flash_nreset				: out STD_LOGIC;
+@@ }
+@@ if {$is_cfg_mode} {
+		-- FPGA
+        pfl_clk						: in STD_LOGIC:= '0';
+		fpga_pgm					: in STD_LOGIC_VECTOR (2 DOWNTO 0):= (others=>'0');
+		fpga_conf_done				: in STD_LOGIC:= '0';
+		fpga_nstatus				: in STD_LOGIC:= '0';
+		avst_clk					: out STD_LOGIC;
+		avst_data					: out STD_LOGIC_VECTOR (CONF_DATA_WIDTH-1 downto 0);
+		avst_valid					: out STD_LOGIC;
+		avst_ready					: in STD_LOGIC := '0';
+		fpga_nconfig				: out STD_LOGIC;
+@@ } 
+    	pfl_nreset					: in STD_LOGIC:= '0'
+	);
+
+end entity altera_parallel_flash_loader_2;
+
+architecture rtl of altera_parallel_flash_loader_2 is
+@@ if {$is_cfg_mode} {
+    COMPONENT altera_pfl2_cfg is
+      generic
+      (
+            FLASH_ADDR_WIDTH			: natural;				-- from 19 for 8Mbits, up to 25 for 512Mbits
+            FLASH_OPTIONS_ADDR			: natural;
+            ACCESS_CLK_DIVISOR			: natural := 1;
+            PAGE_ACCESS_CLK_DIVISOR		: natural := 1;
+            CONF_DATA_WIDTH				: natural := 1;		-- valid values are 16 (FPPx16) or 32 (FPPx32)
+            FLASH_DATA_WIDTH			: natural := 16;   	-- valid values are 8, 16 or 32
+            SAFE_MODE_HALT				: natural := 0;
+            SAFE_MODE_RETRY				: natural := 1;
+            SAFE_MODE_REVERT			: natural := 0;
+            SAFE_MODE_REVERT_ADDR		: natural := 0;
+            NORMAL_MODE					: natural := 1;
+            BURST_MODE					: natural := 0;
+            PAGE_MODE					: natural := 0;
+			MT28EW_PAGE_MODE			: natural := 0;
+            BURST_MODE_INTEL			: natural := 0;
+            BURST_MODE_SPANSION			: natural := 0;
+            BURST_MODE_NUMONYX			: natural := 0;
+            FLASH_BURST_EXTRA_CYCLE		: natural := 0;
+            CONF_WAIT_TIMER_WIDTH 		: natural := 16;
+            BURST_MODE_LATENCY_COUNT	: NATURAL := 4;
+            PFL_RSU_WATCHDOG_ENABLED	: natural := 0;
+            RSU_WATCHDOG_COUNTER		: natural := 100000000;
+            READY_SYNC_STAGES           : natural := 2
+      );
+      port
+      (
+            clk							: in STD_LOGIC;
+            nreset						: in STD_LOGIC;
+            
+            flash_access_granted		: in STD_LOGIC;
+            flash_access_request		: out STD_LOGIC;
+            pfl_nreconfigure 			: in STD_LOGIC;
+            pfl_reset_watchdog			: in STD_LOGIC;
+            pfl_watchdog_error			: out STD_LOGIC;
+            
+        -- 	flash output
+            flash_addr					: out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+            flash_data_in				: in STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+            flash_data_out				: out STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+            flash_read					: out STD_LOGIC;
+            flash_select				: out STD_LOGIC;
+            flash_write					: out STD_LOGIC;
+            flash_clk					: out STD_LOGIC;
+            flash_nadv					: out STD_LOGIC;
+            flash_rdy					: in STD_LOGIC;
+            flash_nreset				: out STD_LOGIC;
+            flash_data_highz			: out STD_LOGIC;
+            
+            page_sel					: in STD_LOGIC_VECTOR (2 DOWNTO 0);
+
+            --	FPGA
+            fpga_conf_done				: in STD_LOGIC;
+            fpga_nstatus				: in STD_LOGIC;
+            avst_clk					: out STD_LOGIC;
+            avst_data					: out STD_LOGIC_VECTOR (CONF_DATA_WIDTH-1 downto 0);
+            avst_valid					: out STD_LOGIC;
+            avst_ready					: in STD_LOGIC := '0';
+            fpga_nconfig				: out STD_LOGIC;
+
+            --	from PGM
+            enable_configuration 		: in STD_LOGIC;
+            enable_nconfig 				: in STD_LOGIC
+        );
+    end COMPONENT altera_pfl2_cfg;
+    @@ if {$flash_nreset_checkbox} {
+        COMPONENT altera_pfl2_cfg_flash_reset is
+            generic
+            (
+                FLASH_NRESET_COUNTER		: natural := 1
+            );
+            port
+            (
+                pfl_clk						: in STD_LOGIC;
+                pfl_nreset					: in STD_LOGIC;
+            
+                assert_flash_nreset 		: out STD_LOGIC;
+                enable_operation 			: out STD_LOGIC
+            );
+        end COMPONENT altera_pfl2_cfg_flash_reset;
+    @@ }
+@@ } 
+@@ if {$is_pgm_mode && !$is_pgm_enhanced} {
+    COMPONENT altera_pfl2_pgm is
+        generic 
+        (
+            PFL_IR_BITS					: natural;
+            ADDR_WIDTH					: natural;	-- from 19 for 8Mbits, up to 25 for 512Mbits
+            OPTION_START_ADDR			: natural;
+            FLASH_DATA_WIDTH			: natural;	-- valid values are 8, 16 or 32
+            N_FLASH						: natural;
+            N_FLASH_BITS				: natural;
+            DISABLE_CRC_CHECKBOX 		: natural := 0
+        );
+        port
+        (
+            pfl_nreset					: in STD_LOGIC;
+            pfl_flash_access_granted	: in STD_LOGIC;
+            pfl_flash_access_request	: out STD_LOGIC;
+
+            --	to CFG
+            enable_configuration 		: out STD_LOGIC;
+            enable_nconfig				: out STD_LOGIC;
+            
+            --	flash output
+            flash_addr					: out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+            flash_data_in				: in STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+            flash_data_out				: out STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+            flash_read					: out STD_LOGIC;
+            flash_write					: out STD_LOGIC;
+            flash_select				: out STD_LOGIC;
+            flash_nreset				: out STD_LOGIC;
+            flash_data_highz			: out STD_LOGIC;
+            active_flash_index 			: out STD_LOGIC_VECTOR (N_FLASH_BITS-1 downto 0)
+            );
+    end COMPONENT altera_pfl2_pgm;
+@@ } 
+
+@@ if {$is_pgm_mode && $is_pgm_enhanced} {
+    COMPONENT altera_pfl2_pgm_enhanced is
+        generic 
+        (
+            PFL_IR_BITS					: natural;
+            ADDR_WIDTH					: natural;	-- from 19 for 8Mbits, up to 25 for 512Mbits
+            OPTION_START_ADDR			: natural;
+            FLASH_DATA_WIDTH			: natural;	-- valid values are 8 and 16
+            FIFO_SIZE		 			: natural;
+            N_FLASH						: natural;
+            N_FLASH_BITS				: natural;
+            DISABLE_CRC_CHECKBOX		: natural := 1
+        );
+        port
+        (
+            pfl_nreset					: in STD_LOGIC;
+            pfl_flash_access_granted	: in STD_LOGIC;
+            pfl_flash_access_request	: out STD_LOGIC;
+
+            --	to CFG
+            enable_configuration 		: out STD_LOGIC;
+            enable_nconfig 				: out STD_LOGIC;
+            
+            --	flash output
+            flash_addr					: out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+            flash_data_in				: in STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+            flash_data_out				: out STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+            flash_read					: out STD_LOGIC;
+            flash_write					: out STD_LOGIC;
+            flash_select				: out STD_LOGIC;
+            flash_nreset				: out STD_LOGIC;
+            flash_data_highz			: out STD_LOGIC;
+            active_flash_index 			: out STD_LOGIC_VECTOR (N_FLASH_BITS-1 downto 0)
+            );
+    end COMPONENT altera_pfl2_pgm_enhanced;
+@@ } 
+	signal assert_flash_nreset 		: STD_LOGIC;
+	signal enable_operation 		: STD_LOGIC;
+	signal enable_configuration 	: STD_LOGIC;
+	signal enable_nconfig 			: STD_LOGIC;
+	signal pgm_flash_access_granted : STD_LOGIC;
+	signal pgm_flash_access_request	: STD_LOGIC;
+	signal pgm_flash_data_in 		: STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+	signal pgm_flash_data_out 		: STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+	signal pgm_flash_addr 			: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+	signal pgm_flash_read 			: STD_LOGIC;
+	signal pgm_flash_write 			: STD_LOGIC;
+	signal pgm_flash_select			: STD_LOGIC;
+	signal pgm_flash_nreset 		: STD_LOGIC;
+	signal pgm_flash_data_highz 	: STD_LOGIC;
+	signal cfg_flash_access_granted : STD_LOGIC;
+	signal cfg_flash_access_request : STD_LOGIC;
+	signal cfg_flash_data_in 		: STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+	signal cfg_flash_data_out	 	: STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+	signal cfg_flash_addr 			: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+	signal cfg_flash_read 			: STD_LOGIC;
+	signal cfg_flash_write 			: STD_LOGIC;
+	signal cfg_flash_select			: STD_LOGIC;
+	signal cfg_flash_clk 			: STD_LOGIC;
+	signal cfg_flash_nadv 			: STD_LOGIC;
+	signal cfg_flash_nreset 		: STD_LOGIC;
+	signal cfg_flash_data_highz 	: STD_LOGIC;
+
+	signal flash_data_out 			: STD_LOGIC_VECTOR (FLASH_DATA_WIDTH-1 downto 0);
+	signal flash_addr_out	 		: STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0);
+	signal flash_read 				: STD_LOGIC;
+	signal flash_write 				: STD_LOGIC;
+	signal flash_select				: STD_LOGIC;
+	signal flash_nadv_sig 			: STD_LOGIC;
+	signal flash_clk_sig 			: STD_LOGIC;
+	signal flash_nreset_sig			: STD_LOGIC;
+	signal flash_data_highz 		: STD_LOGIC;
+
+	attribute altera_attribute 		: string;
+	attribute altera_attribute of rtl   : architecture is "SUPPRESS_DA_RULE_INTERNAL=""D101, D103""";
+begin
+
+@@ if {$is_cfg_mode && $flash_nreset_checkbox} {
+	ini:altera_pfl2_cfg_flash_reset
+		generic map
+	    (
+			FLASH_NRESET_COUNTER	=> FLASH_NRESET_COUNTER
+		
+		)
+		port map
+		(
+			pfl_clk 				=> pfl_clk,
+			pfl_nreset 				=> pfl_nreset,
+			assert_flash_nreset 	=> assert_flash_nreset,
+			enable_operation 		=> enable_operation
+	
+		);
+@@  } else {
+	assert_flash_nreset <= 'X';
+	enable_operation 	<= '1';
+@@ }  
+
+@@ if {$is_pgm_mode && !$is_pgm_enhanced} {
+		pgm: altera_pfl2_pgm
+		generic map
+	    (
+			PFL_IR_BITS 			=> PFL_IR_BITS,
+			ADDR_WIDTH 				=> ADDR_WIDTH,
+			OPTION_START_ADDR		=> OPTION_START_ADDR,
+			FLASH_DATA_WIDTH 		=> FLASH_DATA_WIDTH, 
+			N_FLASH 				=> N_FLASH,
+			N_FLASH_BITS 			=> N_FLASH_BITS,
+			DISABLE_CRC_CHECKBOX	=> DISABLE_CRC_CHECKBOX
+		)
+		port map
+		(
+			pfl_nreset 				    => pfl_nreset,
+			pfl_flash_access_granted    => pgm_flash_access_granted,
+			pfl_flash_access_request	=> pgm_flash_access_request,
+			flash_addr 					=> pgm_flash_addr,
+			flash_data_in 				=> flash_data,
+			flash_data_out 				=> pgm_flash_data_out,
+			flash_read 					=> pgm_flash_read,
+			flash_write 				=> pgm_flash_write,
+			flash_select 				=> pgm_flash_select,
+			flash_nreset 				=> pgm_flash_nreset,
+			flash_data_highz 			=> pgm_flash_data_highz,
+			enable_configuration 		=> enable_configuration,
+			enable_nconfig 				=> enable_nconfig
+			--active_flash_index		=> active_flash_index_si					
+		);
+
+@@  }
+
+@@ if {$is_pgm_mode && $is_pgm_enhanced} {
+		pgm_enhanced: altera_pfl2_pgm_enhanced
+		generic map
+		(
+			PFL_IR_BITS 			    => PFL_IR_BITS,
+			ADDR_WIDTH 					=> ADDR_WIDTH,
+			OPTION_START_ADDR 			=> OPTION_START_ADDR,
+			FLASH_DATA_WIDTH 			=> FLASH_DATA_WIDTH,
+			FIFO_SIZE 					=> FIFO_SIZE,
+			N_FLASH 					=> N_FLASH,
+			N_FLASH_BITS 				=> N_FLASH_BITS,
+			DISABLE_CRC_CHECKBOX 		=> DISABLE_CRC_CHECKBOX
+		)
+		port map
+		(
+			pfl_nreset 					=> pfl_nreset,
+			pfl_flash_access_granted 	=> pgm_flash_access_granted,
+			pfl_flash_access_request 	=> pgm_flash_access_request,
+			flash_addr 					=> pgm_flash_addr,
+			flash_data_in 				=> flash_data,
+			flash_data_out				=> pgm_flash_data_out,
+			flash_read					=> pgm_flash_read,
+			flash_write 				=> pgm_flash_write,
+			flash_select 				=> pgm_flash_select,
+			flash_nreset 				=> pgm_flash_nreset,
+			flash_data_highz 			=> pgm_flash_data_highz,
+			enable_configuration	 	=> enable_configuration,
+			enable_nconfig				=> enable_nconfig
+			--active_flash_index			=> active_flash_index_sig
+		);
+@@  }
+
+
+@@ if {!$is_pgm_mode} {
+
+		pgm_flash_access_request		<= '0';
+		pgm_flash_addr					<= (others => 'X');
+		pgm_flash_read					<= 'X';
+		pgm_flash_write					<= 'X';
+		pgm_flash_select				<= 'X';
+		pgm_flash_nreset				<= 'X';
+		pgm_flash_data_highz			<= 'X';
+		pgm_flash_data_out				<= (others => 'X');
+		enable_configuration			<= '1';
+		enable_nconfig					<= '0';
+@@ }
+
+@@ if {$is_cfg_mode} {
+        cfg: altera_pfl2_cfg
+        generic map
+        (
+            FLASH_ADDR_WIDTH 				=> ADDR_WIDTH,
+            FLASH_OPTIONS_ADDR 				=> OPTION_START_ADDR,
+            ACCESS_CLK_DIVISOR 				=> CLK_DIVISOR,
+            PAGE_ACCESS_CLK_DIVISOR			=> PAGE_CLK_DIVISOR,
+            CONF_DATA_WIDTH 				=> CONF_DATA_WIDTH,
+            FLASH_DATA_WIDTH 				=> FLASH_DATA_WIDTH,
+            SAFE_MODE_HALT 					=> SAFE_MODE_HALT,
+            SAFE_MODE_RETRY 				=> SAFE_MODE_RETRY,
+            SAFE_MODE_REVERT 				=> SAFE_MODE_REVERT,
+            SAFE_MODE_REVERT_ADDR 			=> SAFE_MODE_REVERT_ADDR,
+            NORMAL_MODE 					=> NORMAL_MODE,
+            BURST_MODE 						=> BURST_MODE,
+            PAGE_MODE 						=> PAGE_MODE,
+			MT28EW_PAGE_MODE				=> MT28EW_PAGE_MODE,
+            BURST_MODE_INTEL 				=> BURST_MODE_INTEL,
+            BURST_MODE_SPANSION 		    => BURST_MODE_SPANSION,
+            BURST_MODE_NUMONYX				=> BURST_MODE_NUMONYX,
+            FLASH_BURST_EXTRA_CYCLE			=> FLASH_BURST_EXTRA_CYCLE,
+            BURST_MODE_LATENCY_COUNT		=> BURST_MODE_LATENCY_COUNT,
+            CONF_WAIT_TIMER_WIDTH 			=> CONF_WAIT_TIMER_WIDTH,
+            PFL_RSU_WATCHDOG_ENABLED		=> PFL_RSU_WATCHDOG_ENABLED,
+            RSU_WATCHDOG_COUNTER			=> RSU_WATCHDOG_COUNTER,
+            READY_SYNC_STAGES               => READY_SYNC_STAGES
+        )
+        port map
+        (
+            clk 							=> pfl_clk,
+            nreset 							=> pfl_nreset,
+            flash_access_granted 			=> cfg_flash_access_granted,
+            flash_access_request 			=> cfg_flash_access_request,
+    @@ if {$reconfigure_port} {
+            pfl_nreconfigure 				=> pfl_nreconfigure,
+    @@ } else {
+            pfl_nreconfigure 				=> 'X',
+    @@ }
+    @@ if {$rsu_watchdog_enable_port} {
+            pfl_reset_watchdog				=> pfl_reset_watchdog,
+            pfl_watchdog_error				=> pfl_watchdog_error,
+    @@ } else {
+            pfl_reset_watchdog				=> 'X',
+    @@ }
+            flash_addr 						=> cfg_flash_addr,
+            flash_data_in 					=> flash_data,
+            flash_data_out 					=> cfg_flash_data_out,
+            flash_read 						=> cfg_flash_read,
+            flash_write 					=> cfg_flash_write,
+            flash_select 					=> cfg_flash_select,
+            flash_clk 						=> cfg_flash_clk,
+            flash_nadv 						=> cfg_flash_nadv,
+            flash_rdy 						=> 'X',
+            flash_nreset 					=> cfg_flash_nreset,
+            flash_data_highz 				=> cfg_flash_data_highz,
+            page_sel 						=> fpga_pgm,
+            fpga_conf_done 					=> fpga_conf_done,
+            fpga_nstatus 					=> fpga_nstatus,
+            avst_data 						=> avst_data,
+            avst_clk 						=> avst_clk,
+            avst_valid 						=> avst_valid,
+            avst_ready 						=> avst_ready,
+            fpga_nconfig 					=> fpga_nconfig,
+            enable_configuration 			=> enable_configuration,
+            enable_nconfig 					=> enable_nconfig
+          );
+@@ }
+
+@@ if {!$is_cfg_mode} {
+
+		cfg_flash_access_request		<= '0';
+		cfg_flash_data_out				<= (others => 'X');
+		cfg_flash_addr					<= (others => 'X');
+		cfg_flash_read					<= 'X';
+		cfg_flash_write 				<= 'X';
+		cfg_flash_select 				<= 'X';
+		cfg_flash_clk					<= 'X';
+		cfg_flash_nadv					<= 'X';
+		cfg_flash_nreset 				<= 'X';
+		cfg_flash_data_highz 			<= 'X';
+
+@@ }
+
+  process (pgm_flash_access_request, cfg_flash_access_request, 
+		   pgm_flash_access_granted, cfg_flash_access_granted, pfl_flash_access_granted,
+		   pgm_flash_addr, pgm_flash_data_out, pgm_flash_read, pgm_flash_write, 
+		   cfg_flash_addr, cfg_flash_data_out, cfg_flash_read, cfg_flash_write,
+		   cfg_flash_nadv, cfg_flash_clk,
+		   pgm_flash_data_highz, cfg_flash_data_highz,
+		   cfg_flash_select, pgm_flash_select,
+           pgm_flash_nreset, cfg_flash_nreset,assert_flash_nreset,enable_operation)
+	begin
+	  
+		if (pgm_flash_access_request = '1') then 
+			pfl_flash_access_request        <= pgm_flash_access_request;
+			pgm_flash_access_granted		<= pfl_flash_access_granted;
+			flash_addr_out					<= pgm_flash_addr;
+			flash_data_out					<= pgm_flash_data_out;
+			flash_read						<= pgm_flash_read;
+			flash_write						<= pgm_flash_write;
+			flash_select					<= pgm_flash_select;
+			flash_data_highz				<= pgm_flash_data_highz;
+			flash_nadv_sig					<= '0';
+			flash_clk_sig					<= '0';
+			flash_nreset_sig				<= pgm_flash_nreset;
+			cfg_flash_access_granted		<= '0';
+@@ if {$is_cfg_mode && $flash_nreset_checkbox} {
+		elsif (assert_flash_nreset = '0') then
+			pfl_flash_access_request		<= '0';
+			flash_read						<= '0';
+			flash_write						<= '0';
+			flash_select					<= '0';
+			flash_data_highz				<= '1';
+			flash_nadv_sig					<= '0';
+			flash_clk_sig					<= '0';
+			flash_nreset_sig				<= assert_flash_nreset;
+			flash_data_out					<= (others => 'X');
+			pgm_flash_access_granted		<= '0';
+			cfg_flash_access_granted		<= '0';
+			flash_addr_out					<= (others => 'X');
+@@ }
+		elsif (cfg_flash_access_request = '1' and enable_operation = '1') then
+			pfl_flash_access_request		<= cfg_flash_access_request;
+			cfg_flash_access_granted		<= pfl_flash_access_granted;
+			flash_addr_out					<= cfg_flash_addr;
+			flash_read						<= cfg_flash_read;
+			flash_write						<= cfg_flash_write;
+			flash_select					<= cfg_flash_select;
+			flash_data_out					<= cfg_flash_data_out;
+			flash_nadv_sig					<= cfg_flash_nadv;
+			flash_clk_sig					<= cfg_flash_clk;
+			flash_nreset_sig				<= cfg_flash_nreset;
+			flash_data_highz				<= cfg_flash_data_highz;
+			pgm_flash_access_granted		<= '0';
+		else
+			pfl_flash_access_request		<= '0';
+			flash_read						<= '0';
+			flash_write						<= '0';
+			flash_select					<= '0';
+			flash_data_highz				<= '1';
+			flash_nadv_sig					<= '0';
+			flash_clk_sig					<= '0';
+			flash_nreset_sig				<= '1';
+			flash_data_out					<= (others => 'X');
+			pgm_flash_access_granted		<= '0';
+			cfg_flash_access_granted		<= '0';
+			flash_addr_out					<= (others => 'X');
+		end if;
+	end process;
+        
+	-- generates control signal
+	ctrl_sig : process(flash_read, flash_write, flash_data_out, flash_select, pfl_flash_access_granted, 
+		flash_addr_out, flash_data_highz, flash_nadv_sig, flash_clk_sig, flash_nreset_sig)
+    begin  
+@@ if {$tristate_checkbox} {
+		if (pfl_flash_access_granted = '1') then
+			flash_nce		<= not flash_select;
+			flash_nwe		<= not flash_write;
+			flash_noe		<= not flash_read;
+			flash_addr		<= flash_addr_out;
+    @@ if {$cfi_burst} {
+			flash_nadv		<= flash_nadv_sig;
+			flash_clk		<= flash_clk_sig;
+    @@ }
+
+    @@ if {$flash_nreset_port_gen} {
+            flash_nreset	<= flash_nreset_sig;	
+    @@ }           
+			if (flash_data_highz = '1') then
+				flash_data	<= (others => 'Z');
+			else
+				flash_data	<= flash_data_out;
+			end if;
+		else
+			flash_nce 		<= 'Z';
+			flash_nwe 		<= 'Z';
+			flash_noe 		<= 'Z';
+    @@ if {$cfi_burst} {
+			flash_nadv 		<= 'Z';
+			flash_clk 		<= 'Z';
+    @@ }
+    @@ if {$flash_nreset_port_gen} {
+			flash_nreset	<= 'Z';	
+    @@ }              
+			flash_data		<= (others => 'Z');
+			flash_addr 		<= (others => 'Z');
+    end if;	
+
+@@ }  else {
+            flash_nce		<= not flash_select;
+			flash_nwe		<= not flash_write;
+			flash_noe		<= not flash_read;
+			flash_addr		<= flash_addr_out;
+    @@ if {$cfi_burst} {
+			flash_nadv		<= flash_nadv_sig;
+			flash_clk		<= flash_clk_sig;
+    @@ }
+
+    @@ if {$flash_nreset_port_gen} {
+            flash_nreset	<= flash_nreset_sig;	
+    @@ }           
+			if (flash_data_highz = '1') then
+				flash_data	<= (others => 'Z');
+			else
+				flash_data	<= flash_data_out;
+			end if;
+
+@@ }  
+      end process ctrl_sig;
+  end architecture rtl;
+

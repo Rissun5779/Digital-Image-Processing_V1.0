@@ -1,0 +1,133 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+module $output_name
+
+   (  input    wire                                clock,
+      input    wire                                reset,
+      
+      output   wire                                av_st_cmd_ac_valid,
+      input    wire                                av_st_cmd_ac_ready,
+      output   wire                                av_st_cmd_ac_startofpacket,
+      output   wire                                av_st_cmd_ac_endofpacket,
+      output   wire  [$data_width - 1 : 0]         av_st_cmd_ac_data,
+      
+      @@if {$num_cores > 1} {
+      output   wire                                av_st_cmd_mux_valid,
+      input    wire                                av_st_cmd_mux_ready,
+      output   wire                                av_st_cmd_mux_startofpacket,
+      output   wire                                av_st_cmd_mux_endofpacket,
+      output   wire  [$data_width - 1 : 0]         av_st_cmd_mux_data,
+      @@}
+      
+      @@if {$runtime_control == 1} {
+      input    wire                                av_mm_control_write,
+      input    wire                                av_mm_control_read,
+      input    wire  [$be_width - 1 : 0]           av_mm_control_byteenable,
+      input    wire  [$addr_width - 1 : 0]         av_mm_control_address,
+      input    wire  [$mm_data_width - 1 : 0]      av_mm_control_writedata,
+      output   wire                                av_mm_control_waitrequest,
+      output   wire  [$mm_data_width - 1 : 0]      av_mm_control_readdata,
+      output   wire                                av_mm_control_readdatavalid,
+      @@}
+      
+      output   wire                                av_st_cmd_vob_valid,
+      input    wire                                av_st_cmd_vob_ready,
+      output   wire                                av_st_cmd_vob_startofpacket,
+      output   wire                                av_st_cmd_vob_endofpacket,
+      output   wire  [$data_width - 1 : 0]         av_st_cmd_vob_data
+   );
+   
+   @@if {$num_cores == 1} {
+   wire                                av_st_cmd_mux_valid;
+   wire                                av_st_cmd_mux_ready;
+   wire                                av_st_cmd_mux_startofpacket;
+   wire                                av_st_cmd_mux_endofpacket;
+   wire  [$data_width - 1 : 0]         av_st_cmd_mux_data;
+   @@}
+   
+   @@if {$runtime_control == 0} {
+   wire                                av_mm_control_write;
+   wire                                av_mm_control_read;
+   wire  [$be_width - 1 : 0]           av_mm_control_byteenable;
+   wire  [$addr_width - 1 : 0]         av_mm_control_address;
+   wire  [$mm_data_width - 1 : 0]      av_mm_control_writedata;
+   wire                                av_mm_control_waitrequest;
+   wire  [$mm_data_width - 1 : 0]      av_mm_control_readdata;
+   wire                                av_mm_control_readdatavalid;
+   @@}
+   
+   localparam  integer  CORE_TYPE   [0 : 15] =  '{ $core_type_0,  $core_type_1,  $core_type_2,  $core_type_3,
+                                                   $core_type_4,  $core_type_5,  $core_type_6,  $core_type_7, 
+                                                   $core_type_8,  $core_type_9,  $core_type_10, $core_type_11, 
+                                                   $core_type_12, $core_type_13, $core_type_14, $core_type_15 };
+
+   localparam  integer  CORE_SUBS   [0 : 15] =  '{ $core_subsamp_0,  $core_subsamp_1,  $core_subsamp_2,  $core_subsamp_3,
+                                                   $core_subsamp_4,  $core_subsamp_5,  $core_subsamp_6,  $core_subsamp_7, 
+                                                   $core_subsamp_8,  $core_subsamp_9,  $core_subsamp_10, $core_subsamp_11, 
+                                                   $core_subsamp_12, $core_subsamp_13, $core_subsamp_14, $core_subsamp_15 };
+   
+   alt_vip_tpg_multi_scheduler # (
+      .BITS_PER_SYMBOL                 ($bps),
+      .MAX_WIDTH                       ($max_width),
+      .MAX_HEIGHT                      ($max_height),
+      .PIXELS_IN_PARALLEL              ($pip),
+      .NUM_CORES                       ($num_cores),
+      .RUNTIME_CONTROL                 ($runtime_control),
+      .LIMITED_READBACK                ($limited_readback),
+      .PIPELINE_READY                  ($pipeline_ready),
+      .DEFAULT_R_Y                     ($default_r_y),
+      .DEFAULT_G_CB                    ($default_g_cb),
+      .DEFAULT_B_CR                    ($default_b_cr),
+      .DEFAULT_INTERLACE               ("$default_interlace"),
+      .DEFAULT_BOARDER                 ($default_boarder),
+      .CORE_TYPE                       (CORE_TYPE),
+      .CORE_SUBS                       (CORE_SUBS)
+   ) tpg_multi_scheduler_inst (  
+      .clock                           (clock),
+      .reset                           (reset),
+      .av_st_cmd_ac_valid              (av_st_cmd_ac_valid),
+      .av_st_cmd_ac_ready              (av_st_cmd_ac_ready),
+      .av_st_cmd_ac_startofpacket      (av_st_cmd_ac_startofpacket),
+      .av_st_cmd_ac_endofpacket        (av_st_cmd_ac_endofpacket),
+      .av_st_cmd_ac_data               (av_st_cmd_ac_data),
+      
+      .av_st_cmd_mux_valid             (av_st_cmd_mux_valid),
+      .av_st_cmd_mux_ready             (av_st_cmd_mux_ready),
+      .av_st_cmd_mux_startofpacket     (av_st_cmd_mux_startofpacket),
+      .av_st_cmd_mux_endofpacket       (av_st_cmd_mux_endofpacket),
+      .av_st_cmd_mux_data              (av_st_cmd_mux_data),
+      
+      .av_st_cmd_vob_valid             (av_st_cmd_vob_valid),
+      .av_st_cmd_vob_ready             (av_st_cmd_vob_ready),
+      .av_st_cmd_vob_startofpacket     (av_st_cmd_vob_startofpacket),
+      .av_st_cmd_vob_endofpacket       (av_st_cmd_vob_endofpacket),
+      .av_st_cmd_vob_data              (av_st_cmd_vob_data),
+      
+      .av_mm_control_write             (av_mm_control_write),
+      .av_mm_control_read              (av_mm_control_read),
+      .av_mm_control_byteenable        (av_mm_control_byteenable),
+      .av_mm_control_address           (av_mm_control_address),
+      .av_mm_control_writedata         (av_mm_control_writedata),
+      .av_mm_control_waitrequest       (av_mm_control_waitrequest),
+      .av_mm_control_readdata          (av_mm_control_readdata),
+      .av_mm_control_readdatavalid     (av_mm_control_readdatavalid)
+   );
+   
+endmodule
+   
+   
+      
+      
+      
+      

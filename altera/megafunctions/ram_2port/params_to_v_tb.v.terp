@@ -1,0 +1,653 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: params_to_v.v_tb.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to verilog file
+@@ #
+@@ # Usage: IP core independent, general verilog format output for lpm ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module  ram_2port_wrapper  (
+@@
+@@  # output module port list #
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $port $port_last]}    {
+@@    #$port);#
+	
+@@      } else {
+@@    #$port,#
+@@      }
+@@  }
+
+  );
+
+@@  # output input and output port lists #
+@@	set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+    wire  [$width:0]  $port;
+@@          } else {
+    wire    $port;
+@@          }
+@@      } else {
+@@          if {$width!= -1}    {
+    wire  [$width:0]  $port;
+@@ #        if {[string equal $port "eccstatus"]} {	#
+@@  # wire  [$width:0]  ${port}_expected;#
+@@		#} else {#
+    wire  [$width:0]  ${port}_expected;
+@@#}#
+@@          } else {
+@@    wire    $port;
+@@	wire    ${port}_expected;
+@@          }
+@@      }
+@@  }
+
+
+@@  # output component information #
+@@  set ip_name_lower [string tolower $ip_name]
+    ${output_name}  ram_2port_v (
+@@
+@@  # output component port list #
+@@  set size [llength $ports_not_added_list]
+@@  if {$size} {
+@@      foreach {name_l name_r} $port_map_list {
+                .$name_l ($name_r),
+@@      }
+@@      set port_last [lindex $ports_not_added_list end-1]
+@@      foreach {name_l name_r} $ports_not_added_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_l ($name_r));
+@@          } else {
+                .$name_l ($name_r),
+@@          }
+@@      }
+@@  } else {
+@@      set port_last [lindex $port_map_list end-1]
+@@      foreach {name_l name_r} $port_map_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_l ($name_r));
+@@          } else {
+                .$name_l ($name_r),
+@@          }
+@@      }
+@@  }
+@@
+
+@@  # output component information #
+@@  set ip_name_lower [string tolower $ip_name]
+    ${output_name}_vo  ram_2port_vo (
+@@
+@@  # output component port list #
+@@  set size [llength $ports_not_added_list]
+@@  if {$size} {
+@@      foreach {name_l name_r} $port_map_list {
+                .$name_l ($name_r),
+@@      }
+@@      set port_last [lindex $ports_not_added_list end-1]
+@@      foreach {name_l name_r} $ports_not_added_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_l (${name_r}_expected));
+@@          } else {
+                .$name_l ($name_r),
+@@          }
+@@      }
+@@  } else {
+@@      set port_last [lindex $port_map_input_list end-1]
+@@      foreach {name_l name_r} $port_map_output_list {
+@@#				if {[string equal $name_l "eccstatus"]} {#
+@@				#.$name_l (${name_r}),#
+@@				#} else {#
+                .$name_l (${name_r}_expected),
+@@				#}#
+@@      }
+@@      foreach {name_l name_r} $port_map_input_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_l ($name_r));
+@@          } else {
+                .$name_l ($name_r),
+@@          }
+@@      }
+@@  }
+@@
+
+
+@@  # output component information #
+@@  set ip_name_lower [string tolower $ip_name]
+    ${output_name}_tbench  tbench (
+@@
+@@  # output component port list #
+@@  set size [llength $ports_not_added_list]
+@@  if {$size} {
+@@      foreach {name_l name_r} $port_map_list {
+            .$name_r ($name_r),
+@@      }
+@@      set port_last [lindex $ports_not_added_list end-1]
+@@      foreach {name_l name_r} $ports_not_added_list {
+@@          if {[string equal $name_l $port_last]}    {
+		.$name_r (${name_r})),
+                .${name_r}_expected (${name_r}_expected)),
+@@          } else {
+                .$name_r ($name_r),
+@@          }
+@@      }
+@@  } else {
+@@      set port_last [lindex $port_map_input_list end-1]
+@@      foreach {name_l name_r} $port_map_output_list {
+@@				#if {[string equal $name_l "eccstatus"]} {#
+@@				#.$name_r (${name_r}),#
+@@				#} else {#
+		.$name_r (${name_r}),
+                .${name_r}_expected (${name_r}_expected),
+@@				#}#
+@@      }
+@@      foreach {name_l name_r} $port_map_input_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_r ($name_r));
+@@          } else {
+                .$name_r ($name_r),
+@@          }
+@@      }
+@@  }
+
+endmodule
+
+
+module ${output_name}_tbench (
+@@
+@@  # output component port list #
+@@  set size [llength $ports_not_added_list]
+@@  if {$size} {
+@@      foreach {name_l name_r} $port_map_list {
+                $name_r,
+@@      }
+@@      set port_last [lindex $ports_not_added_list end-1]
+@@      foreach {name_l name_r} $ports_not_added_list {
+@@          if {[string equal $name_l $port_last]}    {
+		${name_r}),
+                ${name_r}_expected),
+@@          } else {
+                $name_r,
+@@          }
+@@      }
+@@  } else {
+@@      set port_last [lindex $port_map_input_list end-1]
+@@      foreach {name_l name_r} $port_map_output_list {
+@@				#if {[string equal $name_l "eccstatus"]} {#
+@@				#${name_r},#
+@@				#} else {#
+		${name_r},
+                ${name_r}_expected,
+@@				#}#
+@@      }
+@@      foreach {name_l name_r} $port_map_input_list {
+@@          if {[string equal $name_l $port_last]}    {
+                $name_r);
+@@          } else {
+                $name_r,
+@@          }
+@@      }
+@@  }
+
+@@  # output input and output port lists #
+@@	set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+    output reg  [$width:0]  $port;
+@@          } else {
+    output reg    $port;
+@@          }
+@@      } else {
+@@          if {$width!= -1}    {
+    input reg  [$width:0]  $port;
+@@        # if {[string equal $port "eccstatus"]} {	#
+@@  # wire  [$width:0]  ${port}_expected;#
+@@		#} else {#
+    input reg  [$width:0]  ${port}_expected;
+@@#}#
+@@          } else {
+    input reg    $port;
+    input reg    ${port}_expected;
+@@          }
+@@      }
+@@  }
+
+wire state;
+wire start_compare;
+wire sampler;
+wire dr_status_check;
+
+
+@@  # output component information #
+@@  set ip_name_lower [string tolower $ip_name]
+    tb_gen  #(
+	
+@@	# output component parameters #
+@@  # defparam#
+@@      set name_last [lindex $params_list end-1]
+@@      foreach {name value} $params_list  {
+@@          if {[string equal $name $name_last]} {
+        .$name   ($value)
+@@          } elseif {[string equal $name "init_file"]} {
+@@              set file_tail   [string range [file tail $value] end-3 end-1]
+@@              if {[string equal $file_tail "mif"] ||[string equal $value "\"STRING\""]} {
+        .$name  ($value),
+@@              } else {
+@@                  set file_name   [string range $value  0 end-5]
+@@                  set file_name   ${file_name}.rif\"
+`ifdef NO_PLI
+        .$name = $file_name
+`else
+        .$name = ($value)
+`endif
+,
+@@              }
+@@          } else {
+        .$name   ($value),
+@@          }
+@@      }
+	
+	) tg_gen (
+		.state(state),
+		.start_compare(start_compare),
+		.dr_status_check(dr_status_check),   
+@@  # output input and output port lists #
+@@	
+@@  #if {[string equal $direction "IN"]}    {#
+@@	set port_last [lindex $module_input_port_list end-3]
+@@  foreach {port direction width value} $module_input_port_list {
+@@		 
+@@      	if {[string equal $port $port_last]} {
+		.$port ($port));
+@@          } else {
+		.$port ($port),
+@@			}
+@@    }	
+
+	
+@@	#sample_tst instantiation#
+	sample_tst sample_tst(
+@@
+@@  # output input and output port lists #
+@@	
+@@  #if {[string equal $direction "IN"]}    {#
+		.sampler_tx (sampler),
+@@	set port_last [lindex $module_input_port_list end-3]
+@@  foreach {port direction width value} $module_input_port_list {
+@@		 
+@@      	if {[string equal $port $port_last]} {
+		.$port ($port));
+@@          } else {
+		.$port ($port),	
+@@			}
+@@    }		
+	
+
+@@ #sim checker instantiation#
+	sim_checker sim_checker(
+		.sampler_rx (sampler),
+		.state(state),
+		.start_compare(start_compare),
+		.dr_status_check(dr_status_check),   
+@@		foreach {port direction} $module_output_port_only_list {
+@@			if {[string equal $direction "OUT"]} {
+		.${port}_expected (${port}_expected),
+@@		}		
+@@	}
+@@  # output input and output port lists #
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+@@    #wire  [$width:0]  $port;#
+@@          } else {
+@@    #wire    $port;#
+@@          }
+@@      } else {
+@@		if {[string equal $port "q_a"]} {
+		.${port}_expected (${port}_expected),
+@@		}
+@@		if {[string equal $port "q_b"]} {
+		.${port}_expected (${port}_expected),
+@@		}
+@@		if {[string equal $port "eccstatus"]} {
+		.${port}_expected (${port}_expected),
+@@		}		
+@@      if {[string equal $port $port_last]} {
+		.$port ($port));
+@@		} else {
+@@		#if {[string equal $port "eccstatus"]} {#
+@@		#} else {#
+		.$port ($port),
+@@		#}#
+@@		}		
+@@          }
+@@  }
+
+endmodule
+
+
+module  sample_tst(
+@@  foreach {port direction width value} $module_input_port_list {
+@@      if {[string equal $port $port_last]}    {
+	$port,
+@@      } else {
+	$port,
+@@ }
+@@  }	
+	sampler_tx
+);
+
+@@ foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+    input  [$width:0]  $port;
+@@          } else {
+    input    $port;	
+@@          }
+@@      } else {
+@@    #output   sampler_tx;#
+@@          }
+@@  }
+    output   sampler_tx;
+
+
+reg sample;
+time current_time;
+
+@@ #foreach {port direction width value} $module_port_list {#
+@@     # if {[string equal $direction "IN"]} {#
+@@        #  if {$width!= -1}    {#
+@@  #set port_list [list]#
+@@  #lappend $port#
+@@      #[$width:0]  $port;#
+@@    #      } else {#
+ @@     #  $port_list;#
+@@   #       }#
+@@   #   } #
+@@ # }#
+
+
+@@ set input $module_port_list 
+@@ set output [join $module_input_port_only_list " or "]
+@@     # if {[string equal $direction "IN"]} {#
+always @($output)
+@@         # }#
+@@ #}#
+
+@@#always @(clock or data or rdaddress or wraddress or wren)#
+                                                                                
+begin                                                 
+ \if (\$realtime\ > 0)                                   
+ begin                                                
+   \ if (\$realtime\ == 0 || \$realtime\ != current_time)  
+    begin                                             
+        if (sample === 1'bx)                          
+            sample = 0;                               
+        else                                          
+            sample = ~sample;                         
+    end                                               
+    \current_time = \$realtime\;                         
+ end                                                  
+end                                                   
+
+assign sampler_tx = sample;
+endmodule
+
+
+@@#foreach {port direction width value} $module_port_list {#
+@@    #  if {[string equal $direction "OUT"]} {#
+@@       #   if {$width!= -1}    {#
+@@
+
+module  sim_checker (
+		state,
+		start_compare,
+		dr_status_check,
+		sampler_rx,
+@@		foreach {port direction} $module_output_port_only_list {
+@@			if {[string equal $direction "OUT"]} {
+		${port}_expected,
+@@		}		
+@@	}
+@@  # output input and output port lists #
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+@@    #wire  [$width:0]  $port;#
+@@          } else {
+@@    #wire    $port;#
+@@          }
+@@      } else {
+@@      if {[string equal $port $port_last]} {
+		${port}_expected,
+		$port);
+@@		} else {
+@@   #if {[string equal $port "eccstatus"]} {#
+@@#} else {#
+		${port}_expected,
+@@		#}#
+		$port,
+@@		}		
+@@          }
+@@  }		
+input state;
+input start_compare;
+input sampler_rx;
+output reg dr_status_check;
+@@  # output input and output port lists #
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+@@   # wire  [$width:0]  $port;#
+@@          } else {
+@@ #   wire    $port;#
+@@          }
+@@      } else {
+@@          if {$width!= -1}    {
+input  [$width:0]  $port;
+@@ #if {[string equal $port "eccstatus"]} {#
+@@#} else {#
+input  [$width:0]  ${port}_expected;
+@@#}#
+@@          }
+@@      }
+@@  }		
+
+reg trigger;
+reg dr_status;
+
+integer i;
+integer nummismatches;
+
+reg [1:1] on_first_change ;
+
+
+initial
+begin
+trigger = 0;
+dr_status = 0;
+i = 0;
+nummismatches = 0;
+on_first_change = 1'b1;
+end
+@@		#}#
+@@	#}#
+@@#}#
+
+@@   #until here#
+
+always @(posedge dr_status) begin
+	dr_status_check = 1;
+repeat(1)@ (posedge sampler_rx)
+	dr_status_check = 0;
+end
+   
+always @(posedge sampler_rx or negedge sampler_rx)
+begin
+`ifdef debug_tbench
+    \$display("Scanning pattern %d @time = %t",i,\$realtime\ );
+	\i = i + 1;
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $port "q"]} {
+	\$display("| expected q = %b | ",q_expected);
+	\$display("| real q     = %b | ",q);
+@@		}
+@@      if {[string equal $port "q_b"]} {
+	\$display("| expected q = %b | ",q_b_expected);
+	\$display("| real q     = %b | ",q_b);
+@@		}
+@@      if {[string equal $port "q_a"]} {
+	\$display("| expected q = %b | ",q_a_expected);
+	\$display("| real q     = %b | ",q_a);
+@@		}
+@@      if {[string equal $port "eccstatus"]} {
+	\$display("| expected eccstatus = %b | ",eccstatus_expected);
+	\$display("| real eccstatus     = %b | ",eccstatus);
+@@		}
+@@	}
+`endif
+
+
+if (start_compare == 1) begin
+@@  foreach {port direction width value} $module_port_list {
+@@	 if {[string equal $port "q"]} {
+@@          if {$width!= -1}    {
+@@ 	set total_width [expr {$width+1}]
+
+	\if (q[$width:0] !== q_expected[$width:0] && q[$width:0] !== $total_width'bx)
+	begin
+
+	
+		\$display ("ERROR! Vector Mismatch for output port q[$width:0] :: @time = %t", \$realtime\);
+
+		\$display ("     Expected value = %b", q_expected);
+		\$display ("     Real value     = %b", q);
+		nummismatches = nummismatches + 1;
+		on_first_change[1] = 1'b0;
+		dr_status = 1;
+@@	#	last_q_exp[0] = q_expected_prev[0];#
+	end
+@@			}
+@@	}
+@@	 if {[string equal $port "q_b"]} {
+@@          if {$width!= -1}    {
+@@ 	set total_width [expr {$width+1}]
+
+	\if (q_b[$width:0] !== q_b_expected[$width:0] && q_b[$width:0] !== $total_width'bx)
+	begin
+
+	
+		\$display ("ERROR! Vector Mismatch for output port q[$width:0] :: @time = %t", \$realtime\);
+
+		\$display ("     Expected value = %b", q_b_expected);
+		\$display ("     Real value     = %b", q_b);
+		nummismatches = nummismatches + 1;
+		on_first_change[1] = 1'b0;
+		dr_status = 1;
+@@	#	last_q_exp[0] = q_expected_prev[0];#
+	end
+@@			}
+@@	}
+@@	 if {[string equal $port "q_a"]} {
+@@          if {$width!= -1}    {
+@@ 	set total_width [expr {$width+1}]
+
+	\if (q_a[$width:0] !== q_a_expected[$width:0] && q_a[$width:0] !== $total_width'bx)
+	begin
+
+	
+		\$display ("ERROR! Vector Mismatch for output port q[$width:0] :: @time = %t", \$realtime\);
+
+		\$display ("     Expected value = %b", q_a_expected);
+		\$display ("     Real value     = %b", q_a);
+		nummismatches = nummismatches + 1;
+		on_first_change[1] = 1'b0;
+		dr_status = 1;
+@@	#	last_q_exp[0] = q_expected_prev[0];#
+	end
+@@			}
+@@	}
+@@	 if {[string equal $port "eccstatus"]} {
+@@          if {$width!= -1}    {
+@@ 	set total_width [expr {$width+1}]
+
+	\if (eccstatus !== eccstatus_expected && eccstatus !== 2'bx)
+	begin
+
+	
+		\$display ("ERROR! Vector Mismatch for output port eccstatus:: @time = %t", \$realtime\);
+
+		\$display ("     Expected value = %b", eccstatus_expected);
+		\$display ("     Real value     = %b", eccstatus);
+		nummismatches = nummismatches + 1;
+		on_first_change[1] = 1'b0;
+		dr_status = 1;
+	end
+@@			}
+@@	}
+@@	}	
+@@	#trigger <= ~trigger;#
+
+@@      foreach {name value} $params_list  {
+@@      if {[string equal $value "\"BIDIR_DUAL_PORT\""]} {
+	\if (q_a == q_a_expected && q_b == q_b_expected)
+	begin
+		dr_status = 0;
+	end
+@@	} 
+@@  	if {[string equal $value "\"DUAL_PORT\""]} {
+	\if (q_b == q_b_expected)
+	begin
+		dr_status = 0;
+	end
+@@}
+@@}
+
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $port "eccstatus"]} {
+	\if (eccstatus == eccstatus_expected)
+	begin
+		dr_status = 0;
+	end
+@@}
+@@}
+
+
+	\$timeformat(-12,3," ps",6);
+	if (state == 1) begin
+		if (nummismatches > 0)
+			\$display ("%d mismatched vectors : Simulation failed !",nummismatches);
+		else
+			\$display ("Simulation passed !");
+			\$stop;
+	end 
+
+end
+end
+
+endmodule
+

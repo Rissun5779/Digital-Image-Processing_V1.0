@@ -1,0 +1,26 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+QSYS_SIMDIR="ENET_ENTITY_QMEGA_01312014"
+QUARTUS_INSTALL_DIR=$QUARTUS_ROOTDIR
+SKIP_ELAB=1
+SKIP_SIM=1
+
+cp -r $QSYS_SIMDIR/cadence/* .
+
+sh ./ncsim_setup.sh QSYS_SIMDIR=$QSYS_SIMDIR QUARTUS_INSTALL_DIR=$QUARTUS_INSTALL_DIR SKIP_ELAB=$SKIP_ELAB SKIP_SIM=$SKIP_SIM
+
+ncvlog ./basic_avl_tb_top.v
+
+ncelab -timescale '1 ps / 1 ps' -access +rwc basic_avl_tb_top
+ncsim  -licqueue -run -exit -extassertmsg basic_avl_tb_top

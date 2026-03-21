@@ -1,0 +1,52 @@
+CONDITION,DO
+
+"[get_old_param ARCH] == ""TRIG_ARCH""","set_new_param arch ""trig"""
+"[get_old_param ARCH] == ""SMALL_ROM_ARCH""","set_new_param arch ""small_rom"""
+"[get_old_param ARCH] == ""LARGE_ROM_ARCH""","set_new_param arch ""large_rom"""
+"[get_old_param ARCH] == ""CORDIC_ARCH""","set_new_param arch ""cordic"""
+
+"[get_old_param DUAL_NOT_SGL_OP] == ""WANT_SIN_AND_COS""","set_new_param want_sin_and_cos ""dual_output"""
+"[get_old_param DUAL_NOT_SGL_OP] == ""WANT_SIN_ONLY""","set_new_param want_sin_and_cos ""single_output"""
+
+,set_new_param numch [get_old_param NUMCH]
+[exists_old_param NUMBA],set_new_param numba [get_old_param NUMBA]
+! [exists_old_param NUMBA],set_new_param numba 1
+,set_new_param apr [get_old_param APR]
+,set_new_param apri [get_old_param APRI]
+,set_new_param mpr [get_old_param MPR]
+
+"[get_old_param WANT_DITHER] == ""YES""",set_new_param want_dither true
+"[get_old_param WANT_DITHER] == ""NO""",set_new_param want_dither false
+
+,set_new_param dpri [get_old_param DPRI]
+
+"[get_old_param FSAMP_UNIT] == ""MHz""",set_new_param fsamp [get_old_param FSAMP_VALUE]
+"[get_old_param FSAMP_UNIT] == ""kHz""",set_new_param fsamp [expr {[get_old_param FSAMP_VALUE] / 1000.0}]
+"[get_old_param FSAMP_UNIT] == ""Hz""",set_new_param fsamp [expr {[get_old_param FSAMP_VALUE] / 1000000.0}]
+"[get_old_param FSAMP_UNIT] == ""mHz""",set_new_param fsamp [expr {[get_old_param FSAMP_VALUE] / 1000000000.0}]
+
+"[get_old_param FREQ_UNIT] == ""MHz""",set_new_param freq_out [get_old_param FREQ_VALUE]
+"[get_old_param FREQ_UNIT] == ""kHz""",set_new_param freq_out [expr {[get_old_param FREQ_VALUE] / 1000.0}]
+"[get_old_param FREQ_UNIT] == ""Hz""",set_new_param freq_out [expr {[get_old_param FREQ_VALUE] / 1000000.0}]
+"[get_old_param FREQ_UNIT] == ""mHz""",set_new_param freq_out [expr {[get_old_param FREQ_VALUE] / 1000000000.0}]
+
+"[get_old_param WANT_FMOD] == ""YES""",set_new_param want_freq_mod true
+"[get_old_param WANT_FMOD] == ""NO""",set_new_param want_freq_mod false
+,set_new_param aprf [get_old_param APRF]
+,set_new_param fmod_pipe [get_old_param FMOD_PIPELINE]
+
+"[get_old_param WANT_PMOD] == ""YES""",set_new_param want_phase_mod true
+"[get_old_param WANT_PMOD] == ""NO""",set_new_param want_phase_mod false
+,set_new_param aprp [get_old_param APRP]
+,set_new_param pmod_pipe [get_old_param PMOD_PIPELINE]
+
+"[get_old_param MULT_TYPE] == ""DEDICATED""",set_new_param use_dedicated_multipliers true
+"[get_old_param MULT_TYPE] != ""DEDICATED""",set_new_param use_dedicated_multipliers false
+
+"[get_old_param CORDIC_TYPE] == ""PARALLEL""","set_new_param cordic_arch ""parallel"""
+"[get_old_param CORDIC_TYPE] != ""PARALLEL""","set_new_param cordic_arch ""serial"""
+
+,set_new_param trig_cycles_per_output [get_old_param THROUGHPUT]
+
+,set_new_param selected_device_family [get_old_param TARGET]
+

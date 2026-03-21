@@ -1,0 +1,9 @@
+CONDITION,DO
+,set_new_param device_family [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param sld_ir_width [get_old_param SLD_IR_WIDTH]
+,set_new_param sld_instance_index [get_old_param SLD_INSTANCE_INDEX]
+"[get_old_param show_jtag_state] == ""1""","set_new_param CREATE_PRIMITIVE_JTAG_STATE_SIGNAL_PORTS ""true"""
+"[get_old_param show_jtag_state] == ""0""","set_new_param CREATE_PRIMITIVE_JTAG_STATE_SIGNAL_PORTS ""false"""
+"[get_old_param SLD_AUTO_INSTANCE_INDEX] == ""YES""","set_new_param gui_use_auto_index ""true"""
+"[get_old_param SLD_AUTO_INSTANCE_INDEX] == ""NO""","set_new_param gui_use_auto_index ""false"""
+"[get_old_param SLD_SIM_ACTION] != """"","croak ""Simulation Stimulus is no longer supported.  Please remove it before migrating."""

@@ -1,0 +1,413 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//----------------------------------------------------------------------------------------------
+// This test module uses System Verilog syntax.
+//----------------------------------------------------------------------------------------------
+
+
+`timescale 1 ps / 1 ps
+// console messaging level
+`define VERBOSITY VERBOSITY_INFO
+
+
+
+//local parameters
+`define ST_SYMBOL_W             ${BITSPERSYMBOL}
+`define N                       ${N}
+`define CHECK                   ${CHECK}
+`define PAR                     ${PAR}
+`define NB_CHANNEL              ${CHANNEL}
+`define USE_BYPASS              ${USE_BYPASS}
+`define USE_SYNC                ${USE_SYNC}
+
+
+//BFM related parameters
+`define ST_NUMSYMBOLS           1
+`define ST_READY_LATENCY        0
+
+`define SOURCE_RESP_TIMEOUT     100000
+
+
+//BFM hierachy
+@@ if {$PRO} {
+`define CLK tb.${output_name}_inst_core_clk_bfm.${output_name}_inst_core_clk_bfm
+`define RST tb.${output_name}_inst_core_rst_bfm.${output_name}_inst_core_rst_bfm
+`define SNK tb.${output_name}_inst_core_sink_bfm.${output_name}_inst_core_sink_bfm
+`define SRC tb.${output_name}_inst_core_source_bfm.${output_name}_inst_core_source_bfm
+@@} else {
+`define CLK tb.${output_name}_inst_core_clk_bfm
+`define RST tb.${output_name}_inst_core_rst_bfm
+`define SNK tb.${output_name}_inst_core_sink_bfm
+`define SRC tb.${output_name}_inst_core_source_bfm
+@@}
+
+
+
+// BACK & FORWARD PRESSUR
+`define BACK_PRESSURE         "false"
+`define FORWARD_PRESSURE      "false"
+
+
+
+
+@@ if {[get_parameter_value RS] == "Encoder"} {
+`define IN_DATA_FILE         "${output_name}_data.txt"
+`define OUT_FILE             "${output_name}_codewords.txt"
+@@ } else {
+`define IN_DATA_FILE         "${output_name}_received_words.txt"
+`define OUT_FILE             "${output_name}_decoded_codewords.txt"
+@@ if {${USE_BYPASS} == 1} {
+`define BYPASS_FILE             "${output_name}_bypassed_codewords.txt"
+@@ }
+@@ }
+@@ if {${USE_SYNC} == 1} {
+`define SYNC_FILE             "${output_name}_sync.txt"
+@@ }
+
+
+
+module test_program();
+  
+    import verbosity_pkg::*;
+    localparam CHANNEL         = `NB_CHANNEL;
+    localparam BPS             = `ST_SYMBOL_W;    
+    localparam K               = `N-`CHECK;
+
+    localparam P               = `PAR*`NB_CHANNEL;
+    localparam INPUT_WIDTH     = BPS*P + `USE_BYPASS;
+@@ if {[get_parameter_value RS] == "Encoder"} {
+    localparam LIN             = K ;
+@@ } else {
+    localparam LIN             = `N;
+@@ }
+    localparam LOUT            =  `N;
+    localparam ISMODINP        = (((LIN*CHANNEL)%P)==0)? 0 : 1;
+    localparam ISMODOUTP       = (((LOUT*CHANNEL)%P)==0)? 0 : 1;
+    localparam OUTPUT_SIZE     = LOUT*CHANNEL / P + ISMODOUTP;
+    localparam INPUT_SIZE      = LIN*CHANNEL  / P + ISMODINP;
+@@ if {${RS} == "Encoder"} {
+    localparam OUTPUT_WIDTH     = P*BPS;
+    localparam ERROR_W          = 0;
+    localparam DECFAIL_W        = 0;
+@@ } else {
+    localparam ERROR_W          = \$clog2(($CHECK>>1)+1)*$CHANNEL*${USE_NBERROR};
+    localparam DECFAIL_W        = 1*$CHANNEL*${USE_DECFAIL};
+    localparam OUTPUT_WIDTH     = P*BPS+ERROR_W+DECFAIL_W;
+@@ }
+
+    string message;
+
+    ${output_name}_tb tb ( );
+
+
+    int i, j;
+
+    int total_data_in    = 0;
+    int total_data_out   = 0;
+    int data_counted_in  = 0;
+    int data_counted_out = 0;
+
+    
+    int bp_idle_table [5:0];
+    int fp_idle_table [5:0];
+    
+    
+    //the ST transaction is defined using SystemVerilog structure data type
+    class src_transaction_class;
+        int                                      idles;
+        bit                                      startofpacket;
+        bit                                      endofpacket;
+
+        logic  [BPS*P-1:0]                       data0;
+        logic  [INPUT_WIDTH-1:0]                 data;
+        logic  [BPS-1:0]                         value_data;
+        logic                                    value_bypass;
+        int                                      value_sync;
+
+        int data_count=0;
+        int data_file, bypass_file, sync_file;
+        int lin = LIN*CHANNEL;
+        int input_data_size = INPUT_SIZE;
+        int value_sync_old = INPUT_SIZE;
+        string message;
+
+        int last_symbol;
+
+        
+        function void open_input_files();
+            \$sformat(message, "%m: Opening input files");
+            print(VERBOSITY_DEBUG, message);
+            
+            data_file = \$fopen(`IN_DATA_FILE , "r");
+            if (!data_file)
+                print(VERBOSITY_ERROR,"Failed to open data file");
+
+@@ if {${USE_BYPASS} == 1 && ${RS} == "Decoder"} {
+            bypass_file = \$fopen(`BYPASS_FILE , "r");
+            if (!bypass_file)
+                print(VERBOSITY_ERROR,"Failed to open bypass file");
+@@ } 
+@@ if {${USE_SYNC} == 1} {
+            sync_file = \$fopen(`SYNC_FILE , "r");
+                if (!sync_file)
+                print(VERBOSITY_ERROR,"Failed to open sync file");
+@@ } 
+        endfunction
+
+        function int read_input_data_files();
+            int read_data, read_bypass, read_sync;
+            \$sformat(message, "%m: Reading from file line");
+            print(VERBOSITY_DEBUG, message);
+            startofpacket = 1'b0;
+            endofpacket   = 1'b0;
+
+            print(VERBOSITY_DEBUG,"Reading the input files");
+            
+            if (\$feof(data_file)) begin
+                print(VERBOSITY_WARNING,"End of Data file");
+                return -1;
+            end
+
+            value_bypass =  1'b0;
+            if (data_count == 0) begin
+                startofpacket = 1'b1;
+                total_data_out = total_data_out + OUTPUT_SIZE;
+                total_data_in  = total_data_in  + INPUT_SIZE; 
+@@ if {${USE_BYPASS} == 1 && ${RS} == "Decoder"} {
+                read_bypass = \$fscanf(bypass_file,"%d\\n",value_bypass);
+@@ } 
+                last_symbol = input_data_size-1;
+@@ if {${USE_SYNC} == 1} {
+                    read_sync = \$fscanf(sync_file,"%d\\n",value_sync);
+                    last_symbol = value_sync;
+@@      if {[get_parameter_value RS] == "Decoder"} {
+                    if (value_sync_old != input_data_size)
+                        startofpacket = 1'b1;
+                    else
+                        startofpacket = 1'b0;
+                    
+                    value_sync_old = value_sync;
+@@      }
+@@ } 
+            end
+
+            data0 = 0;
+            for (j=0;j<P;j++) begin
+                read_data = \$fscanf(data_file,"%d\\n",value_data);
+                data0 = data0 ^ ({ {((P-1)*BPS){1'b0}}, value_data[BPS-1:0]}<<(j*BPS));     
+            end
+@@ if {${USE_BYPASS} == 1 && ${RS} == "Decoder"} {
+                data = {value_bypass,data0};
+@@ } else {
+                data = data0;
+@@ } 
+            
+            if (data_count == input_data_size-1) begin
+                endofpacket = 1'b1;
+            end    
+            
+            
+            if (data_count == last_symbol ) begin
+@@ if {${USE_SYNC} == 1} {
+                if (last_symbol!=input_data_size-1) begin 
+@@      if {[get_parameter_value RS] == "Encoder"} {
+                    total_data_in = total_data_in - INPUT_SIZE + data_count+1;
+                    total_data_out = total_data_out - OUTPUT_SIZE + data_count+1;
+@@      } else {
+                    data_counted_in = data_counted_in - data_count-1;
+                    total_data_in = total_data_in - INPUT_SIZE;
+                    total_data_out = total_data_out - OUTPUT_SIZE;
+@@      }
+                end
+@@ }
+                data_count = 0;
+            end
+            else begin
+                data_count = data_count + 1;
+            end
+            
+            read_input_data_files = 1;
+        endfunction
+
+        function void send_data();
+            data_counted_in++;
+            \$sformat(message, "%m: Sent Packet");
+            print(VERBOSITY_DEBUG, message);
+            `SRC.set_transaction_idles   (idles);
+            `SRC.set_transaction_sop     (startofpacket);
+            `SRC.set_transaction_eop     (endofpacket);
+            `SRC.set_transaction_data    (data);
+            `SRC.push_transaction();
+        endfunction
+
+        function void close_input_files();
+            \$sformat(message, "%m: Closing input files");
+            print(VERBOSITY_DEBUG, message);
+            \$fclose(data_file);
+        endfunction
+
+
+    endclass
+  
+  
+  
+    class snk_transaction_class; 
+        int                             idles;
+        bit                             startofpacket;
+        bit                             endofpacket;
+        logic [OUTPUT_WIDTH-1:0]        out_data;
+        logic [BPS*P-1:0]               data;
+@@ if {${USE_NBERROR} == 1 && ${RS} == "Decoder"} {
+        logic [ERROR_W-1:0]             error;
+@@ }
+@@ if {${USE_DECFAIL} == 1 && ${RS} == "Decoder"} {
+        logic [DECFAIL_W-1:0]           decfail;
+@@ }
+        logic [BPS-1:0]                 writen_data;
+
+        int out_data_file;
+        int lout = LOUT*CHANNEL;
+        int data_count = 0;
+
+        //pop the transaction from Sink BFM queue and get the decriptors
+        function automatic void snk_pop_transaction();
+            data_counted_out++;
+            data_count++;
+            `SNK.pop_transaction();
+            idles         = `SNK.get_transaction_idles();
+            startofpacket = `SNK.get_transaction_sop();
+            endofpacket   = `SNK.get_transaction_eop();
+            out_data      = `SNK.get_transaction_data();
+            data = out_data[BPS*P-1:0];
+@@ if {${USE_DECFAIL} == 1 && ${RS} == "Decoder"} {
+            decfail = out_data[BPS*P+DECFAIL_W-1:BPS*P];
+@@ }
+@@ if {${USE_NBERROR} == 1 && ${RS} == "Decoder"} {
+            error = out_data[BPS*P+DECFAIL_W+ERROR_W-1:BPS*P+DECFAIL_W];
+@@ }
+        endfunction
+        function void open_output_files();
+            print(VERBOSITY_DEBUG,"Opening the output files");
+            out_data_file = \$fopen(`OUT_FILE , "w");
+            if (!out_data_file)
+                print(VERBOSITY_ERROR,"Failed to open out_data_file file");
+        endfunction
+        function void write_out_result();            
+            for (j=0;j<P;j++) begin
+                writen_data = ((data>>(j*BPS)) &  {{(P*BPS-BPS){1'b0}},{BPS{1'b1}}});
+                \$fdisplay(out_data_file, "%d", writen_data);
+            end
+            \$sformat(message, "%m: Result has been written out");
+            print(VERBOSITY_DEBUG, message);
+        endfunction   
+        function void close_output_files();
+            print(VERBOSITY_DEBUG,"Closing the output files");
+            \$fclose(out_data_file);
+        endfunction
+    endclass  
+ 
+  
+    src_transaction_class src_transaction;
+    snk_transaction_class snk_transaction;
+    
+    
+    
+    initial
+    begin
+        int l;
+        fp_idle_table[0] = 0; fp_idle_table[1] = 0; fp_idle_table[2] = 0; fp_idle_table[3] = 1;fp_idle_table[4] = 2; fp_idle_table[5] = 3;
+        bp_idle_table[0] = 0; bp_idle_table[1] = 0; bp_idle_table[2] = 0; bp_idle_table[3] = 0;bp_idle_table[4] = 0; bp_idle_table[5] = 2;
+        
+        src_transaction = new();
+        snk_transaction = new();
+        src_transaction.open_input_files();
+        snk_transaction.open_output_files();
+        
+
+        // Initialisation
+        set_verbosity(`VERBOSITY);
+        `SRC.set_response_timeout(`SOURCE_RESP_TIMEOUT);
+        `SRC.init();
+        `SNK.init();
+        `SRC.set_min_transaction_queue_size(5);  //???
+        
+        //wait for reset to de-assert and trigger start_test event
+        // wait(`RST.reset == 1);
+        // `SNK.set_ready(1);
+        wait(`RST.reset == 1);
+        `RST.reset_assert();
+        @(negedge `CLK.clk);
+        `RST.reset_deassert();
+        @(posedge `CLK.clk);
+        
+        fork: test_threads
+    
+            source_data_thread:    begin
+                \$display("SRC data thread");
+                while(src_transaction.read_input_data_files() != -1) begin
+                    if(`FORWARD_PRESSURE=="true")
+                       src_transaction.idles =  fp_idle_table[(\$unsigned(\$random()) % 6)];
+                    else
+                       src_transaction.idles =  0;
+                    src_transaction.send_data();
+                    @(`SRC.signal_min_transaction_queue_size);
+                end
+            end // source_data_thread
+            
+  
+            sink_thread: begin  
+                \$display("SNK data thread");
+                while (1) begin 
+@@ if {$USE_BKP == 1 || $USE_BYPASS == 1} {
+                    `SNK.set_ready(1); 
+@@ }
+                    @ (`SNK.signal_transaction_received);
+                    snk_transaction.snk_pop_transaction();
+                    snk_transaction.write_out_result();
+@@ if {$USE_BKP == 1 || $USE_BYPASS == 1} {   
+                    if(`BACK_PRESSURE=="true")
+                    begin
+                        snk_transaction.idles = bp_idle_table[(\$unsigned(\$random()) % 6)];
+                        `SNK.set_ready(0);
+                        for(l = 0; l < snk_transaction.idles; l++)
+                        begin
+                            @(posedge `CLK.clk);
+                        end
+                    end
+@@ }
+                   //\$display("data_counted_in = %0d, total_data_in = %0d, data_counted_out = %0d, total_data_out = %0d",data_counted_in,total_data_in,data_counted_out,total_data_out);
+                    if ((data_counted_out==total_data_out) && (data_counted_in==total_data_in))   begin    
+                        \$display("End of simulation");
+                            break;
+                    end
+                end
+            end // sink_thread
+            
+        join
+
+        disable test_threads;  // kill any threads still runnin            
+
+        src_transaction.close_input_files();
+        snk_transaction.close_output_files();
+        \$sformat(message, "%m: Test Finished");
+        print(VERBOSITY_INFO, message);
+        `CLK.clock_stop();  
+                
+        \$stop;
+    end
+
+
+    
+    
+endmodule

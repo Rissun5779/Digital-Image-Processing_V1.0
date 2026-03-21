@@ -1,0 +1,119 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+LIBRARY TWENTYNM;
+USE TWENTYNM.TWENTYNM_COMPONENTS.ALL;
+
+
+ENTITY ${output_name} IS
+	PORT (
+@@if { $total_clks_used > 1 } {
+	clk		  : IN STD_LOGIC_VECTOR(${total_clks_used}-1 downto 0);
+	ena	      : IN STD_LOGIC_VECTOR(${total_clks_used}-1 downto 0);
+@@} elseif { $total_clks_used > 0 } {
+    clk       : IN STD_LOGIC;
+    ena       : IN STD_LOGIC;
+@@}
+@@if { $single_clear == "true" } {
+    aclr      : IN STD_LOGIC;
+@@} else {
+    aclr      : IN STD_LOGIC_VECTOR(1 downto 0);
+@@}
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    accumulate: IN STD_LOGIC;
+@@}        
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    ax        : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}        
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    ay        : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}        
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    az        : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}        
+@@if { [lsearch -nocase $interfaces "chainin"] != -1 } {
+    chainin   : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}
+@@if { [lsearch -nocase $interfaces "chainout"] != -1 } {
+    chainout   : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}
+	result    : OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+
+	);
+END ${output_name};
+
+ARCHITECTURE SYN OF ${output_name} IS
+@@if { $total_clks_used > 0} {
+    signal clk_vec,ena_vec : std_logic_vector(${total_clks_used}-1 downto 0);
+@@}
+@@if { $single_clear == "true" } {
+    signal aclr_vec : std_logic_vector(1 downto 0);
+@@}
+BEGIN
+@@if { $total_clks_used > 1 } {
+    clk_vec <= clk;
+    ena_vec <= ena;
+@@} elseif { $total_clks_used > 0 } {
+    clk_vec(0) <= clk;
+    ena_vec(0) <= ena;
+@@}
+@@if { $single_clear == "true" } {
+    aclr_vec(1) <= aclr;
+    aclr_vec(0) <= aclr;
+@@}
+
+$OPERATION : twentynm_fp_mac
+generic map (
+@@foreach cur_clock $hdl_clocks {
+@@set val [subst $${cur_clock}_derived]
+    $cur_clock => "${val}",
+@@}
+
+    use_chainin => "${use_chainin}",
+    operation_mode => "${OPERATION}",
+    adder_subtract => "${adder_subtract}"
+
+
+) port map (
+@@if { $total_clks_used > 1 } {
+@@for {set i 0} {$i < $total_clks_used} {incr i} {
+    clk(${i}) => clk_vec(${i}),
+    ena(${i}) => ena_vec(${i}),
+@@}
+@@for {set i $total_clks_used} {$i < 3} {incr i} {
+    clk(${i}) => '0',
+    ena(${i}) => '0',
+@@}
+@@}
+@@if { $single_clear == "true" } {
+    aclr   => aclr_vec,
+@@} else {
+    aclr   => aclr,
+@@}
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    accumulate => accumulate,
+@@}
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    ax => ax,
+@@}
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    ay => ay,
+@@}
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    az => az,
+@@}
+
+@@if { $use_chainin } {
+    chainin => chainin,
+@@} else {
+    chainin => (others=>'0'),
+@@}
+    resulta => result,
+@@if { $use_chainout } {
+    chainout => chainout
+@@} else {
+    chainout => open
+@@}
+);
+
+END SYN;

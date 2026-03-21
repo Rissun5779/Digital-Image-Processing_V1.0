@@ -1,0 +1,25 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_WIDTH_A [get_old_param WidthA]
+,set_new_param GUI_WIDTH_B [get_old_param WidthB]
+,set_new_param GUI_AUTO_SIZE_RESULT [get_old_param AutoSizeResult]
+[get_old_param AutoSizeResult] == 0,set_new_param GUI_WIDTH_P [get_old_param WidthP]
+[get_old_param AutoSizeResult] == 1,ignore_new_param GUI_WIDTH_P
+,set_new_param GUI_B_IS_CONSTANT [get_old_param B_isConstant]
+,set_new_param GUI_CONSTANT_B [get_old_param ConstantB]
+,set_new_param GUI_PIPELINE [get_old_param Latency]
+[get_old_param Latency] != 0,set_new_param GUI_LATENCY [get_old_param LPM_PIPELINE]
+[get_old_param aclr] == 1,set_new_param GUI_CLEAR_TYPE ACLR
+[exists_old_param GUI_ACLR] && [get_old_param GUI_ACLR] == TRUE, set_new_param GUI_CLEAR_TYPE ACLR
+[get_old_param clken] == 1,set_new_param GUI_CLKEN TRUE
+[get_old_param Latency] == 0,ignore_new_param GUI_LATENCY
+[get_old_param aclr] == 0,set_new_param GUI_CLEAR_TYPE NONE
+[exists_old_param GUI_ACLR] && [get_old_param GUI_ACLR] == FALSE, set_new_param GUI_CLEAR_TYPE NONE
+[get_old_param clken] == 0,set_new_param GUI_CLKEN FALSE
+,set_new_param GUI_USE_MULT [get_old_param USE_MULT]
+,set_new_param GUI_SIGNED_MULT [get_old_param SignedMult]
+,set_new_param GUI_OPTIMIZE [get_old_param optimize]
+"[exists_old_param LPM_HINT] && [regexp "DEDICATED_MULTIPLIER_CIRCUITRY=YES*" [get_old_param LPM_HINT] match]","set_new_param GUI_IMPLEMENTATION 1"
+"[exists_old_param LPM_HINT] && [regexp "DEDICATED_MULTIPLIER_CIRCUITRY=NO*" [get_old_param LPM_HINT] match]","set_new_param GUI_IMPLEMENTATION 2"
+,ignore_new_param GUI_RESULT_WIDTH
+[exists_new_param GUI_USE_MULT] && [get_new_param GUI_USE_MULT] == 0,set_new_param GUI_WIDTH_B 0

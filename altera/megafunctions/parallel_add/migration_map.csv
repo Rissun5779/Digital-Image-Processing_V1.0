@@ -1,0 +1,18 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_REPRESENTATION [get_old_param REPRESENTATION]
+,set_new_param GUI_SHIFT [get_old_param SHIFT]
+,set_new_param GUI_SIZE [get_old_param SIZE]
+,set_new_param GUI_WIDTH [get_old_param WIDTH]
+,set_new_param GUI_WIDTHR_VALUE [get_old_param WIDTHR]
+,"set_new_param GUI_CALCULATE "Restrict the width to""
+"[exists_old_param USED_PORT_aclr] && [string equal [get_old_param USED_PORT_aclr] "true"]","set_new_param GUI_ACLR "true""
+"![exists_old_param USED_PORT_aclr]","set_new_param GUI_ACLR "false""
+"[exists_old_param USED_PORT_clken] && [string equal [get_old_param USED_PORT_clken] "true"]","set_new_param GUI_CLKEN "true""
+"![exists_old_param USED_PORT_clken]","set_new_param GUI_CLKEN "false""
+"[get_old_param MSW_SUBTRACT] == "YES"","set_new_param GUI_MSW_SUBTRACT "Sub""
+"[get_old_param MSW_SUBTRACT] == "NO"","set_new_param GUI_MSW_SUBTRACT "Add""
+"[get_old_param PIPELINE] <= "0"","set_new_param GUI_USE_LATENCY "No""
+"[get_old_param PIPELINE] <= "0"","set_new_param GUI_PIPELINE "1""
+"[get_old_param PIPELINE] > "0"","set_new_param GUI_USE_LATENCY "Yes I want output latency of""
+"[get_old_param PIPELINE] > "0"","set_new_param GUI_PIPELINE [get_old_param PIPELINE]"

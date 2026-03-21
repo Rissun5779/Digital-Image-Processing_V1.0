@@ -1,0 +1,306 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+
+# PLL clock for 64-bit XGMII
+set xgmii_clk "altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|xcvr_fpll_a10_0|outclk0"
+
+# set the number of channels
+set ch_number $SELECT_NUMBER_OF_CHANNEL
+
+set_time_format -unit ns -decimal_places 3
+
+#**************************************************************
+# Set Clock path suffix and data-path registers for below commands
+# user is div_clkout output, 156MHz for 10G mode, 125MHz when in 1G mode for GIGE_PCS
+# pma is pma_clkout output, 258MHz for 1588 and LT, 125MHz when in 1G mode for GIGE_PCS
+#**************************************************************
+set  clk_rx_user "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pma|gen_twentynm_hssi_pma_rx_deser.inst_twentynm_hssi_pma_rx_deser|clkdiv_user"
+set  clk_rx_pma  "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pma|gen_twentynm_hssi_pma_rx_deser.inst_twentynm_hssi_pma_rx_deser|clkdiv"
+set  clk_tx_pma  "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pma|gen_twentynm_hssi_pma_tx_cgb.inst_twentynm_hssi_pma_tx_cgb|cpulse_out_bus[0]"
+set  clk_tx_user "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pma|gen_twentynm_hssi_pma_tx_ser.inst_twentynm_hssi_pma_tx_ser|wys|clk_divtx_user"
+#set  clk_rx_div  "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|inst_twentynm_pcs|ch[0].inst_twentynm_pcs_ch|gen_twentynm_hssi_rx_pld_pcs_interface.inst_twentynm_hssi_rx_pld_pcs_interface|wys|pld_pma_clkdiv_rx_user"
+
+set  clk_pma_src         "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pma|gen_twentynm_hssi_pma_rx_deser.inst_twentynm_hssi_pma_rx_deser|clk0"
+set  pma_rx_pma_clk      "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pcs|gen_twentynm_hssi_rx_pcs_pma_interface.inst_twentynm_hssi_rx_pcs_pma_interface|pma_rx_pma_clk"
+set  pma_tx_pma_clk      "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pcs|gen_twentynm_hssi_tx_pcs_pma_interface.inst_twentynm_hssi_tx_pcs_pma_interface|pma_tx_pma_clk"
+set  pld_pcs_rx_clk_out  "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pcs|gen_twentynm_hssi_rx_pld_pcs_interface.inst_twentynm_hssi_rx_pld_pcs_interface|pld_pcs_rx_clk_out"
+set  pld_pcs_tx_clk_out  "g_xcvr_native_insts[0].twentynm_xcvr_native_inst|twentynm_xcvr_native_inst|inst_twentynm_pcs|gen_twentynm_hssi_tx_pld_pcs_interface.inst_twentynm_hssi_tx_pld_pcs_interface|pld_pcs_tx_clk_out"
+
+# automatically set parameters for the included design modules
+set reg_check    [get_keepers -nowarn *kr_gige_pcs_top*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length==0} {  set SYNTH_GIGE  0 
+} else          {  set SYNTH_GIGE  1 }
+
+set reg_check    [get_keepers -nowarn *soft10Gfifo*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length==0} {  set SYNTH_1588  0 
+} else          {  set SYNTH_1588  1 }
+
+# automatically set the native_phy instance depending upon the synthesis parameters
+set reg_check    [get_keepers -nowarn *NATIVE_PHY_10G_644*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length!=0} {  set native_inst "DATAPATH_10G.NATIVE_PHY_10G_644.native_10g_644_inst|native_10g_644|" }
+
+set reg_check    [get_keepers -nowarn *NATIVE_PHY_10G_322*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length!=0} {  set native_inst "DATAPATH_10G.NATIVE_PHY_10G_322.native_10g_322_inst|native_10g_322|" }
+
+set reg_check    [get_keepers -nowarn *NATIVE_PHY_10G_1588_644*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length!=0} {  set native_inst "DATAPATH_10G.NATIVE_PHY_10G_1588_644_LS.native_10g_1588_644_ls_inst|native_10g_1588_644_ls|native_10g_1588_644_ls_inst|" }
+
+set reg_check    [get_keepers -nowarn *NATIVE_PHY_10G_1588_322*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length!=0} {  set native_inst "DATAPATH_10G.NATIVE_PHY_10G_1588_322.native_10g_1588_322_inst|native_10g_1588_322|" }
+
+## 1588 hard prbs version
+set reg_check    [get_keepers -nowarn *NATIVE_PHY_10G_1588HP_644_LS*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length!=0} {  set native_inst "DATAPATH_10G.NATIVE_PHY_10G_1588HP_644_LS.native_10g_1588hp_644_ls_inst|native_10g_1588hp_644_ls|native_10g_1588hp_644_ls_inst|" }
+
+set reg_check    [get_keepers -nowarn *NATIVE_PHY_10G_1588HP_322_LS*]
+set length       [string length [query_collection \$reg_check]]
+if {\$length!=0} {  set native_inst "DATAPATH_10G.NATIVE_PHY_10G_1588HP_322_LS.native_10g_1588hp_322_ls_inst|native_10g_1588hp_322_ls|native_10g_1588hp_322_ls_inst|" }
+
+#**************************************************************
+# Create input reference Clocks
+#**************************************************************
+
+create_clock -period "125 MHz" -name {pll_ref_clk_1g} [get_ports ref_clk_1g]
+create_clock -period "644.53125 MHz" -name  {pll_ref_clk_10g} [get_ports ref_clk_10g]
+create_clock -period "125 MHz" -name  {phy_mgmt_clk} [get_ports mm_clk]
+
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
+
+# derive_  did not find this clock
+# should be able to remove at some point
+# create_clock -name xgmii_clk -period 6.4 [get_pins {LOCAL_ip_wrapper|pll_xgmii_inst|pll_xgmii_inst|outclk0~CLKENA0|outclk}]
+
+puts "Creating generated clocks for isolating 1G datapaths"
+  set inst 0
+  for {set i 0} {\$i < \$ch_number} {incr i} {	
+    set ch "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$i\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|CHANNEL|"
+
+    # Create 1G RX clock
+    set clock_name "rxclk_8g_ch\$inst"
+    set master_clock "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$inst\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_pma_clk"
+    set source_node  "\$ch\$native_inst\$pma_rx_pma_clk"
+    set clock_node   "\$ch\$native_inst\$pld_pcs_rx_clk_out"
+    create_generated_clock -name \$clock_name -source \$source_node -master_clock \$master_clock -divide_by 33 -multiply_by 16 \$clock_node -add
+    
+    # Create 1G TX clock
+    set clock_name "txclk_8g_ch\$inst"
+    set master_clock "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$inst\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_pma_clk"
+    set source_node  "\$ch\$native_inst\$pma_tx_pma_clk"
+    set clock_node   "\$ch\$native_inst\$pld_pcs_tx_clk_out"
+    create_generated_clock -name \$clock_name -source \$source_node -master_clock \$master_clock -divide_by 33 -multiply_by 16 \$clock_node -add
+
+    # Recreate 10G RX clock
+    set clock_name     "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$inst\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_clkout"
+    set master_src     "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$inst\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_pma_clk"
+    set clock_source   "\$ch\$native_inst\$clk_rx_pma"
+    set clock_node     "\$ch\$native_inst\$pld_pcs_rx_clk_out"
+     # Remove clock if exists- so you do not see warning
+     set clk_exists [get_collection_size [get_clocks \$clock_name]]
+     if {\$clk_exists} { remove_clock \$clock_name}  else {post_message -type info "Clock \$clock_name does not exist- so cannot remove"}
+    create_generated_clock -name \$clock_name -source [get_pins \$clock_source] -master_clock \$master_src [get_pins \$clock_node] -add
+
+    # Recreate 10G TX clock
+    set clock_name     "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$inst\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_clkout"
+    set master_src     "altera_eth_multi_channel_1588_inst|CHANNEL\\[\$inst\\].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_pma_clk"
+    set clock_source   "\$ch\$native_inst\$clk_tx_pma"
+    set clock_node     "\$ch\$native_inst\$pld_pcs_tx_clk_out"
+     # Remove clock if exists- so you do not see warning
+     set clk_exists [get_collection_size [get_clocks \$clock_name]]
+     if {\$clk_exists} { remove_clock \$clock_name}  else {post_message -type info "Clock \$clock_name does not exist- so cannot remove"}
+    create_generated_clock -name \$clock_name -source [get_pins \$clock_source] -master_clock \$master_src [get_pins \$clock_node] -add
+
+    incr inst
+  }
+
+
+#**************************************************************
+# Create generated clocks
+#**************************************************************
+
+for {set i 0} {\$i < \$ch_number} {incr i} {	
+    set generated_312_5_name "iopll_312_5m_for_ch\$i" 
+    set generated_156_25_name "iopll_156_25m_for_ch\$i"
+	
+    create_generated_clock -name \$generated_312_5_name -source altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|altera_iopll_i|twentynm_pll|iopll_inst~vcoph[0] -divide_by 33 -multiply_by 16 altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|altera_iopll_i|twentynm_pll|iopll_inst|outclk[1] -add 
+    
+    create_generated_clock -name \$generated_156_25_name -source altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|altera_iopll_i|twentynm_pll|iopll_inst~vcoph[0] -divide_by 33 -multiply_by 8 altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|altera_iopll_i|twentynm_pll|iopll_inst|outclk[0] -add
+}
+
+for {set i 0} {\$i < \$ch_number} {incr i} {		
+    set generated_312_5_name "iopll_312_5m_for_ch\$i" 
+    set generated_156_25_name "iopll_156_25m_for_ch\$i"
+	
+    set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*  -to \$generated_312_5_name
+    set_false_path -from \$generated_312_5_name -to {address_decoder_top:address_decoder_top_inst|*}
+    set_false_path -from \$generated_312_5_name -to {eth_traffic_controller_top:ETH_TRAFFIC_CTRL_PAIR_CHANNEL[*]}
+    set_false_path -from \$generated_312_5_name -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*
+    set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*  -to \$generated_156_25_name
+    set_false_path -from \$generated_156_25_name -to {address_decoder_top:address_decoder_top_inst|*}
+    set_false_path -from \$generated_156_25_name -to {eth_traffic_controller_top:ETH_TRAFFIC_CTRL_PAIR_CHANNEL[*]}
+    set_false_path -from \$generated_156_25_name -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*
+	
+	for {set j 0} {\$j < \$ch_number} {incr j} {
+	    set generated_312_5_clock "iopll_312_5m_for_ch\$j"
+	    set generated_156_25_clock "iopll_156_25m_for_ch\$j"
+	    if {\$i != \$j} {
+	        set eth_datapath "altera_eth_multi_channel_1588:altera_eth_multi_channel_1588_inst|altera_eth_channel_1588:CHANNEL\\[\$j\\].altera_eth_channel_1588_inst|*"
+			
+	    	set_false_path -from \$generated_312_5_name -to \$eth_datapath
+	    	set_false_path -from \$generated_312_5_name -to \$generated_312_5_clock
+	    	set_false_path -from \$generated_312_5_name -to \$generated_156_25_clock
+	    	set_false_path -from \$generated_156_25_name -to \$eth_datapath
+	    	set_false_path -from \$generated_156_25_name -to \$generated_156_25_clock
+	    	set_false_path -from \$generated_156_25_name -to \$generated_312_5_clock
+	        }
+	    }
+}
+
+set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*  -to {altera_eth_multi_channel_1588:altera_eth_multi_channel_1588_inst|altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|*}
+set_false_path -from {altera_eth_multi_channel_1588:altera_eth_multi_channel_1588_inst|altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|*}  -to {address_decoder_top:address_decoder_top_inst|*} 
+set_false_path -to {altera_eth_multi_channel_1588:altera_eth_multi_channel_1588_inst|altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|*}  -from {address_decoder_top:address_decoder_top_inst|*}
+set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*                                        -to altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_clkout                               
+#set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*                                        -to phy_mgmt_clk  
+#set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*                                        -to pll_ref_clk_1g   
+set_false_path -from altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*                                        -to altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_clkout                            
+set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_clkout  -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*   
+set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_pma_clk -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*  
+set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_clkout  -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*     
+set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_pma_clk -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*      
+#set_false_path -from phy_mgmt_clk                                                                                               -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk*    
+#set_false_path -from pll_ref_clk_1g                                                                                             -to altera_eth_multi_channel_1588_inst|FPLL[0].pll_inst|iopll_0|outclk* 
+
+#set_false_path -from iopll_*_for_ch*                                                                                            -to altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_clkout                               
+#set_false_path -from iopll_*_for_ch*                                                                                            -to phy_mgmt_clk  
+#set_false_path -from iopll_*_for_ch*                                                                                            -to pll_ref_clk_1g   
+#set_false_path -from iopll_*_for_ch*                                                                                            -to altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_clkout                            
+#set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_clkout  -to iopll_*_for_ch*   
+set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_pma_clk -to iopll_*_for_ch*  
+#set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_clkout  -to iopll_*_for_ch*     
+set_false_path -from altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_pma_clk -to iopll_*_for_ch*      
+#set_false_path -from phy_mgmt_clk                                                                                               -to iopll_*_for_ch*    
+#set_false_path -from pll_ref_clk_1g                                                                                             -to iopll_*_for_ch* 
+
+#**************************************************************
+# Set Clock Groups
+#**************************************************************
+set rx_10g_clk "altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_clkout altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|rx_pma_clk"
+set tx_10g_clk "altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_clkout altera_eth_multi_channel_1588_inst|CHANNEL[*].altera_eth_channel_1588_inst|phy|xcvr_10gkr_a10_0|tx_pma_clk"
+
+puts "Creating set clock groups for asynchronous clocks"
+  set_clock_groups -asynchronous -group [get_clocks rxclk_8g_ch*] -group [get_clocks \${rx_10g_clk}]
+  set_clock_groups -asynchronous -group [get_clocks txclk_8g_ch*] -group [get_clocks \${tx_10g_clk}]
+#  set_clock_groups -asynchronous -group [get_clocks phy_mgmt_clk]
+
+  #**************************************************************
+  # False Path - Non-1588 Mode, between core and HSSI
+  #**************************************************************
+  if {\$SYNTH_1588 != 1} {
+     set_clock_groups -asynchronous -group [get_clocks \$xgmii_clk] -group [get_clocks rxclk_8g_ch*]
+     set_clock_groups -asynchronous -group [get_clocks \$xgmii_clk] -group [get_clocks \${rx_10g_clk}]
+     set_clock_groups -asynchronous -group [get_clocks \$xgmii_clk] -group [get_clocks txclk_8g_ch*]
+     set_clock_groups -asynchronous -group [get_clocks \$xgmii_clk] -group [get_clocks \${tx_10g_clk}]
+  }
+
+  # set_clock_groups -asynchronous -group {rxclk_8g_ch*} -group {txclk_8g_ch*} -group [get_clocks *\$clk_rx_user] -group [get_clocks *\$clk_rx_pma] -group [get_clocks *\$clk_tx_pma] -group [get_clocks *\$clk_tx_user] -group {*mgmt_clk}
+  
+#**************************************************************
+# Set False Paths - PHY
+#**************************************************************
+puts "Creating false paths between 1G and 10G PHY datapaths"
+  # These are for the 10G clocks/logic to the Gige logic
+  set_false_path  -from [get_clocks {pll_ref_clk_10g}] -to [get_registers {*kr_gige_pcs_top*}]
+  set_false_path  -from [get_clocks \${rx_10g_clk}]      -to [get_registers {*kr_gige_pcs_top*}]
+  set_false_path  -from [get_clocks \${tx_10g_clk}]      -to [get_registers {*kr_gige_pcs_top*}]
+  set_false_path  -from [get_clocks *xclk_8g_ch*]      -to [get_registers {*soft10Gfifos*}]
+  
+  # these are for the Gige logic to the 10G logic
+  set_false_path -from [get_registers {*kr_gige_pcs_top*}]  -to  [get_clocks {pll_ref_clk_10g}]
+  set_false_path -from [get_registers {*kr_gige_pcs_top*}]  -to  [get_clocks \${rx_10g_clk}]
+  set_false_path -from [get_registers {*kr_gige_pcs_top*}]  -to  [get_clocks \${tx_10g_clk}]
+  set_false_path -from [get_registers {*soft10Gfifos*}]     -to  [get_clocks *xclk_8g_ch*] 
+
+
+  # Reset synchronizer input to the DCFIFO
+  set_false_path -to [get_registers *altera_10gbaser_phy_async_fifo*dffpipe*rdaclr*]
+  set_false_path -to [get_registers *altera_10gbaser_phy_async_fifo*dffpipe*wraclr*]
+  
+#  set_false_path -to [get_pins -compatibility_mode *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10gkr_phy:phy|altera_xcvr_10gkr_a10:xcvr_10gkr_a10_0|ultra_chnl:CHANNEL|soft10Gfifos.tx_wr_rstn|clrn]
+#  set_false_path -to [get_pins -compatibility_mode *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10gkr_phy:phy|altera_xcvr_10gkr_a10:xcvr_10gkr_a10_0|ultra_chnl:CHANNEL|soft10Gfifos.tx_wr_rstn_m1|clrn]
+#  set_false_path -to [get_pins -compatibility_mode *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10gkr_phy:phy|altera_xcvr_10gkr_a10:xcvr_10gkr_a10_0|ultra_chnl:CHANNEL|soft10Gfifos.rx_rd_rstn|clrn]
+#  set_false_path -to [get_pins -compatibility_mode *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10gkr_phy:phy|altera_xcvr_10gkr_a10:xcvr_10gkr_a10_0|ultra_chnl:CHANNEL|soft10Gfifos.rx_rd_rstn_m1|clrn]
+
+#**************************************************************
+# Set False Paths - Core
+#**************************************************************
+puts "Creating false paths between 1G and 10G core datapaths"
+  # These are for the 10G clocks/logic to the Gige logic
+  # 10G clock from PHY does not drive MAC logic, safe to false path it to the entire MAC  
+  set_false_path -from [get_clocks \${tx_10g_clk}] -to [get_registers {*alt_em10g32unit:alt_em10g32unit_inst*}]
+
+  set_false_path -from [get_clocks \${tx_10g_clk}] -to [get_registers {*altera_eth_1588_tod_1g:eth_1588_tod_1g_u1*}]  
+  set_false_path -from [get_clocks \${tx_10g_clk}] -to [get_registers {*altera_eth_1588_tod_sync_96b_1g:eth_1588_tod_synchronizer_96b_1g_u2*}]
+  set_false_path -from [get_clocks \${tx_10g_clk}] -to [get_registers {*altera_eth_1588_tod_sync_64b_1g:eth_1588_tod_synchronizer_64b_1g_u3*}]
+  
+  # these are for the Gige logic to the 10G logic
+  # 10G clock from PHY does not drive MAC logic, safe to false path it to the entire MAC
+  set_false_path -from [get_registers {*alt_em10g32unit:alt_em10g32unit_inst*}]                                     -to [get_clocks \${tx_10g_clk}]
+
+  set_false_path -from [get_registers {*altera_eth_1588_tod_1g:eth_1588_tod_1g_u1*}]                               -to [get_clocks \${tx_10g_clk}]
+  set_false_path -from [get_registers {*altera_eth_1588_tod_sync_96b_1g:eth_1588_tod_synchronizer_96b_1g_u2*}]     -to [get_clocks \${tx_10g_clk}]
+  set_false_path -from [get_registers {*altera_eth_1588_tod_sync_64b_1g:eth_1588_tod_synchronizer_64b_1g_u3*}]     -to [get_clocks \${tx_10g_clk}]
+
+ #************************************************************************************************************************
+ # False-path'ing clock signals to be appeared as nodes, which are not found in Stratix V - Tracked in Fogbugz case:158498
+ #************************************************************************************************************************
+ puts "Creating false paths for clock signals to be appeared as nodes"
+ if { [string equal "quartus_sta" \$::TimeQuestInfo(nameofexecutable)] } {
+  #set_false_path -from {*altera_xcvr_10gkr_a10:altera_eth_10gkr_phy_inst|tx_parallel_data_to_pcs[*]} -to {*inst_twentynm_hssi_tx_pld_pcs_interface|wys~hssi_tile/ch*_pld_tx_clk.reg}
+  #set_false_path -from [get_registers {*wys~pma_rx_pma_clk.reg}]                                     -to [get_clocks *xclk_8g_ch*]
+  #set_false_path -from [get_registers {*wys~pma_rx_pma_clk.reg}]                                     -to [get_clocks *\$clk_rx_pma]
+  #set_false_path -from {*ram_block*a*register_clock*}                                                -to *
+  #set_false_path -from *                                                                             -to {*ram_block*a*register_clock*}
+  #set_false_path -from *                                                                             -to {*|Mult0~8register_clock0}
+ }
+
+#**************************************************************
+# False Path - Reset synchronizer
+#**************************************************************
+set_false_path -to [get_pins -compatibility_mode *reset_synchronizer_int_chain*\\|clrn]
+
+#**************************************************************
+# False Path between MAC and PHY
+#**************************************************************
+# Speed Info - 10G
+set_false_path -from [get_registers *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10gkr_phy:phy|altera_xcvr_10gkr_a10:xcvr_10gkr_a10_0|seqa10_sm:SEQ_GEN.SEQUENCER|pcs_mode_rc[3]] -to [get_registers *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10g_mac:mac|*]
+
+# Speed Info - 1G
+set_false_path -from [get_registers *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10gkr_phy:phy|altera_xcvr_10gkr_a10:xcvr_10gkr_a10_0|ultra_chnl:CHANNEL|kr_gige_pcs_top:GIGE_ENABLE.GMII_PCS_ENABLED.kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_pcs_control:U_REG|kr_gige_pcs_mdio_reg:U_REG|sgmii_speed[*]] -to [get_registers *altera_eth_channel_1588:CHANNEL[*].altera_eth_channel_1588_inst|altera_eth_10g_mac:mac|*]
+
+#**************************************************************
+# False Path within PHY
+#**************************************************************
+#set_false_path -from [get_registers *kr_gige_pcs_top:GIGE_ENABLE.GMII_PCS_ENABLED.kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_top_sgmii_strx_gx:U_SGMII|kr_gige_pcs_top_pcs_strx_gx:U_PCS|kr_gige_pcs_rx_encapsulation_strx_gx:U_RCAPS|gmii_dv] -to [get_registers *kr_gige_pcs_top:GIGE_ENABLE.GMII_PCS_ENABLED.kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_top_sgmii_strx_gx:U_SGMII|kr_gige_pcs_top_rx_converter:U_RXCV|kr_gige_pcs_rx_fifo_rd:U_FFRD|pcs_dv_macclk]
+
+#set_false_path -from [get_registers *kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_top_sgmii_strx_gx:U_SGMII|kr_gige_pcs_top_rx_converter:U_RXCV|kr_gige_pcs_a_fifo_24:U_DSW|kr_gige_pcs_gray_cnt:U_RD|g_out*] -to [get_registers *kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_top_sgmii_strx_gx:U_SGMII|kr_gige_pcs_top_rx_converter:U_RXCV|kr_gige_pcs_a_fifo_24:U_DSW|rd_g_wptr*]
+#set_false_path -from [get_registers *kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_top_sgmii_strx_gx:U_SGMII|kr_gige_pcs_top_rx_converter:U_RXCV|kr_gige_pcs_a_fifo_24:U_DSW|kr_gige_pcs_gray_cnt:U_WRT|g_out*] -to [get_registers *kr_gige_pcs_top|kr_gige_pcs_top_1000_base_x_strx_gx:kr_gige_pcs_top_1000_base_x_strx_gx_inst|kr_gige_pcs_top_sgmii_strx_gx:U_SGMII|kr_gige_pcs_top_rx_converter:U_RXCV|kr_gige_pcs_a_fifo_24:U_DSW|wr_g_rptr*]
+
+

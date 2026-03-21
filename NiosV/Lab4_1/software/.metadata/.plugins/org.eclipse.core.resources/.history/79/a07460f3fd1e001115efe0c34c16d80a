@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdint.h>
+#include "system.h"
+#include "kissfft/kiss_fft.h"
+
+#define FFT_SIZE 8
+
+// ===================== RISC-V 原生計數器讀取 =====================
+// 讀取 64 位元時脈週期數 (mcycle)
+static inline uint64_t get_cycles() {
+    uint32_t hi, lo, tmp;
+    __asm__ __volatile__ (
+        "1: rdcycleh %0\n"
+        "   rdcycle  %1\n"
+        "   rdcycleh %2\n"
+        "   bne %0, %2, 1b"
+        : "=&r"(hi), "=&r"(lo), "=&r"(tmp)
+    );
+    return ((uint64_t)hi << 32) | lo;
+}
+
+// 讀取 64 位元已執行指令數 (minstret)
+static inline uint64_t get_instret() {
+    uint32_t hi, lo, tmp;
+    __asm__ __volatile__ (
+        "1: rdinstreth %0\n"
+        "   rdinstret  %1\n"
+        "   rdinstreth %2\n"
+        "   bne %0, %2, 1b"
+        : "=&r"(hi), "=&r"(lo), "=&r"(tmp)
+    );
+    return ((uint64_t)hi << 32) | lo;
+}
+
+int main() {
+    printf("--- Nios V Performance Test (CSR Mode) ---\n");
+    printf("CPU Frequency: %u Hz\n", (unsigned int)ALT_CPU_FREQ);
+
+    kiss_fft_cpx in[FFT_SIZE], out[FFT_SIZE];
+    for(int i=0; i<FFT_SIZE; i++) { in[i].r = (float)i; in[i].i = 0.0f; }
+
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg) return -1;
+
+    // --- 測量開始 ---
+    uint64_t start_c = get_cycles();
+    uint64_t start_i = get_instret();
+
+    kiss_fft(cfg, in, out);
+
+    uint64_t end_c = get_cycles();
+    uint64_t end_i = get_instret();
+    // --- 測量結束 ---
+
+    // 1. 計算週期與指令差
+    uint64_t diff_cycles = end_c - start_c;
+    uint64_t diff_instr  = end_i - start_i;
+
+    // 2. 換算時間 (ms)
+    // 時間 = 週期 / 頻率 * 1000
+    double time_ms = ((double)diff_cycles / ALT_CPU_FREQ) * 1000.0;
+
+    // 3. 計算 CPI
+    double cpi = (double)diff_cycles / (double)diff_instr;
+
+    printf("\nFFT size %d Results:\n", FFT_SIZE);
+    printf("Execution Time: %.6f ms\n", time_ms);
+    printf("Total Cycles:   %llu\n", diff_cycles);
+    printf("Instructions:   %llu\n", diff_instr);
+    printf("System CPI:     %.3f\n", cpi);
+
+    kiss_fft_free(cfg);
+    return 0;
+}

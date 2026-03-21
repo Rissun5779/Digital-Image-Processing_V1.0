@@ -1,0 +1,11 @@
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,SYSTEM_INFO,VISIBLE,DESCRIPTION,,
+DEVICE_FAMILY,STRING,Cyclone IV GX,Device Family,{device_family},FALSE,Specifies which device family is currently selected.,,
+,,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,ALLOWED_RANGES,DISPLAY_HINT,ENABLED,DESCRIPTION
+CLOCK_TYPE,INTEGER,1,How do you want to use the ALTCLKCTRL?,TRUE,"""1: For global clock"" ""3: For external path""",,TRUE,Specify the Altclkctrl buffering mode.
+NUMBER_OF_CLOCKS,POSITIVE,1,How many clock inputs would you like?,TRUE,1 2 3 4,,TRUE,Specify the number of input clock sources for the clock control block.
+ENA_REGISTER_MODE,INTEGER,1,How do you want to register the 'ena' port?,TRUE,"""1: Falling edge of input clock"" ""2: Double register with input clock"" ""0: Not registered""",,FALSE,Register mode for the 'ena' port.
+,,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,VISIBLE,ENABLED,DESCRIPTION,DESCRIPTION
+GUI_USE_ENA,BOOLEAN,FALSE,Create 'ena' port to enable or disable the clock network driven by this buffer?,TRUE,TRUE,TRUE,Turn on this option if you want to create an active high clock enable signal to enable or disable the clock network.,
+USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION,BOOLEAN,FALSE,Ensure glitch-free switchover implementation,TRUE,TRUE,TRUE,Turn on this option to implement a glitch-free switchover when you use multiple clock inputs.,

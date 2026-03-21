@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+<file path="simulation/ed_sim/models/tb_top_n_1588.sv" type="SYSTEM_VERILOG">
+<include path="simulation/ed_sim/models/tb_testcase_1588.sv" />
+</file>
+<topLevel name="tb_top" />
+<file path="rtl/mdio/altera_eth_mdio.v" type="VERILOG" />
+<topLevel name="altera_eth_mdio" />
+<file path="rtl/altera_eth_1588_pps/altera_eth_1588_pps.v" type="VERILOG" />
+<topLevel name="altera_eth_1588_pps" />
+<file path="rtl/altera_eth_packet_classifier/altera_avalon_sc_fifo.v" type="VERILOG" />
+<topLevel name="altera_avalon_sc_fifo" />
+<file path="rtl/altera_eth_packet_classifier/altera_avalon_st_pipeline_base.v" type="VERILOG" />
+<topLevel name="altera_avalon_st_pipeline_base" />
+<file path="rtl/altera_eth_packet_classifier/altera_avalon_st_pipeline_stage.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_avalon_st_pipeline_stage" />
+<file path="rtl/altera_eth_packet_classifier/altera_eth_packet_classifier.v" type="VERILOG" />
+<topLevel name="altera_eth_packet_classifier" />
+<file path="rtl/altera_eth_channel_1588.v" type="VERILOG" />
+<topLevel name="altera_eth_channel_1588" />
+<file path="rtl/altera_eth_multi_channel_1588.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_eth_multi_channel_1588" />
+<file path="rtl/reset_csr/reset_csr.v" type="VERILOG" />
+<topLevel name="reset_csr" />
+</simPackage>

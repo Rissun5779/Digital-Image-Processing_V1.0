@@ -1,0 +1,135 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions and other 
+-- software and tools, and its AMPP partner logic functions, and any output 
+-- files from any of the foregoing (including device programming or simulation 
+-- files), and any associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License Subscription 
+-- Agreement, Intel FPGA IP License Agreement, or other applicable 
+-- license agreement, including, without limitation, that your use is for the 
+-- sole purpose of programming logic devices manufactured by Intel and sold by 
+-- Intel or its authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: params_to_vhd.vhd.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to vhdl file
+@@ #
+@@ # Usage: IP core independent, general vhdl format output for lpm ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+LIBRARY lpm;
+USE lpm.all;
+
+ENTITY ${output_name} IS
+    PORT
+    (
+@@  # output entity port list #
+@@  set port_last [lindex $module_port_list end-2]
+@@  foreach {port direction width} $module_port_list {
+@@      if {[string equal $port $port_last]}    {
+@@          if {$width!=-1} {
+        $port       : $direction STD_LOGIC_VECTOR ($width DOWNTO 0)
+@@          } else {
+        $port       : $direction STD_LOGIC
+@@          }
+@@      } else {
+@@          if {$width!=-1} {
+        $port       : $direction STD_LOGIC_VECTOR ($width DOWNTO 0);
+@@          } else {
+        $port       : $direction STD_LOGIC ;
+@@          }
+@@      }
+@@  }
+    );
+END ${output_name};
+
+
+ARCHITECTURE SYN OF ${output_name} IS
+
+@@  # output eq signal list #
+@@  foreach {name width} $sub_wire_list {
+@@      if {$width !=-1} {
+    SIGNAL $name    : STD_LOGIC_VECTOR ($width DOWNTO 0);
+@@      } else {
+    SIGNAL $name    : STD_LOGIC ;
+@@      }
+@@  }
+
+
+@@  # declare component information #
+    COMPONENT $ip_name
+    GENERIC (
+@@      set name_last [lindex $params_list end-2]
+@@      foreach {name str value} $params_list  {
+@@          if {[string equal $name $name_last]} {
+            $name      : $str
+@@          } else {
+            $name      : $str;
+@@          }
+@@      }
+    );
+    PORT (
+@@      set port_last [lindex $port_map_list end-3]
+@@      foreach {name_l name_r direction width} $port_map_list {
+@@          if {[string equal $name_l $port_last]} {
+@@              if {$width!=-1} {
+            $name_l     : $direction STD_LOGIC_VECTOR ($width DOWNTO 0)
+@@              } else {
+            $name_l     : $direction STD_LOGIC
+@@              }
+@@          } else {
+@@              if {$width!=-1} {
+            $name_l     : $direction STD_LOGIC_VECTOR ($width DOWNTO 0);
+@@              } else {
+            $name_l     : $direction STD_LOGIC ;
+@@              }
+@@          }
+@@      }
+    );
+    END COMPONENT;
+
+@@  # architecture component map information #
+BEGIN
+@@  foreach {name_l name_r width widthL} $wire_list {
+@@      if {$width == -1} {
+    $name_l     <= $name_r;
+@@      } else {
+    $name_l     <= $name_r ($width);
+@@      }
+@@  }
+
+@@  set ip_name_upper  [string toupper $ip_name]
+    ${ip_name_upper}_component : $ip_name_upper
+    GENERIC MAP (
+@@      set name_last [lindex $params_list end-2]
+@@      foreach {name str value} $params_list  {
+@@          if {[string equal $name $name_last]} {
+            $name  => $value
+@@          } else {
+            $name  => $value,
+@@          }
+@@      }
+    )
+    PORT MAP (
+@@      set port_last [lindex $port_map_list end-3]
+@@      foreach {name_l name_r direction width} $port_map_list {
+@@          if {[string equal $name_l $port_last]} {
+        $name_l => $name_r
+@@          } else {
+        $name_l => $name_r,
+@@          }
+@@      }
+    );
+
+
+
+END SYN;

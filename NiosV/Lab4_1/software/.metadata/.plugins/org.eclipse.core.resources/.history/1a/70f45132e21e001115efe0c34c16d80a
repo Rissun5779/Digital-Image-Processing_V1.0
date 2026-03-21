@@ -1,0 +1,21 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS 1000
+
+int main(){
+	uint8_t LED = 0x01;
+
+    while(1){
+      if(LED == 0x80){
+    	  LED = 0x01;
+      }
+      alt_printf("LED=%d\n", LED);
+      LED_REG = LED;
+      LED <<= 1;
+      usleep(100*MS);
+    }
+	return 0;
+}

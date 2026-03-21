@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags="INTERNAL_COMPONENT=true"
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element highspeed_rs_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10AX115U1F45E1SG" />
+ <parameter name="deviceFamily" value="Arria 10" />
+ <parameter name="deviceSpeedGrade" value="1" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="true" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName">alt_e25_rs_tx_top.qpf</parameter>
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface name="clk" internal="highspeed_rs_0.clk" type="clock" dir="end">
+  <port name="clk_clk" internal="clk_clk" />
+ </interface>
+ <interface name="in" internal="highspeed_rs_0.in" type="conduit" dir="end">
+  <port name="in_startofpacket" internal="in_startofpacket" />
+  <port name="in_endofpacket" internal="in_endofpacket" />
+  <port name="in_valid" internal="in_valid" />
+  <port name="in_ready" internal="in_ready" />
+  <port name="in_data" internal="in_data" />
+ </interface>
+ <interface name="out" internal="highspeed_rs_0.out" type="conduit" dir="end">
+  <port name="out_startofpacket" internal="out_startofpacket" />
+  <port name="out_endofpacket" internal="out_endofpacket" />
+  <port name="out_valid" internal="out_valid" />
+  <port name="out_ready" internal="out_ready" />
+  <port name="out_data" internal="out_data" />
+ </interface>
+ <interface name="reset" internal="highspeed_rs_0.reset" type="reset" dir="end">
+  <port name="reset_reset_n" internal="reset_reset_n" />
+ </interface>
+ <module
+   name="highspeed_rs_0"
+   kind="altera_highspeed_rs"
+   version="16.0"
+   enabled="1"
+   autoexport="1">
+  <parameter name="AUTO_DEVICE" value="10AX115U1F45E1SG" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="1" />
+  <parameter name="BITSPERSYMBOL" value="10" />
+  <parameter name="BMSPEED" value="4" />
+  <parameter name="IRRPOL" value="1033" />
+  <parameter name="K" value="514" />
+  <parameter name="N" value="528" />
+  <parameter name="PAR" value="8" />
+  <parameter name="RS" value="Encoder" />
+  <parameter name="USEECCFORRAM" value="1" />
+  <parameter name="USERAM" value="0" />
+  <parameter name="USE_BKP" value="0" />
+  <parameter name="design_env" value="NATIVE" />
+  <parameter name="selected_device_family" value="Arria 10" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

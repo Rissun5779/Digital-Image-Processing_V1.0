@@ -1,0 +1,49 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ set data_msb [expr {$data_width - 1}]
+
+module ${output_name} (
+	input  wire        clk,
+	input  wire        reset_n,
+	input  wire        a_valid,
+	output wire        a_ready,
+	input  wire [${data_msb}:0] a_data,
+	input  wire        b_valid,
+	output wire        b_ready,
+	input  wire [${data_msb}:0] b_data,
+	output wire        c_valid,
+	input  wire        c_ready,
+	output wire [${data_msb}:0] c_data
+);
+
+altera_fp_matrixmult_internal altera_fp_matrixmult_inst (
+   .clock(clk),
+   .resetn(reset_n),
+   .a_valid(a_valid),
+   .a_ready(a_ready),
+   .a_data(a_data),
+   .b_valid(b_valid),
+   .b_ready(b_ready),
+   .b_data(b_data),
+   .c_valid(c_valid),
+   .c_ready(c_ready),
+   .c_data(c_data),
+   .start(1'b1),
+   .busy(),
+   .done(),
+   .stall(1'b0)
+);
+
+endmodule
+

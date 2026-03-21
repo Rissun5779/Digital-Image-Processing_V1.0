@@ -1,0 +1,220 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #
+@@ # Variables used for TERP:
+@@ # cdr_clk_period:   period of the CDR reference clock in ps.
+@@ # cdr_refclk:       frequency of the CDR reference clock in MHz.
+@@ # data_rate:        the data rate per link. 10, 12.5, or 15.
+@@ # num_channels:     number of channels used
+@@ #
+
+
+`timescale 1ps/1ps
+
+module hmcc_tb;
+
+   logic clk_50;
+   logic clk_125;
+   logic hssi_refclk;
+   logic reset_n;
+
+   parameter CHANNELS             = $num_channels;
+   parameter CDR_REFCLK_PERIOD    = $cdr_clk_period;
+   
+   wire         [15:0] LxRXP;
+   wire         [15:0] LxTXP;
+   wire [CHANNELS-1:0] hmc_lxrx;
+   wire [CHANNELS-1:0] hmc_lxtx;
+   wire                LxRXPS;
+   wire                LxTXPS;
+   wire                FERR_N;
+   wire                P_RST_N;
+
+   wire                SCL;
+   wire                SDA;
+   
+// wire                CUB;
+   
+   wire                link_init_complete_n;
+   wire                test_passed_n;
+   wire                test_failed_n;
+   wire                heart_beat_n;         // Connect to an LED.
+
+   assign              LxRXP    = 16'h0 | hmc_lxtx;
+   assign              hmc_lxrx = LxTXP[CHANNELS-1:0];
+   
+   hmcc_example hmcc_example 
+   (
+    .clk_50               ( clk_50               ), // 50 MHz input clock (always present)
+    .hssi_refclk          ( hssi_refclk          ), // TX PLL and CDR reference clock
+    .hmc_lxrx             ( hmc_lxrx             ), // Connect to HMC's LxTXP/N
+    .hmc_lxtx             ( hmc_lxtx             ), // Connect to HMC's LxRXP/N
+    .hmc_ctrl_lxrxps      ( LxTXPS               ), // Connect to HMC's LxTXPS
+    .hmc_ctrl_lxtxps      ( LxRXPS               ), // Connect to HMC's LxRXPS
+    .hmc_ctrl_ferr_n      ( FERR_N               ), // Connect to HMC's FERR_N
+    .hmc_ctrl_p_rst_n     ( P_RST_N              ), // Connect to HMC's P_RST_N
+    .hmc_ctrl_scl         ( SCL                  ), // Connect to HMC's SCL
+    .hmc_ctrl_sda         ( SDA                  ), // Connect to HMC's SDA
+    .push_button          ( reset_n              ),
+    .heart_beat_n         ( heart_beat_n         ), // Connect to an LED.
+    .link_init_complete_n ( link_init_complete_n ), // Connect to an LED.
+    .test_passed_n        ( test_passed_n        ), // Connect to an LED.
+    .test_failed_n        ( test_failed_n        )  // Connect to an LED.
+    );
+
+   hmc_cfg
+   #(
+     .num_links_c    (1),
+     .num_hmc_c      (1) 
+     ) 
+   hmc_cfg_inst
+   (
+    .LxRXP       (  LxRXP    ),
+    .LxRXN       ( ~LxRXP    ),
+    .LxTXP       (  LxTXP    ),
+    .LxTXN       (           ),
+    .LxRXPS      (  LxRXPS   ),
+    .LxTXPS      (  LxTXPS   ),
+    .FERR_N      (  FERR_N   ),
+
+    .REFCLKP     (  clk_125  ),
+    .REFCLKN     ( ~clk_125  ),
+    .REFCLKSEL   (  1'b0     ),
+    .P_RST_N     (  P_RST_N  ),
+
+    .TRST_N      (  1'b0     ),
+    .TCK         (  1'b0     ),
+    .TMS         (  1'b0     ),
+    .TDI         (  1'b0     ),
+    .TDO         (           ),
+
+    .SCL         (  1'b0     ),
+    .SDA         (  SDA      ),
+
+    .CUB         (  3'b0     ),
+    .REFCLK_BOOT (  2'b0     ),
+
+    .EXTRESTP    (           ),
+    .EXTRESTN    (           ),
+    .EXTRESBP    (           ),
+    .EXTRESBN    (           )
+    );
+
+   // Create the required clocks.
+   initial                          clk_50  <= 1'b0;
+   always  #10000                   clk_50  <= ~clk_50;
+   
+   initial                          clk_125 <= 1'b0;
+   always  #4000                    clk_125 <= ~clk_125;
+
+   initial                          hssi_refclk <= 1'b0;
+   always  #(CDR_REFCLK_PERIOD/2)   hssi_refclk <= ~hssi_refclk;
+
+   // Power On reset pulse.
+   initial begin
+      reset_n <= 1'b0;
+      #100000;
+      reset_n <= 1'b1;
+   end
+
+   // Wait for the test to complete.
+   initial begin
+//    \$vcdplusmemon; // Uncomment to dump arrays under VCS.
+      wait( !test_passed_n || !test_failed_n );
+
+      if( !test_failed_n ) begin
+         \$display( "TEST_FAILED" );
+      end else if( !test_passed_n ) begin
+         \$display( "TEST_PASSED" );
+      end
+      
+      repeat (100) @(posedge clk_50);
+      \$finish();
+   end
+
+   // Set time formatting to picoseconds.
+   initial \$timeformat(-12, 0, " ps ", 12);
+
+   // Watchdog timer (much shorter than example design's watchdog timer)
+   initial begin
+      #500000;
+      \$display("INFO: Running $data_rate Gbps using $cdr_refclk MHz CDR reference clock.");
+@@ if { $data_rate == 10 } {
+      \$display("INFO: Test ends around 31000000 ps assuming 125 MHz CDR reference clock.");
+@@ } elseif { $data_rate == 12.5 } {
+      \$display("INFO: Test ends around 37000000 ps assuming 125 MHz CDR reference clock.");
+@@ }
+      #49500000
+      \$display( "Watchdog timeout." );
+      \$display( "TEST_FAILED" );
+      \$finish();
+   end
+   
+
+   int request_count;
+   int prev_req_tag;
+   int new_req;
+   initial begin
+      \@(negedge link_init_complete_n);
+      \$display( "%t Link Initialization complete.", \$time );
+   
+      request_count = 1;
+      prev_req_tag = 10'h200;
+
+      forever begin
+         \@(posedge hmcc_example.clk );
+         new_req = (prev_req_tag[10:0] != {1'b0, hmcc_example.dp_req_tag});
+         if ( hmcc_example.dp_req_valid ) begin
+            if ( new_req ) begin
+               \$display("%t Sent request with tag: 0x%3h; sent %2d total", \$time, hmcc_example.dp_req_tag, request_count );
+               prev_req_tag = hmcc_example.dp_req_tag;
+               request_count += 1;
+            end
+         end else begin
+            prev_req_tag = 10'h200;
+         end
+      end
+   end      
+
+   int response_count;
+   int prev_rsp_tag;
+   int new_rsp;
+   initial begin
+      \@(negedge link_init_complete_n);
+   
+      response_count = 1;
+      prev_rsp_tag = 10'h200;
+
+      forever begin
+         \@(posedge hmcc_example.clk );
+         new_rsp = (prev_rsp_tag[10:0] != {1'b0, hmcc_example.dp_rsp_tag});
+         if ( hmcc_example.dp_rsp_valid ) begin
+            if ( new_rsp ) begin
+               \$display("%t Received response with tag: 0x%3h; received %2d total", \$time, hmcc_example.dp_rsp_tag, response_count );
+               prev_rsp_tag = hmcc_example.dp_rsp_tag;
+               response_count += 1;
+            end
+         end else begin
+            prev_rsp_tag = 10'h200;
+         end
+      end
+   end
+   
+   // Simulation heartbeat.
+   initial forever begin
+      \$display( "%t Simulation time advancing.", \$time );
+      #1000000;
+   end
+   
+endmodule : hmcc_tb

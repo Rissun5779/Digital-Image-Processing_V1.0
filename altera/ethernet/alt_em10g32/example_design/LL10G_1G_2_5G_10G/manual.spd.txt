@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+<file path="simulation/ed_sim/models/tb_top.sv" type="SYSTEM_VERILOG">
+<include path="simulation/ed_sim/models/tb_testcase.sv" />
+</file>
+<topLevel name="tb_top" />
+<file path="rtl/reconfig/alt_mge_rcfg_a10_ch_recal.v" type="VERILOG" />
+<topLevel name="alt_mge_rcfg_a10_ch_recal" />
+<file path="rtl/reconfig/alt_mge_rcfg_a10_mif_master.v" type="VERILOG" />
+<topLevel name="alt_mge_rcfg_a10_mif_master" />
+<file path="rtl/reconfig/alt_mge_rcfg_a10_mif_rom.v" type="VERILOG" />
+<topLevel name="alt_mge_rcfg_a10_mif_rom" />
+<file path="rtl/reconfig/alt_mge_rcfg_a10_rxcdr_switch.v" type="VERILOG" />
+<topLevel name="alt_mge_rcfg_a10_rxcdr_switch" />
+<file path="rtl/reconfig/alt_mge_rcfg_a10.sv" type="SYSTEM_VERILOG" />
+<topLevel name="alt_mge_rcfg_a10" />
+<file path="rtl/reconfig/alt_mge_rcfg_a10_txpll_switch.v" type="VERILOG" />
+<topLevel name="alt_mge_rcfg_a10_txpll_switch" />
+<file path="rtl/alt_mge_channel.v" type="VERILOG" />
+<topLevel name="alt_mge_channel" />
+<file path="rtl/alt_mge_rd.sv" type="SYSTEM_VERILOG" />
+<topLevel name="alt_mge_rd" />
+<file path="rtl/alt_mge_reset_synchronizer.v" type="VERILOG" />
+<topLevel name="alt_mge_reset_synchronizer" />
+</simPackage>

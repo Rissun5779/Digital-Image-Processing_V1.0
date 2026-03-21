@@ -1,0 +1,377 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+#######################################################
+#
+# Device, pin and other assignments for the 
+# HDMI MegaCore Hardware Demo
+# 
+# #####################################################
+
+@@ set device_part $param0
+@@ set ed_name $param1
+@@ set targeted_board $param2
+@@ set acds_ver 18.1
+@@ set split_array [split $acds_ver "."]
+@@ set qii_ver [concat [lindex $split_array 0][lindex $split_array 1]]
+@@ append top_lvl_v $ed_name ".v"
+
+# Set the family, device, top-level entity
+set_global_assignment -name FAMILY "Arria 10"
+#set_global_assignment -name DEVICE 10AX115S3F45E2SGE3
+set_global_assignment -name DEVICE $device_part
+#set_global_assignment -name TOP_LEVEL_ENTITY a10_hdmi2_demo
+set_global_assignment -name TOP_LEVEL_ENTITY $ed_name
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+
+# Add files to the project
+# =========================================================
+#set_global_assignment -name VERILOG_FILE ../rtl/a10_hdmi2_demo.v
+set_global_assignment -name VERILOG_FILE ../rtl/$top_lvl_v
+set_global_assignment -name VERILOG_FILE ../rtl/rxtx_link.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../rtl/xcvr_reconfig_arbiter.sv
+set_global_assignment -name VERILOG_FILE ../rtl/common/clock_crosser.v
+set_global_assignment -name VERILOG_FILE ../rtl/common/dcfifo_inst.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_state_machine.v 
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_rx_valuemask.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_rx_dprioaddr_bitmask.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_pll_valuemask_8bpc.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_pll_valuemask_10bpc.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_pll_valuemask_12bpc.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_pll_valuemask_16bpc.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_pll_dprioaddr.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rom_pcs.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_reconfig_mgmt.v 
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_reconfig_master_rx.v 
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_reconfig_master_pll.v 
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_rate_detect.v
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_compare_rx.v 
+set_global_assignment -name VERILOG_FILE ../rtl/reconfig_mgmt/mr_compare_pll.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_rx/hdmi_rx_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_rx/mr_hdmi_rx_core_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_rx/mr_rx_oversample.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_rx/mr_clock_sync.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_rx/symbol_aligner.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_tx/hdmi_tx_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_tx/mr_hdmi_tx_core_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_tx/mr_ce.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdmi_tx/mr_tx_oversample.v 
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2cslave_to_avlmm_bridge.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_avl_mst_intf_gen.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_clk_cnt.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_condt_det.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_databuffer.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_rxshifter.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_slvfsm.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_spksupp.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_txout.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_slave/i2c_txshifter.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_master/timescale.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_master/i2c_master_defines.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_master/i2c_master_bit_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_master/i2c_master_byte_ctrl.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_master/i2c_master_top.v
+set_global_assignment -name VERILOG_FILE ../rtl/i2c_master/oc_i2c_master.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdr/altera_hdmi_hdr_infoframe.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdr/altera_hdmi_aux_hdr.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdr/altera_hdmi_aux_snk.v
+set_global_assignment -name VERILOG_FILE ../rtl/hdr/altera_hdmi_aux_src.v
+set_global_assignment -name QIP_FILE ../rtl/i2c_slave/edid_ram/edid_ram.qip
+set_global_assignment -name QIP_FILE ../rtl/pll/pll_hdmi/pll_hdmi.qip
+set_global_assignment -name QIP_FILE ../rtl/pll/pll_hdmi_reconfig/pll_hdmi_reconfig.qip
+set_global_assignment -name QIP_FILE ../rtl/gxb/gxb_tx_reset/gxb_tx_reset.qip
+set_global_assignment -name QIP_FILE ../rtl/gxb/gxb_tx/gxb_tx.qip
+set_global_assignment -name QIP_FILE ../rtl/gxb/gxb_tx_fpll/gxb_tx_fpll.qip
+set_global_assignment -name QIP_FILE ../rtl/gxb/gxb_rx_reset/gxb_rx_reset.qip
+set_global_assignment -name QIP_FILE ../rtl/gxb/gxb_rx/gxb_rx.qip
+set_global_assignment -name QIP_FILE ../rtl/hdmi_tx/hdmi_tx/hdmi_tx.qip
+set_global_assignment -name QIP_FILE ../rtl/hdmi_rx/hdmi_rx/hdmi_rx.qip
+set_global_assignment -name QIP_FILE ../rtl/common/fifo/fifo.qip
+set_global_assignment -name QIP_FILE ../rtl/common/clock_control/clock_control.qip
+set_global_assignment -name QIP_FILE ../rtl/common/output_buf_i2c/output_buf_i2c.qip
+set_global_assignment -name QSYS_FILE ../rtl/hdr/avalon_st_multiplexer.qsys
+set_global_assignment -name QSYS_FILE  ../rtl/nios.qsys
+set_global_assignment -name QSYS_FILE  ../rtl/hdr/bitec_hdmi_aux_hdr.qsys
+set_global_assignment -name QSYS_FILE ../rtl/common/reset_controller.qsys
+
+# Set various options
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_global_assignment -name BLOCK_RAM_AND_MLAB_EQUIVALENT_POWER_UP_CONDITIONS "DONT CARE"
+
+# add the Nios SW HEX file to the project
+set_global_assignment -name QIP_FILE ../software/tx_control/mem_init/meminit.qip
+
+#Add the example SDC last to not get overwritten by the IP ones
+set_global_assignment -name SDC_FILE ../rtl/sdc/a10_hdmi2.sdc
+set_global_assignment -name SDC_FILE ../rtl/sdc/jtag.sdc
+set_global_assignment -name SDC_FILE ../rtl/sdc/mr_clock_sync.sdc
+set_global_assignment -name SDC_FILE ../rtl/sdc/mr_reconfig_mgmt.sdc
+set_global_assignment -name SDC_FILE ../rtl/sdc/rxtx_link.sdc
+
+# Pin & Location Assignments
+# =========================================================
+@@ if { $targeted_board == 1 } {
+set_location_assignment PIN_F23 -to clk_fpga_b3_p
+set_location_assignment PIN_G23 -to "clk_fpga_b3_p(n)"
+set_location_assignment PIN_BD27 -to cpu_resetn
+set_location_assignment PIN_L28 -to user_led_g[0]
+set_location_assignment PIN_K26 -to user_led_g[1]
+set_location_assignment PIN_K25 -to user_led_g[2]
+set_location_assignment PIN_L25 -to user_led_g[3]
+set_location_assignment PIN_J24 -to user_led_g[4]
+set_location_assignment PIN_A19 -to user_led_g[5]
+set_location_assignment PIN_C18 -to user_led_g[6]
+set_location_assignment PIN_D18 -to user_led_g[7]
+set_location_assignment PIN_T12 -to user_pb[0]
+set_location_assignment PIN_U12 -to user_pb[1]
+set_location_assignment PIN_U11 -to user_pb[2]
+set_location_assignment PIN_AB1 -to fmcb_dp_c2m_p[0]
+set_location_assignment PIN_Y1 -to fmcb_dp_c2m_p[1]
+set_location_assignment PIN_V1 -to fmcb_dp_c2m_p[2]
+set_location_assignment PIN_T1 -to fmcb_dp_c2m_p[3]
+set_location_assignment PIN_AA3 -to fmcb_dp_m2c_p[0]
+set_location_assignment PIN_W3 -to fmcb_dp_m2c_p[1]
+set_location_assignment PIN_Y5 -to fmcb_dp_m2c_p[2]
+set_location_assignment PIN_W8 -to fmcb_gbtclk_m2c_p_0
+set_location_assignment PIN_W7 -to "fmcb_gbtclk_m2c_p_0(n)"
+set_location_assignment PIN_H19 -to fmcb_la_rx_p_9
+set_location_assignment PIN_H20 -to fmcb_la_rx_p_8
+set_location_assignment PIN_G20 -to fmcb_la_rx_n_8
+set_location_assignment PIN_K16 -to fmcb_la_tx_p_10
+set_location_assignment PIN_M13 -to fmcb_la_tx_p_12
+set_location_assignment PIN_L14 -to fmcb_la_tx_n_12
+set_location_assignment PIN_M12 -to fmcb_la_rx_p_10
+set_location_assignment PIN_H13 -to fmcb_la_tx_p_11
+set_location_assignment PIN_H18 -to fmcb_la_rx_n_9
+@@ } elseif { $targeted_board == 0 } {
+set_instance_assignment -name VIRTUAL_PIN ON -to clk_fpga_b3_p
+set_instance_assignment -name VIRTUAL_PIN ON -to "clk_fpga_b3_p(n)"
+set_instance_assignment -name VIRTUAL_PIN ON -to cpu_resetn
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[2]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[3]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[4]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[5]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[6]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[7]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb[2]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_c2m_p[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_c2m_p[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_c2m_p[2]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_c2m_p[3]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_m2c_p[0]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_m2c_p[1]
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_dp_m2c_p[2]
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_gbtclk_m2c_p_0
+set_instance_assignment -name VIRTUAL_PIN ON -to "fmcb_gbtclk_m2c_p_0(n)"
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_rx_p_9
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_rx_p_8
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_rx_n_8
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p_10
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p_12
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_n_12
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_rx_p_10
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p_11
+#set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_rx_n_9
+@@ } else {
+set_location_assignment YOUR_PIN_LOCATION -to clk_fpga_b3_p
+set_location_assignment YOUR_PIN_LOCATION -to "clk_fpga_b3_p(n)"
+set_location_assignment YOUR_PIN_LOCATION -to cpu_resetn
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[0]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[1]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[2]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[3]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[4]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[5]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[6]
+set_location_assignment YOUR_PIN_LOCATION -to user_led_g[7]
+set_location_assignment YOUR_PIN_LOCATION -to user_pb[0]
+set_location_assignment YOUR_PIN_LOCATION -to user_pb[1]
+set_location_assignment YOUR_PIN_LOCATION -to user_pb[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_c2m_p[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_c2m_p[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_c2m_p[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_c2m_p[3]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_m2c_p[0]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_m2c_p[1]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_dp_m2c_p[2]
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_gbtclk_m2c_p_0
+set_location_assignment YOUR_PIN_LOCATION -to "fmcb_gbtclk_m2c_p_0(n)"
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_rx_p_9
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_rx_p_8
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_rx_n_8
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_tx_p_10
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_tx_p_12
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_tx_n_12
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_rx_p_10
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_tx_p_11
+set_location_assignment YOUR_PIN_LOCATION -to fmcb_la_rx_n_9
+@@ }
+# =========================================================
+
+# I/O Assignments
+# =========================================================
+set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to clk_fpga_b3_p
+set_instance_assignment -name IO_STANDARD LVDS -to clk_fpga_b3_p
+set_instance_assignment -name IO_STANDARD LVDS -to "clk_fpga_b3_p(n)"
+set_instance_assignment -name IO_STANDARD "Current Mode Logic (CML)" -to fmcb_gbtclk_m2c_p_0
+set_instance_assignment -name IO_STANDARD "Current Mode Logic (CML)" -to "fmcb_gbtclk_m2c_p_0(n)"
+set_instance_assignment -name IO_STANDARD "1.8 V" -to cpu_resetn
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_rx_p_9
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_rx_p_8
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_rx_n_8
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p_10
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p_12
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_n_12
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_rx_p_10
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p_11
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_rx_n_9
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_m2c_p[0]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_m2c_p[1]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_m2c_p[2]
+
+# Transceivers setting
+# =========================================================
+set_instance_assignment -name XCVR_RECONFIG_GROUP 1 -to fmcb_dp_m2c_p[1]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 1 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 2 -to fmcb_dp_m2c_p[2]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 2 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 0 -to fmcb_dp_m2c_p[0]
+set_instance_assignment -name XCVR_RECONFIG_GROUP 0 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_rx_n_8
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmcb_la_rx_n_8
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_tx_p_10
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmcb_la_tx_p_10
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_tx_n_12
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmcb_la_tx_n_12
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_tx_p_11
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmcb_la_tx_p_11
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_rx_n_9
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmcb_la_rx_n_9
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_rx_p_10
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to fmcb_la_rx_p_10
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_rx_p_8
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR OFF -to fmcb_la_rx_p_8
+set_instance_assignment -name AUTO_OPEN_DRAIN_PINS ON -to fmcb_la_tx_p_12
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR OFF -to fmcb_la_tx_p_12
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_SLEW_RATE_CTRL SLEW_R5 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_SLEW_RATE_CTRL SLEW_R5 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_SLEW_RATE_CTRL SLEW_R5 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_SLEW_RATE_CTRL SLEW_R5 -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_VOD_OUTPUT_SWING_CTRL 31 -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_PRE_TAP_1T FIR_PRE_1T_POS -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_PRE_TAP_1T FIR_PRE_1T_POS -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_PRE_TAP_1T FIR_PRE_1T_POS -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_PRE_TAP_1T FIR_PRE_1T_POS -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_1T 0 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_1T 0 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_1T 0 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_1T 0 -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_POS -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_POS -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_POS -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SIGN_1ST_POST_TAP FIR_POST_1T_POS -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 0 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 0 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_1ST_POST_TAP 0 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_2T 0 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_2T 0 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_2T 0 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_PRE_TAP_2T 0 -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_2ND_POST_TAP 0 -to fmcb_dp_c2m_p[0]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_2ND_POST_TAP 0 -to fmcb_dp_c2m_p[1]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_2ND_POST_TAP 0 -to fmcb_dp_c2m_p[2]
+set_instance_assignment -name XCVR_A10_TX_PRE_EMP_SWITCHING_CTRL_2ND_POST_TAP 0 -to fmcb_dp_c2m_p[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_m2c_p[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_m2c_p[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_m2c_p[2]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmcb_dp_m2c_p[0]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmcb_dp_m2c_p[1]
+set_instance_assignment -name XCVR_A10_RX_EQ_DC_GAIN_TRIM NO_DC_GAIN -to fmcb_dp_m2c_p[2]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmcb_dp_m2c_p[0]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmcb_dp_m2c_p[1]
+set_instance_assignment -name XCVR_A10_RX_ONE_STAGE_ENABLE NON_S1_MODE -to fmcb_dp_m2c_p[2]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to fmcb_dp_m2c_p[0]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to fmcb_dp_m2c_p[1]
+set_instance_assignment -name XCVR_A10_RX_ADP_VGA_SEL RADP_VGA_SEL_4 -to fmcb_dp_m2c_p[2]
+
+# Current strength and slew rate setting
+# =========================================================
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[7]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_rx_p_9
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_rx_p_8
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_rx_n_8
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_n_12
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_rx_p_10
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_p_11
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_rx_n_9
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[0]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[1]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[2]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[3]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[4]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[5]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[6]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[7]
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_rx_p_9
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_rx_p_8
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_rx_n_8
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_n_12
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_rx_p_10
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_p_11
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_rx_n_9
+
+# Suppress Warning message
+# =========================================================
+# base clock (FB:494913)
+set_global_assignment -name MESSAGE_DISABLE 332157
+
+# Panasonic.hex (FB:436148)
+set_global_assignment -name MESSAGE_DISABLE 113015
+
+# Synthesized away node (FB:497298)
+#set_global_assignment -name MESSAGE_DISABLE 14284
+

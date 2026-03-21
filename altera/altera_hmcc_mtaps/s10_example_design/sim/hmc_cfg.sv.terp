@@ -1,0 +1,130 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #
+@@ # Variables used for TERP:
+@@ # data_rate:    the data rate per link. 10, 12.5, or 15.
+@@ # num_channels: number of channels used
+@@ #
+
+`timescale 1ps/1ps
+
+module hmc_cfg #(
+    num_links_c=4,
+    num_hmc_c=1
+) (
+    // Group: Link Interface
+    input  [num_links_c-1:0][15:0] LxRXP,       // Link 0, Receiver Data, Positive.
+    input  [num_links_c-1:0][15:0] LxRXN,       // Link 0, Receiver Data, Negative.
+    output [num_links_c-1:0][15:0] LxTXP,       // Link 0, Transmitter Data, Positive.
+    output [num_links_c-1:0][15:0] LxTXN,       // Link 0, Transmitter Data, Negative.
+    input  [num_links_c-1:0]       LxRXPS,      // Power State, Link 0, Receiver.
+    output [num_links_c-1:0]       LxTXPS,      // Power State, Link 0, Transmitter.
+    output                         FERR_N,      // Fatal Error
+
+    // Group: Clocks & Reset
+    input         REFCLKP,        // Differential Reference Clock, Positive.
+    input         REFCLKN,        // Differential Reference Clock, Negative.
+    input         REFCLKSEL,
+    input         P_RST_N,        // Reset Pin.
+
+    // Group: JTAG Interface
+    input         TRST_N,         // Test Reset.
+    input         TCK,            // Test Clock.
+    input         TMS,            // Test Mode Select.
+    input         TDI,            // Test Data Input.
+    output        TDO,            // Test Data Output.
+
+    // Group: I2C Interface
+    input         SCL,            // Clock.
+    inout         SDA,            // Data.
+
+    // Group: Bootstrapping Pins
+    input   [2:0] CUB,
+    input   [1:0] REFCLK_BOOT,
+
+    // Group: Analog Pins
+    output        EXTRESTP,    // External Calibration Resistor, Top, Positive.
+    output        EXTRESTN,    // External Calibration Resistor, Top, Negative.
+    output        EXTRESBP,    // External Calibration Resistor, Bottom, Positive.
+    output        EXTRESBN    // External Calibration Resistor, Bottom, Negative.
+
+    // Group: Reserved Pins
+    // input DNU
+
+);
+
+   hmc_bfm 
+   #(
+     .num_links_c    (num_links_c),
+     .num_hmc_c      (num_hmc_c) 
+     ) 
+   hmc_bfm_model 
+   (
+    .LxRXP       (  LxRXP        ),
+    .LxRXN       (  LxRXN        ),
+    .LxTXP       (  LxTXP        ),
+    .LxTXN       (  LxTXN        ),
+    .LxRXPS      (  LxRXPS       ),
+    .LxTXPS      (  LxTXPS       ),
+    .FERR_N      (  FERR_N       ),
+    
+    .REFCLKP     (  REFCLKP      ),
+    .REFCLKN     (  REFCLKN      ),
+    .REFCLKSEL   (  REFCLKSEL    ),
+    .P_RST_N     (  P_RST_N      ),
+     
+    .TRST_N      (  TRST_N       ),
+    .TCK         (  TCK          ),
+    .TMS         (  TMS          ),
+    .TDI         (  TDI          ),
+    .TDO         (  TDO          ),
+     
+    .SCL         (  SCL          ),
+    .SDA         (  SDA          ),
+     
+    .CUB         (  CUB          ),
+    .REFCLK_BOOT (  REFCLK_BOOT  ),
+     
+    .EXTRESTP    (  EXTRESTP     ),
+    .EXTRESTN    (  EXTRESTN     ),
+    .EXTRESBP    (  EXTRESBP     ),
+    .EXTRESBN    (  EXTRESBN     )
+    );
+
+   // Configure the HMC BFM with mostly default settings.
+   cls_link_cfg  link_cfg;
+   cls_cube_cfg  cube_cfg;
+   initial begin
+      link_cfg = new();
+      cube_cfg = new();
+
+      @(posedge REFCLKP);
+
+      @@ if {$num_channels == 8} {
+      link_cfg.cfg_half_link_mode_tx = 1;
+      link_cfg.cfg_half_link_mode_rx = 1;
+      @@ }
+      link_cfg.cfg_tx_clk_ratio = $data_rate * 4;
+      link_cfg.cfg_rx_clk_ratio = $data_rate * 4;
+      link_cfg.cfg_rsp_open_loop = 1;
+      link_cfg.cfg_tokens = 219; // Same as hardware.
+      link_cfg.display();
+      cube_cfg.cfg_cube_size = 2'b01; // 4GB memory.
+      cube_cfg.display();
+      hmc_bfm_model.set_config(link_cfg, 0);
+      hmc_bfm_model.set_cube_config(cube_cfg, 0);
+   end
+
+
+endmodule : hmc_cfg

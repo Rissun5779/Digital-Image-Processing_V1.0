@@ -1,0 +1,34 @@
+touch ./app/hello.c
+niosv-app --bsp-dir=hal_bsp/ --app-dir=app/ --srcs=app/hello.c --elf-name=hello.elf
+
+# 連結 elf2hex
+sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/elf2hex /usr/local/bin/elf2hex
+
+# 連結 niosv-stack-report
+sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-stack-report /usr/local/bin/niosv-stack-report
+
+# 連結 niosv-app (以後開發會用到)
+sudo ln -s /home/rissun57/intelFPGA_lite/24.1std/niosv/bin/niosv-app /usr/local/bin/niosv-app
+
+# index scanner
+/home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/bin/riscv32-unknown-elf-gcc ${FLAGS} -E -P -v -dD "${INPUTS}"
+
+# download to RAM
+niosv-download -g -r /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/app/build/app.elf 或是 其他執行檔的位置
+
+# 如果失敗版本不同用 
+trings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX | tail -5
+
+ls /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6
+
+mv /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6 /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6.bak
+
+cp /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/libstdc++.so.6
+
+niosv-download -g -r /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab2/software/app/build/app.elf
+
+# DEBUG 通道卡住
+sudo killall -9 ash-riscv-gdb-server juart-terminal riscv32-unknown-elf-gdb openocd
+
+pkill -f ash-riscv-gdb-server
+pkill -f riscv32-unknown-elf-gdb

@@ -1,0 +1,102 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set fileset_lang $param0
+@@ set vid_std      $param1
+@@ set ed_variant   $param2
+@@ set acds_ver     $param3
+@@ set direction    $param4
+@@ set txclk_sw     $param5
+@@ set split_array [split $acds_ver "."]
+@@ set qii_ver [concat [lindex $split_array 0][lindex $split_array 1]]
+source rivierapro_setup.tcl
+set USER_DEFINED_VERILOG_COMPILE_OPTIONS +define+USE_ICD_CDR_MODEL+SDI_SIM
+
+dev_com
+com
+
+# Compile the additional test files
+@@ if { $direction == "du"  } {
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS      "\$QSYS_SIMDIR/../rtl/du/du_top.v"
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/sdi_rx_phy/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG0.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/sdi_rx_phy/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG1.sv"
+@@          if { $vid_std == "mr" } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/sdi_rx_phy/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG2.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/sdi_rx_phy/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG3.sv"
+@@          }
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/rcfg_sdi_cdr.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/sdi_ii_rx_rcfg_a10.sv"
+@@      }
+@@      if { $txclk_sw != 0 } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/rcfg_pll_sw.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/rcfg_refclk_sw.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/du/sdi_ii_tx_rcfg_a10.sv"
+@@      }
+@@ } else {
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS      "\$QSYS_SIMDIR/../rtl/rx/rx_top.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS      "\$QSYS_SIMDIR/../rtl/tx/tx_top.v"
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/rx/sdi_rx_sys/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG0.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/rx/sdi_rx_sys/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG1.sv"
+@@          if { $vid_std == "mr" } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/rx/sdi_rx_sys/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG2.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/rx/sdi_rx_sys/altera_xcvr_native_a10_$qii_ver/sim/reconfig/altera_xcvr_native_a10_reconfig_parameters_CFG3.sv"
+@@          }
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/rx/rcfg_sdi_cdr.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/rx/sdi_ii_rx_rcfg_a10.sv"
+@@      }
+@@      if { $txclk_sw != 0 } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/tx/rcfg_pll_sw.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/tx/rcfg_refclk_sw.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/tx/sdi_ii_tx_rcfg_a10.sv"
+@@      }
+@@ }
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/edge_detector.sv"
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/a10_reconfig_arbiter.sv"
+@@ }
+@@ if { $ed_variant == 3 } {
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/vid_pattgen/sdi_ii_colorbar_gen.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/vid_pattgen/sdi_ii_ed_vid_pattgen.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/vid_pattgen/sdi_ii_makeframe.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/../rtl/vid_pattgen/sdi_ii_patho_gen.v"
+@@ } else {
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/vid_pattgen/sdi_ii_colorbar_gen.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/vid_pattgen/sdi_ii_ed_vid_pattgen.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/vid_pattgen/sdi_ii_makeframe.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/vid_pattgen/sdi_ii_patho_gen.v"
+@@ }
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tb_control/sdi_ii_tb_control.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tb_control/tb_clk_rst.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tb_control/tb_data_delay.v"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tb_control/tb_serial_delay.sv"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tx_checker/sdi_ii_tb_tx_checker.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tx_checker/tb_serial_check_counter.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tx_checker/tb_serial_descrambler.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tx_checker/tb_tx_clkout_check.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/sdi_ii_tb_rx_checker.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_data_compare.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_dual_link_sync.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_fifo_line_test.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_rxsample_test.v"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_vpid_check.v"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_frame_locked_test.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_trs_locked_test.sv"
+vlog \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/rx_checker/tb_txpll_test.sv"
+vlog -sv2k5 \$USER_DEFINED_VERILOG_COMPILE_OPTIONS  "\$QSYS_SIMDIR/testbench/tb_top.v"
+
+set TOP_LEVEL_NAME "tb_top"
+
+elab_debug -t 1fs -sv_seed random
+run -all

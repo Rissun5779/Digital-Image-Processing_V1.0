@@ -1,0 +1,88 @@
+-- Copyright (C) 1991-2013 Altera Corporation
+-- Your use of Altera Corporation's design tools, logic functions 
+-- and other software and tools, and its AMPP partner logic 
+-- functions, and any output files from any of the foregoing 
+-- (including device programming or simulation files), and any 
+-- associated documentation or information are expressly subject 
+-- to the terms and conditions of the Altera Program License 
+-- Subscription Agreement, Altera MegaCore Function License 
+-- Agreement, or other applicable license agreement, including, 
+-- without limitation, that your use is for the sole purpose of 
+-- programming logic devices manufactured by Altera and sold by 
+-- Altera or its authorized distributors.  Please refer to the 
+-- applicable agreement for further details.
+
+-- Quartus II generated Memory Initialization File (.mif)
+
+WIDTH=32;
+DEPTH=128;
+
+ADDRESS_RADIX=UNS;
+DATA_RADIX=BIN;
+
+CONTENT BEGIN
+	0   :   10000100000000000001000001111100;  -- AD9517, write 0x7C to PLL operating mode register 0x010 to enable PLL         (Maximum Config)
+	1   :   10000100000000000001010000000101;  -- AD9517, write 0x05 to B counter register 0x14 for B=5
+	2   :   10000100000000000001011000000101;  -- AD9517, write 0x05 to prescaler P register 0x16 for P = divide by 16
+	3   :   10000100000000000001110000000010;  -- AD9517, write 0x02 to refclk select register 0x1C for selecting REF1
+	4   :   10000100000000001111000100001000;  -- AD9517, write 0x08 to OUT1 register 0xF1 for turning on LVPECL output
+	5   :   10000100000000010100000001000010;  -- AD9517, write 0x42 to OUT4 register 0x140 for turning on LVDS output	
+   6   :   10000100000000010100000101000010;  -- AD9517, write 0x42 to OUT5 register 0x141 for turning on LVDS output
+	7   :   10000100000000010100001001000010;  -- AD9517, write 0x42 to OUT6 register 0x142 for turning on LVDS output
+	8   :   10000100000000011001000000010001;  -- AD9517, write 0x11 to divider 0 register 0x190 for divider ratio=4
+	9   :   10000100000000011001000100000000;  -- AD9517, write 0x00 to divider 0 register 0x191 for turning on divider 0
+	10  :   10000100000000011001100100010001;  -- AD9517, write 0x11 to divider 2.1 register 0x199 for divider ratio=4
+   11  :   10000100000000011001110000100000;  -- AD9517, write 0x20 to divider 2 register 0x19C for bypassing divider 2.2
+	12  :   10000100000000011001111000010001;  -- AD9517, write 0x11 to divider 3.1 register 0x19E for divider ratio=4
+	13  :   10000100000000011010000100100000;  -- AD9517, write 0x20 to divider 3 register 0x1A1 for bypassing divider 3.2
+	14  :   10000100000000000001100000000110;  -- AD9517, write 0x06 to VCO cal register 0x018 to reset VCO calibration
+	15  :   10000100000000100011001000000001;  -- AD9517, write 0x01 to update all register 0x232 to update the register settings
+	16  :   10000100000000011110000000000011;  -- AD9517, write 0x03 to VCO divider register 0x1E0 for divider ratio=5
+	17  :   10000100000000011110000100000010;  -- AD9517, write 0x02 to VCO divider register 0x1E1 for selecting VCO as input
+	18  :   10000100000000000001100000000111;  -- AD9517, write 0x07 to VCO cal register 0x018 to initiate VCO calibration
+	19  :   10000100000000100011001000000001;  -- AD9517, write 0x01 to update all register 0x232 to update the register settings
+	20  :   10000000000000000101111100010101;  -- AD9250 #1, write 0x15 to link control 1 register 0x5F to disable the lane 
+   21  :   10000000000000000101111000100010;  -- AD9250 #1, write 0x22 to quick config register 0x5E for L=2, M=2 
+	22  :   10000000000000000111001100001111;  -- AD9250 #1, write 0x0F to parameter subclass/Np register 0x73 for subclass 0	
+	23  :   10000000000000001111111100000001;  -- AD9250 #1, write 0x01 to device update register 0xFF to update the settings	
+	24  :   10000000000000000101111100010100;  -- AD9250 #1, write 0x14 to link control 1 register 0x5F to enable the lane
+	25  :   10000001000000000101111100010101;  -- AD9250 #2, write 0x15 to link control 1 register 0x5F to disable the lane	
+	26  :   10000001000000000101111000100010;  -- AD9250 #2, write 0x22 to quick config register  0x5E for L=2, M=2
+	27  :   10000001000000000111001100001111;  -- AD9250 #2, write 0x0F to parameter subclass/Np register 0x73 for subclass 0	
+	28  :   10000001000000001111111100000001;  -- AD9250 #2, write 0x01 to device update register 0xFF to update the settings
+	29  :   10000001000000000101111100010100;  -- AD9250 #2, write 0x14 to link control 1 register 0x5F to enable the lane
+	30  :   11111111111111111111111111111111;  -- end of programming sequence
+	[31..63] :   00000000000000000000000000000000;
+	64  :   10000100000000000001000001111100;  -- AD9517, write 0x7C to PLL operating mode register 0x010 to enable PLL         (Downscale Config)	
+	65  :   10000100000000000001010000000101;  -- AD9517, write 0x05 to B counter register 0x14 for B=5
+	66  :   10000100000000000001011000000101;  -- AD9517, write 0x05 to prescaler P register 0x16 for P = divide by 16
+	67  :   10000100000000000001110000000010;  -- AD9517, write 0x02 to refclk select register 0x1C for selecting REF1
+	68  :   10000100000000001111000100001000;  -- AD9517, write 0x08 to OUT1 register 0xF1 for turning on LVPECL output
+	69  :   10000100000000010100000001000010;  -- AD9517, write 0x42 to OUT4 register 0x140 for turning on LVDS output	
+   70  :   10000100000000010100000101000010;  -- AD9517, write 0x42 to OUT5 register 0x141 for turning on LVDS output
+	71  :   10000100000000010100001001000010;  -- AD9517, write 0x42 to OUT6 register 0x142 for turning on LVDS output
+	72  :   10000100000000011001000000010001;  -- AD9517, write 0x11 to divider 0 register 0x190 for divider ratio=4
+	73  :   10000100000000011001000100000000;  -- AD9517, write 0x00 to divider 0 register 0x191 for turning on divider 0
+	74  :   10000100000000011001100100010001;  -- AD9517, write 0x11 to divider 2.1 register 0x199 for divider ratio=4
+   75  :   10000100000000011001110000100000;  -- AD9517, write 0x20 to divider 2 register 0x19C for bypassing divider 2.2
+	76  :   10000100000000011001111000010001;  -- AD9517, write 0x11 to divider 3.1 register 0x19E for divider ratio=4
+	77  :   10000100000000011010000100100000;  -- AD9517, write 0x20 to divider 3 register 0x1A1 for bypassing divider 3.2
+	78  :   10000100000000000001100000000110;  -- AD9517, write 0x06 to VCO cal register 0x018 to reset VCO calibration
+	79  :   10000100000000100011001000000001;  -- AD9517, write 0x01 to update all register 0x232 to update the register settings
+	80  :   10000100000000011110000000000011;  -- AD9517, write 0x03 to VCO divider register 0x1E0 for divider ratio=5
+	81  :   10000100000000011110000100000010;  -- AD9517, write 0x02 to VCO divider register 0x1E1 for selecting VCO as input
+	82  :   10000100000000000001100000000111;  -- AD9517, write 0x07 to VCO cal register 0x018 to initiate VCO calibration
+	83  :   10000100000000100011001000000001;  -- AD9517, write 0x01 to update all register 0x232 to update the register settings
+	84  :   10000000000000000101111100010101;  -- AD9250 #1, write 0x15 to link control 1 register 0x5F to disable the lane 
+   85  :   10000000000000000101111000100010;  -- AD9250 #1, write 0x22 to quick config register 0x5E for L=2, M=2 
+	86  :   10000000000000000111001100001111;  -- AD9250 #1, write 0x0F to parameter subclass/Np register 0x73 for subclass 0	
+	87  :   10000000000000001111111100000001;  -- AD9250 #1, write 0x01 to device update register 0xFF to update the settings	
+	88  :   10000000000000000101111100010100;  -- AD9250 #1, write 0x14 to link control 1 register 0x5F to enable the lane
+	89  :   10000001000000000101111100010101;  -- AD9250 #2, write 0x15 to link control 1 register 0x5F to disable the lane	
+	90  :   10000001000000000101111000100010;  -- AD9250 #2, write 0x22 to quick config register  0x5E for L=2, M=2
+	91  :   10000001000000000111001100001111;  -- AD9250 #2, write 0x0F to parameter subclass/Np register 0x73 for subclass 0	
+	92  :   10000001000000001111111100000001;  -- AD9250 #2, write 0x01 to device update register 0xFF to update the settings
+	93  :   10000001000000000101111100010100;  -- AD9250 #2, write 0x14 to link control 1 register 0x5F to enable the lane
+	94  :   11111111111111111111111111111111;  -- end of programming sequence
+	[95..127]  :   00000000000000000000000000000000;
+END;

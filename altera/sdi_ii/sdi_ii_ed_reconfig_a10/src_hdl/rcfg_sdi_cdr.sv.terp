@@ -1,0 +1,267 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//**********************************************************************************
+// CDR Reconfig Block
+// Generates DPRIO address and control signals for a single xcvr interface
+//   - Performs RMW for handling logical CDR Reconfiguration
+//**********************************************************************************
+@@ if { $param0 == "mr" } {
+`define SDI_MULTI_RATE 1
+@@ } else {
+//`define SDI_MULTI_RATE 1
+@@ }
+`timescale 1 ns / 1 ps
+
+module rcfg_sdi_cdr #(
+    parameter xcvr_rcfg_if_type    = "channel",  
+    parameter xcvr_rcfg_addr_width = 10,
+    parameter xcvr_rcfg_data_width = 32,
+    parameter xcvr_dprio_addr_width = 9,
+    parameter xcvr_dprio_data_width = 8
+) ( 
+    input  wire        clk,
+    input  wire        reset,
+
+    input  wire        rx_cal_busy_negedge,
+    input  wire        cdr_reconfig_req,
+    input  wire  [2:0] cdr_reconfig_sel,
+    output reg         cdr_reconfig_busy, 
+
+    output  reg                             reconfig_write,
+    output  reg                             reconfig_read,
+    output  reg  [xcvr_rcfg_addr_width-1:0] reconfig_address, 
+    output  reg  [xcvr_rcfg_data_width-1:0] reconfig_writedata, 
+    input   wire [xcvr_rcfg_data_width-1:0] reconfig_readdata,
+    input   wire                            reconfig_waitrequest
+);
+  import altera_xcvr_native_a10_reconfig_parameters_CFG0::*;
+  import altera_xcvr_native_a10_reconfig_parameters_CFG1::*;
+  `ifdef SDI_MULTI_RATE
+    import altera_xcvr_native_a10_reconfig_parameters_CFG2::*;
+    import altera_xcvr_native_a10_reconfig_parameters_CFG3::*;
+  `endif
+
+  //--------------------------------------
+  // state assignments
+  //--------------------------------------
+  localparam [2:0] IDLE         = 3'd0;
+  localparam [2:0] RD           = 3'd1; 
+  localparam [2:0] MOD          = 3'd2; 
+  localparam [2:0] WR           = 3'd3; 
+  localparam [2:0] TRANS        = 3'd4;
+  localparam [2:0] RECAL_WAIT   = 3'd5;
+
+  //Interface types
+  localparam [0:0] CHANNEL      = 1'd0;
+  localparam [3:0] EXTRA_OFFSET = 4'd4;
+  localparam [5:0] TOTAL_OFFSET = altera_xcvr_native_a10_reconfig_parameters_CFG0::ram_depth[4:0] + EXTRA_OFFSET;
+
+  localparam [xcvr_rcfg_addr_width-1:0] PMA_CAL_ENA_OFST   = 10'h100;
+  localparam [xcvr_rcfg_addr_width-1:0] CAPABILITY_OFST    = 10'h281;
+  localparam [xcvr_rcfg_addr_width-1:0] RATE_SW_FLG_OFST   = 10'h166;
+
+  //--------------------------------------
+  // signals
+  //--------------------------------------
+  reg [2:0]  next_state = 3'd0; 
+  reg [2:0]  state;
+
+  reg  [xcvr_dprio_data_width-1:0] modify_cgb_data;
+
+  //wire [xcvr_dprio_addr_width-1:0] cgb_scratch_addr; 
+
+  //*********************************************************************
+  //******Number of execution required for the whole CDR reconfig process (SDI)************
+  reg [5:0] num_exec;
+  always @(posedge clk or posedge reset)
+  begin
+     if (reset) begin
+        num_exec <= TOTAL_OFFSET;
+     end else begin
+        if (next_state == IDLE) begin
+           num_exec <= TOTAL_OFFSET;
+        end else if (next_state == TRANS) begin
+           num_exec <= num_exec - 6'd1;
+        end
+     end
+  end
+
+  wire request_access = (num_exec == TOTAL_OFFSET);
+  wire cal_bit_enable = (num_exec == 6'd3);
+  wire rate_switch_flag = (num_exec == 6'd2);
+  wire return_access_with_recal = (num_exec == 6'd1);
+  wire reconfig_done = (num_exec == 6'd0);
+
+  //*********************************************************************
+  //******Get ram data for each config***********************************
+  wire [26:0] ram_data;
+  `ifdef SDI_MULTI_RATE
+    assign ram_data =   (cdr_reconfig_sel[2:1] == 2'b11) ?  altera_xcvr_native_a10_reconfig_parameters_CFG0::get_ram_data(num_exec-EXTRA_OFFSET) :
+                        (cdr_reconfig_sel[2:1] == 2'b10) ?  altera_xcvr_native_a10_reconfig_parameters_CFG1::get_ram_data(num_exec-EXTRA_OFFSET) :
+                        (cdr_reconfig_sel      == 3'b001)?  altera_xcvr_native_a10_reconfig_parameters_CFG3::get_ram_data(num_exec-EXTRA_OFFSET) :
+                                                            altera_xcvr_native_a10_reconfig_parameters_CFG2::get_ram_data(num_exec-EXTRA_OFFSET);
+  `else
+    assign ram_data =   (cdr_reconfig_sel      == 3'b001) ? altera_xcvr_native_a10_reconfig_parameters_CFG1::get_ram_data(num_exec-EXTRA_OFFSET) :
+                                                            altera_xcvr_native_a10_reconfig_parameters_CFG0::get_ram_data(num_exec-EXTRA_OFFSET);
+  `endif
+  //***********************************************************************************
+  //***************************Control State Machine***********************************
+  // state register
+  always @(posedge clk or posedge reset)
+  begin
+   if (reset) 
+     state <= IDLE;
+   else
+     state <= next_state;
+  end   
+
+  // next state logic
+  always @ (*) begin
+    case(state)
+      IDLE: begin
+        if (cdr_reconfig_req)
+          next_state = MOD;
+        else    
+          next_state = IDLE;
+      end
+      RD: begin
+        if (reconfig_waitrequest)
+          next_state = RD;
+        else
+          next_state = MOD;
+      end
+      MOD: begin
+        next_state = WR;
+      end
+      WR: begin
+        if (reconfig_waitrequest)
+          next_state = WR;
+        else
+          next_state = TRANS;
+      end
+      TRANS : begin
+         if (reconfig_done)
+            next_state = RECAL_WAIT;
+         else if (return_access_with_recal)
+            next_state = MOD;
+         else
+            next_state = RD;
+      end
+      RECAL_WAIT : begin
+         if (rx_cal_busy_negedge)
+          next_state = IDLE;
+         else
+          next_state = RECAL_WAIT;
+      end
+      default : next_state = IDLE;
+    endcase
+  end
+
+  //*********************************************************************
+  //************************** cdr_reconfig_busy****************************
+  always @(posedge clk or posedge reset)
+  begin
+      if (reset)
+        cdr_reconfig_busy <= 1'd0;
+      else begin
+        if (cdr_reconfig_req)
+          cdr_reconfig_busy <= 1'b1; 
+        else if (next_state == IDLE) 
+          cdr_reconfig_busy <= 1'b0;
+      end
+  end
+
+  //********************************************************************************
+  //*****************Generate DPRIO signals for single XCVR Interface***************
+  //DPRIO read
+  always @(posedge clk or posedge reset)
+  begin
+    if (reset)
+      reconfig_read  <= 1'b0; 
+    else begin
+      if(next_state == RD)
+        reconfig_read  <= 1'b1; 
+      else
+        reconfig_read  <= 1'b0; 
+    end
+  end
+
+  //DPRIO write
+  always @(posedge clk or posedge reset)
+  begin
+    if (reset)
+      reconfig_write  <= 1'b0; 
+    else begin
+      if(next_state == WR)
+        reconfig_write  <= 1'b1; 
+      else 
+        reconfig_write  <= 1'b0; 
+    end
+  end
+
+  //DPRIO writedata
+  always @(posedge clk or posedge reset)
+  begin
+    if (reset)
+      reconfig_writedata  <= {xcvr_rcfg_data_width{1'b0}}; 
+    else begin
+      if(next_state == WR)
+          reconfig_writedata  <= {24'b0,modify_cgb_data};
+    end
+  end
+
+  //DPRIO address
+  always @ (posedge clk or posedge reset)
+  begin
+    if (reset)
+      reconfig_address  <= {xcvr_rcfg_addr_width{1'b0}}; 
+    else begin
+      if (next_state == RD | next_state == WR) begin
+        if (request_access | return_access_with_recal)
+          reconfig_address  <= {xcvr_rcfg_addr_width{1'b0}}; 
+        else if (cal_bit_enable)
+          reconfig_address  <= PMA_CAL_ENA_OFST;
+        else if (rate_switch_flag)
+          reconfig_address  <= RATE_SW_FLG_OFST;
+        else
+          reconfig_address <= ram_data[25:16];
+      end
+    end
+  end
+
+  // Data to be written to avmm
+  always @ (posedge clk or posedge reset)
+  begin
+    if (reset)
+      modify_cgb_data  <= {8{1'b0}}; 
+    else begin
+      if (next_state == MOD) begin
+        if (request_access)
+          modify_cgb_data  <= {6'd0, 2'b10};
+        else if (return_access_with_recal)
+          modify_cgb_data  <= {6'd0, 2'b01};
+        else if (cal_bit_enable)
+          modify_cgb_data  <= {reconfig_readdata[7], 1'b0, reconfig_readdata[5:2], 1'b1, reconfig_readdata[0]};
+        else if (rate_switch_flag)
+          modify_cgb_data  <= {1'b0, reconfig_readdata[6:0]};
+        else
+          modify_cgb_data  <= ram_data[7:0] | (reconfig_readdata[7:0] & ~ram_data[15:8]);
+      end
+    end
+  end
+  
+endmodule 
+@@ if { $param0 == "mr" } {
+`undef SDI_MULTI_RATE
+@@ }

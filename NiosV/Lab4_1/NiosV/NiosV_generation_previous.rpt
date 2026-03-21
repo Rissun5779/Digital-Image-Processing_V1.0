@@ -1,0 +1,143 @@
+Info: Starting: Create block symbol file (.bsf)
+Info: qsys-generate /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV.qsys --block-symbol-file --output-directory=/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV --family="Cyclone V" --part=5CSXFC6D6F31C6
+Progress: Loading Lab4_1/NiosV.qsys
+Progress: Reading input file
+Progress: Adding CLK [clock_source 24.1]
+Progress: Parameterizing module CLK
+Progress: Adding JTAG_UART [altera_avalon_jtag_uart 24.1]
+Progress: Parameterizing module JTAG_UART
+Progress: Adding NiosV [intel_niosv_m 26.0.0]
+Progress: Parameterizing module NiosV
+Progress: Adding PIO_HEX_0 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_0
+Progress: Adding PIO_HEX_1 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_1
+Progress: Adding PIO_HEX_2 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_2
+Progress: Adding PIO_HEX_3 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_3
+Progress: Adding PIO_LED [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_LED
+Progress: Adding PIO_SW [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_SW
+Progress: Adding RAM [altera_avalon_onchip_memory2 24.1]
+Progress: Parameterizing module RAM
+Progress: Adding timer_0 [altera_avalon_timer 24.1]
+Progress: Parameterizing module timer_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: NiosV.JTAG_UART: JTAG UART IP input clock need to be at least double (2x) the operating frequency of JTAG TCK on board
+Warning: NiosV.NiosV: Properties (associatedClock) have been set on interface reset - in composed mode these are ignored
+Warning: NiosV.NiosV: Properties (associatedClock,associatedReset) have been set on interface instruction_manager - in composed mode these are ignored
+Warning: NiosV.NiosV: Properties (associatedClock,associatedReset) have been set on interface data_manager - in composed mode these are ignored
+Info: NiosV.PIO_SW: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
+Info: qsys-generate succeeded.
+Info: Finished: Create block symbol file (.bsf)
+Info: 
+Info: Starting: Create HDL design files for synthesis
+Info: qsys-generate /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV.qsys --synthesis=VERILOG --output-directory=/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis --family="Cyclone V" --part=5CSXFC6D6F31C6
+Progress: Loading Lab4_1/NiosV.qsys
+Progress: Reading input file
+Progress: Adding CLK [clock_source 24.1]
+Progress: Parameterizing module CLK
+Progress: Adding JTAG_UART [altera_avalon_jtag_uart 24.1]
+Progress: Parameterizing module JTAG_UART
+Progress: Adding NiosV [intel_niosv_m 26.0.0]
+Progress: Parameterizing module NiosV
+Progress: Adding PIO_HEX_0 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_0
+Progress: Adding PIO_HEX_1 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_1
+Progress: Adding PIO_HEX_2 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_2
+Progress: Adding PIO_HEX_3 [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_HEX_3
+Progress: Adding PIO_LED [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_LED
+Progress: Adding PIO_SW [altera_avalon_pio 24.1]
+Progress: Parameterizing module PIO_SW
+Progress: Adding RAM [altera_avalon_onchip_memory2 24.1]
+Progress: Parameterizing module RAM
+Progress: Adding timer_0 [altera_avalon_timer 24.1]
+Progress: Parameterizing module timer_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: NiosV.JTAG_UART: JTAG UART IP input clock need to be at least double (2x) the operating frequency of JTAG TCK on board
+Warning: NiosV.NiosV: Properties (associatedClock) have been set on interface reset - in composed mode these are ignored
+Warning: NiosV.NiosV: Properties (associatedClock,associatedReset) have been set on interface instruction_manager - in composed mode these are ignored
+Warning: NiosV.NiosV: Properties (associatedClock,associatedReset) have been set on interface data_manager - in composed mode these are ignored
+Info: NiosV.PIO_SW: PIO inputs are not hardwired in test bench. Undefined values will be read from PIO inputs during simulation.
+Info: NiosV: Generating "NiosV" for QUARTUS_SYNTH
+Info: JTAG_UART: "NiosV" instantiated altera_avalon_jtag_uart "JTAG_UART"
+Info: NiosV: "NiosV" instantiated intel_niosv_m "NiosV"
+Info: PIO_HEX_0: Starting RTL generation for module 'NiosV_PIO_HEX_0'
+Info: PIO_HEX_0:   Generation command is [exec /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/perl/bin/perl -I /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/perl/lib -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin/europa -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/common -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=NiosV_PIO_HEX_0 --dir=/tmp/alt0525_8338428453717082029.dir/0031_PIO_HEX_0_gen/ --quartus_dir=/home/rissun57/intelFPGA_lite/24.1std/quartus --verilog --config=/tmp/alt0525_8338428453717082029.dir/0031_PIO_HEX_0_gen//NiosV_PIO_HEX_0_component_configuration.pl  --do_build_sim=0  ]
+Info: PIO_HEX_0: Done RTL generation for module 'NiosV_PIO_HEX_0'
+Info: PIO_HEX_0: "NiosV" instantiated altera_avalon_pio "PIO_HEX_0"
+Info: PIO_SW: Starting RTL generation for module 'NiosV_PIO_SW'
+Info: PIO_SW:   Generation command is [exec /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/perl/bin/perl -I /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/perl/lib -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin/europa -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/common -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=NiosV_PIO_SW --dir=/tmp/alt0525_8338428453717082029.dir/0032_PIO_SW_gen/ --quartus_dir=/home/rissun57/intelFPGA_lite/24.1std/quartus --verilog --config=/tmp/alt0525_8338428453717082029.dir/0032_PIO_SW_gen//NiosV_PIO_SW_component_configuration.pl  --do_build_sim=0  ]
+Info: PIO_SW: Done RTL generation for module 'NiosV_PIO_SW'
+Info: PIO_SW: "NiosV" instantiated altera_avalon_pio "PIO_SW"
+Info: RAM: Starting RTL generation for module 'NiosV_RAM'
+Info: RAM:   Generation command is [exec /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/perl/bin/perl -I /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64/perl/lib -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin/europa -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/common -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2 -- /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2/generate_rtl.pl --name=NiosV_RAM --dir=/tmp/alt0525_8338428453717082029.dir/0033_RAM_gen/ --quartus_dir=/home/rissun57/intelFPGA_lite/24.1std/quartus --verilog --config=/tmp/alt0525_8338428453717082029.dir/0033_RAM_gen//NiosV_RAM_component_configuration.pl  --do_build_sim=0  ]
+Info: RAM: Done RTL generation for module 'NiosV_RAM'
+Info: RAM: "NiosV" instantiated altera_avalon_onchip_memory2 "RAM"
+Info: timer_0: Starting RTL generation for module 'NiosV_timer_0'
+Info: timer_0:   Generation command is [exec /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64//perl/bin/perl -I /home/rissun57/intelFPGA_lite/24.1std/quartus/linux64//perl/lib -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin/europa -I /home/rissun57/intelFPGA_lite/24.1std/quartus/sopc_builder/bin -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/common -I /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_timer -- /home/rissun57/intelFPGA_lite/24.1std/quartus/../ip/altera/sopc_builder_ip/altera_avalon_timer/generate_rtl.pl --name=NiosV_timer_0 --dir=/tmp/alt0525_8338428453717082029.dir/0034_timer_0_gen/ --quartus_dir=/home/rissun57/intelFPGA_lite/24.1std/quartus --verilog --config=/tmp/alt0525_8338428453717082029.dir/0034_timer_0_gen//NiosV_timer_0_component_configuration.pl  --do_build_sim=0  ]
+Info: timer_0: Done RTL generation for module 'NiosV_timer_0'
+Info: timer_0: "NiosV" instantiated altera_avalon_timer "timer_0"
+Info: avalon_st_adapter: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_001: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_002: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_003: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_004: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_005: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_006: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_007: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_008: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_009: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_010: Inserting error_adapter: error_adapter_0
+Info: mm_interconnect_0: "NiosV" instantiated altera_mm_interconnect "mm_interconnect_0"
+Info: irq_mapper: "NiosV" instantiated altera_irq_mapper "irq_mapper"
+Info: rst_controller: "NiosV" instantiated altera_reset_controller "rst_controller"
+Info: niosv_reset_controller: "Generating: niosv_reset_controller"
+Info: hart: "NiosV" instantiated intel_niosv_m_unit "hart"
+Info: timer_module: "NiosV" instantiated intel_niosv_timer_msip "timer_module"
+Info: dbg_mod: "NiosV" instantiated intel_niosv_dbg_mod "dbg_mod"
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/niosv_ram.sv
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_reset_synchronizer.v
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_reset_controller.v
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_reset_controller.sdc
+Info: irq_mapper: "NiosV" instantiated altera_irq_mapper "irq_mapper"
+Info: JTAG_UART_avalon_jtag_slave_translator: "mm_interconnect_0" instantiated altera_merlin_slave_translator "JTAG_UART_avalon_jtag_slave_translator"
+Info: NiosV_data_manager_agent: "mm_interconnect_0" instantiated altera_merlin_axi_master_ni "NiosV_data_manager_agent"
+Info: JTAG_UART_avalon_jtag_slave_agent: "mm_interconnect_0" instantiated altera_merlin_slave_agent "JTAG_UART_avalon_jtag_slave_agent"
+Info: JTAG_UART_avalon_jtag_slave_agent_rsp_fifo: "mm_interconnect_0" instantiated altera_avalon_sc_fifo "JTAG_UART_avalon_jtag_slave_agent_rsp_fifo"
+Info: router: "mm_interconnect_0" instantiated altera_merlin_router "router"
+Info: router_002: "mm_interconnect_0" instantiated altera_merlin_router "router_002"
+Info: router_004: "mm_interconnect_0" instantiated altera_merlin_router "router_004"
+Info: router_014: "mm_interconnect_0" instantiated altera_merlin_router "router_014"
+Info: NiosV_instruction_manager_wr_limiter: "mm_interconnect_0" instantiated altera_merlin_traffic_limiter "NiosV_instruction_manager_wr_limiter"
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_avalon_sc_fifo.v
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_avalon_st_pipeline_base.v
+Info: cmd_demux: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "cmd_demux"
+Info: cmd_demux_002: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "cmd_demux_002"
+Info: cmd_mux: "mm_interconnect_0" instantiated altera_merlin_multiplexer "cmd_mux"
+Info: cmd_mux_010: "mm_interconnect_0" instantiated altera_merlin_multiplexer "cmd_mux_010"
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: rsp_demux: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "rsp_demux"
+Info: rsp_demux_010: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "rsp_demux_010"
+Info: rsp_mux: "mm_interconnect_0" instantiated altera_merlin_multiplexer "rsp_mux"
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: rsp_mux_002: "mm_interconnect_0" instantiated altera_merlin_multiplexer "rsp_mux_002"
+Info: Reusing file /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/NiosV/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: avalon_st_adapter: "mm_interconnect_0" instantiated altera_avalon_st_adapter "avalon_st_adapter"
+Info: niosv_reset_controller: "hart" instantiated intel_niosv_m_unit "niosv_reset_controller"
+Info: error_adapter_0: "avalon_st_adapter" instantiated error_adapter "error_adapter_0"
+Info: NiosV: Done "NiosV" with 34 modules, 89 files
+Info: qsys-generate succeeded.
+Info: Finished: Create HDL design files for synthesis

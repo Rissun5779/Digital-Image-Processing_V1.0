@@ -1,0 +1,148 @@
+// This file is dynamically generated and is for information purposes only.
+// It is not used during compilation or simulation.
+
+SEQ_GPT
+   0x5C00   SEQ_GPT_GLOBAL_PAR_VER        : 2          0x00000002
+   0x5C04   SEQ_GPT_NIOS_C_VER            : 1          0x00000001
+   0x5C08   SEQ_GPT_COLUMN_ID             : 1          0x00000001
+   0x5C0C   SEQ_GPT_NUM_IOPACKS           : 11         0x0000000B
+   0x5C10   SEQ_GPT_NIOS_CLK_FREQ_KHZ     : 790000     0x000C0DF0
+   0x5C14   SEQ_GPT_PARAM_TABLE_SIZE      : 256        0x00000100
+   0x5C18   SEQ_GPT_INTERFACE_PAR_PTRS    
+   0x5C18      static_array_elem [0]      : 80         0x00000050
+   0x5C1C      static_array_elem [1]      : 0          0x00000000
+   0x5C20      static_array_elem [2]      : 0          0x00000000
+   0x5C24      static_array_elem [3]      : 0          0x00000000
+   0x5C28      static_array_elem [4]      : 0          0x00000000
+   0x5C2C      static_array_elem [5]      : 0          0x00000000
+   0x5C30      static_array_elem [6]      : 0          0x00000000
+   0x5C34      static_array_elem [7]      : 0          0x00000000
+   0x5C38      static_array_elem [8]      : 0          0x00000000
+   0x5C3C      static_array_elem [9]      : 0          0x00000000
+   0x5C40      static_array_elem [10]     : 0          0x00000000
+   0x5C44   SEQ_GPT_SKIP_PLL_CAL          : 4294967295 0xFFFFFFFF
+   0x5C48   SEQ_GPT_SKIP_PLL_DCC_CAL      : 4294967295 0xFFFFFFFF
+   0x5C4C   SEQ_GPT_SLAVE_CLK_DIVIDER     : 30         0x0000001E
+SEQ_PT
+   0x5C50   SEQ_PT_IP_VER                 : 16448      0x4040    
+   0x5C52   SEQ_PT_INTERFACE_PAR_VER      : 2          0x0002    
+   0x5C54   SEQ_PT_DEBUG_DATA_PTR         : 0          0x0000    
+   0x5C56   SEQ_PT_USER_COMMAND_PTR       : 0          0x0000    
+   0x5C58   SEQ_PT_MEMORY_TYPE            : 0          0x00      
+   0x5C59   SEQ_PT_DIMM_TYPE              : 0          0x00      
+   0x5C5A   SEQ_PT_CONTROLLER_TYPE        : 1          0x01      
+   0x5C5B   SEQ_PT_RESERVED               : 0          0x00      
+   0x5C5C   SEQ_PT_AFI_CLK_FREQ_KHZ       : 200000     0x00030D40
+   0x5C60   SEQ_PT_BURST_LEN              : 8          0x08      
+   0x5C61   SEQ_PT_READ_LATENCY           : 8          0x08      
+   0x5C62   SEQ_PT_WRITE_LATENCY          : 6          0x06      
+   0x5C63   SEQ_PT_NUM_RANKS              : 1          0x01      
+   0x5C64   SEQ_PT_NUM_DIMMS              : 1          0x01      
+   0x5C65   SEQ_PT_NUM_DQS_WR             : 1          0x01      
+   0x5C66   SEQ_PT_NUM_DQS_RD             : 1          0x01      
+   0x5C67   SEQ_PT_NUM_DQ                 : 8          0x08      
+   0x5C68   SEQ_PT_NUM_DM                 : 1          0x01      
+   0x5C69   SEQ_PT_ADDR_WIDTH             : 16         0x10      
+   0x5C6A   SEQ_PT_BANK_WIDTH             : 3          0x03      
+   0x5C6B   SEQ_PT_CS_WIDTH               : 1          0x01      
+   0x5C6C   SEQ_PT_CKE_WIDTH              : 1          0x01      
+   0x5C6D   SEQ_PT_ODT_WIDTH              : 1          0x01      
+   0x5C6E   SEQ_PT_C_WIDTH                : 0          0x00      
+   0x5C6F   SEQ_PT_BANK_GROUP_WIDTH       : 0          0x00      
+   0x5C70   SEQ_PT_ADDR_MIRROR            : 0          0x00      
+   0x5C71   SEQ_PT_CK_WIDTH               : 1          0x01      
+   0x5C72   SEQ_PT_CAL_DATA_SIZE          : 16         0x10      
+   0x5C73   SEQ_PT_NUM_LRDIMM_CFG         : 2          0x02      
+   0x5C74   SEQ_PT_NUM_AC_ROM_ENUMS       : 48         0x30      
+   0x5C75   SEQ_PT_NUM_CENTERS            : 1          0x01      
+   0x5C76   SEQ_PT_NUM_CA_LANES           : 3          0x03      
+   0x5C77   SEQ_PT_NUM_DATA_LANES         : 1          0x01      
+   0x5C78   SEQ_PT_ODT_TABLE_LO           : 4          0x00000004
+   0x5C7C   SEQ_PT_ODT_TABLE_HI           : 0          0x00000000
+   0x5C80   SEQ_PT_CAL_CONFIG             : 18899073   0x01206081
+   0x5C84   SEQ_PT_DBG_CONFIG             : 0          0x0000    
+   0x5C86   SEQ_PT_CAL_DATA_PTR           : 156        0x009C    
+   0x009C      CAL_TREFI                  : 7800       0x00001E78 7800
+   0x00A0      CAL_TRFC                   : 260        0x00000104 260
+   0x00A4      CAL_ADDR0                  : 0          0x00000000 0
+   0x00A8      CAL_ADDR1                  : 8          0x00000008 8
+   0x5C88   SEQ_PT_DBG_SKIP_RANKS         : 0          0x00000000
+   0x5C8C   SEQ_PT_DBG_SKIP_GROUPS        : 0          0x00000000
+   0x5C90   SEQ_PT_DBG_SKIP_STEPS         : 62752      0x0000F520
+   0x5C94   SEQ_PT_NUM_MR                 : 4          0x04      
+   0x5C95   SEQ_PT_NUM_DIMM_MR            : 4          0x04      
+   0x5C96   SEQ_PT_TILE_ID_PTR            : 172        0x00AC    
+   0x00AC      TILE [0]                   : 4          0x04       (T) = (0)
+   0x00AD      AC_LANE [0]                : 0          0x00       (T L) = (0 0)
+   0x00AE      AC_LANE [1]                : 1          0x01       (T L) = (0 1)
+   0x00AF      AC_LANE [2]                : 2          0x02       (T L) = (0 2)
+   0x00B0      DATA_LANE [0]              : 3          0x03       (T L) = (0 3)
+   0x00B1      ALIGN_PAD                  : 0          0x00       
+   0x00B2      ALIGN_PAD                  : 0          0x00       
+   0x00B3      ALIGN_PAD                  : 0          0x00       
+   0x5C98   SEQ_PT_PIN_ADDR_PTR           : 180        0x00B4    
+   0x00B4      PORT_MEM_CKE [0]           : 6          0x06       (T L P) = (0 0 6 )  AC_LANE [0]
+   0x00B5                                 : 0          0x00       UNUSED_AC_PORT
+   0x00B6                                 : 0          0x00       UNUSED_AC_PORT
+   0x00B7                                 : 0          0x00       UNUSED_AC_PORT
+   0x00B8      PORT_MEM_ODT [0]           : 4          0x04       (T L P) = (0 0 4 )  AC_LANE [0]
+   0x00B9                                 : 0          0x00       UNUSED_AC_PORT
+   0x00BA                                 : 0          0x00       UNUSED_AC_PORT
+   0x00BB                                 : 0          0x00       UNUSED_AC_PORT
+   0x00BC      PORT_MEM_RESET_N [0]       : 1          0x01       (T L P) = (0 0 1 )  AC_LANE [0]
+   0x00BD      PORT_MEM_WE_N [0]          : 0          0x00       (T L P) = (0 0 0 )  AC_LANE [0]
+   0x00BE      PORT_MEM_CAS_N [0]         : 40         0x28       (T L P) = (0 2 8 )  AC_LANE [2]
+   0x00BF      PORT_MEM_RAS_N [0]         : 39         0x27       (T L P) = (0 2 7 )  AC_LANE [2]
+   0x00C0      PORT_MEM_CS_N [0]          : 2          0x02       (T L P) = (0 0 2 )  AC_LANE [0]
+   0x00C1                                 : 0          0x00       UNUSED_AC_PORT
+   0x00C2                                 : 0          0x00       UNUSED_AC_PORT
+   0x00C3                                 : 0          0x00       UNUSED_AC_PORT
+   0x00C4      PORT_MEM_BA [0]            : 41         0x29       (T L P) = (0 2 9 )  AC_LANE [2]
+   0x00C5      PORT_MEM_BA [1]            : 42         0x2A       (T L P) = (0 2 10)  AC_LANE [2]
+   0x00C6      PORT_MEM_BA [2]            : 43         0x2B       (T L P) = (0 2 11)  AC_LANE [2]
+   0x00C7      PORT_MEM_A [0]             : 16         0x10       (T L P) = (0 1 0 )  AC_LANE [1]
+   0x00C8      PORT_MEM_A [1]             : 17         0x11       (T L P) = (0 1 1 )  AC_LANE [1]
+   0x00C9      PORT_MEM_A [2]             : 18         0x12       (T L P) = (0 1 2 )  AC_LANE [1]
+   0x00CA      PORT_MEM_A [3]             : 19         0x13       (T L P) = (0 1 3 )  AC_LANE [1]
+   0x00CB      PORT_MEM_A [4]             : 20         0x14       (T L P) = (0 1 4 )  AC_LANE [1]
+   0x00CC      PORT_MEM_A [5]             : 21         0x15       (T L P) = (0 1 5 )  AC_LANE [1]
+   0x00CD      PORT_MEM_A [6]             : 22         0x16       (T L P) = (0 1 6 )  AC_LANE [1]
+   0x00CE      PORT_MEM_A [7]             : 23         0x17       (T L P) = (0 1 7 )  AC_LANE [1]
+   0x00CF      PORT_MEM_A [8]             : 24         0x18       (T L P) = (0 1 8 )  AC_LANE [1]
+   0x00D0      PORT_MEM_A [9]             : 25         0x19       (T L P) = (0 1 9 )  AC_LANE [1]
+   0x00D1      PORT_MEM_A [10]            : 26         0x1A       (T L P) = (0 1 10)  AC_LANE [1]
+   0x00D2      PORT_MEM_A [11]            : 27         0x1B       (T L P) = (0 1 11)  AC_LANE [1]
+   0x00D3      PORT_MEM_A [12]            : 35         0x23       (T L P) = (0 2 3 )  AC_LANE [2]
+   0x00D4      PORT_MEM_A [13]            : 36         0x24       (T L P) = (0 2 4 )  AC_LANE [2]
+   0x00D5      PORT_MEM_A [14]            : 37         0x25       (T L P) = (0 2 5 )  AC_LANE [2]
+   0x00D6      PORT_MEM_A [15]            : 38         0x26       (T L P) = (0 2 6 )  AC_LANE [2]
+   0x00D7                                 : 0          0x00       UNUSED_AC_PORT
+   0x00D8                                 : 0          0x00       UNUSED_AC_PORT
+   0x00D9                                 : 0          0x00       UNUSED_AC_PORT
+   0x00DA                                 : 0          0x00       UNUSED_AC_PORT
+   0x00DB                                 : 0          0x00       UNUSED_AC_PORT
+   0x00DC      PORT_MEM_CK [0]            : 8          0x08       (T L P) = (0 0 8 )  AC_LANE [0]
+   0x00DD      PORT_MEM_CK_N [0]          : 9          0x09       (T L P) = (0 0 9 )  AC_LANE [0]
+   0x00DE                                 : 0          0x00       UNUSED_AC_PORT
+   0x00DF                                 : 0          0x00       UNUSED_AC_PORT
+   0x00E0                                 : 0          0x00       UNUSED_AC_PORT
+   0x00E1                                 : 0          0x00       UNUSED_AC_PORT
+   0x00E2                                 : 0          0x00       UNUSED_AC_PORT
+   0x00E3                                 : 0          0x00       UNUSED_AC_PORT
+   0x00E4      PORT_MEM_DQS [0]           : 4          0x04       (T L P) = (0 3 4 )  DATA_LANE [0]
+   0x00E5      PORT_MEM_DQS_N [0]         : 5          0x05       (T L P) = (0 3 5 )  DATA_LANE [0]
+   0x00E6      PORT_MEM_DM [0]            : 11         0x0B       (T L P) = (0 3 11)  DATA_LANE [0]
+   0x00E7      PORT_MEM_DQ [0]            : 1          0x01       (T L P) = (0 3 1 )  DATA_LANE [0]
+   0x00E8      PORT_MEM_DQ [1]            : 2          0x02       (T L P) = (0 3 2 )  DATA_LANE [0]
+   0x00E9      PORT_MEM_DQ [2]            : 3          0x03       (T L P) = (0 3 3 )  DATA_LANE [0]
+   0x00EA      PORT_MEM_DQ [3]            : 6          0x06       (T L P) = (0 3 6 )  DATA_LANE [0]
+   0x00EB      PORT_MEM_DQ [4]            : 7          0x07       (T L P) = (0 3 7 )  DATA_LANE [0]
+   0x00EC      PORT_MEM_DQ [5]            : 8          0x08       (T L P) = (0 3 8 )  DATA_LANE [0]
+   0x00ED      PORT_MEM_DQ [6]            : 9          0x09       (T L P) = (0 3 9 )  DATA_LANE [0]
+   0x00EE      PORT_MEM_DQ [7]            : 10         0x0A       (T L P) = (0 3 10)  DATA_LANE [0]
+   0x00EF      ALIGN_PAD                  : 0          0x00       
+   0x5C9A   SEQ_PT_MR_PTR                 : 240        0x00F0    
+   0x00F0      MR0                        : 1088       0x00000440 0000000010001000000
+   0x00F4      MR1                        : 65538      0x00010002 0010000000000000010
+   0x00F8      MR2                        : 131592     0x00020208 0100000001000001000
+   0x00FC      MR3                        : 196608     0x00030000 0110000000000000000

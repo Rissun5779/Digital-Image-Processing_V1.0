@@ -1,0 +1,33 @@
+[Interface Protocols|Audio & Video]
+DisplayPort Intel FPGA IP v18.1 = "%t" "%w/../../common/lib/megawizard.pl" --wizard_file:"%w/altera_dp_hw.tcl" --wizard:altera_dp --familyparameter:DEVICE_FAMILY --cusp_ip:true  --early_gen:on  %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<VISIBILITY FOR_CREATE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Stratix V | Arria V | Arria V GZ | Cyclone V | Arria 10"   SUPPORT_CHECK="ON" /> 
+<LANGUAGES AHDL="OFF" />
+<PINPLAN SUPPORTED="OFF"/>
+<ALIAS>DisplayPort v12.1</ALIAS>
+<ALIAS>DisplayPort v13.0</ALIAS>
+<ALIAS>DisplayPort v13.1</ALIAS>
+<ALIAS>DisplayPort v14.0</ALIAS>
+<ALIAS>DisplayPort v14.0.1</ALIAS>
+<ALIAS>DisplayPort v14.1</ALIAS>
+<ALIAS>DisplayPort v15.0</ALIAS>
+<ALIAS>DisplayPort v15.0.1</ALIAS>
+<ALIAS>DisplayPort v15.1</ALIAS>
+<ALIAS>DisplayPort v15.1.1</ALIAS>
+<ALIAS>DisplayPort v15.1.2</ALIAS>
+<ALIAS>DisplayPort v16.0</ALIAS>
+<ALIAS>DisplayPort v16.0.1</ALIAS>
+<ALIAS>DisplayPort v16.0.2</ALIAS>
+<ALIAS>DisplayPort v16.1</ALIAS>
+<ALIAS>DisplayPort v16.1.1</ALIAS>
+<ALIAS>DisplayPort v16.1.2</ALIAS>
+<ALIAS>DisplayPort v17.0</ALIAS>
+<ALIAS>DisplayPort v17.0.1</ALIAS>
+<ALIAS>DisplayPort v17.0.2</ALIAS>
+<ALIAS>DisplayPort v17.1</ALIAS>
+<ALIAS>DisplayPort v17.1.1</ALIAS>
+<ALIAS>DisplayPort v18.0</ALIAS>
+</INFO>

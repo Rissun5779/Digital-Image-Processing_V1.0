@@ -1,0 +1,117 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions and other 
+-- software and tools, and its AMPP partner logic functions, and any output 
+-- files from any of the foregoing (including device programming or simulation 
+-- files), and any associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License Subscription 
+-- Agreement, Intel FPGA IP License Agreement, or other applicable 
+-- license agreement, including, without limitation, that your use is for the 
+-- sole purpose of programming logic devices manufactured by Intel and sold by 
+-- Intel or its authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: params_to_vhd.vhd.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to vhdl file
+@@ #
+@@ # Usage: IP core independent, general vhdl format output for lpm ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+LIBRARY altera_mf;
+USE altera_mf.altera_mf_components.all;
+
+ENTITY ${output_name} IS
+	PORT
+	(
+@@  # output entity port list #
+@@  # module_port_list {{port direction width value} {port direction width value} ...} #
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $port $port_last]}    {
+@@          if {$value == -1} {
+@@              if {$width!=-1} {
+		$port		: $direction STD_LOGIC_VECTOR ($width DOWNTO 0)
+@@              } else {
+		$port		: $direction STD_LOGIC
+@@              }
+@@          } elseif {$value == 2} {
+		$port		: $direction STD_LOGIC_VECTOR ($width DOWNTO 0) := (OTHERS => '1')
+@@          } else {
+		$port		: $direction STD_LOGIC  := '$value'
+@@          }
+@@      } else {
+@@          if {$value == -1} {
+@@              if {$width!=-1} {
+		$port		: $direction STD_LOGIC_VECTOR ($width DOWNTO 0);
+@@              } else {
+		$port		: $direction STD_LOGIC;
+@@              }
+@@          } elseif {$value == 2} {
+		$port		: $direction STD_LOGIC_VECTOR ($width DOWNTO 0) := (OTHERS => '1');
+@@          } else {
+		$port		: $direction STD_LOGIC  := '$value';
+@@          }
+@@      }
+@@  }
+	);
+END ${output_name};
+
+
+ARCHITECTURE SYN OF ${output_name} IS
+
+--	type ALTERA_MF_LOGIC_2D is array (NATURAL RANGE <>, NATURAL RANGE <>) of STD_LOGIC;
+
+@@  # output output ports wire connections #
+@@  # sub_wire_list_vhdl {name_l name_r width_l width_r}
+@@  foreach {name_l name_r width_l width_r} $sub_wire_list_vhdl {
+@@      if {$width_r !=-1} {
+	SIGNAL $name_l	: $name_r ($width_l DOWNTO 0, $width_r DOWNTO 0);
+@@      } else {
+	SIGNAL $name_l	: $name_r ($width_l DOWNTO 0);
+@@      }
+@@  }
+
+@@  # architecture component map information #
+BEGIN
+@@  foreach {name_l name_r width} $wire_list_vhdl {
+	$name_l    <= $name_r ($width DOWNTO 0);
+@@  }
+@@  foreach {name_l x y name_r} $array2d_wire_list_vhdl {
+	$name_l ($x, $y)    <= $name_r ($y);
+@@  }
+@@  foreach {name_l name_r width} $result_wire_list_vhdl {
+	$name_l    <= $name_r ($width DOWNTO 0);
+@@  }
+
+	${ip_name}_component : $ip_name
+	GENERIC MAP (
+@@  foreach {sub_param} $params_list  {
+@@  foreach {name value} $sub_param  {
+		$name => $value,
+@@      }
+@@  }
+		lpm_type => "parallel_add"
+	)
+	PORT MAP (
+@@      set port_last [lindex $port_map_list end-3]
+@@      foreach {name_l name_r direction width} $port_map_list {
+@@          if {[string equal $name_l $port_last]} {
+		$name_l => $name_r
+@@          } else {
+		$name_l => $name_r,
+@@          }
+@@      }
+	);
+
+
+
+END SYN;

@@ -1,0 +1,319 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set vid_std    $param0
+@@ set txclk_sw   $param1
+
+#****************************************************
+# Set value
+#****************************************************
+proc set_value {value} {
+    set claim_path [claim_service master \$::master mylib]
+    master_write_16 \$claim_path 0x0 \$value
+    close_service master \$claim_path
+}
+
+#****************************************************
+# Hold reset
+#****************************************************
+proc hold_reset {} {
+    set masked_bit 0x7FF
+    set mod_bits 0x800
+
+    set ::pio_value [expr \$mod_bits | ( \$::pio_value & \$masked_bit) ]
+    # puts \$::pio_value
+    set_value \$::pio_value
+}
+
+#****************************************************
+# Release reset
+#****************************************************
+proc release_reset {} {
+    set masked_bit 0x7FF
+    set mod_bits 0x000
+
+    set ::pio_value [expr \$mod_bits | ( \$::pio_value & \$masked_bit) ]
+    # puts \$::pio_value
+    set_value \$::pio_value
+}
+
+#****************************************************
+# Reset pattgen
+#****************************************************
+proc reset_pattgen {} {
+    hold_reset
+    release_reset
+}
+
+#****************************************************
+# SD video format list
+#****************************************************
+proc sd_vidfmt_list {} {
+    return [list "625i" "525i"] 
+}
+
+#****************************************************
+# HD video format list
+#****************************************************
+@@  if { $txclk_sw != 0 } {
+proc hd_vidfmt_list {} {
+    return [list "720p60" "720p59.94" "720p50" "720p30" "720p29.97" \\
+                "720p25" "720p24" "720p23.98" "1080i60" "1080i59.94" \\
+                "1080i50" "1080sF30" "1080sF29.97" "1080sF25" \\
+                "1080sF24" "1080sF23.98" "1080p30" "1080p29.97" \\
+                "1080p25" "1080p24" "1080p23.98"]
+}
+@@ } else {
+proc hd_vidfmt_list { } {
+    return [list "720p60" "720p50" "720p30" \\
+                "720p25" "720p24" \\
+                "1080i60" "1080i50" \\
+                "1080sF30" "1080sF25" "1080sF24" \\
+                "1080p30" "1080p25" "1080p24"]
+}
+@@ }
+
+#****************************************************
+# 3G video format list
+#****************************************************
+@@  if { $txclk_sw != 0 } {
+proc threeg_vidfmt_list {} {
+    return [list "1080p60 Level A" "1080p59.94 Level A" "1080p50 Level A" \\
+                "1080p60 Level B-DL" "1080p59.94 Level B-DL" "1080p50 Level B-DL" \\
+                "720p60 Level B-DS" "720p59.94 Level B-DS" "720p50 Level B-DS" \\
+                "720p30 Level B-DS" "720p29.97 Level B-DS" "720p25 Level B-DS" \\
+                "720p24 Level B-DS" "720p23.98 Level B-DS" "1080i60 Level B-DS" \\
+                "1080i59.94 Level B-DS" "1080i50 Level B-DS" "1080sF30 Level B-DS" \\
+                "1080sF29.97 Level B-DS" "1080sF25 Level B-DS" "1080sF24 Level B-DS" \\
+                "1080sF23.98 Level B-DS" "1080p30 Level B-DS" "1080p29.97 Level B-DS" \\
+                "1080p25 Level B-DS" "1080p24 Level B-DS" "1080p23.98 Level B-DS"]
+}
+@@ } else {
+proc threeg_vidfmt_list {} {
+    return [list "1080p60 Level A" "1080p50 Level A" "1080p60 Level B-DL" \\
+                "1080p50 Level B-DL" "720p60 Level B-DS" "720p50 Level B-DS" \\
+                "720p30 Level B-DS" "720p25 Level B-DS" "720p24 Level B-DS" \\
+                "1080i60 Level B-DS" "1080i50 Level B-DS" "1080sF30 Level B-DS" \\
+                "1080sF25 Level B-DS" "1080sF24 Level B-DS" "1080p30 Level B-DS" \\
+                "1080p25 Level B-DS" "1080p24 Level B-DS"]
+}
+@@ }
+
+#****************************************************
+# 6G video format list
+#****************************************************
+@@  if { $txclk_sw != 0 } {
+proc sixg_vidfmt_list {} {
+    return [list "2160p30 ST 2081-10 Mode 1" "2160p29.97 ST 2081-10 Mode 1" \\
+                "2160p25 ST 2081-10 Mode 1" "2160p24 ST 2081-10 Mode 1" \\
+                "2160p23.98 ST 2081-10 Mode 1"]
+}
+@@ } else {
+proc sixg_vidfmt_list {} {
+    return [list "2160p30 ST 2081-10 Mode 1" "2160p25 ST 2081-10 Mode 1" \\
+                "2160p24 ST 2081-10 Mode 1"]
+}
+@@ }
+
+#****************************************************
+# 12G video format list
+#****************************************************
+@@  if { $txclk_sw != 0 } {
+proc twelveg_vidfmt_list {} {
+    return [list "2160p60 ST 2082-10 Mode 1" "2160p59.94 ST 2082-10 Mode 1" \\
+                "2160p50 ST 2082-10 Mode 1"]
+}
+@@ } else {
+proc twelveg_vidfmt_list {} {
+    return [list "2160p60 ST 2082-10 Mode 1" "2160p50 ST 2082-10 Mode 1"]
+}
+@@ }
+
+#****************************************************
+# Video Standard changed 
+#****************************************************
+proc std_change {} {
+    switch [dashboard_get_property \$::dash vidstd_list selectedItem] {
+        "SD-SDI" {
+            dashboard_set_property \$::dash vidfmt_list options [sd_vidfmt_list]
+            dashboard_set_property \$::dash vidfmt_list selected 0
+        }
+        "HD-SDI" {
+            dashboard_set_property \$::dash vidfmt_list options [hd_vidfmt_list]
+            dashboard_set_property \$::dash vidfmt_list selected 0
+        }
+        "3G-SDI" {
+            dashboard_set_property \$::dash vidfmt_list options [threeg_vidfmt_list]
+            dashboard_set_property \$::dash vidfmt_list selected 0
+        }
+        "6G-SDI" {
+            dashboard_set_property \$::dash vidfmt_list options [sixg_vidfmt_list]
+            dashboard_set_property \$::dash vidfmt_list selected 0
+        }
+        "12G-SDI" {
+            dashboard_set_property \$::dash vidfmt_list options [twelveg_vidfmt_list]
+            dashboard_set_property \$::dash vidfmt_list selected 0
+        }
+        default {
+            dashboard_set_property \$::dash vidfmt_list options [hd_vidfmt_list]
+            dashboard_set_property \$::dash vidfmt_list selected 0
+        }
+    }
+}
+
+#****************************************************
+# Video Format changed
+#****************************************************
+proc format_change {} {
+    hold_reset
+
+    set masked_bit 0x400
+    switch [dashboard_get_property \$::dash vidfmt_list selectedItem] {
+        "625i"                          { set mod_bits 0x001 }
+        "525i"                          { set mod_bits 0x000 }
+        "720p60"                        { set mod_bits 0x017 }
+        "720p59.94"                     { set mod_bits 0x217 }
+        "720p50"                        { set mod_bits 0x018 }
+        "720p30"                        { set mod_bits 0x019 }
+        "720p29.97"                     { set mod_bits 0x219 }
+        "720p25"                        { set mod_bits 0x01A }
+        "720p24"                        { set mod_bits 0x01B }
+        "720p23.98"                     { set mod_bits 0x21B }
+        "1080i60"                       { set mod_bits 0x014 }
+        "1080i59.94"                    { set mod_bits 0x214 }
+        "1080i50"                       { set mod_bits 0x015 }
+        "1080sF30"                      { set mod_bits 0x094 }
+        "1080sF29.97"                   { set mod_bits 0x294 }
+        "1080sF25"                      { set mod_bits 0x095 }
+        "1080sF24"                      { set mod_bits 0x09E }
+        "1080sF23.98"                   { set mod_bits 0x29E }
+        "1080p30"                       { set mod_bits 0x01C }
+        "1080p29.97"                    { set mod_bits 0x21C }
+        "1080p25"                       { set mod_bits 0x01D }
+        "1080p24"                       { set mod_bits 0x016 }
+        "1080p23.98"                    { set mod_bits 0x216 }
+        "1080p60 Level A"               { set mod_bits 0x03C }
+        "1080p59.94 Level A"            { set mod_bits 0x23C }
+        "1080p50 Level A"               { set mod_bits 0x03D }
+        "1080p60 Level B-DL"            { set mod_bits 0x12C }
+        "1080p59.94 Level B-DL"         { set mod_bits 0x32C }
+        "1080p50 Level B-DL"            { set mod_bits 0x12D }
+        "720p60 Level B-DS"             { set mod_bits 0x027 }
+        "720p59.94 Level B-DS"          { set mod_bits 0x227 }
+        "720p50 Level B-DS"             { set mod_bits 0x028 }
+        "720p30 Level B-DS"             { set mod_bits 0x029 }
+        "720p29.97 Level B-DS"          { set mod_bits 0x229 }
+        "720p25 Level B-DS"             { set mod_bits 0x02A }
+        "720p24 Level B-DS"             { set mod_bits 0x02B }
+        "720p23.98 Level B-DS"          { set mod_bits 0x22B }
+        "1080i60 Level B-DS"            { set mod_bits 0x024 }
+        "1080i59.94 Level B-DS"         { set mod_bits 0x224 }
+        "1080i50 Level B-DS"            { set mod_bits 0x025 }
+        "1080sF30 Level B-DS"           { set mod_bits 0x0A4 }
+        "1080sF29.97 Level B-DS"        { set mod_bits 0x2A4 }
+        "1080sF25 Level B-DS"           { set mod_bits 0x0A5 }
+        "1080sF24 Level B-DS"           { set mod_bits 0x0AE }
+        "1080sF23.98 Level B-DS"        { set mod_bits 0x2AE }
+        "1080p30 Level B-DS"            { set mod_bits 0x02C }
+        "1080p29.97 Level B-DS"         { set mod_bits 0x22C }
+        "1080p25 Level B-DS"            { set mod_bits 0x02D }
+        "1080p24 Level B-DS"            { set mod_bits 0x026 }
+        "1080p23.98 Level B-DS"         { set mod_bits 0x226 }
+        "2160p30 ST 2081-10 Mode 1"     { set mod_bits 0x04C }
+        "2160p29.97 ST 2081-10 Mode 1"  { set mod_bits 0x24C }
+        "2160p25 ST 2081-10 Mode 1"     { set mod_bits 0x04D }
+        "2160p24 ST 2081-10 Mode 1"     { set mod_bits 0x046 }
+        "2160p23.98 ST 2081-10 Mode 1"  { set mod_bits 0x246 }
+        "2160p60 ST 2082-10 Mode 1"     { set mod_bits 0x07C }
+        "2160p59.94 ST 2082-10 Mode 1"  { set mod_bits 0x27C }
+        "2160p50 ST 2082-10 Mode 1"     { set mod_bits 0x07D }
+    }
+
+    set ::pio_value [expr \$mod_bits | ( \$::pio_value & \$masked_bit) ]
+    # puts \$::pio_value
+    set_value \$::pio_value
+}
+
+#****************************************************
+# Pattern Change
+#****************************************************
+proc pattern_change {} {
+    hold_reset
+
+    set masked_bit 0x3FF
+    if { [dashboard_get_property \$::dash vidpatt_list selected] } {
+        set mod_bits 0x400
+    } else {
+        set mod_bits 0x000
+    }
+
+    set ::pio_value [expr \$mod_bits | ( \$::pio_value & \$masked_bit) ]
+    # puts \$::pio_value
+    set_value \$::pio_value
+}
+
+#****************************************************
+# Main program
+#****************************************************
+# Add dashboard for GUI
+set ::dash [add_service dashboard pattgen_ctrl_dashboard "SDI Video Pattern Gen Control" "Tools/Pattgen_Ctrl"]
+dashboard_set_property \$::dash self visible true
+dashboard_set_property \$::dash self itemsPerRow 1
+dashboard_set_property \$::dash self developmentMode true
+
+dashboard_add \$::dash vidstd_list comboBox self
+dashboard_set_property \$::dash vidstd_list label   "Video Standard: "
+@@ if { $vid_std == "hd" } {
+dashboard_set_property \$::dash vidstd_list options {"HD-SDI"}
+@@ } elseif { $vid_std == "mr" } {
+dashboard_set_property \$::dash vidstd_list options {"12G-SDI" "6G-SDI" "3G-SDI" "HD-SDI" "SD-SDI"}
+@@ } elseif { $vid_std == "tr" } {
+dashboard_set_property \$::dash vidstd_list options {"3G-SDI" "HD-SDI" "SD-SDI"}
+@@ } else {
+dashboard_set_property \$::dash vidstd_list options {"3G-SDI"}
+@@ }
+dashboard_set_property \$::dash vidstd_list selected 0
+dashboard_set_property \$::dash vidstd_list onChange {std_change}
+
+dashboard_add \$::dash vidfmt_list comboBox self
+dashboard_set_property \$::dash vidfmt_list label   "Video Format: "
+@@ if { $vid_std == "hd" } {
+dashboard_set_property \$::dash vidfmt_list options [hd_vidfmt_list]
+@@ } elseif { $vid_std == "mr" } {
+dashboard_set_property \$::dash vidfmt_list options [twelveg_vidfmt_list]
+@@ } else {
+dashboard_set_property \$::dash vidfmt_list options [threeg_vidfmt_list]
+@@ }
+dashboard_set_property \$::dash vidfmt_list selected 0
+dashboard_set_property \$::dash vidfmt_list onChange {format_change}
+
+dashboard_add \$::dash vidpatt_list comboBox self
+dashboard_set_property \$::dash vidpatt_list label   "Video Pattern: "
+dashboard_set_property \$::dash vidpatt_list options {"colorbar" "pathological"}
+dashboard_set_property \$::dash vidpatt_list selected 0
+dashboard_set_property \$::dash vidpatt_list onChange {pattern_change}
+
+# Get the correct master
+foreach m [get_service_paths master] {
+    set minfo [marker_node_info \$m]
+    if {[string match {*altera_avalon_packets_to_master.in_stream*} \$minfo]} {
+        set ::master \$m
+        set ::pio_value 0
+        # Initialize pattgen according to the default value set
+        format_change
+        pattern_change
+    }
+}
+if {! [info exists ::master] } {
+    puts "Unable to locate JTAG to AVMM master"
+}

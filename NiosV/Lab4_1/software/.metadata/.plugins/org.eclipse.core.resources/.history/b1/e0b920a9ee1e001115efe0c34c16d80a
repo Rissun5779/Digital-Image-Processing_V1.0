@@ -1,0 +1,28 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include <kiss_fft.h>
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS       1000
+#define FFT_SIZE    8
+
+int main()
+{
+	alt_printf("--- KissFFT Nios V Example ----\n");
+
+	// FFT input/output buffer
+	kiss_fft_cpx in[FFT_SIZE];
+	kiss_fft_cpx out[FFT_SIZE];
+
+	for(int i=0; i<FFT_SIZE; i++){
+		in[i].r = i;
+		in[i].i = 0;
+	}
+
+	kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+	if(!cfg){
+		alt_printf("FFT allocation failed!\n");
+	}
+	return 0;
+}

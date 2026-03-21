@@ -1,0 +1,16 @@
+[Interface Protocols|Ethernet]
+Low Latency 25G/50G Ethernet Intel FPGA IP = "%t" "%w/../../../common/lib/megawizard.pl" --wizard:alt_e2550 --familyparameter:DEVICE_FAMILY --early_gen:on --wizard_file:"%w/alt_e2550_hw.tcl" %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE|Stratix V"   SUPPORT_CHECK="ON" /> 
+<LANGUAGES   AHDL="OFF"/>
+<PINPLAN SUPPORTED="ON"/>
+<VISIBILITY FOR_CREATE="OFF"/> 
+<ALIAS>Low Latency 25G/50G Ethernet v16.0</ALIAS>
+<ALIAS>Low Latency 25G/50G Ethernet v16.1</ALIAS>
+<ALIAS>Low Latency 25G/50G Ethernet v17.0</ALIAS>
+<ALIAS>Low Latency 25G/50G Ethernet v17.1</ALIAS>
+<ALIAS>Low Latency 25G/50G Ethernet v18.0</ALIAS>
+<ALIAS>Low Latency 25G/50G Ethernet Intel FPGA IP</ALIAS>
+</INFO>

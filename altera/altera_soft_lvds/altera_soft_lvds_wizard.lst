@@ -1,0 +1,23 @@
+
+[Basic Functions|I/O]
+Altera Soft LVDS v18.1 = "%t" "%w/../common/lib/megawizard.pl" --wizard_file:"%w/altera_soft_lvds_hw.tcl" --wizard:altera_soft_lvds --familyparameter:device_family --early_gen:on %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Zippleback | MAX 10 FPGA | MAX 10"   SUPPORT_CHECK="ON" />
+<LANGUAGES AHDL="ON"/>
+<PINPLAN SUPPORTED="OFF"/>
+<ALIAS>Altera Soft LVDS v13.1</ALIAS>
+<ALIAS>Altera Soft LVDS v14.0</ALIAS>
+<ALIAS>Altera Soft LVDS v14.1</ALIAS>
+<ALIAS>Altera Soft LVDS v15.0</ALIAS>
+<ALIAS>Altera Soft LVDS v15.1</ALIAS>
+<ALIAS>Altera Soft LVDS v16.0</ALIAS>
+<ALIAS>Altera Soft LVDS v16.1</ALIAS>
+<ALIAS>Altera Soft LVDS v17.0</ALIAS>
+<ALIAS>Altera Soft LVDS v17.1</ALIAS>
+<ALIAS>Soft LVDS Intel FPGA IP v18.0</ALIAS>
+<ALIAS>Soft LVDS Intel FPGA IP v18.1</ALIAS>
+<ALIAS>Soft LVDS Intel FPGA IP v19.1</ALIAS>
+<ALIAS>Soft LVDS Intel FPGA IP v19.2</ALIAS>
+</INFO>

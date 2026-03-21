@@ -1,0 +1,150 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions and other 
+-- software and tools, and its AMPP partner logic functions, and any output 
+-- files from any of the foregoing (including device programming or simulation 
+-- files), and any associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License Subscription 
+-- Agreement, Intel FPGA IP License Agreement, or other applicable 
+-- license agreement, including, without limitation, that your use is for the 
+-- sole purpose of programming logic devices manufactured by Intel and sold by 
+-- Intel or its authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: altera_mult_add.vhd.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to vhdl file
+@@ #
+@@ # Usage: IP core independent, general vhdl format output for ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+@@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+LIBRARY altera_lnsim;
+USE altera_lnsim.altera_lnsim_components.all;
+
+ENTITY ${output_name} IS
+    PORT
+    (
+@@
+@@  #----- write entity port list -----#
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width widthL} $module_port_list {
+@@      set delim ";"
+@@      set logic_string "STD_LOGIC"
+@@
+@@      if {$port eq $port_last} {
+@@          set delim ""
+@@      }
+@@
+@@      if {$width > 1} {
+@@          set logic_string "${logic_string}_VECTOR ([expr {$width+$widthL-1}] DOWNTO $widthL)"
+@@      }
+@@
+        $port       : $direction $logic_string $delim
+@@
+@@  }
+@@
+    );
+END ${output_name};
+
+
+ARCHITECTURE SYN OF ${output_name} IS
+
+@@
+@@  #----- write eq signal list -----#
+@@  foreach {name width widthL} $sub_wire_list {
+@@      set logic_string "STD_LOGIC"
+@@
+@@      if {$width != -1} {
+@@          set logic_string "${logic_string}_VECTOR ([expr {$width+$widthL-1}] DOWNTO $widthL)"
+@@      }
+@@
+    SIGNAL $name    : $logic_string ;
+@@
+@@  }
+@@
+@@  dict for {base_port info} $input_merge_wire_list {
+@@      set logic_string "STD_LOGIC"
+@@      dict with info {
+@@          set width_string "${logic_string}_VECTOR ([expr {($width*$count)-1}] DOWNTO 0)"
+@@
+    SIGNAL $base_port_wire    : $width_string ;
+@@
+@@      }
+@@  }
+
+@@
+@@  #----- write architecture component map information -----#
+@@
+BEGIN
+@@
+@@  foreach {dest src width widthL} $wire_list {
+@@      set width_string ""
+@@
+@@      if {$width != -1} {
+@@          set width_string "([expr {$width+$widthL-1}] DOWNTO $widthL)"
+@@      }
+@@
+    $dest     <= $src$width_string;
+@@
+@@  }
+@@
+@@  dict for {base_port info} $input_merge_wire_list {
+@@      dict with info {
+@@
+@@          for {set i 0} {$i < $count} {incr i} {
+@@              set input_index "_$i"
+@@              set width_string "([expr {($width*(1+$i))-1}] downto [expr {($width*($i))}])"
+    $base_port_wire$width_string     <= $base_port$input_index;
+@@          }
+@@      }
+@@  }
+
+@@
+
+@@
+    ${ip_name}_component : $ip_name
+    GENERIC MAP (
+@@
+@@  set name_last [lindex $params_list end-2]
+@@  foreach {name str value} $params_list  {
+@@      set delim ","
+@@
+@@      if {$str eq "STRING"} {
+@@          set value "\"$value\""
+@@      }
+@@
+@@      if {$name eq $name_last} {
+@@          set delim ""
+@@      } 
+@@
+            $name  => $value$delim
+@@
+@@  }
+@@
+    )
+    PORT MAP (
+@@
+@@  set port_last [lindex $port_map_list end-4]
+@@  foreach {dest src direction width widthL} $port_map_list {
+@@      set delim ","
+@@
+@@      if {$dest eq $port_last} {
+@@          set delim ""
+@@      }
+@@
+        $dest => $src$delim
+@@
+@@  }
+@@
+    );
+
+
+
+END SYN;

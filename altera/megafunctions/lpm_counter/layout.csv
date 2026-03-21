@@ -1,0 +1,28 @@
+tab: General,,,
+,group: How wide should the 'q' output bus be?,,
+,,param: GUI_WIDTH ,
+,group: What should the counter direction be?,,
+,,param: GUI_DIRECTION,
+tab: General 2,,,
+,group: What type of counter do you want?,,
+,,param: GUI_MODULUS_COUNTER,
+,,param: GUI_MODULUS_VALUE,
+,group: Do you want any optional additional ports?,,
+,,param: GUI_CLKEN,
+,,param: GUI_CNTEN,
+,,param: GUI_CARRYIN,
+,,param: GUI_CARRYOUT,
+tab: Optional Inputs,,,
+,group: Do you want any optional inputs?,,
+,,group: Synchronous Inputs,
+,,,param: GUI_SCLR
+,,,param: GUI_SLOAD
+,,,param: GUI_SSET
+,,,param: GUI_SSET_ALL1
+,,,param: GUI_SVALUE
+,,group: Asynchronous Inputs,
+,,,param: GUI_ACLR
+,,,param: GUI_ALOAD
+,,,param: GUI_ASET
+,,,param: GUI_ASET_ALL1
+,,,param: GUI_AVALUE

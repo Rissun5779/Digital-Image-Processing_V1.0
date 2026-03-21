@@ -1,0 +1,34 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+
+`ifdef EMR_UNLOADER_DEVICE
+	`undef EMR_UNLOADER_DEVICE
+`endif
+`ifdef ALTERA_RESERVED_QIS_DEVICE   
+	`define EMR_UNLOADER_DEVICE	`ALTERA_RESERVED_QIS_DEVICE
+`else								
+	`define EMR_UNLOADER_DEVICE	"10AX115"
+`endif
+
+// Arria 10 EDCRC circuitry Slow Detection constant time in cycles
+//The time between falling edge of first CRCERROR pulse (VEC) and raising edge of the second
+`define			AEU_HEC_CYCLES_1 214
+`define			AEU_HEC_CYCLES_2 290
+`define			AEU_HEC_CYCLES_3 286
+`define			AEU_HEC_CYCLES_4 286
+`define			AEU_HEC_CYCLES_5 406
+
+// The minimal measured Arria 10 internal oscillator frequency
+//Use the minimal internal oscillator frequency measured for Arria 10 devices
+`define			AEU_INTOSC_FREQUENCY  80

@@ -1,0 +1,219 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 13.1a10.0 Build 346 11/13/2013 SJ Full Version
+# Date created = 15:00:57  January 24, 2014
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		eth_100g_a10_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+#set_global_assignment -name FAMILY "Arria 10"
+#set_global_assignment -name DEVICE 10AT115U2F45E2SG
+#set_global_assignment -name TOP_LEVEL_ENTITY eth_100g_a10
+#set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.1
+#set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:00:57  JANUARY 24, 2014"
+#set_global_assignment -name LAST_QUARTUS_VERSION 13.1
+#set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+#set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+#set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
+#set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
+#set_global_assignment -name SIP_FILE ../ENET_ENTITY_QMEGA_01312014/ENET_ENTITY_QMEGA_01312014.sip
+#set_global_assignment -name QIP_FILE ../ENET_ENTITY_QMEGA_01312014/ENET_ENTITY_QMEGA_01312014.qip
+#set_global_assignment -name VERILOG_FILE eth_100g_a10.v
+#set_global_assignment -name PARTITION_NETLIST_TYPE POST_SYNTH -section_id Top
+#set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT -section_id Top
+#set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_data
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_data
+set_global_assignment -name SDC_FILE ./eth_100g_a10.sdc
+
+#########################################################
+# Timing Related Setting                                #
+#########################################################
+#set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS OFF
+#set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+#set_global_assignment -name AUTO_GLOBAL_CLOCK OFF
+#set_global_assignment -name AUTO_GLOBAL_REGISTER_CONTROLS OFF
+#set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+#set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING OFF
+#set_global_assignment -name ENABLE_BENEFICIAL_SKEW_OPTIMIZATION OFF
+#set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+#set_global_assignment -name TIMEQUEST_DO_REPORT_TIMING ON
+#set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION OFF
+#set_global_assignment -name AUTO_RAM_RECOGNITION OFF
+#set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION OFF
+#set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 10
+#set_global_assignment -name ROUTER_EFFORT_MULTIPLIER 4
+#set_global_assignment -name REMOVE_DUPLICATE_REGISTERS OFF
+
+
+
+#set_instance_assignment -name GXB_0PPM_CORECLK ON -to rx_serial
+#set_instance_assignment -name GXB_0PPM_CORECLK ON -to tx_serial
+# Use H/V routing on RX HSSI 
+#set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|caui4_e100_pma:iof|caui4_xcvr:xcvr|altera_xcvr_native_a10:caui4_xcvr|twentynm_xcvr_native:g_xcvr_native_insts[*].twentynm_xcvr_native_inst|twentynm_pcs:inst_twentynm_pcs|twentynm_pcs_ch:ch[0].inst_twentynm_pcs_ch*pld_pcs_rx_clk_out*"
+
+#set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "1.8 V"
+#set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_endofpacket
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_error
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_fcs_error
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_fcs_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_startofpacket
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_rx_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_error
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_empty
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_endofpacket
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_ready
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_startofpacket
+set_instance_assignment -name VIRTUAL_PIN ON -to l8_tx_valid
+
+set_instance_assignment -name VIRTUAL_PIN ON -to din_sop
+set_instance_assignment -name VIRTUAL_PIN ON -to din_eop
+set_instance_assignment -name VIRTUAL_PIN ON -to din_idle
+set_instance_assignment -name VIRTUAL_PIN ON -to din_eop_empty
+set_instance_assignment -name VIRTUAL_PIN ON -to din
+set_instance_assignment -name VIRTUAL_PIN ON -to din_req
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_d
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_c
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_sop
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_eop
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_eop_empty
+set_instance_assignment -name VIRTUAL_PIN ON -to dout_idle
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_fcs_error
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_fcs_valid
+
+set_instance_assignment -name VIRTUAL_PIN ON -to local_fault_status
+set_instance_assignment -name VIRTUAL_PIN ON -to pause_insert_tx
+set_instance_assignment -name VIRTUAL_PIN ON -to pause_receive_rx
+set_instance_assignment -name VIRTUAL_PIN ON -to ptp_pkt_out
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_address
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_clk
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_read
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_readdata
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_reset
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_waitrequest
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_write
+set_instance_assignment -name VIRTUAL_PIN ON -to reconfig_writedata
+set_instance_assignment -name VIRTUAL_PIN ON -to remote_fault_status
+set_instance_assignment -name VIRTUAL_PIN ON -to reset_async
+set_instance_assignment -name VIRTUAL_PIN ON -to reset_status
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_64
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_127
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_255
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_511
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_1023
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_1518
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_bcast_ctrl
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_bcast_ctrl_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_bcast_data_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_bcast_data_ok
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_fcs_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_fragment
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_jabber
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_max
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_mcast_ctrl
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_mcast_ctrl_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_mcast_data_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_mcast_data_ok
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_over
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_pause
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_pause_ctrl_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_runt
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_sizeok_fcserr
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_ucast_ctrl
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_ucast_ctrl_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_ucast_data_err
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_inc_ucast_data_ok
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_pcs_ready
+set_instance_assignment -name VIRTUAL_PIN ON -to status_addr
+set_instance_assignment -name VIRTUAL_PIN ON -to status_read
+set_instance_assignment -name VIRTUAL_PIN ON -to status_read_timeout
+set_instance_assignment -name VIRTUAL_PIN ON -to status_readdata
+set_instance_assignment -name VIRTUAL_PIN ON -to status_readdata_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to status_waitrequest
+set_instance_assignment -name VIRTUAL_PIN ON -to status_write
+set_instance_assignment -name VIRTUAL_PIN ON -to status_writedata
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_64
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_127
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_255
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_511
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_1023
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_1518
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_bcast_ctrl
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_bcast_data_err
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_bcast_data_ok
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_fcs_err
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_fragment
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_jabber
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_max
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_mcast_ctrl
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_mcast_data_err
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_mcast_data_ok
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_over
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_pause
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_sizeok_fcserr
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_ucast_ctrl
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_ucast_data_err
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_inc_ucast_data_ok
+
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_request_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_request_fingerprint
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_timestamp_insert
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_timestamp_format
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_residence_time_update
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_residence_time_calc_format
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_checksum_zero
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_checksum_correct
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_offset_timestamp
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_offset_correction_field
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_offset_checksum_field
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_offset_checksum_correction
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_asymmetry_update
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_time_of_day_96b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_time_of_day_96b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_ingress_timestamp_96b
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_ingress_timestamp_96b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_ingress_timestamp_96b_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_96b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_96b_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_96b_fingerprint
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_time_of_day_64b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_time_of_day_64b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_etstamp_ins_ctrl_ingress_timestamp_64b
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_ingress_timestamp_64b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_ingress_timestamp_64b_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_64b_data
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_64b_valid
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_egress_timestamp_64b_fingerprint

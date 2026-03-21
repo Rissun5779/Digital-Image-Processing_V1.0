@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="1G/10G Ethernet Example Design (Arria 10)"
+     kind="alt_em10g32"
+     version="All"
+     description="1G/10G Ethernet Example Design (Arria 10)">
+    <parameter name="DATAPATH_OPTION" value="3" />
+  	<parameter name="ENABLE_10GBASER_REG_MODE" value="0" />
+  	<parameter name="ENABLE_1G10G_MAC" value="1" />
+  	<parameter name="ENABLE_MEM_ECC" value="0" />
+  	<parameter name="ENABLE_PFC" value="0" />
+  	<parameter name="ENABLE_PTP_1STEP" value="0" />
+  	<parameter name="ENABLE_SUPP_ADDR" value="1" />
+  	<parameter name="ENABLE_TIMESTAMPING" value="0" />
+  	<parameter name="ENABLE_UNIDIRECTIONAL" value="0" />
+  	<parameter name="INSERT_CSR_ADAPTOR" value="1" />
+  	<parameter name="INSERT_ST_ADAPTOR" value="1" />
+  	<parameter name="INSERT_XGMII_ADAPTOR" value="1" />
+  	<parameter name="INSTANTIATE_STATISTICS" value="1" />
+  	<parameter name="PFC_PRIORITY_NUMBER" value="8" />
+  	<parameter name="PREAMBLE_PASSTHROUGH" value="0" />
+  	<parameter name="REGISTER_BASED_STATISTICS" value="0" />
+  	<parameter name="SHOW_HIDDEN_OPTIONS" value="0" />
+  	<parameter name="TIME_OF_DAY_FORMAT" value="2" />
+  	<parameter name="TSTAMP_FP_WIDTH" value="4" />
+	<parameter name="SELECT_SUPPORTED_VARIANT" value="4" />
+	<parameter name="ENABLE_ED_FILESET_SYNTHESIS" value="1" />
+	<parameter name="ENABLE_ED_FILESET_SIM" value="1" />
+	<parameter name="SELECT_NUMBER_OF_CHANNEL" value="1" />
+    <parameter name="SELECT_TARGETED_DEVICE" value="0" />
+    <parameter name="QSF_PATH" value="LL10G_1G_10G_LINESIDE/" />
+  </preset>
+ </presets>
+</ip>

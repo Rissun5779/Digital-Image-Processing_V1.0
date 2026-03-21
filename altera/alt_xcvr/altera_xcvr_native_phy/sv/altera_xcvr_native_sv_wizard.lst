@@ -1,0 +1,25 @@
+[Interface Protocols|Transceiver PHY]
+Transceiver Native PHY Intel Stratix V FPGA IP = "%t" "%w/../../../common/lib/megawizard.pl" --wizard_file:"%w/tcl/altera_xcvr_native_sv_hw.tcl" --wizard:altera_xcvr_native_sv --familyparameter:DEVICE_FAMILY --cusp_ip:true --early_gen:on  %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<VISIBILITY FOR_CREATE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Stratix V"   SUPPORT_CHECK="ON" /> 
+<LANGUAGES   AHDL="OFF" />
+<PINPLAN SUPPORTED="OFF"/>
+<ALIAS>Stratix V Transceiver Native PHY</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v12.0</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v12.1</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v13.0</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v13.1</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v14.0</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v14.1</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v15.0</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v15.1</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v16.0</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v16.1</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v17.0</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v17.1</ALIAS>
+<ALIAS>Stratix V Transceiver Native PHY v18.0</ALIAS>
+<ALIAS>Transceiver Native PHY Intel Stratix V FPGA IP v18.0</ALIAS>
+</INFO>

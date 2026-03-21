@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include "system.h"
+#include "sys/alt_timestamp.h"
+#include "kissfft/kiss_fft.h"
+
+#define FFT_SIZE 8
+
+int main() {
+    if(!alt_timestamp_start()) {
+        printf("Timestamp timer not available.\n");
+        return -1;
+    }
+
+    kiss_fft_cpx in[FFT_SIZE], out[FFT_SIZE];
+    for(int i=0;i<FFT_SIZE;i++){ in[i].r = i; in[i].i = 0; }
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg){ printf("FFT allocation failed!\n"); return -1; }
+
+    // 讀取起始 tick
+    int repeat = 1000;
+    alt_u32 start = alt_timestamp();
+    for(int r=0;r<repeat;r++)
+        kiss_fft(cfg, in, out);
+    alt_u32 end = alt_timestamp();
+
+    kiss_fft_free(cfg);
+
+    alt_u32 ticks = end - start;
+    double ms = ticks * 1000.0 / NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND;
+    double cpi = (double)ticks * (ALT_CPU_FREQ / NIOSV_INTERNAL_TIMER_TICKS_PER_SECOND) / FFT_SIZE;
+
+    printf("FFT time: %lu ticks\n", ticks);
+    printf("FFT time: %.3f ms\n", ms);
+    printf("Approx CPI per FFT element: %.3f\n", cpi);
+
+    return 0;
+}

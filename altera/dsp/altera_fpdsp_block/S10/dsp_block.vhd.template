@@ -1,0 +1,163 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+library fourteennm;
+use fourteennm.fourteennm_components.fourteennm_fp_mac;
+
+
+
+ENTITY ${output_name} IS
+	PORT (
+@@if { $total_clks_used > 1 } {
+	clk		  : IN STD_LOGIC_VECTOR(${total_clks_used}-1 downto 0);
+	ena	      : IN STD_LOGIC_VECTOR(${total_clks_used}-1 downto 0);
+@@} elseif { $total_clks_used > 0 } {
+    clk       : IN STD_LOGIC;
+    ena       : IN STD_LOGIC;
+@@}
+@@if { $clear_type != "NONE" } {
+@@if { $single_clear == "true" } {
+    clr      : IN STD_LOGIC;
+@@} else {
+    clr      : IN STD_LOGIC_VECTOR(1 downto 0);
+@@}
+@@}
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    accumulate: IN STD_LOGIC;
+@@}        
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    ax        : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}        
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    ay        : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}        
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    az        : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}        
+@@if { [lsearch -nocase $interfaces "chainin"] != -1 } {
+    chainin   : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}
+@@if { [lsearch -nocase $interfaces "chainout"] != -1 } {
+    chainout   : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+@@}
+@@if {$mult_exceptions} {
+    mult_overflow  : OUT STD_LOGIC;
+    mult_underflow : OUT STD_LOGIC;
+    mult_invalid   : OUT STD_LOGIC;
+    mult_inexact   : OUT STD_LOGIC;
+@@}
+@@if {$adder_exceptions} {
+    adder_overflow   : OUT STD_LOGIC;
+    adder_underflow  : OUT STD_LOGIC;
+    adder_invalid    : OUT STD_LOGIC;
+    adder_inexact    : OUT STD_LOGIC;
+@@}
+	result    : OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+
+	);
+END ${output_name};
+
+ARCHITECTURE SYN OF ${output_name} IS
+@@if { $total_clks_used > 0} {
+    signal clk_vec,ena_vec : std_logic_vector(${total_clks_used}-1 downto 0);
+@@}
+    signal clr_vec : std_logic_vector(1 downto 0);
+BEGIN
+@@if { $total_clks_used > 1 } {
+    clk_vec <= clk;
+    ena_vec <= ena;
+@@} elseif { $total_clks_used > 0 } {
+    clk_vec(0) <= clk;
+    ena_vec(0) <= ena;
+@@}
+@@if {$clear_type == "NONE" } {
+    clr_vec <= "00";
+@@} else {
+@@if { $single_clear == "true" } {
+    clr_vec(1) <= clr;
+    clr_vec(0) <= clr;
+@@} else {
+    clr_vec <= clr;
+@@}
+@@}
+
+
+$OPERATION : fourteennm_fp_mac
+generic map (
+@@foreach cur_clock $hdl_clocks {
+@@set val [subst $${cur_clock}_derived]
+    $cur_clock => "${val}",
+@@}
+
+    clear_type => "${clear_type}",
+    use_chainin => "${use_chainin}",
+    operation_mode => "uc${OPERATION}",
+    adder_subtract => "${adder_subtract}"
+
+
+) port map (
+@@if { $total_clks_used > 0 } {
+@@for {set i 0} {$i < $total_clks_used} {incr i} {
+    clk(${i}) => clk_vec(${i}),
+@@}
+@@for {set i $total_clks_used} {$i < 3} {incr i} {
+    clk(${i}) => '0',
+@@}
+@@}
+@@if { $total_clks_used > 0 } {
+@@for {set i 0} {$i < $total_clks_used} {incr i} {
+    ena(${i}) => ena_vec(${i}),
+@@}
+@@for {set i $total_clks_used} {$i < 3} {incr i} {
+    ena(${i}) => '0',
+@@}
+@@}
+    clr   => clr_vec,
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    accumulate => accumulate,
+@@}
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    ax => ax,
+@@}
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    ay => ay,
+@@}
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    az => az,
+@@}
+@@if { $use_chainin } {
+    chainin => chainin,
+@@} else {
+    chainin => (others=>'0'),
+@@}
+    resulta => result,
+@@if {$mult_exceptions} {
+    mult_overflow  => mult_overflow,
+    mult_underflow => mult_underflow,
+    mult_invalid   => mult_invalid,
+    mult_inexact   => mult_inexact,
+@@} else {
+    mult_overflow  => open,
+    mult_underflow => open,
+    mult_invalid   => open,
+    mult_inexact   => open,
+@@}
+@@if {$adder_exceptions} {
+    adder_overflow   => adder_overflow,
+    adder_underflow  => adder_underflow,
+    adder_invalid    => adder_invalid,
+    adder_inexact    => adder_inexact,
+@@} else {
+    adder_overflow  => open,
+    adder_underflow => open,
+    adder_invalid   => open,
+    adder_inexact   => open,
+@@}
+@@if { $use_chainout } {
+    chainout => chainout
+@@} else {
+    chainout => open
+@@}
+);
+
+END SYN;

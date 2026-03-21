@@ -1,0 +1,8 @@
+<parameterization name="${output_name}">
+	<frequency>${frequency}<freqeuncy>
+	<latency>${latency}</latency>
+	<luts>${luts}<luts>
+	<mbits>${mbits}</mbits>
+	<mblocks>${mblocks}</mblocks>
+	<multiplies>${multiplies}</multiplies>
+</parameterization>

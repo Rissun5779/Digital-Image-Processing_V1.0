@@ -1,0 +1,351 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1 ps/1 ps 
+module $output_name (
+  // Rate Switching from the master channel
+  input  wire [1:0]         pipe_sw_done,             
+  output wire [1:0]         pipe_sw,                  
+
+  input  wire [$num_channels*80-1:0]    tx_parallel_data,
+  output wire [$num_channels*80-1:0]    rx_parallel_data,
+  input  wire [$num_channels-1:0]       tx_analogreset,           
+  input  wire [$num_channels-1:0]       tx_digitalreset,          
+  input  wire [$num_channels-1:0]       rx_analogreset,           
+  input  wire [$num_channels-1:0]       rx_digitalreset,          
+  input  wire [$num_channels-1:0]       tx_aibreset,              
+  input  wire [$num_channels-1:0]       rx_aibreset,              
+  output wire [$num_channels-1:0]       tx_reset_out,
+  output wire [$num_channels-1:0]       rx_reset_out,
+  output wire [$num_channels-1:0]       tx_transfer_ready,        
+  output wire [$num_channels-1:0]       rx_transfer_ready,        
+  output wire [$num_channels-1:0]       tx_cal_busy,              
+  output wire [$num_channels-1:0]       rx_cal_busy,              
+  input  wire [5:0]         tx_bonding_clocks,        
+  input  wire               rx_cdr_refclk0,           
+  output wire [$num_channels-1:0]       tx_serial_data,           
+  input  wire [$num_channels-1:0]       rx_serial_data,           
+  output wire [$num_channels-1:0]       rx_is_lockedtoref,        
+  output wire [$num_channels-1:0]       rx_is_lockedtodata,       
+
+  output wire [$num_channels-1:0]       tx_clkout,                
+  output wire [$num_channels-1:0]       tx_clkout2,               
+  output wire [$num_channels-1:0]       rx_clkout,                
+  input  wire               pipe_hclk_in,             
+  input  wire               tx_serial_clk0,             
+  input  wire               tx_serial_clk1,             
+
+  input  wire [$num_channels*3-1:0]     pipe_rx_eidleinfersel,    
+  output wire [$num_channels-1:0]       pipe_rx_elecidle,         
+
+  input  wire [$num_channels*101-1:0]   hip_aib_data_in,          
+  output wire [$num_channels*132-1:0]   hip_aib_data_out,         
+  input  wire [$num_channels*92-1:0]    hip_pcs_data_in,          
+  output wire [$num_channels*62-1:0]    hip_pcs_data_out,         
+  input  wire [$num_channels*4-1:0]     hip_aib_fsr_in,           
+  input  wire [$num_channels*40-1:0]    hip_aib_ssr_in,           
+  output wire [$num_channels*4-1:0]     hip_aib_fsr_out,          
+  output wire [$num_channels*8-1:0]     hip_aib_ssr_out,          
+  output wire [$num_channels-1:0]       hip_cal_done,
+
+  input  wire               reconfig_clk,
+  input  wire               reconfig_reset,
+  input  wire               reconfig_write,
+  input  wire               reconfig_read,
+  input  wire [$address_bits+$sel_bit_width-1:0]    reconfig_address,
+  input  wire [$avmm_data_width-1:0]      reconfig_writedata,
+  output wire [$avmm_data_width-1:0]      reconfig_readdata,
+  output wire               reconfig_waitrequest
+);
+
+// Localparams for reconfig
+localparam ADDR_BITS          = $address_bits;
+localparam AVMM_WIDTH         = $avmm_data_width;
+localparam CHANNEL_SEL_WIDTH  = $sel_bit_width;
+
+// Wires for Clocks
+wire [$num_channels-1:0]       tx_coreclkin;
+wire [$num_channels-1:0]       rx_coreclkin;
+wire [$num_channels-1:0]       tx_x2_coreclkin;
+
+// Bonding PCS
+wire [(($num_channels+1)*30)-1:0]  pcs_bonding_top_data_out;
+wire [(($num_channels+1)*30)-1:0]  pcs_bonding_bot_data_out;
+assign pcs_bonding_top_data_out [0+:30]                 = 30'b0;
+assign pcs_bonding_bot_data_out [$num_channels*30+:30]  = 30'b0;
+
+// Bonding AIB Core TX
+wire [(($num_channels+1)*5)-1:0]   pld_aib_bond_tx_us_out;
+wire [(($num_channels+1)*5)-1:0]   pld_aib_bond_tx_ds_out;
+assign pld_aib_bond_tx_us_out   [0+:5]                  = 5'b0;
+assign pld_aib_bond_tx_ds_out   [$num_channels*5+:5]    = 5'b0;
+
+// Bonding AIB Core Rx
+wire [(($num_channels+1)*5)-1:0]   pld_aib_bond_rx_us_out;
+wire [(($num_channels+1)*5)-1:0]   pld_aib_bond_rx_ds_out;
+assign pld_aib_bond_rx_us_out   [0+:5]                  = 5'b0;
+assign pld_aib_bond_rx_ds_out   [$num_channels*5+:5]    = 5'b0;
+
+// Bonding AIB HSSI TX
+wire [(($num_channels+1)*7)-1:0]   hssi_aib_bond_tx_us_out;
+wire [(($num_channels+1)*7)-1:0]   hssi_aib_bond_tx_ds_out;
+assign hssi_aib_bond_tx_us_out  [0+:7]                  = 7'b0;
+assign hssi_aib_bond_tx_ds_out  [7*$num_channels+:7]    = 7'b0;
+
+// Bonding AIB HSSI RX
+wire [(($num_channels+1)*8)-1:0]   hssi_aib_bond_rx_us_out;
+wire [(($num_channels+1)*8)-1:0]   hssi_aib_bond_rx_ds_out;
+assign hssi_aib_bond_rx_us_out  [0+:8]                  = 8'b0;
+assign hssi_aib_bond_rx_ds_out  [8*$num_channels+:8]    = 8'b0;
+
+///////////////////////////////////////////////////////////////
+// Reconfig Channel Sharing
+///////////////////////////////////////////////////////////////
+wire [CHANNEL_SEL_WIDTH-1:0]          rcfg_if_sel;
+wire [$num_channels-1:0]                          split_avmm_clk;
+wire [$num_channels-1:0]                          split_avmm_reset;
+wire [$num_channels-1:0]                          split_user_write;
+wire [$num_channels-1:0]                          split_user_read;
+wire [$num_channels-1:0]                          split_user_waitrequest;
+wire [$num_channels*ADDR_BITS-1:0]                split_user_address;
+wire [$num_channels*AVMM_WIDTH-1:0]               split_user_readdata;
+wire [$num_channels*AVMM_WIDTH-1:0]               split_user_writedata;
+
+///////////////////////////////////////////////////////////////
+// Reset Sequencer
+///////////////////////////////////////////////////////////////
+wire                      clk;
+wire                      reset_n;
+wire  [$num_channels-1:0] tx_aibreset_out;
+wire  [$num_channels-1:0] rx_aibreset_out;
+altera_s10_xcvr_clkout_endpoint clock_endpoint ( 
+  .clk_out                             (  clk                                       )
+); 
+
+//***************************************************************************
+// Need to self-generate internal reset signal
+//***************************************************************************
+alt_xcvr_resync_std #(
+	.SYNC_CHAIN_LENGTH(3),
+	.INIT_VALUE(0)
+) reset_n_generator (
+	.clk	(clk),
+	.reset	(1'b0),
+	.d		(1'b1),
+	.q		(reset_n)
+);
+
+alt_xcvr_native_dig_reset_seq
+#(
+  .CLK_FREQ_IN_HZ                      (  100000000                                 ),
+  .DEFAULT_RESET_SEPARATION_NS         (  200                                       ),
+  .RESET_SEPARATION_NS                 (  200                                       ),
+  .PCS_RESET_EXTENSION_NS              (  200                                       ),
+  .RESET_MODE                          (  "bonded"                                  ),
+  .BONDING_MASTER                      (  0                                         ),
+  .NUM_CHANNELS                        (  $num_channels                             ),
+  .ENABLE_PCS_RESET                    (  0                                         ),
+  .RESET_AIB_FIRST                     (  1                                         )
+) altera_xcvr_pcie_hip_native_tx_aib_reset_seq (
+  .clk                                 (  clk                                       ),
+  .reset_n                             (  reset_n                                   ), // ???
+  .release_aib_first                   (  1'b1                                      ), // double check with lee ping
+  .reset_in                            (  tx_aibreset                               ), 
+  .transfer_ready_in                   (  tx_transfer_ready                         ), // From?
+  .aib_reset_out                       (  tx_aibreset_out                           ), // reset to AIB
+  .pcs_reset_out                       (                                            ), // left hanging?
+  .reset_out                           (  tx_reset_out                              )  // reset out to... top? is this the busy signal?
+);
+
+alt_xcvr_native_dig_reset_seq
+#(
+  .CLK_FREQ_IN_HZ                      (  100000000                                 ),
+  .DEFAULT_RESET_SEPARATION_NS         (  200                                       ),
+  .RESET_SEPARATION_NS                 (  200                                       ),
+  .PCS_RESET_EXTENSION_NS              (  200                                       ),
+  .RESET_MODE                          (  "bonded"                                  ),
+  .BONDING_MASTER                      (  4                                         ),
+  .NUM_CHANNELS                        (  $num_channels                             ),
+  .ENABLE_PCS_RESET                    (  0                                         ),
+  .RESET_AIB_FIRST                     (  1                                         )
+) altera_xcvr_pcie_hip_native_rx_aib_reset_seq (
+  .clk                                 (  clk                                       ),
+  .reset_n                             (  reset_n                                   ), // ???
+  .release_aib_first                   (  1'b1                                      ), 
+  .reset_in                            (  rx_aibreset                               ), 
+  .transfer_ready_in                   (  rx_transfer_ready                         ), // From?
+  .aib_reset_out                       (  rx_aibreset_out                           ),
+  .pcs_reset_out                       (                                            ), // left hanging?
+  .reset_out                           (  rx_reset_out                              )  // reset out to... top? is this the busy signal?
+);
+
+///////////////////////////////////////////////////////////////
+// Transceiver Channels
+///////////////////////////////////////////////////////////////
+genvar ig;
+generate
+// Generate interface select based on upper address bits
+assign rcfg_if_sel          = reconfig_address      [ADDR_BITS+:CHANNEL_SEL_WIDTH];
+assign reconfig_readdata    = split_user_readdata   [rcfg_if_sel*AVMM_WIDTH +: AVMM_WIDTH];
+assign reconfig_waitrequest = split_user_waitrequest[rcfg_if_sel];
+
+for(ig=0;ig<$num_channels;ig=ig+1) begin: g_shared_reconfig_interface
+  // Split shared signals to independent channels
+  assign split_avmm_clk        [ig]  = reconfig_clk;
+  assign split_avmm_reset      [ig]  = reconfig_reset;
+
+  assign split_user_write      [ig]  = reconfig_write & (rcfg_if_sel == ig);
+  assign split_user_read       [ig]  = reconfig_read  & (rcfg_if_sel == ig);
+  assign split_user_address    [ig*ADDR_BITS +: ADDR_BITS] = reconfig_address[0+:ADDR_BITS];
+  assign split_user_writedata  [ig*AVMM_WIDTH+:AVMM_WIDTH] = reconfig_writedata;
+end
+endgenerate
+
+
+@@for { set ig 0 } { $ig < $num_channels } { incr ig } {
+@@if { $ig >= $used_channels } {
+///////////////////////////////////////////////////////////////
+// Transceiver Channel Instance $ig
+// Generating Disabled Channel
+///////////////////////////////////////////////////////////////
+@@} elseif { $ig == $master_channel } {
+///////////////////////////////////////////////////////////////
+// Transceiver Channel Instance $ig
+// Generating Master Channel
+///////////////////////////////////////////////////////////////
+@@} else {
+///////////////////////////////////////////////////////////////
+// Transceiver Channel Instance $ig
+// Generating Slave Channel
+///////////////////////////////////////////////////////////////
+@@}
+@@if { $ig <= 7 } {
+assign tx_coreclkin[$ig]    = tx_clkout[$aib_bonding_chnl];
+assign rx_coreclkin[$ig]    = tx_clkout[$aib_bonding_chnl];
+assign tx_x2_coreclkin[$ig] = tx_clkout2[$aib_bonding_chnl];
+@@} else {
+assign tx_coreclkin[$ig]    = tx_clkout[$aib_debug_clock];
+assign rx_coreclkin[$ig]    = tx_clkout[$aib_debug_clock];
+assign tx_x2_coreclkin[$ig] = tx_clkout2[$aib_debug_clock];
+@@}
+wire [61:0]    int_hip_pcs_data_out_$ig;
+@@if { $ig == 0 || $ig == 6 } {
+assign hip_pcs_data_out[$ig*62+:62] = {int_hip_pcs_data_out_$ig[61],pipe_hclk_in,int_hip_pcs_data_out_$ig[59:0]};
+@@} else {
+assign hip_pcs_data_out[$ig*62+:62] = int_hip_pcs_data_out_$ig;
+@@}
+altera_xcvr_pcie_hip_channel_s10_ch${ig}_$unique_identifier altera_xcvr_hip_channel_s10_ch$ig (
+  // Channel Signals
+@@if { $ig == $master_channel } {
+  /*input  wire [1:0]   */  .pipe_sw_done                    ( pipe_sw_done               [1:0]        ),
+  /*output wire [1:0]   */  .pipe_sw                         ( pipe_sw                    [1:0]        ),
+@@} else {
+  /*input  wire [1:0]   */  .pipe_sw_done                    ( 2'b0                                    ),
+  /*output wire [1:0]   */  .pipe_sw                         (                                         ),
+@@}
+  /*input  wire [79:0]  */  .tx_parallel_data                ( tx_parallel_data           [$ig*80+:80]   ),
+  /*output wire [79:0]  */  .rx_parallel_data                ( rx_parallel_data           [$ig*80+:80]   ),
+  /*input  wire [0:0]   */  .tx_analogreset                  ( tx_analogreset             [$ig]          ),
+  /*input  wire [0:0]   */  .tx_digitalreset                 ( tx_digitalreset            [$ig]          ),
+  /*input  wire [0:0]   */  .rx_analogreset                  ( rx_analogreset             [$ig]          ),
+  /*input  wire [0:0]   */  .rx_digitalreset                 ( rx_digitalreset            [$ig]          ),
+  /*input  wire [0:0]   */  .tx_aibreset                     ( tx_aibreset_out            [$ig]          ),
+  /*input  wire [0:0]   */  .rx_aibreset                     ( rx_aibreset_out            [$ig]          ),
+  /*output wire [0:0]   */  .tx_transfer_ready               ( tx_transfer_ready          [$ig]          ),
+  /*output wire [0:0]   */  .rx_transfer_ready               ( rx_transfer_ready          [$ig]          ),
+  /*output wire [0:0]   */  .tx_cal_busy                     ( tx_cal_busy                [$ig]          ),
+  /*output wire [0:0]   */  .rx_cal_busy                     ( rx_cal_busy                [$ig]          ),
+  /*input  wire         */  .rx_cdr_refclk0                  ( rx_cdr_refclk0                          ),
+  /*output wire [0:0]   */  .tx_serial_data                  ( tx_serial_data             [$ig]          ),
+  /*input  wire [0:0]   */  .rx_serial_data                  ( rx_serial_data             [$ig]          ),
+  /*output wire [0:0]   */  .rx_is_lockedtoref               ( rx_is_lockedtoref          [$ig]          ),
+  /*output wire [0:0]   */  .rx_is_lockedtodata              ( rx_is_lockedtodata         [$ig]          ),
+  /*input  wire [0:0]   */  .tx_coreclkin                    ( tx_coreclkin               [$ig]          ),
+  /*input  wire [0:0]   */  .rx_coreclkin                    ( rx_coreclkin               [$ig]          ),
+  /*input  wire [0:0]   */  .tx_x2_coreclkin                 ( tx_x2_coreclkin            [$ig]          ),
+  /*output wire [0:0]   */  .tx_clkout                       ( tx_clkout                  [$ig]          ),
+  /*output wire [0:0]   */  .tx_clkout2                      ( tx_clkout2                 [$ig]          ),
+  /*output wire [0:0]   */  .rx_clkout                       ( rx_clkout                  [$ig]          ),
+  /*input  wire         */  .pipe_hclk_in                    ( pipe_hclk_in                            ),
+@@if { $used_channels == 1 } {
+@@  if { $ig == 0 } {
+@@    if { $protocol_mode == "pipe_g3" } {
+  /*input  wire         */  .tx_serial_clk0                  ( tx_serial_clk0                          ),
+  /*input  wire         */  .tx_serial_clk1                  ( tx_serial_clk1                          ),
+@@    } else {
+  /*input  wire         */  .tx_serial_clk0                  ( tx_serial_clk0                          ),
+@@    }
+@@  }
+@@} elseif { $used_channels > 1 } {
+  /*input  wire [5:0]   */  .tx_bonding_clocks               ( tx_bonding_clocks                         ),
+@@}
+
+  /*input  wire [2:0]   */  .pipe_rx_eidleinfersel           ( pipe_rx_eidleinfersel      [$ig*3+:3]     ),
+  /*output wire [0:0]   */  .pipe_rx_elecidle                ( pipe_rx_elecidle           [$ig]          ),
+
+  // Bonding PCS
+  /*output wire [29:0]  */  .pcs_bonding_top_data_out        ( pcs_bonding_top_data_out   [($ig+1)*30+:30]),
+  /*input  wire [29:0]  */  .pcs_bonding_bot_data_in         ( pcs_bonding_top_data_out   [$ig*30+:30]    ), 
+  /*output wire [29:0]  */  .pcs_bonding_bot_data_out        ( pcs_bonding_bot_data_out   [$ig*30+:30]    ), 
+  /*input  wire [29:0]  */  .pcs_bonding_top_data_in         ( pcs_bonding_bot_data_out   [($ig+1)*30+:30]),
+
+  // Bonding AIB Core TX
+  /*output wire [4:0]   */  .pld_aib_bond_tx_us_out          ( pld_aib_bond_tx_us_out     [($ig+1)*5+:5] ),
+  /*input  wire [4:0]   */  .pld_aib_bond_tx_ds_in           ( pld_aib_bond_tx_us_out     [$ig*5+:5]     ),
+  /*output wire [4:0]   */  .pld_aib_bond_tx_ds_out          ( pld_aib_bond_tx_ds_out     [$ig*5+:5]     ),
+  /*input  wire [4:0]   */  .pld_aib_bond_tx_us_in           ( pld_aib_bond_tx_ds_out     [($ig+1)*5+:5] ),
+
+  // Bonding AIB Core Rx
+  /*output wire [4:0]   */  .pld_aib_bond_rx_us_out          ( pld_aib_bond_rx_us_out     [($ig+1)*5+:5] ),
+  /*input  wire [4:0]   */  .pld_aib_bond_rx_ds_in           ( pld_aib_bond_rx_us_out     [$ig*5+:5]     ),
+  /*output wire [4:0]   */  .pld_aib_bond_rx_ds_out          ( pld_aib_bond_rx_ds_out     [$ig*5+:5]     ),
+  /*input  wire [4:0]   */  .pld_aib_bond_rx_us_in           ( pld_aib_bond_rx_ds_out     [($ig+1)*5+:5] ),
+
+  // Bonding AIB HSSI TX
+  /*output wire [6:0]   */  .hssi_aib_bond_tx_us_out         ( hssi_aib_bond_tx_us_out    [($ig+1)*7+:7] ),
+  /*input  wire [6:0]   */  .hssi_aib_bond_tx_ds_in          ( hssi_aib_bond_tx_us_out    [$ig*7+:7]     ),
+  /*output wire [6:0]   */  .hssi_aib_bond_tx_ds_out         ( hssi_aib_bond_tx_ds_out    [$ig*7+:7]     ),
+  /*input  wire [6:0]   */  .hssi_aib_bond_tx_us_in          ( hssi_aib_bond_tx_ds_out    [($ig+1)*7+:7] ),
+
+  // Bonding AIB HSSI RX
+  /*output wire [7:0]   */  .hssi_aib_bond_rx_us_out         ( hssi_aib_bond_rx_us_out    [($ig+1)*8+:8] ),
+  /*input  wire [7:0]   */  .hssi_aib_bond_rx_ds_in          ( hssi_aib_bond_rx_us_out    [$ig*8+:8]     ),
+  /*output wire [7:0]   */  .hssi_aib_bond_rx_ds_out         ( hssi_aib_bond_rx_ds_out    [$ig*8+:8]     ),
+  /*input  wire [7:0]   */  .hssi_aib_bond_rx_us_in          ( hssi_aib_bond_rx_ds_out    [($ig+1)*8+:8] ),
+
+  // Reconfig Signals
+                            .reconfig_clk                    ( split_avmm_clk             [$ig]          ),
+                            .reconfig_reset                  ( split_avmm_reset           [$ig]          ),
+                            .reconfig_read                   ( split_user_read            [$ig]          ),
+                            .reconfig_write                  ( split_user_write           [$ig]          ),
+                            .reconfig_address                ( split_user_address         [$ig*$address_bits+:$address_bits]   ),
+                            .reconfig_readdata               ( split_user_readdata        [$ig*$avmm_data_width+:$avmm_data_width]   ),
+                            .reconfig_writedata              ( split_user_writedata       [$ig*$avmm_data_width+:$avmm_data_width]   ),
+                            .reconfig_waitrequest            ( split_user_waitrequest     [$ig]          ),
+
+  // HIP Signals
+  /*input  wire [100:0] */  .hip_aib_data_in                 ( hip_aib_data_in            [$ig*101+:101] ),
+  /*output wire [131:0] */  .hip_aib_data_out                ( hip_aib_data_out           [$ig*132+:132] ),
+  /*input  wire [91:0]  */  .hip_pcs_data_in                 ( hip_pcs_data_in            [$ig*92+:92]   ),
+  /*output wire [61:0]  */  .hip_pcs_data_out                ( int_hip_pcs_data_out_$ig                  ),
+  /*input  wire [3:0]   */  .hip_aib_fsr_in                  ( hip_aib_fsr_in             [$ig*4+:4]     ),
+  /*input  wire [39:0]  */  .hip_aib_ssr_in                  ( hip_aib_ssr_in             [$ig*40+:40]   ),
+  /*output wire [3:0]   */  .hip_aib_fsr_out                 ( hip_aib_fsr_out            [$ig*4+:4]     ),
+  /*output wire [7:0]   */  .hip_aib_ssr_out                 ( hip_aib_ssr_out            [$ig*8+:8]     ),
+  /*output wire [0:0]   */  .hip_cal_done                    ( hip_cal_done               [$ig]          )
+
+);
+
+@@}
+
+endmodule

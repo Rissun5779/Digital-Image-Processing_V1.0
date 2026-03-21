@@ -1,0 +1,1300 @@
+<?xml version="1.0" ?>
+<spirit:component xmlns:altera="http://www.altera.com/XMLSchema/IPXact/extensions" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009">
+  <spirit:vendor>Altera Corporation</spirit:vendor>
+  <spirit:library>jesd204b_ed_qsys_spi_1</spirit:library>
+  <spirit:name>jesd204b_ed_qsys_spi_0</spirit:name>
+  <spirit:version>16.1</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>clk</spirit:name>
+      <spirit:busType spirit:vendor="altera" spirit:library="altera" spirit:name="clock" spirit:version="16.1"></spirit:busType>
+      <spirit:slave></spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>clk</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>clk</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>clockRate</spirit:name>
+          <spirit:displayName>Clock rate</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="clockRate">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>externallyDriven</spirit:name>
+          <spirit:displayName>Externally driven</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="externallyDriven">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>ptfSchematicName</spirit:name>
+          <spirit:displayName>PTF schematic name</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="ptfSchematicName"></spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>external</spirit:name>
+      <spirit:busType spirit:vendor="altera" spirit:library="altera" spirit:name="conduit" spirit:version="16.1"></spirit:busType>
+      <spirit:slave></spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>MISO</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>MISO</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>MOSI</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>MOSI</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>SCLK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>SCLK</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>SS_n</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>SS_n</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>associatedClock</spirit:name>
+          <spirit:displayName>associatedClock</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedClock"></spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>associatedReset</spirit:name>
+          <spirit:displayName>associatedReset</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedReset"></spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>irq</spirit:name>
+      <spirit:busType spirit:vendor="altera" spirit:library="altera" spirit:name="interrupt" spirit:version="16.1"></spirit:busType>
+      <spirit:slave></spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>irq</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>irq</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>associatedAddressablePoint</spirit:name>
+          <spirit:displayName>Associated addressable interface</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedAddressablePoint">jesd204b_ed_qsys_spi_1.spi_control_port</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>associatedClock</spirit:name>
+          <spirit:displayName>Associated clock</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedClock">clk</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>associatedReset</spirit:name>
+          <spirit:displayName>Associated reset</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedReset">reset</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>bridgedReceiverOffset</spirit:name>
+          <spirit:displayName>Bridged receiver offset</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="bridgedReceiverOffset">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>bridgesToReceiver</spirit:name>
+          <spirit:displayName>Bridges to receiver</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="bridgesToReceiver"></spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>irqScheme</spirit:name>
+          <spirit:displayName>Interrupt scheme</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="irqScheme">NONE</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>reset</spirit:name>
+      <spirit:busType spirit:vendor="altera" spirit:library="altera" spirit:name="reset" spirit:version="16.1"></spirit:busType>
+      <spirit:slave></spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>reset_n</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>reset_n</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>associatedClock</spirit:name>
+          <spirit:displayName>Associated clock</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedClock">clk</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>synchronousEdges</spirit:name>
+          <spirit:displayName>Synchronous edges</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="synchronousEdges">DEASSERT</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>spi_control_port</spirit:name>
+      <spirit:busType spirit:vendor="altera" spirit:library="altera" spirit:name="avalon" spirit:version="16.1"></spirit:busType>
+      <spirit:slave></spirit:slave>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>writedata</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>data_from_cpu</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>readdata</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>data_to_cpu</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>address</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>mem_addr</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>read_n</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>read_n</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>chipselect</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>spi_select</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>write_n</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>write_n</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>addressAlignment</spirit:name>
+          <spirit:displayName>Slave addressing</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="addressAlignment">NATIVE</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>addressGroup</spirit:name>
+          <spirit:displayName>Address group</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="addressGroup">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>addressSpan</spirit:name>
+          <spirit:displayName>Address span</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="addressSpan">8</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>addressUnits</spirit:name>
+          <spirit:displayName>Address units</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="addressUnits">WORDS</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>alwaysBurstMaxBurst</spirit:name>
+          <spirit:displayName>Always burst maximum burst</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="alwaysBurstMaxBurst">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>associatedClock</spirit:name>
+          <spirit:displayName>Associated clock</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedClock">clk</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>associatedReset</spirit:name>
+          <spirit:displayName>Associated reset</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="associatedReset">reset</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>bitsPerSymbol</spirit:name>
+          <spirit:displayName>Bits per symbol</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="bitsPerSymbol">8</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>bridgedAddressOffset</spirit:name>
+          <spirit:displayName>Bridged Address Offset</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="bridgedAddressOffset">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>bridgesToMaster</spirit:name>
+          <spirit:displayName>Bridges to master</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="bridgesToMaster"></spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>burstOnBurstBoundariesOnly</spirit:name>
+          <spirit:displayName>Burst on burst boundaries only</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="burstOnBurstBoundariesOnly">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>burstcountUnits</spirit:name>
+          <spirit:displayName>Burstcount units</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="burstcountUnits">WORDS</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>constantBurstBehavior</spirit:name>
+          <spirit:displayName>Constant burst behavior</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="constantBurstBehavior">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>explicitAddressSpan</spirit:name>
+          <spirit:displayName>Explicit address span</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="explicitAddressSpan">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>holdTime</spirit:name>
+          <spirit:displayName>Hold</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="holdTime">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>interleaveBursts</spirit:name>
+          <spirit:displayName>Interleave bursts</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="interleaveBursts">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>isBigEndian</spirit:name>
+          <spirit:displayName>Big endian</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="isBigEndian">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>isFlash</spirit:name>
+          <spirit:displayName>Flash memory</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="isFlash">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>isMemoryDevice</spirit:name>
+          <spirit:displayName>Memory device</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="isMemoryDevice">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>isNonVolatileStorage</spirit:name>
+          <spirit:displayName>Non-volatile storage</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="isNonVolatileStorage">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>linewrapBursts</spirit:name>
+          <spirit:displayName>Linewrap bursts</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="linewrapBursts">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>maximumPendingReadTransactions</spirit:name>
+          <spirit:displayName>Maximum pending read transactions</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="maximumPendingReadTransactions">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>maximumPendingWriteTransactions</spirit:name>
+          <spirit:displayName>Maximum pending write transactions</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="maximumPendingWriteTransactions">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>minimumUninterruptedRunLength</spirit:name>
+          <spirit:displayName>Minimum uninterrupted run length</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="minimumUninterruptedRunLength">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>printableDevice</spirit:name>
+          <spirit:displayName>Can receive stdout/stderr</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="printableDevice">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>readLatency</spirit:name>
+          <spirit:displayName>Read latency</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="readLatency">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>readWaitStates</spirit:name>
+          <spirit:displayName>Read wait states</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="readWaitStates">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>readWaitTime</spirit:name>
+          <spirit:displayName>Read wait</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="readWaitTime">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>registerIncomingSignals</spirit:name>
+          <spirit:displayName>Register incoming signals</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="registerIncomingSignals">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>registerOutgoingSignals</spirit:name>
+          <spirit:displayName>Register outgoing signals</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="registerOutgoingSignals">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>setupTime</spirit:name>
+          <spirit:displayName>Setup</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="setupTime">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>timingUnits</spirit:name>
+          <spirit:displayName>Timing units</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="timingUnits">Cycles</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>transparentBridge</spirit:name>
+          <spirit:displayName>Transparent bridge</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="transparentBridge">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>wellBehavedWaitrequest</spirit:name>
+          <spirit:displayName>Well-behaved waitrequest</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="wellBehavedWaitrequest">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>writeLatency</spirit:name>
+          <spirit:displayName>Write latency</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="writeLatency">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>writeWaitStates</spirit:name>
+          <spirit:displayName>Write wait states</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="writeWaitStates">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>writeWaitTime</spirit:name>
+          <spirit:displayName>Write wait</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="writeWaitTime">1</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+      <spirit:vendorExtensions>
+        <altera:altera_assignments>
+          <spirit:parameters>
+            <spirit:parameter>
+              <spirit:name>embeddedsw.configuration.isFlash</spirit:name>
+              <spirit:value spirit:format="string" spirit:id="embeddedsw.configuration.isFlash">0</spirit:value>
+            </spirit:parameter>
+            <spirit:parameter>
+              <spirit:name>embeddedsw.configuration.isMemoryDevice</spirit:name>
+              <spirit:value spirit:format="string" spirit:id="embeddedsw.configuration.isMemoryDevice">0</spirit:value>
+            </spirit:parameter>
+            <spirit:parameter>
+              <spirit:name>embeddedsw.configuration.isNonVolatileStorage</spirit:name>
+              <spirit:value spirit:format="string" spirit:id="embeddedsw.configuration.isNonVolatileStorage">0</spirit:value>
+            </spirit:parameter>
+            <spirit:parameter>
+              <spirit:name>embeddedsw.configuration.isPrintableDevice</spirit:name>
+              <spirit:value spirit:format="string" spirit:id="embeddedsw.configuration.isPrintableDevice">0</spirit:value>
+            </spirit:parameter>
+          </spirit:parameters>
+        </altera:altera_assignments>
+      </spirit:vendorExtensions>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>QUARTUS_SYNTH</spirit:name>
+        <spirit:envIdentifier>:quartus.altera.com:</spirit:envIdentifier>
+        <spirit:modelName>altera_avalon_spi</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>QUARTUS_SYNTH</spirit:localName>
+        </spirit:fileSetRef>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>clk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>reset_n</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>data_from_cpu</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left>0</spirit:left>
+            <spirit:right>31</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC_VECTOR</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>data_to_cpu</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left>0</spirit:left>
+            <spirit:right>31</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC_VECTOR</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>mem_addr</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left>0</spirit:left>
+            <spirit:right>2</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC_VECTOR</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>read_n</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>spi_select</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>write_n</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>irq</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>MISO</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>MOSI</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>SCLK</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>SS_n</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left>0</spirit:left>
+            <spirit:right>2</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>STD_LOGIC_VECTOR</spirit:typeName>
+              <spirit:viewNameRef>QUARTUS_SYNTH</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+  </spirit:model>
+  <spirit:vendorExtensions>
+    <altera:entity_info>
+      <spirit:vendor>Altera Corporation</spirit:vendor>
+      <spirit:library>jesd204b_ed_qsys_spi_1</spirit:library>
+      <spirit:name>altera_avalon_spi</spirit:name>
+      <spirit:version>16.1</spirit:version>
+    </altera:entity_info>
+    <altera:altera_module_parameters>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>clockPhase</spirit:name>
+          <spirit:displayName>Clock phase</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="clockPhase">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>clockPolarity</spirit:name>
+          <spirit:displayName>Clock polarity</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="clockPolarity">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>dataWidth</spirit:name>
+          <spirit:displayName>Width</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="dataWidth">24</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>disableAvalonFlowControl</spirit:name>
+          <spirit:displayName>Disable flow control on Avalon slave interface</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="disableAvalonFlowControl">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>insertDelayBetweenSlaveSelectAndSClk</spirit:name>
+          <spirit:displayName>Specify delay</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="insertDelayBetweenSlaveSelectAndSClk">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>insertSync</spirit:name>
+          <spirit:displayName>Insert Synchronizers</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="insertSync">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>lsbOrderedFirst</spirit:name>
+          <spirit:displayName>Shift direction</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="lsbOrderedFirst">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>masterSPI</spirit:name>
+          <spirit:displayName>Type</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="masterSPI">true</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>numberOfSlaves</spirit:name>
+          <spirit:displayName>Number of select (SS_n) signals (one for each slave)</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="numberOfSlaves">3</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>syncRegDepth</spirit:name>
+          <spirit:displayName>Depth</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="syncRegDepth">2</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>targetClockRate</spirit:name>
+          <spirit:displayName>SPI clock (SCLK) rate</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="targetClockRate">20000000</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>targetSlaveSelectToSClkDelay</spirit:name>
+          <spirit:displayName>Target delay</spirit:displayName>
+          <spirit:value spirit:format="float" spirit:id="targetSlaveSelectToSClkDelay">0.0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>avalonSpec</spirit:name>
+          <spirit:displayName>avalonSpec</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="avalonSpec">2.0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>inputClockRate</spirit:name>
+          <spirit:displayName>inputClockRate</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="inputClockRate">100000000</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>actualClockRate</spirit:name>
+          <spirit:displayName>Actual clock rate</spirit:displayName>
+          <spirit:value spirit:format="float" spirit:id="actualClockRate">1.6666666E7</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>actualSlaveSelectToSClkDelay</spirit:name>
+          <spirit:displayName>Actual delay</spirit:displayName>
+          <spirit:value spirit:format="float" spirit:id="actualSlaveSelectToSClkDelay">0.0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>legacySignalsAllow</spirit:name>
+          <spirit:displayName>legacySignalsAllow</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="legacySignalsAllow">false</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>slaveDataBusWidth</spirit:name>
+          <spirit:displayName>slaveDataBusWidth</spirit:displayName>
+          <spirit:value spirit:format="long" spirit:id="slaveDataBusWidth">32</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </altera:altera_module_parameters>
+    <altera:altera_assignments>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.CLOCKMULT</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.CLOCKMULT">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.CLOCKPHASE</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.CLOCKPHASE">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.CLOCKPOLARITY</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.CLOCKPOLARITY">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.CLOCKUNITS</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.CLOCKUNITS">"Hz"</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.DATABITS</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.DATABITS">24</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.DATAWIDTH</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.DATAWIDTH">32</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.DELAYMULT</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.DELAYMULT">"1.0E-9"</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.DELAYUNITS</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.DELAYUNITS">"ns"</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.EXTRADELAY</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.EXTRADELAY">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.INSERT_SYNC</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.INSERT_SYNC">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.ISMASTER</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.ISMASTER">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.LSBFIRST</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.LSBFIRST">0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.NUMSLAVES</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.NUMSLAVES">3</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.PREFIX</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.PREFIX">"spi_"</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.SYNC_REG_DEPTH</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.SYNC_REG_DEPTH">2</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.TARGETCLOCK</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.TARGETCLOCK">20000000u</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.CMacro.TARGETSSDELAY</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.CMacro.TARGETSSDELAY">"0.0"</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.dts.compatible</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.dts.compatible">altr,spi-1.0</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.dts.group</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.dts.group">spi</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.dts.name</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.dts.name">spi</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>embeddedsw.dts.vendor</spirit:name>
+          <spirit:value spirit:format="string" spirit:id="embeddedsw.dts.vendor">altr</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </altera:altera_assignments>
+    <altera:altera_system_parameters>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>device</spirit:name>
+          <spirit:displayName>Device</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="device">1SG280LN3F43E1VG</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>deviceFamily</spirit:name>
+          <spirit:displayName>Device family</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="deviceFamily">Stratix 10</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>deviceSpeedGrade</spirit:name>
+          <spirit:displayName>Device Speed Grade</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="deviceSpeedGrade">1</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>bonusData</spirit:name>
+          <spirit:displayName>bonusData</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="bonusData">bonusData 
+{
+}
+</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>hideFromIPCatalog</spirit:name>
+          <spirit:displayName>Hide from IP Catalog</spirit:displayName>
+          <spirit:value spirit:format="bool" spirit:id="hideFromIPCatalog">true</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>lockedInterfaceDefinition</spirit:name>
+          <spirit:displayName>lockedInterfaceDefinition</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="lockedInterfaceDefinition"><![CDATA[<boundaryDefinition>
+    <interfaces>
+        <interface>
+            <name>clk</name>
+            <type>clock</type>
+            <isStart>false</isStart>
+            <ports>
+                <port>
+                    <name>clk</name>
+                    <role>clk</role>
+                    <direction>Input</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+            </ports>
+            <assignments>
+                <assignmentValueMap/>
+            </assignments>
+            <parameters>
+                <parameterValueMap>
+                    <entry>
+                        <key>clockRate</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>externallyDriven</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>ptfSchematicName</key>
+                    </entry>
+                </parameterValueMap>
+            </parameters>
+        </interface>
+        <interface>
+            <name>external</name>
+            <type>conduit</type>
+            <isStart>false</isStart>
+            <ports>
+                <port>
+                    <name>MISO</name>
+                    <role>MISO</role>
+                    <direction>Input</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+                <port>
+                    <name>MOSI</name>
+                    <role>MOSI</role>
+                    <direction>Output</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+                <port>
+                    <name>SCLK</name>
+                    <role>SCLK</role>
+                    <direction>Output</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+                <port>
+                    <name>SS_n</name>
+                    <role>SS_n</role>
+                    <direction>Output</direction>
+                    <width>3</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC_VECTOR</vhdlType>
+                </port>
+            </ports>
+            <assignments>
+                <assignmentValueMap/>
+            </assignments>
+            <parameters>
+                <parameterValueMap>
+                    <entry>
+                        <key>associatedClock</key>
+                    </entry>
+                    <entry>
+                        <key>associatedReset</key>
+                    </entry>
+                </parameterValueMap>
+            </parameters>
+        </interface>
+        <interface>
+            <name>irq</name>
+            <type>interrupt</type>
+            <isStart>false</isStart>
+            <ports>
+                <port>
+                    <name>irq</name>
+                    <role>irq</role>
+                    <direction>Output</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+            </ports>
+            <assignments>
+                <assignmentValueMap/>
+            </assignments>
+            <parameters>
+                <parameterValueMap>
+                    <entry>
+                        <key>associatedAddressablePoint</key>
+                        <value>jesd204b_ed_qsys_spi_1.spi_control_port</value>
+                    </entry>
+                    <entry>
+                        <key>associatedClock</key>
+                        <value>clk</value>
+                    </entry>
+                    <entry>
+                        <key>associatedReset</key>
+                        <value>reset</value>
+                    </entry>
+                    <entry>
+                        <key>bridgedReceiverOffset</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>bridgesToReceiver</key>
+                    </entry>
+                    <entry>
+                        <key>irqScheme</key>
+                        <value>NONE</value>
+                    </entry>
+                </parameterValueMap>
+            </parameters>
+        </interface>
+        <interface>
+            <name>reset</name>
+            <type>reset</type>
+            <isStart>false</isStart>
+            <ports>
+                <port>
+                    <name>reset_n</name>
+                    <role>reset_n</role>
+                    <direction>Input</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+            </ports>
+            <assignments>
+                <assignmentValueMap/>
+            </assignments>
+            <parameters>
+                <parameterValueMap>
+                    <entry>
+                        <key>associatedClock</key>
+                        <value>clk</value>
+                    </entry>
+                    <entry>
+                        <key>synchronousEdges</key>
+                        <value>DEASSERT</value>
+                    </entry>
+                </parameterValueMap>
+            </parameters>
+        </interface>
+        <interface>
+            <name>spi_control_port</name>
+            <type>avalon</type>
+            <isStart>false</isStart>
+            <ports>
+                <port>
+                    <name>data_from_cpu</name>
+                    <role>writedata</role>
+                    <direction>Input</direction>
+                    <width>32</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC_VECTOR</vhdlType>
+                </port>
+                <port>
+                    <name>data_to_cpu</name>
+                    <role>readdata</role>
+                    <direction>Output</direction>
+                    <width>32</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC_VECTOR</vhdlType>
+                </port>
+                <port>
+                    <name>mem_addr</name>
+                    <role>address</role>
+                    <direction>Input</direction>
+                    <width>3</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC_VECTOR</vhdlType>
+                </port>
+                <port>
+                    <name>read_n</name>
+                    <role>read_n</role>
+                    <direction>Input</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+                <port>
+                    <name>spi_select</name>
+                    <role>chipselect</role>
+                    <direction>Input</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+                <port>
+                    <name>write_n</name>
+                    <role>write_n</role>
+                    <direction>Input</direction>
+                    <width>1</width>
+                    <lowerBound>0</lowerBound>
+                    <vhdlType>STD_LOGIC</vhdlType>
+                </port>
+            </ports>
+            <assignments>
+                <assignmentValueMap>
+                    <entry>
+                        <key>embeddedsw.configuration.isFlash</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>embeddedsw.configuration.isMemoryDevice</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>embeddedsw.configuration.isNonVolatileStorage</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>embeddedsw.configuration.isPrintableDevice</key>
+                        <value>0</value>
+                    </entry>
+                </assignmentValueMap>
+            </assignments>
+            <parameters>
+                <parameterValueMap>
+                    <entry>
+                        <key>addressAlignment</key>
+                        <value>NATIVE</value>
+                    </entry>
+                    <entry>
+                        <key>addressGroup</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>addressSpan</key>
+                        <value>8</value>
+                    </entry>
+                    <entry>
+                        <key>addressUnits</key>
+                        <value>WORDS</value>
+                    </entry>
+                    <entry>
+                        <key>alwaysBurstMaxBurst</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>associatedClock</key>
+                        <value>clk</value>
+                    </entry>
+                    <entry>
+                        <key>associatedReset</key>
+                        <value>reset</value>
+                    </entry>
+                    <entry>
+                        <key>bitsPerSymbol</key>
+                        <value>8</value>
+                    </entry>
+                    <entry>
+                        <key>bridgedAddressOffset</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>bridgesToMaster</key>
+                    </entry>
+                    <entry>
+                        <key>burstOnBurstBoundariesOnly</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>burstcountUnits</key>
+                        <value>WORDS</value>
+                    </entry>
+                    <entry>
+                        <key>constantBurstBehavior</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>explicitAddressSpan</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>holdTime</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>interleaveBursts</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>isBigEndian</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>isFlash</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>isMemoryDevice</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>isNonVolatileStorage</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>linewrapBursts</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>maximumPendingReadTransactions</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>maximumPendingWriteTransactions</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>minimumUninterruptedRunLength</key>
+                        <value>1</value>
+                    </entry>
+                    <entry>
+                        <key>printableDevice</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>readLatency</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>readWaitStates</key>
+                        <value>1</value>
+                    </entry>
+                    <entry>
+                        <key>readWaitTime</key>
+                        <value>1</value>
+                    </entry>
+                    <entry>
+                        <key>registerIncomingSignals</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>registerOutgoingSignals</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>setupTime</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>timingUnits</key>
+                        <value>Cycles</value>
+                    </entry>
+                    <entry>
+                        <key>transparentBridge</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>wellBehavedWaitrequest</key>
+                        <value>false</value>
+                    </entry>
+                    <entry>
+                        <key>writeLatency</key>
+                        <value>0</value>
+                    </entry>
+                    <entry>
+                        <key>writeWaitStates</key>
+                        <value>1</value>
+                    </entry>
+                    <entry>
+                        <key>writeWaitTime</key>
+                        <value>1</value>
+                    </entry>
+                </parameterValueMap>
+            </parameters>
+        </interface>
+    </interfaces>
+</boundaryDefinition>]]></spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>systemInfos</spirit:name>
+          <spirit:displayName>systemInfos</spirit:displayName>
+          <spirit:value spirit:format="string" spirit:id="systemInfos"><![CDATA[<systemInfosDefinition>
+    <connPtSystemInfos>
+        <entry>
+            <key>clk</key>
+            <value>
+                <connectionPointName>clk</connectionPointName>
+                <suppliedSystemInfos>
+                    <entry>
+                        <key>CLOCK_RATE</key>
+                        <value>100000000</value>
+                    </entry>
+                </suppliedSystemInfos>
+                <consumedSystemInfos/>
+            </value>
+        </entry>
+        <entry>
+            <key>spi_control_port</key>
+            <value>
+                <connectionPointName>spi_control_port</connectionPointName>
+                <suppliedSystemInfos/>
+                <consumedSystemInfos>
+                    <entry>
+                        <key>ADDRESS_MAP</key>
+                        <value>&lt;address-map&gt;&lt;slave name='spi_control_port' start='0x0' end='0x20' datawidth='32' /&gt;&lt;/address-map&gt;</value>
+                    </entry>
+                    <entry>
+                        <key>ADDRESS_WIDTH</key>
+                        <value>5</value>
+                    </entry>
+                    <entry>
+                        <key>MAX_SLAVE_DATA_WIDTH</key>
+                        <value>32</value>
+                    </entry>
+                </consumedSystemInfos>
+            </value>
+        </entry>
+    </connPtSystemInfos>
+</systemInfosDefinition>]]></spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </altera:altera_system_parameters>
+    <altera:altera_interface_boundary>
+      <altera:interface_mapping altera:name="clk" altera:internal="jesd204b_ed_qsys_spi_0.clk" altera:type="clock" altera:dir="end">
+        <altera:port_mapping altera:name="clk" altera:internal="clk"></altera:port_mapping>
+      </altera:interface_mapping>
+      <altera:interface_mapping altera:name="external" altera:internal="jesd204b_ed_qsys_spi_0.external" altera:type="conduit" altera:dir="end">
+        <altera:port_mapping altera:name="MISO" altera:internal="MISO"></altera:port_mapping>
+        <altera:port_mapping altera:name="MOSI" altera:internal="MOSI"></altera:port_mapping>
+        <altera:port_mapping altera:name="SCLK" altera:internal="SCLK"></altera:port_mapping>
+        <altera:port_mapping altera:name="SS_n" altera:internal="SS_n"></altera:port_mapping>
+      </altera:interface_mapping>
+      <altera:interface_mapping altera:name="irq" altera:internal="jesd204b_ed_qsys_spi_0.irq" altera:type="interrupt" altera:dir="end">
+        <altera:port_mapping altera:name="irq" altera:internal="irq"></altera:port_mapping>
+      </altera:interface_mapping>
+      <altera:interface_mapping altera:name="reset" altera:internal="jesd204b_ed_qsys_spi_0.reset" altera:type="reset" altera:dir="end">
+        <altera:port_mapping altera:name="reset_n" altera:internal="reset_n"></altera:port_mapping>
+      </altera:interface_mapping>
+      <altera:interface_mapping altera:name="spi_control_port" altera:internal="jesd204b_ed_qsys_spi_0.spi_control_port" altera:type="avalon" altera:dir="end">
+        <altera:port_mapping altera:name="data_from_cpu" altera:internal="data_from_cpu"></altera:port_mapping>
+        <altera:port_mapping altera:name="data_to_cpu" altera:internal="data_to_cpu"></altera:port_mapping>
+        <altera:port_mapping altera:name="mem_addr" altera:internal="mem_addr"></altera:port_mapping>
+        <altera:port_mapping altera:name="read_n" altera:internal="read_n"></altera:port_mapping>
+        <altera:port_mapping altera:name="spi_select" altera:internal="spi_select"></altera:port_mapping>
+        <altera:port_mapping altera:name="write_n" altera:internal="write_n"></altera:port_mapping>
+      </altera:interface_mapping>
+    </altera:altera_interface_boundary>
+    <altera:altera_has_errors>false</altera:altera_has_errors>
+  </spirit:vendorExtensions>
+</spirit:component>

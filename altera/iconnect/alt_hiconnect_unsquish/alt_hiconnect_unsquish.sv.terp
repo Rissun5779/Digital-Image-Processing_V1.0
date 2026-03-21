@@ -1,0 +1,83 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1ns / 1ns
+
+// ---------------------------------------------
+// Maps from input to output, filling in constant values
+// that were removed by the squish.
+// ---------------------------------------------
+module $output_name
+(
+    input clk,
+    input reset,
+
+    input  in_valid,
+    input  [$in_data_width - 1 : 0] in_data,
+@@ if { $channel_width > 0 } {
+    input  [$channel_width - 1 : 0] in_channel,
+@@ }
+@@ if { $error_width > 0 } {
+    input  [$error_width - 1 : 0] in_error,
+@@ }
+    input  in_startofpacket,
+    input  in_endofpacket,
+    output in_ready,
+
+    output out_valid,
+    output [$out_data_width - 1 : 0] out_data,
+@@ if { $channel_width > 0 } {
+    output [$channel_width - 1 : 0] out_channel,
+@@ }
+@@ if { $error_width > 0 } {
+    output [$error_width - 1 : 0] out_error,
+@@ }
+    output out_startofpacket,
+    output out_endofpacket,
+    input  out_ready
+);
+
+    assign out_valid = in_valid;
+    assign out_startofpacket = in_startofpacket;
+    assign out_endofpacket = in_endofpacket;
+@@ if { $channel_width > 0 } {
+    assign out_channel = in_channel;
+@@ }
+@@ if { $error_width > 0 } {
+    assign out_error = in_error;
+@@ }
+
+@@ set in_lsb_index 0
+@@ for { set i 0 } { $i < [ llength $mapping_list ] } { incr i 2 } {
+@@    set part_select [ lindex $mapping_list $i ]
+@@    set part_select_pair [ split $part_select : ]
+@@    set upper_select [ lindex $part_select_pair 0 ]
+@@    set lower_select [ lindex $part_select_pair 1 ]
+@@    set width [ expr $upper_select - $lower_select + 1 ]
+@@    set value [ lindex $mapping_list [ expr $i + 1 ] ]
+@@
+@@    if { [ string equal $value "map" ] } {
+@@        set in_msb_index [ expr $in_lsb_index + $width - 1 ]
+    assign out_data[$part_select] = in_data[$in_msb_index:$in_lsb_index];
+@@        set in_lsb_index [ expr $in_lsb_index + $width ]
+@@    } else {
+    assign out_data[$part_select] = $value;
+@@    }
+@@ }
+
+    assign in_ready = out_ready;
+
+
+endmodule
+
+

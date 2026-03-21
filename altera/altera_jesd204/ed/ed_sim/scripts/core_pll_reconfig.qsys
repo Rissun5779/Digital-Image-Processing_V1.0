@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags="INTERNAL_COMPONENT=true"
+   categories="" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element pll_reconfig_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10AX115S4F45E3SGE3" />
+ <parameter name="deviceFamily" value="Arria 10" />
+ <parameter name="deviceSpeedGrade" value="3" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="true" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="mgmt_avalon_slave"
+   internal="pll_reconfig_0.mgmt_avalon_slave"
+   type="avalon"
+   dir="end">
+  <port name="mgmt_waitrequest" internal="mgmt_waitrequest" />
+  <port name="mgmt_read" internal="mgmt_read" />
+  <port name="mgmt_write" internal="mgmt_write" />
+  <port name="mgmt_readdata" internal="mgmt_readdata" />
+  <port name="mgmt_address" internal="mgmt_address" />
+  <port name="mgmt_writedata" internal="mgmt_writedata" />
+ </interface>
+ <interface
+   name="mgmt_clk"
+   internal="pll_reconfig_0.mgmt_clk"
+   type="clock"
+   dir="end">
+  <port name="mgmt_clk" internal="mgmt_clk" />
+ </interface>
+ <interface
+   name="mgmt_reset"
+   internal="pll_reconfig_0.mgmt_reset"
+   type="reset"
+   dir="end">
+  <port name="mgmt_reset" internal="mgmt_reset" />
+ </interface>
+ <interface
+   name="reconfig_from_pll"
+   internal="pll_reconfig_0.reconfig_from_pll"
+   type="conduit"
+   dir="end">
+  <port name="reconfig_from_pll" internal="reconfig_from_pll" />
+ </interface>
+ <interface
+   name="reconfig_to_pll"
+   internal="pll_reconfig_0.reconfig_to_pll"
+   type="conduit"
+   dir="end">
+  <port name="reconfig_to_pll" internal="reconfig_to_pll" />
+ </interface>
+ <module
+   name="pll_reconfig_0"
+   kind="altera_pll_reconfig"
+   version="16.0"
+   enabled="1"
+   autoexport="1">
+  <parameter name="ENABLE_BYTEENABLE" value="false" />
+  <parameter name="ENABLE_MIF" value="false" />
+  <parameter name="MIF_FILE_NAME" value="" />
+  <parameter name="device_family" value="Arria 10" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

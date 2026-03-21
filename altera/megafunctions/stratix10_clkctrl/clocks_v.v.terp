@@ -1,0 +1,234 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module  ${output_name}  (
+@@ set i 0
+@@  foreach { port direction width } $ports_list {
+@@  incr i 3
+@@      if { $i == [llength $ports_list] } {
+    $port
+@@      } else {
+    $port,
+@@      }
+@@  }
+);
+
+@@  foreach { port direction width } $ports_list {
+@@  incr width -1
+@@      if { $width == 0 } {
+$direction $port;
+@@      } else {
+$direction [$width : 0] $port;
+@@      }
+@@  }
+
+@@  foreach { port direction width } $wire_list {
+@@      if { $width == 0 } {
+$direction $port;
+@@      } else {
+$direction [$width : 0] $port;
+@@      }
+@@  }
+
+@@  switch -exact --  $num_clocks {
+@@      1   {
+assign inclk_muxout = inclk;   
+@@      }
+@@      2   {
+${output_name}_clksel_mux clksel_inst (
+    .inclk0x(inclk0x),
+    .inclk1x(inclk1x),
+    .clkselect(clkselect),
+    .clkout(inclk_muxout)
+); 
+@@      }
+@@      4   {
+${output_name}_clksel_mux clksel_inst (
+    .inclk0x(inclk0x),
+    .inclk1x(inclk1x),
+    .inclk2x(inclk2x),
+    .inclk3x(inclk3x),
+    .clkselect(clkselect),
+    .clkout(inclk_muxout)
+); 
+@@      }
+@@  }
+@@ if { $clock_enable } {
+@@      set ena_register_mode "none"
+@@      if { $enable_register_type == 1 } {
+@@          set ena_register_mode "falling edge"
+@@      }
+@@      if { $enable_type == 1} {
+@@          set enable_type "root"
+@@      } else {
+@@          set enable_type "sector"
+@@      }
+fourteennm_clk_gate #(
+    .ena_register_mode("$ena_register_mode"),
+    .enable_type("$enable_type")
+) clkena_inst (
+    .enable(ena),
+    .inclk(inclk_muxout), 
+    .outclk(outclk)
+);
+@@ } elseif { $clock_divide } {
+@@      switch  -exact -- [get_parameter_value CLOCK_DIVIDER_OUTPUTS] {
+@@          1   {
+fourteennm_clk_divider clkdiv_inst (
+    .inclk(inclk_muxout), 
+    .clock_div1(clock_div1x),
+    .clock_div2(),
+    .clock_div4()
+);    
+@@          }
+@@          2   {
+fourteennm_clk_divider clkdiv_inst (
+    .inclk(inclk_muxout), 
+    .clock_div1(clock_div1x),
+    .clock_div2(clock_div2x),
+    .clock_div4()
+);   
+@@          }
+@@          3   {
+fourteennm_clk_divider clkdiv_inst (
+    .inclk(inclk_muxout), 
+    .clock_div1(clock_div1x),
+    .clock_div2(clock_div2x),
+    .clock_div4(clock_div4x)
+);
+@@          }
+@@      }
+@@ } else {
+@@      if { $global_primitive } {
+GLOBAL global_inst(.in(inclk_muxout), .out(outclk));
+@@      } else {
+assign outclk = inclk_muxout;
+@@      }
+@@ }
+
+endmodule
+
+@@  if { $glitch_free } {
+@@ if { $num_clocks == 2 } {
+
+module ${output_name}_clksel_mux (
+    input inclk0x,
+    input inclk1x,
+    input clkselect,
+    output clkout
+);
+
+wire sel0q, sel1q;
+wire sel0, sel1;
+
+assign sel0 = ~sel1q & ~clkselect;
+assign sel1 = ~sel0q & clkselect;
+
+${output_name}_double_ff dff_clk0(.d(sel0), .clk(inclk0x), .q(sel0q));
+${output_name}_double_ff dff_clk1(.d(sel1), .clk(inclk1x), .q(sel1q));
+
+assign clkout = (sel0q & inclk0x) | (sel1q & inclk1x);
+
+endmodule
+   
+@@ } elseif { $num_clocks == 4 } {
+module ${output_name}_clksel_mux (
+    input inclk0x,
+    input inclk1x,
+    input inclk2x,
+    input inclk3x,
+    input [1 : 0] clkselect,
+    output clkout
+);
+
+wire dec0, dec1, dec2, dec3;
+wire sel0, sel1, sel2, sel3;
+wire sel0q, sel1q, sel2q, sel3q;
+
+// Decoder logic
+assign dec0 = ~clkselect[1] & ~clkselect[0];
+assign dec1 = ~clkselect[1] & clkselect[0];
+assign dec2 = clkselect[1] & ~clkselect[0];
+assign dec3 = clkselect[1] & clkselect[0];
+
+assign sel0 = dec0 & ~sel1q & ~sel2q & ~sel3q;
+assign sel1 = dec1 & ~sel0q & ~sel2q & ~sel3q;
+assign sel2 = dec2 & ~sel0q & ~sel1q & ~sel3q;
+assign sel3 = dec3 & ~sel0q & ~sel1q & ~sel2q;
+
+${output_name}_double_ff dff_clk0(.d(sel0), .clk(inclk0x), .q(sel0q));
+${output_name}_double_ff dff_clk1(.d(sel1), .clk(inclk1x), .q(sel1q));
+${output_name}_double_ff dff_clk2(.d(sel2), .clk(inclk2x), .q(sel2q));
+${output_name}_double_ff dff_clk3(.d(sel3), .clk(inclk3x), .q(sel3q));
+
+assign clkout = (sel0q & inclk0x) | (sel1q & inclk1x) | (sel2q & inclk2x) | (sel3q & inclk3x);
+
+endmodule
+@@ } else {
+this_was_not_supposed_to_happen 
+@@ }
+
+module ${output_name}_double_ff(
+    input d,
+    input clk,
+    output reg q
+);
+
+reg ff0;
+
+initial begin
+    q = 0;
+    ff0 = 0;
+end
+
+always@(posedge clk)
+    ff0 <= d;
+always@(negedge clk)
+    q <= ff0;
+
+endmodule
+
+@@ } elseif { $num_clocks == 2 } {
+module ${output_name}_clksel_mux (
+    input inclk0x,
+    input inclk1x,
+    input clkselect,
+    output clkout
+);
+
+assign clkout = clkselect ? inclk1x : inclk0x;
+
+endmodule
+
+@@ } elseif { $num_clocks == 4 } {
+module ${output_name}_clksel_mux (
+    input inclk0x,
+    input inclk1x,
+    input inclk2x,
+    input inclk3x,
+    input [1 : 0] clkselect,
+    output clkout
+);
+
+wire int0, int1;
+
+assign int0 = clkselect[0] ? inclk1x : inclk0x;
+assign int1 = clkselect[0] ? inclk3x : inclk2x;
+assign clkout = clkselect[1] ? int1 : int0;
+
+endmodule
+
+@@ }

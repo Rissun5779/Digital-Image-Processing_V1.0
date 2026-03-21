@@ -1,0 +1,174 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part          $param0
+@@ set rx_link_rate         $param1
+@@ set rx_max_lane_count    $param2
+@@ set rx_symbols_per_clock $param3
+@@ set rx_pixels_per_clock  $param4
+@@ set rx_video_bpc         $param5
+@@ set rx_support_ss        $param6
+@@ set rx_support_audio     $param7
+@@ set rx_audio_chans       $param8
+@@ set rx_aux_gpu           $param9
+@@ set rx_support_automated_test    $param10
+@@ set rx_scrambler_seed    $param11
+@@ set rx_aux_debug         $param12
+@@ set rx_export_msa        $param13
+@@ set tx_link_rate         $param14
+@@ set tx_max_lane_count    $param15
+@@ set tx_symbols_per_clock $param16
+@@ set tx_pixels_per_clock  $param17
+@@ set tx_video_bpc         $param18
+@@ set tx_support_ss        $param19
+@@ set tx_support_audio     $param20
+@@ set tx_audio_chans       $param21
+@@ set tx_support_analog_reconfig   $param22
+@@ set tx_support_automated_test    $param23
+@@ set tx_scrambler_seed    $param24
+@@ set tx_aux_debug         $param25
+
+# qsys scripting (.tcl) file for dp_tx
+package require -exact qsys 16.0
+
+create_system {dp_tx}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {false}
+
+# Instances and instance parameters
+# Reset Bridge
+add_instance reset_bridge altera_reset_bridge
+set_instance_parameter_value reset_bridge {ACTIVE_LOW_RESET} {1}
+set_instance_parameter_value reset_bridge {SYNCHRONOUS_EDGES} {none}
+# Clock Source
+add_instance clk_100 clock_source
+set_instance_parameter_value clk_100 {clockFrequency} {100000000.0}
+add_instance clk_16 clock_source
+set_instance_parameter_value clk_16 {clockFrequency} {16000000.0}
+# DP Source
+add_instance dp_source altera_dp
+set_instance_parameter_value dp_source {device_family} {Arria 10}
+set_instance_parameter_value dp_source {TX_SUPPORT_DP} {1}
+set_instance_parameter_value dp_source {TX_MAX_LANE_COUNT} {$tx_max_lane_count}
+set_instance_parameter_value dp_source {TX_MAX_LINK_RATE} {$tx_link_rate}
+set_instance_parameter_value dp_source {TX_PIXELS_PER_CLOCK} {$tx_pixels_per_clock}
+set_instance_parameter_value dp_source {TX_SYMBOLS_PER_CLOCK} {$tx_symbols_per_clock}
+set_instance_parameter_value dp_source {TX_VIDEO_BPS} {$tx_video_bpc}
+set_instance_parameter_value dp_source {TX_SUPPORT_SS} {$tx_support_ss}
+set_instance_parameter_value dp_source {TX_SUPPORT_AUDIO} {$tx_support_audio}
+set_instance_parameter_value dp_source {TX_AUDIO_CHANS} {$tx_audio_chans}
+set_instance_parameter_value dp_source {TX_SUPPORT_ANALOG_RECONFIG} {$tx_support_analog_reconfig}
+set_instance_parameter_value dp_source {TX_SUPPORT_AUTOMATED_TEST} {$tx_support_automated_test}
+set_instance_parameter_value dp_source {TX_SUPPORT_GTC} {0}
+set_instance_parameter_value dp_source {TX_SUPPORT_MST} {0}
+set_instance_parameter_value dp_source {TX_SCRAMBLER_SEED} {$tx_scrambler_seed}
+set_instance_parameter_value dp_source {TX_MAX_NUM_OF_STREAMS} {1}
+set_instance_parameter_value dp_source {TX_AUX_DEBUG} {$tx_aux_debug}
+set_instance_parameter_value dp_source {TX_VIDEO_IM_ENABLE} {0}
+set_instance_parameter_value dp_source {RX_SUPPORT_DP} {0}
+set_instance_parameter_value dp_source {RX_MAX_LANE_COUNT} {$rx_max_lane_count}
+set_instance_parameter_value dp_source {RX_MAX_LINK_RATE} {$rx_link_rate}
+set_instance_parameter_value dp_source {RX_PIXELS_PER_CLOCK} {$rx_pixels_per_clock}
+set_instance_parameter_value dp_source {RX_SYMBOLS_PER_CLOCK} {$rx_symbols_per_clock}
+set_instance_parameter_value dp_source {RX_VIDEO_BPS} {$rx_video_bpc}
+set_instance_parameter_value dp_source {RX_SUPPORT_SS} {0}
+set_instance_parameter_value dp_source {RX_SUPPORT_AUDIO} {0}
+set_instance_parameter_value dp_source {RX_AUDIO_CHANS} {2}
+set_instance_parameter_value dp_source {RX_AUX_GPU} {0}
+set_instance_parameter_value dp_source {RX_SUPPORT_AUTOMATED_TEST} {0}
+set_instance_parameter_value dp_source {RX_SUPPORT_GTC} {0}
+set_instance_parameter_value dp_source {RX_SUPPORT_MST} {0}
+set_instance_parameter_value dp_source {RX_SCRAMBLER_SEED} {$rx_scrambler_seed}
+set_instance_parameter_value dp_source {RX_MAX_NUM_OF_STREAMS} {1}
+set_instance_parameter_value dp_source {RX_AUX_DEBUG} {0}
+set_instance_parameter_value dp_source {RX_EXPORT_MSA} {0}
+set_instance_parameter_value dp_source {RX_IEEE_OUI} {1}
+# Merlin Master Translator
+add_instance dp_tx_mgmt_bridge altera_avalon_mm_bridge
+set_instance_parameter_value dp_tx_mgmt_bridge {USE_AUTO_ADDRESS_WIDTH} {1}
+set_instance_parameter_value dp_tx_mgmt_bridge {DATA_WIDTH} {32}
+set_instance_parameter_value dp_tx_mgmt_bridge {SYMBOL_WIDTH} {8}
+# XDASH PIO
+add_instance xdash altera_avalon_pio
+set_instance_parameter_value xdash {width} {32}
+@@ if { $tx_aux_debug == 1} {
+# Aux Debug Fifo
+add_instance aux_tx_debug_fifo altera_avalon_fifo
+set_instance_parameter_value aux_tx_debug_fifo {fifoDepth} {2048}
+set_instance_parameter_value aux_tx_debug_fifo {useBackpressure} {false}
+set_instance_parameter_value aux_tx_debug_fifo {useIRQ} {false}
+set_instance_parameter_value aux_tx_debug_fifo {fifoInputInterfaceOptions} {AVALONST_SINK}
+set_instance_parameter_value aux_tx_debug_fifo {fifoOutputInterfaceOptions} {AVALONMM_READ}
+set_instance_parameter_value aux_tx_debug_fifo {avalonMMAvalonSTDataWidth} {32}
+set_instance_parameter_value aux_tx_debug_fifo {bitsPerSymbol} {32}
+set_instance_parameter_value aux_tx_debug_fifo {channelWidth} {1}
+set_instance_parameter_value aux_tx_debug_fifo {errorWidth} {1}
+set_instance_parameter_value aux_tx_debug_fifo {symbolsPerBeat} {1}
+@@ }
+
+# connections and connection parameters
+add_connection dp_tx_mgmt_bridge.m0 xdash.s1
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/xdash.s1 arbitrationPriority {1}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/xdash.s1 baseAddress {0x0800}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/xdash.s1 defaultConnection {false}
+
+add_connection dp_tx_mgmt_bridge.m0 dp_source.tx_mgmt
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/dp_source.tx_mgmt arbitrationPriority {1}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/dp_source.tx_mgmt baseAddress {0x0000}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/dp_source.tx_mgmt defaultConnection {false}
+
+add_connection reset_bridge.out_reset clk_16.clk_in_reset
+add_connection clk_16.clk dp_source.aux_clk
+add_connection clk_16.clk_reset dp_source.aux_reset
+
+add_connection reset_bridge.out_reset clk_100.clk_in_reset
+add_connection clk_100.clk dp_tx_mgmt_bridge.clk
+add_connection clk_100.clk dp_source.clk
+add_connection clk_100.clk xdash.clk
+add_connection clk_100.clk dp_source.xcvr_mgmt_clk
+add_connection clk_100.clk_reset dp_tx_mgmt_bridge.reset
+add_connection clk_100.clk_reset dp_source.reset
+add_connection clk_100.clk_reset xdash.reset
+
+@@ if { $tx_aux_debug == 1} {
+# Aux Debug Fifo
+add_connection dp_tx_mgmt_bridge.m0 aux_tx_debug_fifo.in_csr
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/aux_tx_debug_fifo.in_csr arbitrationPriority {1}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/aux_tx_debug_fifo.in_csr baseAddress {0x0820}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/aux_tx_debug_fifo.in_csr defaultConnection {false}
+
+add_connection dp_tx_mgmt_bridge.m0 aux_tx_debug_fifo.out
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/aux_tx_debug_fifo.out arbitrationPriority {1}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/aux_tx_debug_fifo.out baseAddress {0x0840}
+set_connection_parameter_value dp_tx_mgmt_bridge.m0/aux_tx_debug_fifo.out defaultConnection {false}
+
+add_connection clk_16.clk aux_tx_debug_fifo.clk_in
+add_connection clk_16.clk_reset aux_tx_debug_fifo.reset_in
+add_connection dp_source.tx_aux_debug aux_tx_debug_fifo.in
+@@}
+
+set_instance_property reset_bridge AUTO_EXPORT {true}
+set_instance_property clk_100 AUTO_EXPORT {true}
+set_instance_property clk_16 AUTO_EXPORT {true}
+set_instance_property dp_source AUTO_EXPORT {true}
+set_instance_property dp_tx_mgmt_bridge AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {dp_tx.qsys}

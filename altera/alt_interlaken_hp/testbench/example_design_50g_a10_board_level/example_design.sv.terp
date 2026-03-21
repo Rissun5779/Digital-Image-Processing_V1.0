@@ -1,0 +1,101 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//*****************************************************
+// top level hardware test RTL file
+// 1) NUM_LANES
+// 2) USR_CLK_FREQ 
+// 3) MM_CLK_FREQ 
+// 4) INTERNAL_WORDS 
+//*****************************************************
+`timescale 1ns/1ps
+module example_design #(
+  parameter NUM_LANES          = ${num_lane},
+  parameter USR_CLK_FREQ       = "300.0 MHz",
+  parameter MM_CLK_FREQ        = "100.0 MHz",
+  parameter INTERNAL_WORDS     = 4,
+
+  parameter W_BUNDLE_TO_XCVR   = 70,
+  parameter W_BUNDLE_FROM_XCVR = 46,
+  parameter NUM_SIXPACKS       = 2,
+  parameter RXFIFO_ADDR_WIDTH  = 12,
+  parameter INT_TX_CLK_DIV     = ${clk_div},
+  parameter CALENDAR_PAGES     = ${cal_pages},
+  parameter LOG_CALENDAR_PAGES = ${log_cal_pages},
+  parameter DATA_RATE          = ${data_rate},
+  parameter TX_PKTMOD_ONLY     = ${tx_packet_mode},
+  parameter RX_PKTMOD_ONLY     = 1,
+  parameter INCLUDE_TEMP_SENSE = 1'b1,
+  parameter MM_CLK_KHZ         = 20'd100000,
+  parameter MM_CLK_MHZ         = 28'd100000000,
+  parameter SIM_FAKE_JTAG      = 1'b0,
+  parameter CNTR_BITS          = 20,   // regulate reset delay, 6 for sim, 20 for hardware
+  parameter METALEN            = 2048,
+  parameter USE_RECO_CTRL      = 0
+) (
+  input                  clk50,
+  input                  pll_ref_clk,
+ 
+  input                  usr_pb_reset_n,
+
+  input  [NUM_LANES-1:0] rx_pin,
+  output [NUM_LANES-1:0] tx_pin,
+
+  output                 tx_fc_clk,
+  output                 tx_fc_data,
+  output                 tx_fc_sync,
+
+  input                  rx_fc_clk,
+  input                  rx_fc_data,
+  input                  rx_fc_sync
+);
+
+  test_env #(
+    .NUM_LANES          (NUM_LANES),
+    .W_BUNDLE_TO_XCVR   (W_BUNDLE_TO_XCVR),
+    .W_BUNDLE_FROM_XCVR (W_BUNDLE_FROM_XCVR),
+    .NUM_SIXPACKS       (NUM_SIXPACKS),
+    .RXFIFO_ADDR_WIDTH  (RXFIFO_ADDR_WIDTH),
+    .CALENDAR_PAGES     (CALENDAR_PAGES),
+    .LOG_CALENDAR_PAGES (LOG_CALENDAR_PAGES),
+    .RX_PKTMOD_ONLY     (RX_PKTMOD_ONLY),
+    .TX_PKTMOD_ONLY     (TX_PKTMOD_ONLY),
+    .INCLUDE_TEMP_SENSE (INCLUDE_TEMP_SENSE),
+    .MM_CLK_KHZ         (MM_CLK_KHZ),
+    .MM_CLK_MHZ         (MM_CLK_MHZ),
+    .USR_CLK_FREQ       (USR_CLK_FREQ),
+    .MM_CLK_FREQ        (MM_CLK_FREQ),
+    .INTERNAL_WORDS     (INTERNAL_WORDS),
+    .SIM_FAKE_JTAG      (SIM_FAKE_JTAG),
+    .CNTR_BITS          (CNTR_BITS),
+    .METALEN            (METALEN),
+    .USE_RECO_CTRL      (USE_RECO_CTRL)
+  ) test_env (
+    .clk50       (clk50),
+    .pll_ref_clk (pll_ref_clk),
+ 
+    .usr_pb_reset_n(usr_pb_reset_n),
+
+    .rx_pin      (rx_pin),
+    .tx_pin      (tx_pin),
+
+    .tx_fc_clk   (tx_fc_clk),
+    .tx_fc_data  (tx_fc_data),
+    .tx_fc_sync  (tx_fc_sync),
+
+    .rx_fc_clk   (rx_fc_clk),
+    .rx_fc_data  (rx_fc_data),
+    .rx_fc_sync  (rx_fc_sync)
+  );
+
+endmodule

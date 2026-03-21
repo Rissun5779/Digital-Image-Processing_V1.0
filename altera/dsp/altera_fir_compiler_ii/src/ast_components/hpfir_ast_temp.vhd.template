@@ -1,0 +1,832 @@
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.auk_dspip_lib_pkg_hpfir.all;
+use work.auk_dspip_math_pkg_hpfir.all;
+@@if { $karatsuba } {
+@@set  components [list rr ii riir]
+@@} else {
+@@set  components [list rr ii ri ir]
+@@}
+
+entity ${entity}_ast is
+  generic (
+        INWIDTH             : integer := $inputBitWidth;
+        OUT_WIDTH_UNTRIMMED : integer := $outWidth;
+        BANKINWIDTH         : integer := $bankInWidth;
+        REM_LSB_BIT_g       : integer := $outLsbBitRem;
+        REM_LSB_TYPE_g      : string := "$outLSBRound";
+        REM_MSB_BIT_g       : integer := $outMsbBitRem;
+        REM_MSB_TYPE_g      : string := "$outMSBRound";
+        PHYSCHANIN          : integer := $inputInterfaceNum;
+        PHYSCHANOUT         : integer := $outputInterfaceNum;
+        CHANSPERPHYIN       : natural := $chanPerInputInterface;
+        CHANSPERPHYOUT      : natural := $chanPerOutputInterface;
+        OUTPUTFIFODEPTH     : integer := $outputfifodepth;
+        USE_PACKETS         : integer := $use_packets;
+        MODE_WIDTH         : integer := $ModeWidth;
+        ENABLE_BACKPRESSURE : boolean := $backPressure;
+        LOG2_CHANSPERPHYOUT : natural := log2_ceil_one($chanPerOutputInterface);
+        NUMCHANS            : integer := $inputChannelNum;
+        DEVICE_FAMILY       : string := "$deviceFamily";
+        COMPLEX_CONST       : integer := $ComplexConstant
+  );
+  port(
+    clk                : in  std_logic;
+    reset_n            : in  std_logic;
+@@if { $ComplexConstant eq "1" } {
+@@set component "core"
+@@if {$coeffReload} {
+    bus_clk            : in std_logic;
+    h_areset           : in std_logic;
+    busIn_a           : in std_logic_vector($busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    busIn_d            : in std_logic_vector($busDataWidth_msb downto 0);
+    busIn_w            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    busIn_read         : in std_logic;
+    busOut_r           : out std_logic_vector($busDataWidth_msb downto 0);
+    busOut_v           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@}
+@@if { $ComplexConstant eq "2" } {
+@@if{$karatsuba} {
+--Karatsuba
+
+@@set rr_busAddressWidth $busAddressWidth
+@@set rr_busDataWidth $busDataWidth
+@@set ii_busAddressWidth $busAddressWidth
+@@set ii_busDataWidth $busDataWidth
+@@set ii_busAddressWidth [expr $busAddressWidth ] 
+@@set ii_busDataWidth [expr $busDataWidth + 1 ]
+@@foreach component $components {
+@@if {$coeffReload} {
+    ${component}_bus_clk            : in std_logic;
+    ${component}_h_areset           : in std_logic;
+    ${component}_busIn_a           : in std_logic_vector(${component}_busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    ${component}_busIn_d            : in std_logic_vector(${component}_busDataWidth-1 downto 0);
+    ${component}_busIn_w            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    ${component}_busIn_read         : in std_logic;
+    ${component}_busOut_r           : out std_logic_vector(${component}_busDataWidth-1 downto 0);
+    ${component}_busOut_v           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@}
+@@} else {
+--standard
+@@foreach component $components {
+@@set ${component}_busAddressWidth $busAddressWidth
+@@set ${component}_busDataWidth $busDataWidth
+@@if {$coeffReload} {
+    ${component}_bus_clk            : in std_logic;
+    ${component}_h_areset           : in std_logic;
+    ${component}_busIn_a           : in std_logic_vector(${component}_busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    ${component}_busIn_d            : in std_logic_vector(${component}_busDataWidth-1 downto 0);
+    ${component}_busIn_w            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    ${component}_busIn_read         : in std_logic;
+    ${component}_busOut_r           : out std_logic_vector(${component}_busDataWidth-1 downto 0);
+    ${component}_busOut_v           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@}
+@@}
+@@}
+    ast_sink_ready     : out std_logic;
+    ast_source_data    : out std_logic_vector(COMPLEX_CONST*(OUT_WIDTH_UNTRIMMED - REM_LSB_BIT_g - REM_MSB_BIT_g) * PHYSCHANOUT - 1  downto 0);
+    ast_sink_data      : in std_logic_vector( COMPLEX_CONST*(INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1 downto 0);
+    ast_sink_valid     : in  std_logic;
+    ast_source_valid   : out std_logic;    
+    ast_source_ready   : in  std_logic;
+    ast_source_eop     : out std_logic;
+    ast_source_sop     : out std_logic;
+    ast_source_channel : out std_logic_vector (LOG2_CHANSPERPHYOUT - 1 downto 0);
+    ast_sink_eop       : in  std_logic;
+    ast_sink_sop       : in  std_logic;
+    ast_sink_error     : in  std_logic_vector (1 downto 0);
+    ast_source_error   : out std_logic_vector (1 downto 0)
+    );
+attribute altera_attribute : string;
+attribute altera_attribute of ${entity}_ast:entity is "-name MESSAGE_DISABLE 15400; -name MESSAGE_DISABLE 14130; -name MESSAGE_DISABLE 12020; -name MESSAGE_DISABLE 12030; -name MESSAGE_DISABLE 12010; -name MESSAGE_DISABLE 12110; -name MESSAGE_DISABLE 14320; -name MESSAGE_DISABLE 13410; -name MESSAGE_DISABLE 10036";
+end ${entity}_ast;
+
+-- Warnings Suppression On
+-- altera message_off 10036
+
+architecture struct of ${entity}_ast is
+  
+  constant OUTWIDTH          : integer   := OUT_WIDTH_UNTRIMMED - REM_LSB_BIT_g - REM_MSB_BIT_g;
+
+  signal channel_out         : std_logic_vector(LOG2_CHANSPERPHYOUT - 1 downto 0);
+  
+  signal core_channel_out    : std_logic_vector(2 -1 downto 0);
+  signal at_source_channel   : std_logic_vector(2 -1 downto 0);
+  signal sink_packet_error   : std_logic_vector(1 downto 0);
+  signal data_in             : std_logic_vector((COMPLEX_CONST*INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1 downto 0);
+  signal data_valid          : std_logic_vector(0 downto 0);
+  
+  signal data_out            : std_logic_vector(COMPLEX_CONST*OUTWIDTH * PHYSCHANOUT -1 downto 0);
+  signal reset_fir           : std_logic;
+  signal sink_ready_ctrl     : std_logic;
+  signal source_packet_error : std_logic_vector(1 downto 0);
+  signal source_stall        : std_logic;
+  signal source_valid_ctrl   : std_logic;
+  signal stall               : std_logic;
+  signal valid               : std_logic;
+  signal core_valid          : std_logic;
+  signal enable_in           : std_logic_vector(0 downto 0);
+  
+  signal outp_out            : std_logic_vector(COMPLEX_CONST*OUTWIDTH * PHYSCHANOUT - 1 downto 0);
+  signal outp_blk_valid      : std_logic_vector(PHYSCHANOUT - 1 downto 0);
+
+  signal core_out            : std_logic_vector(OUT_WIDTH_UNTRIMMED * PHYSCHANOUT - 1 downto 0);
+  signal core_out_valid      : std_logic_vector(0 downto 0);
+  signal core_out_channel    : std_logic_vector(7 downto 0);
+
+  signal core_out_channel_0  : std_logic_vector(7 downto 0);
+
+     
+begin
+  sink : auk_dspip_avalon_streaming_sink_hpfir
+    generic map (
+      WIDTH_g          => (COMPLEX_CONST*INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH,
+      DATA_WIDTH       => (COMPLEX_CONST*INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH,
+      DATA_PORT_COUNT  => 1,
+      PACKET_SIZE_g    => CHANSPERPHYIN)
+    port map (
+      clk             => clk,
+      reset_n         => reset_n,
+      data            => data_in,
+      data_valid      => data_valid,
+      sink_ready_ctrl => sink_ready_ctrl,
+      packet_error    => sink_packet_error,
+      at_sink_ready   => ast_sink_ready,
+      at_sink_valid   => ast_sink_valid,
+      at_sink_data    => ast_sink_data,
+      at_sink_sop     => ast_sink_sop,
+      at_sink_eop     => ast_sink_eop,
+      at_sink_error   => ast_sink_error);
+  
+  source : auk_dspip_avalon_streaming_source_hpfir
+    generic map (
+      WIDTH_g           => COMPLEX_CONST*OUTWIDTH * PHYSCHANOUT,
+      DATA_WIDTH        => COMPLEX_CONST*OUTWIDTH,
+      DATA_PORT_COUNT   => PHYSCHANOUT,
+      FIFO_DEPTH_g      => OUTPUTFIFODEPTH,
+      USE_PACKETS       => USE_PACKETS,
+      HAVE_COUNTER_g    => false,
+      PACKET_SIZE_g     => CHANSPERPHYOUT,
+      COUNTER_LIMIT_g   => CHANSPERPHYOUT,
+      ENABLE_BACKPRESSURE_g => ENABLE_BACKPRESSURE)
+    port map (
+      clk               => clk,
+      reset_n           => reset_n,
+      data_in           => data_out,
+      data_count        => channel_out,
+      source_valid_ctrl => source_valid_ctrl,
+      source_stall      => source_stall,
+      packet_error      => source_packet_error,
+      at_source_ready   => ast_source_ready,
+      at_source_valid   => ast_source_valid,
+      at_source_data    => ast_source_data,
+      at_source_channel => ast_source_channel,
+      at_source_sop     => ast_source_sop,
+      at_source_eop     => ast_source_eop,
+      at_source_error   => ast_source_error);
+   
+   
+  intf_ctrl : auk_dspip_avalon_streaming_controller_hpfir
+    port map (
+      clk                 => clk,
+      reset_n             => reset_n,
+      sink_packet_error   => sink_packet_error,
+      source_stall        => source_stall,
+      valid               => valid,
+      reset_design        => reset_fir,
+      sink_ready_ctrl     => sink_ready_ctrl,
+      source_packet_error => source_packet_error,
+      source_valid_ctrl   => source_valid_ctrl,
+      stall               => stall);
+
+
+  
+  multi_data_out: for m in PHYSCHANOUT-1 downto 0 generate  
+    data_out(((m*OUTWIDTH)+OUTWIDTH-1) downto (m*OUTWIDTH)) <= outp_out(((m*OUTWIDTH)+OUTWIDTH-1) downto (m*OUTWIDTH));
+  end generate multi_data_out;
+
+  channel_pipe_lsb: if REM_LSB_TYPE_g = "round" and REM_LSB_BIT_g > 0 generate
+  begin
+    out_lsb_p : process (clk, reset_n)
+    begin
+      if reset_n = '0' then
+        core_out_channel_0 <= (others => '0');
+      elsif rising_edge(clk) then
+        core_out_channel_0 <= core_out_channel;
+      end if;
+    end process out_lsb_p;
+  end generate channel_pipe_lsb;
+  
+  channel_wire_lsb: if REM_LSB_TYPE_g = "trunc" or REM_LSB_BIT_g = 0 generate
+  begin
+    core_out_channel_0 <= core_out_channel;
+  end generate channel_wire_lsb;  
+  
+  channel_pipe_msb: if REM_MSB_TYPE_g = "sat" and REM_MSB_BIT_g > 0 generate
+  begin
+    out_p : process (clk, reset_n)
+    begin
+      if reset_n = '0' then
+        channel_out <= (others => '0');
+      elsif rising_edge(clk) then
+        channel_out <= core_out_channel_0(LOG2_CHANSPERPHYOUT-1 downto 0);
+      end if;
+    end process out_p;
+  end generate channel_pipe_msb;
+
+  channel_wire_msb: if REM_MSB_TYPE_g = "trunc" or REM_MSB_BIT_g = 0 generate
+  begin
+    channel_out <= core_out_channel_0(LOG2_CHANSPERPHYOUT-1 downto 0);
+  end generate channel_wire_msb;
+
+@@if { $ComplexConstant eq "2" } {
+@@if{$karatsuba} {
+@@set rr_inWidth [expr $inputBitWidth ] 
+@@set rr_outWidth [expr $outWidth_realOnly ] 
+@@set ii_inWidth [expr $inputBitWidth ] 
+@@set ii_outWidth [expr $outWidth_realOnly ]
+@@set riir_inWidth [expr $inputBitWidth+1 ] 
+@@set riir_outWidth [expr $outWidth_realOnly+2 ] 
+
+complex_calculation : if COMPLEX_CONST = 2 generate
+    type outputInterfaces_bus is array ($outputInterfaceNum downto 0) of std_logic_vector($outWidth_realOnly-1 downto 0);
+    type sum_bus is array ($outputInterfaceNum downto 0) of std_logic_vector($outWidth_realOnly downto 0);
+    signal real_res            : sum_bus;
+    signal imag_res            : sum_bus;
+
+@@foreach component $components {
+      component ${entity}_rtl_${component} is
+      port (
+        xIn_v                 : in std_logic_vector(0 downto 0);
+        xIn_c                 : in std_logic_vector(7 downto 0);
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+        xIn_$i                : in std_logic_vector(${component}_inWidth - 1 downto 0);
+@@}
+@@if { $ModeWidth > 0 } {
+        xIn_mode              : in std_logic_vector(MODE_WIDTH-1 downto 0);
+@@}
+@@if {$bankCount > 1} {
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+        bankIn_$i             : in std_logic_vector($bankInWidth - 1 downto 0);
+@@}
+@@}
+@@if {$coeffReload} {
+    bus_clk            : in std_logic;
+    h_areset           : in std_logic;
+    busIn_address            : in std_logic_vector(${component}_busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    busIn_writedata            : in std_logic_vector(${component}_busDataWidth-1 downto 0);
+    busIn_write            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    busIn_read         : in std_logic;
+    busOut_readdata           : out std_logic_vector(${component}_busDataWidth-1 downto 0);
+    busOut_readdatavalid           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@if {$backPressure == "true"} {
+        enable_i             : in std_logic_vector(0 downto 0);
+@@}
+        xOut_v               : out std_logic_vector(0 downto 0);
+        xOut_c               : out std_logic_vector(7 downto 0);
+@@for {set j 0} {$j < $outputInterfaceNum} {incr j} {
+        xOut_$j              : out std_logic_vector(${component}_outWidth- 1 downto 0);
+@@}
+        clk                  : in std_logic;
+        areset               : in std_logic
+        );
+end component ${entity}_rtl_${component};
+  
+    --Complex data re-ordering
+    signal core_channel_out_${component}    : std_logic_vector(2 -1 downto 0);
+    signal data_in_${component}             : std_logic_vector((${component}_inWidth + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1 downto 0);
+    signal data_valid_${component}          : std_logic_vector(0 downto 0);
+    signal core_out_${component}            : std_logic_vector(${component}_outWidth * PHYSCHANOUT - 1 downto 0);
+    signal core_out_valid_${component}      : std_logic_vector(0 downto 0);
+    signal core_out_channel_${component}    : std_logic_vector(7 downto 0);
+    signal ${component}_OutputInterfaces            : outputInterfaces_bus;
+    signal ${component}_OutputInterfaces_r            : outputInterfaces_bus;
+@@}
+  signal data_in_r             : std_logic_vector(($inputBitWidth) * PHYSCHANIN - 1 downto 0);
+  signal data_in_i             : std_logic_vector(($inputBitWidth) * PHYSCHANIN - 1 downto 0);
+  signal data_in_mode             : std_logic_vector(($BANKINWIDTH) * PHYSCHANIN - 1 downto 0);
+
+  signal fir_out_valid_r : std_logic;
+  signal sum_out_valid_r : std_logic;
+  
+
+ 
+  begin
+
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+  -- real is the upper bits, imag lower bits
+  --Set the data
+  data_in_r(($inputBitWidth) * $i + $inputBitWidth - 1 downto (($inputBitWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + 2*$inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i) + $inputBitWidth );
+
+  data_in_r(($inputBitWidth) * $i + $inputBitWidth - 1 downto (($inputBitWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i));
+  --Set the bank in
+  data_in_bank(($bankInWidth) * $i + $bankInWidth - 1 downto (($bankInWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + $inputBitWidth) * $i));
+
+@@}
+
+
+
+
+
+
+@@foreach component $components {
+        hpfircore_rtl_${component}: ${entity}_rtl_${component}
+           port map (
+            xIn_v     => data_valid_${component},
+            xIn_c     => "00000000",
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+            xIn_$i     => data_in_${component}(($bankInWidth + ${component}_inWidth) * $i + ${component}_inWidth - 1 downto ($bankInWidth + ${component}_inWidth) * $i),
+@@}
+@@if {$bankCount > 1} {
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+            bankIn_$i  => data_in_${component}(($bankInWidth + ${component}_inWidth) * $i + ($bankInWidth + ${component}_inWidth) - 1 downto ($bankInWidth + ${component}_inWidth) * $i + $inputBitWidth),
+@@}
+@@}
+@@if { $ModeWidth > 0 } {
+            xIn_mode  => data_in_${component}((${component}_inWidth + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1  downto (${component}_inWidth + BANKINWIDTH) * PHYSCHANIN),
+@@}
+            xOut_v    => core_out_valid_${component},
+            xOut_c    => core_out_channel_${component},
+@@for {set j 0} {$j < $outputInterfaceNum} {incr j} {
+            xOut_$j   => core_out_${component}($outWidth_realOnly* ($j+1) - 1 downto $outWidth_realOnly* $j),
+@@}
+@@if {$backPressure == "true"} {
+            enable_i  => enable_in,
+@@}
+@@if {$coeffReload} {
+            bus_clk   => ${component}_bus_clk,
+            h_areset  => ${component}_h_areset,
+            busIn_address   => ${component}_busIn_a,
+@@if {$coefficientWriteable} {
+            busIn_writedata => ${component}_busIn_writedata,
+            busIn_write => ${component}_busIn_write,          
+@@}
+@@if {$coefficientReadback} {
+            busIn_read  => ${component}_busIn_read,
+            busOut_readdata  => ${component}_busOut_readdata,
+            busOut_readdatavalid   => ${component}_busOut_readdatavalid,
+@@}
+@@}
+            clk       => clk,
+            areset    => reset_fir
+        );
+@@}
+
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+@@foreach component $components {
+  ${component}_OutputInterfaces($i) <= core_out_${component}($outWidth_realOnly* $i + $outWidth_realOnly- 1 downto $outWidth_realOnly* $i);
+@@}
+@@}
+
+combine_adder : process(clk, reset_n) 
+begin
+  if(reset_n = '0' ) then
+    fir_out_valid_r <= '0';
+    sum_out_valid_r <= '0';
+  elsif(rising_edge(clk)) then
+    fir_out_valid_r <= std_logic(core_out_valid_rr(0));
+    sum_out_valid_r <= std_logic(fir_out_valid_r);
+    register_inset : for i in 0 to PHYSCHANOUT-1 loop 
+      rr_OutputInterfaces_r(i) <= rr_OutputInterfaces(i);
+      ri_OutputInterfaces_r(i) <= ri_OutputInterfaces(i);
+      ir_OutputInterfaces_r(i) <= ir_OutputInterfaces(i);
+      ii_OutputInterfaces_r(i) <= ii_OutputInterfaces(i);
+      real_res(i) <= std_logic_vector(resize(signed(rr_OutputInterfaces_r(i)),$outWidth_realOnly+1)-resize(signed(ii_OutputInterfaces_r(i)),$outWidth_realOnly+1));
+      imag_res(i) <= std_logic_vector(resize(signed(ri_OutputInterfaces_r(i)),$outWidth_realOnly+1)+resize(signed(ir_OutputInterfaces_r(i)),$outWidth_realOnly+1));
+    end loop ; -- register_inset
+  end if;
+end process ; -- combine_adder
+gen_outp_blk : for i in PHYSCHANOUT-1 downto 0 generate  
+begin
+real_outp_blk : auk_dspip_roundsat_hpfir
+  generic map (
+    IN_WIDTH_g        =>  $outWidth_realOnly+1      ,
+    REM_LSB_BIT_g     =>  REM_LSB_BIT_g   ,
+    REM_LSB_TYPE_g    =>  REM_LSB_TYPE_g  ,
+    REM_MSB_BIT_g     =>  REM_MSB_BIT_g   ,
+    REM_MSB_TYPE_g    =>  REM_MSB_TYPE_g
+  )
+  port map (
+    clk               =>  clk,
+    reset_n           =>  reset_n,
+    enable            =>  sum_out_valid_r,
+    datain            =>  real_res(i),
+    valid             =>  outp_blk_valid(i),
+    dataout           =>  outp_out(((i*2*OUTWIDTH)+2*OUTWIDTH-1) downto (i*2*OUTWIDTH)+OUTWIDTH)
+  );
+ imag_outp_blk : auk_dspip_roundsat_hpfir
+  generic map (
+    IN_WIDTH_g        =>  $outWidth_realOnly+1      ,
+    REM_LSB_BIT_g     =>  REM_LSB_BIT_g   ,
+    REM_LSB_TYPE_g    =>  REM_LSB_TYPE_g  ,
+    REM_MSB_BIT_g     =>  REM_MSB_BIT_g   ,
+    REM_MSB_TYPE_g    =>  REM_MSB_TYPE_g
+  )
+  port map (
+    clk               =>  clk,
+    reset_n           =>  reset_n,
+    enable            =>  sum_out_valid_r,
+    datain            =>  imag_res(i),
+    valid             =>  open,
+    dataout           =>  outp_out(((i*2*OUTWIDTH)+OUTWIDTH-1) downto (i*2*OUTWIDTH))
+  );
+end generate gen_outp_blk;
+
+  end generate complex_calculation;
+@@} else {
+  
+complex_calculation : if COMPLEX_CONST = 2 generate
+    type outputInterfaces_bus is array ($outputInterfaceNum downto 0) of std_logic_vector($outWidth_realOnly-1 downto 0);
+    type sum_bus is array ($outputInterfaceNum downto 0) of std_logic_vector($outWidth_realOnly downto 0);
+    signal real_res            : sum_bus;
+    signal imag_res            : sum_bus;
+
+@@foreach component $components {
+      component ${entity}_rtl_${component} is
+      port (
+        xIn_v                 : in std_logic_vector(0 downto 0);
+        xIn_c                 : in std_logic_vector(7 downto 0);
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+        xIn_$i                : in std_logic_vector($inputBitWidth - 1 downto 0);
+@@}
+@@if { $ModeWidth > 0 } {
+        xIn_mode              : in std_logic_vector(MODE_WIDTH-1 downto 0);
+@@}
+@@if {$bankCount > 1} {
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+        bankIn_$i             : in std_logic_vector($bankInWidth - 1 downto 0);
+@@}
+@@}
+@@if {$coeffReload} {
+    bus_clk            : in std_logic;
+    h_areset           : in std_logic;
+    busIn_address            : in std_logic_vector(${component}_busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    busIn_writedata            : in std_logic_vector(${component}_busDataWidth-1 downto 0);
+    busIn_write            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    busIn_read         : in std_logic;
+    busOut_readdata           : out std_logic_vector(${component}_busDataWidth-1 downto 0);
+    busOut_readdatavalid           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@if {$backPressure == "true"} {
+        enable_i             : in std_logic_vector(0 downto 0);
+@@}
+        xOut_v               : out std_logic_vector(0 downto 0);
+        xOut_c               : out std_logic_vector(7 downto 0);
+@@for {set j 0} {$j < $outputInterfaceNum} {incr j} {
+        xOut_$j              : out std_logic_vector($outWidth_realOnly- 1 downto 0);
+@@}
+        clk                  : in std_logic;
+        areset               : in std_logic
+        );
+end component ${entity}_rtl_${component};
+  
+    --Complex data re-ordering
+    signal core_channel_out_${component}    : std_logic_vector(2 -1 downto 0);
+    signal data_in_${component}             : std_logic_vector((INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1 downto 0);
+    signal data_valid_${component}          : std_logic_vector(0 downto 0);
+    signal core_out_${component}            : std_logic_vector($outWidth_realOnly * PHYSCHANOUT - 1 downto 0);
+    signal core_out_valid_${component}      : std_logic_vector(0 downto 0);
+    signal core_out_channel_${component}    : std_logic_vector(7 downto 0);
+    signal ${component}_OutputInterfaces            : outputInterfaces_bus;
+    signal ${component}_OutputInterfaces_r            : outputInterfaces_bus;
+@@}
+  signal fir_out_valid_r : std_logic;
+  signal sum_out_valid_r : std_logic;
+  
+
+ 
+  begin
+@@foreach component $components {
+        hpfircore_rtl_${component}: ${entity}_rtl_${component}
+           port map (
+            xIn_v     => data_valid_${component},
+            xIn_c     => "00000000",
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+            xIn_$i     => data_in_${component}(($bankInWidth + $inputBitWidth) * $i + $inputBitWidth - 1 downto ($bankInWidth + $inputBitWidth) * $i),
+@@}
+@@if {$bankCount > 1} {
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+            bankIn_$i  => data_in_${component}(($bankInWidth + $inputBitWidth) * $i + ($bankInWidth + $inputBitWidth) - 1 downto ($bankInWidth + $inputBitWidth) * $i + $inputBitWidth),
+@@}
+@@}
+@@if { $ModeWidth > 0 } {
+            xIn_mode  => data_in_${component}((INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1  downto (INWIDTH + BANKINWIDTH) * PHYSCHANIN),
+@@}
+            xOut_v    => core_out_valid_${component},
+            xOut_c    => core_out_channel_${component},
+@@for {set j 0} {$j < $outputInterfaceNum} {incr j} {
+            xOut_$j   => core_out_${component}($outWidth_realOnly* ($j+1) - 1 downto $outWidth_realOnly* $j),
+@@}
+@@if {$backPressure == "true"} {
+            enable_i  => enable_in,
+@@}
+@@if {$coeffReload} {
+            bus_clk   => ${component}_bus_clk,
+            h_areset  => ${component}_h_areset,
+            busIn_address   => ${component}_busIn_a,
+@@if {$coefficientWriteable} {
+            busIn_writedata => ${component}_busIn_writedata,
+            busIn_write => ${component}_busIn_write,          
+@@}
+@@if {$coefficientReadback} {
+            busIn_read  => ${component}_busIn_read,
+            busOut_readdata  => ${component}_busOut_readdata,
+            busOut_readdatavalid   => ${component}_busOut_readdatavalid,
+@@}
+@@}
+            clk       => clk,
+            areset    => reset_fir
+        );
+@@}
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+  -- real is the upper bits, imag lower bits
+
+  --Set the data
+  data_in_rr(($bankInWidth + $inputBitWidth) * $i + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + 2*$inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i) + $inputBitWidth );
+  data_in_ri(($bankInWidth + $inputBitWidth) * $i + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + 2*$inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i) + $inputBitWidth );
+
+  data_in_ir(($bankInWidth + $inputBitWidth) * $i + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i));
+  data_in_ii(($bankInWidth + $inputBitWidth) * $i + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i));
+
+  --Set the bank in
+  data_in_rr(($bankInWidth + $inputBitWidth) * $i + $bankInWidth + (2 * $inputBitWidth) - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i + (2 * $inputBitWidth)))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + $inputBitWidth) * $i));
+  data_in_ri(($bankInWidth + $inputBitWidth) * $i + $bankInWidth + (2 * $inputBitWidth) - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i + (2 * $inputBitWidth)))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + $inputBitWidth) * $i));
+  data_in_ir(($bankInWidth + $inputBitWidth) * $i + $bankInWidth + (2 * $inputBitWidth) - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i + (2 * $inputBitWidth)))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + $inputBitWidth) * $i));
+  data_in_ii(($bankInWidth + $inputBitWidth) * $i + $bankInWidth + (2 * $inputBitWidth) - 1 downto (($bankInWidth + 2*$inputBitWidth) * $i + (2 * $inputBitWidth)))
+    <= data_in(($bankInWidth + $inputBitWidth) * ($i) + $inputBitWidth - 1 downto (($bankInWidth + $inputBitWidth) * $i));
+
+@@}
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+@@foreach component $components {
+  ${component}_OutputInterfaces($i) <= core_out_${component}($outWidth_realOnly* $i + $outWidth_realOnly- 1 downto $outWidth_realOnly* $i);
+@@}
+@@}
+
+combine_adder : process(clk, reset_n) 
+begin
+  if(reset_n = '0' ) then
+    fir_out_valid_r <= '0';
+    sum_out_valid_r <= '0';
+  elsif(rising_edge(clk)) then
+    fir_out_valid_r <= std_logic(core_out_valid_rr(0));
+    sum_out_valid_r <= std_logic(fir_out_valid_r);
+    register_inset : for i in 0 to PHYSCHANOUT-1 loop 
+      rr_OutputInterfaces_r(i) <= rr_OutputInterfaces(i);
+      ri_OutputInterfaces_r(i) <= ri_OutputInterfaces(i);
+      ir_OutputInterfaces_r(i) <= ir_OutputInterfaces(i);
+      ii_OutputInterfaces_r(i) <= ii_OutputInterfaces(i);
+      real_res(i) <= std_logic_vector(resize(signed(rr_OutputInterfaces_r(i)),$outWidth_realOnly+1)-resize(signed(ii_OutputInterfaces_r(i)),$outWidth_realOnly+1));
+      imag_res(i) <= std_logic_vector(resize(signed(ri_OutputInterfaces_r(i)),$outWidth_realOnly+1)+resize(signed(ir_OutputInterfaces_r(i)),$outWidth_realOnly+1));
+    end loop ; -- register_inset
+  end if;
+end process ; -- combine_adder
+gen_outp_blk : for i in PHYSCHANOUT-1 downto 0 generate  
+begin
+real_outp_blk : auk_dspip_roundsat_hpfir
+  generic map (
+    IN_WIDTH_g        =>  $outWidth_realOnly+1      ,
+    REM_LSB_BIT_g     =>  REM_LSB_BIT_g   ,
+    REM_LSB_TYPE_g    =>  REM_LSB_TYPE_g  ,
+    REM_MSB_BIT_g     =>  REM_MSB_BIT_g   ,
+    REM_MSB_TYPE_g    =>  REM_MSB_TYPE_g
+  )
+  port map (
+    clk               =>  clk,
+    reset_n           =>  reset_n,
+    enable            =>  sum_out_valid_r,
+    datain            =>  real_res(i),
+    valid             =>  outp_blk_valid(i),
+    dataout           =>  outp_out(((i*2*OUTWIDTH)+2*OUTWIDTH-1) downto (i*2*OUTWIDTH)+OUTWIDTH)
+  );
+ imag_outp_blk : auk_dspip_roundsat_hpfir
+  generic map (
+    IN_WIDTH_g        =>  $outWidth_realOnly+1      ,
+    REM_LSB_BIT_g     =>  REM_LSB_BIT_g   ,
+    REM_LSB_TYPE_g    =>  REM_LSB_TYPE_g  ,
+    REM_MSB_BIT_g     =>  REM_MSB_BIT_g   ,
+    REM_MSB_TYPE_g    =>  REM_MSB_TYPE_g
+  )
+  port map (
+    clk               =>  clk,
+    reset_n           =>  reset_n,
+    enable            =>  sum_out_valid_r,
+    datain            =>  imag_res(i),
+    valid             =>  open,
+    dataout           =>  outp_out(((i*2*OUTWIDTH)+OUTWIDTH-1) downto (i*2*OUTWIDTH))
+  );
+end generate gen_outp_blk;
+
+  end generate complex_calculation;
+
+@@}
+
+@@} else {
+
+real_passthrough : if COMPLEX_CONST = 1 generate
+
+@@set component "core"
+      component ${entity}_rtl_${component} is
+      port (
+        xIn_v                 : in std_logic_vector(0 downto 0);
+        xIn_c                 : in std_logic_vector(7 downto 0);
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+        xIn_$i                : in std_logic_vector($inputBitWidth - 1 downto 0);
+@@}
+@@if { $ModeWidth > 0 } {
+        xIn_mode              : in std_logic_vector(MODE_WIDTH-1 downto 0);
+@@}
+@@if {$bankCount > 1} {
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+        bankIn_$i             : in std_logic_vector($bankInWidth - 1 downto 0);
+@@}
+@@}
+@@if {$coeffReload} {
+        bus_clk               : in std_logic;
+        h_areset              : in std_logic;
+        busIn_address         : in std_logic_vector($busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+        busIn_writedata       : in std_logic_vector($busDataWidth_msb downto 0);
+        busIn_write           : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    busIn_read       : in std_logic_vector(0 downto 0);
+    busOut_readdata       : out std_logic_vector($busDataWidth_msb downto 0);
+    busOut_readdatavalid  : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@if {$backPressure == "true"} {
+        enable_i             : in std_logic_vector(0 downto 0);
+@@}
+        xOut_v               : out std_logic_vector(0 downto 0);
+        xOut_c               : out std_logic_vector(7 downto 0);
+@@for {set j 0} {$j < $outputInterfaceNum} {incr j} {
+        xOut_$j              : out std_logic_vector($outWidth_realOnly- 1 downto 0);
+@@}
+        clk                  : in std_logic;
+        areset               : in std_logic
+        );
+end component ${entity}_rtl_${component};
+
+@@if {$coeffReload} {
+    signal bus_clk_${component} : std_logic;
+    signal h_areset_${component}: std_logic;
+    signal busIn_a_${component}            :  std_logic_vector($busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    signal busIn_d_${component}            :  std_logic_vector($busDataWidth_msb downto 0);
+    signal busIn_w_${component}            :  std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    signal busIn_read_${component}           :  std_logic_vector(0 downto 0);
+    signal busOut_r_${component}           :  std_logic_vector($busDataWidth_msb downto 0);
+    signal busOut_v_${component}           :  std_logic_vector(0 downto 0);
+@@}
+@@}
+
+    --Complex data re-ordering
+    signal core_channel_out_core    : std_logic_vector(2 -1 downto 0);
+    signal data_in_core             : std_logic_vector((COMPLEX_CONST*INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1 downto 0);
+    signal data_valid_core          : std_logic_vector(0 downto 0);
+    signal core_out_core            : std_logic_vector(OUT_WIDTH_UNTRIMMED * PHYSCHANOUT - 1 downto 0);
+    signal core_out_valid_core      : std_logic_vector(0 downto 0);
+    signal core_out_channel_core    : std_logic_vector(7 downto 0);
+  
+
+
+  begin
+@@set component "core"
+        hpfircore_${component}: ${entity}_rtl_${component}
+           port map (
+            xIn_v     => data_valid_${component},
+            xIn_c     => "00000000",
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+            xIn_$i     => data_in_${component}(($bankInWidth + $inputBitWidth) * $i + $inputBitWidth - 1 downto ($bankInWidth + $inputBitWidth) * $i),
+@@}
+@@if {$bankCount > 1} {
+@@for {set i 0} {$i < $inputInterfaceNum} {incr i} {
+            bankIn_$i  => data_in_${component}(($bankInWidth + $inputBitWidth) * $i + ($bankInWidth + $inputBitWidth) - 1 downto ($bankInWidth + $inputBitWidth) * $i + $inputBitWidth),
+@@}
+@@}
+@@if { $ModeWidth > 0 } {
+            xIn_mode  => data_in_${component}((INWIDTH + BANKINWIDTH) * PHYSCHANIN  + MODE_WIDTH - 1  downto (INWIDTH + BANKINWIDTH) * PHYSCHANIN),
+@@}
+            xOut_v    => core_out_valid_${component},
+            xOut_c    => core_out_channel_${component},
+@@for {set j 0} {$j < $outputInterfaceNum} {incr j} {
+            xOut_$j   => core_out_${component}($outWidth_realOnly* $j + $outWidth_realOnly- 1 downto $outWidth_realOnly* $j),
+@@}
+@@if {$backPressure == "true"} {
+            enable_i  => enable_in,
+@@}
+@@if {$coeffReload} {
+            bus_clk   => bus_clk_${component},
+            h_areset  => h_areset_${component},
+            busIn_address   => busIn_a_${component},
+@@if {$coefficientWriteable} {
+            busIn_writedata   => busIn_d_${component},
+            busIn_write   => busIn_w_${component},
+@@}
+@@if {$coefficientReadback} {
+            busIn_read  => busIn_read_${component},
+            busOut_readdata  => busOut_r_${component},
+            busOut_readdatavalid  => busOut_v_${component},
+@@}
+@@}
+            clk       => clk,
+            areset    => reset_fir
+        );
+
+
+@@if {$coeffReload} {
+            bus_clk_${component} <= bus_clk;
+            h_areset_${component} <= h_areset;
+            busIn_a_${component} <= busIn_a; 
+@@if {$coefficientWriteable} {
+            busIn_d_${component}   <= busIn_d;
+            busIn_w_${component}   <= busIn_w;
+@@}
+@@if {$coefficientReadback} {
+            busIn_read_${component}(0)  <= (busIn_read);
+            busOut_r  <= busOut_r_${component};
+            busOut_v  <= busOut_v_${component};
+@@}
+@@}
+
+
+    core_channel_out <= core_channel_out_core;              
+    data_in_core <= data_in;               
+    data_valid_core <= data_valid;                
+    core_out <= core_out_core;              
+    core_out_valid(0) <= core_out_valid_core(0);                
+    core_out_channel <= core_out_channel_core;                
+
+
+
+  gen_outp_blk : for i in PHYSCHANOUT-1 downto 0 generate  
+  begin
+    outp_blk : auk_dspip_roundsat_hpfir
+      generic map (
+        IN_WIDTH_g        =>  OUT_WIDTH_UNTRIMMED      ,
+        REM_LSB_BIT_g     =>  REM_LSB_BIT_g   ,
+        REM_LSB_TYPE_g    =>  REM_LSB_TYPE_g  ,
+        REM_MSB_BIT_g     =>  REM_MSB_BIT_g   ,
+        REM_MSB_TYPE_g    =>  REM_MSB_TYPE_g
+      )
+      port map (
+        clk               =>  clk,
+        reset_n           =>  reset_n,
+        enable            =>  core_out_valid(0),
+        datain            =>  core_out(((i*OUT_WIDTH_UNTRIMMED)+OUT_WIDTH_UNTRIMMED-1) downto (i*OUT_WIDTH_UNTRIMMED)),
+        valid             =>  outp_blk_valid(i),
+        dataout           =>  outp_out(((i*OUTWIDTH)+OUTWIDTH-1) downto (i*OUTWIDTH))
+      );
+  end generate gen_outp_blk;
+ end generate real_passthrough;
+
+
+@@}
+
+  valid <= outp_blk_valid(0);
+  
+  enable_in(0) <= not stall;
+
+end struct;
+
+
+

@@ -1,0 +1,279 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+project_new -overwrite -part $device -family "${family}" ${dst_path}/${project_name}
+set_global_assignment -name VERILOG_FILE ${project_name}.v
+set_global_assignment -name SDC_FILE ${project_name}.sdc
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name QIP_FILE ../${variant}/${variant}.qip
+set_global_assignment -name SEARCH_PATH ./common
+
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_user_mode_det.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_optics_control_i2c_workaround.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_mdio_control.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_i2c_wrapper.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_i2c_control.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_packet_client.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_ack_skid.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_mac_loopback.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_traffic_break.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_sync_arst.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_status_sync.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_packet_gen.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_packet_gen_sanity_check.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_stat_cntr_5port.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_six_three_comp.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_status_cntr_sync.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_a10_temp_sense.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_times_1pt8.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_sticky_flag.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_avalon_mm_read_combine.v
+set_global_assignment -name VERILOG_FILE ./common/alt_aeuex_wide_stat_cntr_4port.v
+
+@@ if {$is_pro} {
+set_global_assignment -name QSYS_FILE common/alt_aeuex_jtag_avalon.ip
+set_global_assignment -name QSYS_FILE common/alt_aeuex_iopll_a10.ip
+set_global_assignment -name QSYS_FILE common/probe8.ip
+@@ } else {
+set_global_assignment -name QSYS_FILE common/alt_aeuex_jtag_avalon.qsys
+set_global_assignment -name QSYS_FILE common/alt_aeuex_iopll_a10.qsys
+set_global_assignment -name QSYS_FILE common/probe8.qsys
+@@ }
+
+@@ if {!$caui4} {
+@@ if {$is_pro} {
+set_global_assignment -name QSYS_FILE common/ed_synth.ip
+@@ } else {
+set_global_assignment -name QSYS_FILE common/ed_synth.qsys
+@@ }
+@@ }
+
+set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION OFF
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON
+
+set_instance_assignment -name MESSAGE_DISABLE 10036 -to jtag_master
+set_instance_assignment -name MESSAGE_DISABLE 10230 -to jtag_master
+@@ if {!$caui4} {
+set_instance_assignment -name MESSAGE_DISABLE 13410 -to eQSFP_modselL
+@@ }
+
+@@ if {!$caui4} {
+set_global_assignment -name MESSAGE_DISABLE 14320 -entity e${speed}_tx_pll_644
+set_global_assignment -name MESSAGE_DISABLE 14320 -entity e${speed}_rx_pll
+@@ } else {
+set_instance_assignment -name GLOBAL_SIGNAL OFF            -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|caui4_e100_pma:iof|caui4_xcvr:xcvr|altera_xcvr_native_a10:caui4_xcvr|twentynm_xcvr_native:g_xcvr_native_insts[*].twentynm_xcvr_native_inst|twentynm_pcs:inst_twentynm_pcs|twentynm_pcs_ch:ch[0].inst_twentynm_pcs_ch*pld_pcs_rx_clk_out*"
+@@ }
+
+@@ if {${speed} == 100} {
+    set_global_assignment -name MESSAGE_DISABLE 14320 -entity e100_wide_word_ram_8
+@@ }
+
+@@ if {$ptp} {
+    set_global_assignment -name SEARCH_PATH ./common/tod
+
+    @@ if {$is_pro} {
+    set_global_assignment -name QSYS_FILE common/tod/tod.ip
+    @@ } else {
+    set_global_assignment -name QSYS_FILE common/tod/tod.qsys
+    @@ }
+@@ }
+
+@@ if {$kr4} {
+    set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*e40_inst*twentynm_xcvr_native:g_xcvr_native_insts*inst_twentynm_hssi_rx_pld_pcs_interface|pld_pma_clkdiv_rx_user"
+    set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*e40_inst*twentynm_xcvr_native:g_xcvr_native_insts*inst_twentynm_hssi_rx_pld_pcs_interface|pld_pma_rx_clk_out"
+    set_instance_assignment -name GLOBAL_SIGNAL OFF -to "*e40_inst*twentynm_xcvr_native:g_xcvr_native_insts*inst_twentynm_hssi_tx_pld_pcs_interface|pld_pma_tx_clk_out"
+    set_instance_assignment -name GLOBAL_SIGNAL PERIPHERY_CLOCK -to *e40_inst*g_xcvr_native_insts[*]*twentynm_xcvr_native_inst*inst_twentynm_pcs*_pld_pcs_tx_clk_out
+    set_instance_assignment -name GLOBAL_SIGNAL PERIPHERY_CLOCK -to *e40_inst*g_xcvr_native_insts[*]*twentynm_xcvr_native_inst*inst_twentynm_pcs*_pld_pcs_rx_clk_out
+@@ }
+
+@@ if {$c4_fec} {
+set_instance_assignment -name GLOBAL_SIGNAL OFF            -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|alt_aeu_100_rs_rx:rsfec.rx_rsfec|rst_vdc"
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "*alt_aeu_100_top:ex_100g_caui4_inst|alt_aeu_100_eth_4:e100|caui4_e100_pcs_assembly:phy.epa|caui4_rxrs_fpll:PLLS.rxfpll|altera_xcvr_fpll_a10:caui4_rxrs_fpll|outclk0"
+@@ }
+
+# A10 GX SI Board
+@@ if {($dev_board == 1) || ($dev_board == 2)} {
+    set_location_assignment PIN_AU33 -to clk50
+    set_location_assignment PIN_AT33 -to "clk50(n)"
+    set_location_assignment PIN_AU22 -to cpu_resetn
+    #QSFP Control
+@@  if {!$caui4} {
+    set_location_assignment PIN_B20 -to eQSFP_modselL
+    set_location_assignment PIN_D19 -to eQSFP_modprsL
+    set_location_assignment PIN_C19 -to eQSFP_intl
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to eQSFP_modselL
+    set_instance_assignment -name SLEW_RATE 0 -to eQSFP_modselL
+    #i2c
+    set_location_assignment PIN_AM35 -to I2C_18V_SCL
+    set_location_assignment PIN_AK32 -to I2C_18V_SDA
+@@  }
+    set_location_assignment PIN_C20 -to eQSFP_resetL
+    set_location_assignment PIN_D18 -to eQSFP_LPmode
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to eQSFP_LPmode
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to eQSFP_resetL
+    set_instance_assignment -name SLEW_RATE 0 -to eQSFP_LPmode
+    set_instance_assignment -name SLEW_RATE 0 -to eQSFP_resetL
+@@     if {$speed == 100} {
+@@         if {$caui4} {
+            set_location_assignment PIN_E38  -to rx_serial_r[0]
+            set_location_assignment PIN_A42  -to tx_serial_r[0]
+            set_location_assignment PIN_D40  -to rx_serial_r[1]
+            set_location_assignment PIN_B40  -to tx_serial_r[1]
+            set_location_assignment PIN_R42  -to rx_serial_r[2]
+            set_location_assignment PIN_K44  -to tx_serial_r[2]
+            set_location_assignment PIN_P40  -to rx_serial_r[3]
+            set_location_assignment PIN_J42  -to tx_serial_r[3]
+            set_location_assignment PIN_L37  -to clk_ref_r
+@@         } else {
+            set_location_assignment PIN_AW38 -to rx_serial_r[0]
+            set_location_assignment PIN_BC38 -to tx_serial_r[0]
+            set_location_assignment PIN_BA38 -to rx_serial_r[1]
+            set_location_assignment PIN_BD40 -to tx_serial_r[1]
+            set_location_assignment PIN_AY40 -to rx_serial_r[2]
+            set_location_assignment PIN_BB40 -to tx_serial_r[2]
+            set_location_assignment PIN_AV40 -to rx_serial_r[3]
+            set_location_assignment PIN_BC42 -to tx_serial_r[3]
+            set_location_assignment PIN_AT40 -to rx_serial_r[4]
+            set_location_assignment PIN_BB44 -to tx_serial_r[4]
+            set_location_assignment PIN_AP40 -to rx_serial_r[5]
+            set_location_assignment PIN_BA42 -to tx_serial_r[5]
+            set_location_assignment PIN_AN42 -to rx_serial_r[6]
+            set_location_assignment PIN_AY44 -to tx_serial_r[6]
+            set_location_assignment PIN_AM40 -to rx_serial_r[7]
+            set_location_assignment PIN_AW42 -to tx_serial_r[7]
+            set_location_assignment PIN_AL42 -to rx_serial_r[8]
+            set_location_assignment PIN_AV44 -to tx_serial_r[8]
+            set_location_assignment PIN_AK40 -to rx_serial_r[9]
+            set_location_assignment PIN_AU42 -to tx_serial_r[9]
+            set_location_assignment PIN_AC37 -to clk_ref_r
+            set_location_assignment PIN_AC38 -to "clk_ref_r(n)"
+@@         }
+@@     } else {
+@@         if {$kr4} {
+            set_location_assignment PIN_R42 -to rx_serial_r[0]
+            set_location_assignment PIN_K44 -to tx_serial_r[0]
+            set_location_assignment PIN_P40 -to rx_serial_r[1]
+            set_location_assignment PIN_J42 -to tx_serial_r[1]
+            set_location_assignment PIN_M40 -to rx_serial_r[2]
+            set_location_assignment PIN_G42 -to tx_serial_r[2]
+            set_location_assignment PIN_L42 -to rx_serial_r[3]
+            set_location_assignment PIN_F44 -to tx_serial_r[3]
+            set_location_assignment PIN_R37 -to clk_ref_r
+@@         } else {
+            set_location_assignment PIN_AG42 -to rx_serial_r[0]
+            set_location_assignment PIN_AP44 -to tx_serial_r[0]
+            set_location_assignment PIN_AF40 -to rx_serial_r[1]
+            set_location_assignment PIN_AM44 -to tx_serial_r[1]
+            set_location_assignment PIN_AD40 -to rx_serial_r[2]
+            set_location_assignment PIN_AH44 -to tx_serial_r[2]
+            set_location_assignment PIN_AC42 -to rx_serial_r[3]
+            set_location_assignment PIN_AF44 -to tx_serial_r[3]
+            set_location_assignment PIN_AC37 -to clk_ref_r
+@@         }
+@@     }
+@@ } elseif {$dev_board == 3} {
+    set_location_assignment PIN_AM16 -to clk50
+    set_location_assignment PIN_BD30 -to cpu_resetn
+    set_location_assignment PIN_AH36 -to clk_ref_r
+    #QSFP Control
+    set_location_assignment PIN_Y13 -to eQSFP_modselL
+    set_location_assignment PIN_Y12 -to eQSFP_resetL
+    set_location_assignment PIN_AA13 -to eQSFP_LPmode
+    set_location_assignment PIN_J12 -to eQSFP_modprsL
+    set_location_assignment PIN_L13 -to eQSFP_intl
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to eQSFP_LPmode
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to eQSFP_modselL
+    set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to eQSFP_resetL
+    set_instance_assignment -name SLEW_RATE 0 -to eQSFP_LPmode
+    set_instance_assignment -name SLEW_RATE 0 -to eQSFP_modselL
+    set_instance_assignment -name SLEW_RATE 0 -to eQSFP_resetL
+    #i2c
+    set_location_assignment PIN_H13 -to I2C_18V_SCL
+    set_location_assignment PIN_H12 -to I2C_18V_SDA
+@@     if {$speed == 100} {
+@@         if {$caui4} {
+            set_location_assignment PIN_AH40 -to rx_serial_r[0]
+            set_location_assignment PIN_AH44 -to tx_serial_r[0]
+            set_location_assignment PIN_AJ38 -to rx_serial_r[1]
+            set_location_assignment PIN_AJ42 -to tx_serial_r[1]
+            set_location_assignment PIN_AK40 -to rx_serial_r[2]
+            set_location_assignment PIN_AK44 -to tx_serial_r[2]
+            set_location_assignment PIN_AL38 -to rx_serial_r[3]
+            set_location_assignment PIN_AL42 -to tx_serial_r[3]
+@@         } else {
+            set_location_assignment PIN_AH40 -to rx_serial_r[0]
+            set_location_assignment PIN_AH44 -to tx_serial_r[0]
+            set_location_assignment PIN_AJ38 -to rx_serial_r[1]
+            set_location_assignment PIN_AJ42 -to tx_serial_r[1]
+            set_location_assignment PIN_AK40 -to rx_serial_r[2]
+            set_location_assignment PIN_AK44 -to tx_serial_r[2]
+            set_location_assignment PIN_AL38 -to rx_serial_r[3]
+            set_location_assignment PIN_AL42 -to tx_serial_r[3]
+            set_location_assignment PIN_BA38 -to rx_serial_r[4]
+            set_location_assignment PIN_BB44 -to tx_serial_r[4]
+            set_location_assignment PIN_AM40 -to rx_serial_r[5]
+            set_location_assignment PIN_AM44 -to tx_serial_r[5]
+            set_location_assignment PIN_AN38 -to rx_serial_r[6]
+            set_location_assignment PIN_AN42 -to tx_serial_r[6]
+            set_location_assignment PIN_BC38 -to rx_serial_r[7]
+            set_location_assignment PIN_BD40 -to tx_serial_r[7]
+            set_location_assignment PIN_AY36 -to rx_serial_r[8]
+            set_location_assignment PIN_BC42 -to tx_serial_r[8]
+            set_location_assignment PIN_BB36 -to rx_serial_r[9]
+            set_location_assignment PIN_BD36 -to tx_serial_r[9]
+@@         }
+@@     } else {
+        set_location_assignment PIN_AH40 -to rx_serial_r[0]
+        set_location_assignment PIN_AH44 -to tx_serial_r[0]
+        set_location_assignment PIN_AJ38 -to rx_serial_r[1]
+        set_location_assignment PIN_AJ42 -to tx_serial_r[1]
+        set_location_assignment PIN_AK40 -to rx_serial_r[2]
+        set_location_assignment PIN_AK44 -to tx_serial_r[2]
+        set_location_assignment PIN_AL38 -to rx_serial_r[3]
+        set_location_assignment PIN_AL42 -to tx_serial_r[3]
+@@     }
+@@ }
+
+set_instance_assignment -name IO_STANDARD "CURRENT MODE LOGIC (CML)" -to rx_serial_r[*]
+set_instance_assignment -name IO_STANDARD "HSSI DIFFERENTIAL I/O" -to tx_serial_r[*]
+
+@@ if {$caui4} {
+    set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_1V -to rx_serial_r[*]
+    set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_1V -to tx_serial_r[*]
+@@ } else {
+    set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to rx_serial_r[*]
+    set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to tx_serial_r[*]
+@@ }
+
+set_instance_assignment -name IO_STANDARD LVDS -to clk50
+set_instance_assignment -name IO_STANDARD LVDS -to "clk50(n)"
+set_instance_assignment -name IO_STANDARD LVDS -to clk_ref_r
+set_instance_assignment -name IO_STANDARD LVDS -to "clk_ref_r(n)"
+@@ if {!$caui4} {
+set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to I2C_18V_SCL
+set_instance_assignment -name CURRENT_STRENGTH_NEW 12MA -to I2C_18V_SDA
+set_instance_assignment -name SLEW_RATE 0 -to I2C_18V_SCL
+set_instance_assignment -name SLEW_RATE 0 -to I2C_18V_SDA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to eQSFP_modselL
+set_instance_assignment -name IO_STANDARD "1.8 V" -to eQSFP_modprsL
+set_instance_assignment -name IO_STANDARD "1.8 V" -to eQSFP_intl
+set_instance_assignment -name IO_STANDARD "1.8 V" -to I2C_18V_SDA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to I2C_18V_SCL
+@@ }
+
+set_instance_assignment -name IO_STANDARD "1.8 V" -to cpu_resetn
+set_instance_assignment -name IO_STANDARD "1.8 V" -to eQSFP_resetL
+set_instance_assignment -name IO_STANDARD "1.8 V" -to eQSFP_LPmode
+
+export_assignments -reorganize
+project_close

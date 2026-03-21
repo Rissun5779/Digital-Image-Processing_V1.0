@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip><presets version="18.1">
+	<preset name="QDR-IV-2133 XP SRAM 144Mb (x18) CY7C4122KV13" kind="altera_emif_s10" version="18.1" description="QDR-IV-2133 XP SRAM 144Mb (x18) CY7C4122KV13">
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR4" />
+		<parameter name="MEM_QDR4_SPEEDBIN_ENUM" value="QDR4_SPEEDBIN_2133" />
+		<parameter name="PHY_QDR4_DEFAULT_REF_CLK_FREQ" value="1" />
+		<parameter name="PHY_QDR4_MEM_CLK_FREQ_MHZ" value="1066.667" />
+		<parameter name="PHY_QDR4_DEFAULT_IO" value="1" />
+		<parameter name="MEM_QDR4_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR4_BL" value="2" />
+		<parameter name="MEM_QDR4_TRL_CYC" value="8" />
+		<parameter name="MEM_QDR4_TWL_CYC" value="5" />
+	</preset>
+	<preset name="QDR-IV-1866 XP SRAM 144Mb (x18) CY7C4122KV13" kind="altera_emif_s10" version="18.1" description="QDR-IV-1866 XP SRAM 144Mb (x18) CY7C4122KV13">
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR4" />
+		<parameter name="MEM_QDR4_SPEEDBIN_ENUM" value="QDR4_SPEEDBIN_1866" />
+		<parameter name="PHY_QDR4_DEFAULT_REF_CLK_FREQ" value="1" />
+		<parameter name="PHY_QDR4_MEM_CLK_FREQ_MHZ" value="933.333" />
+		<parameter name="PHY_QDR4_DEFAULT_IO" value="1" />
+		<parameter name="MEM_QDR4_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR4_BL" value="2" />
+		<parameter name="MEM_QDR4_TRL_CYC" value="8" />
+		<parameter name="MEM_QDR4_TWL_CYC" value="5" />
+	</preset>
+	<preset name="QDR-IV-2133 XP SRAM 144Mb (x36) CY7C4142KV13" kind="altera_emif_s10" version="18.1" description="QDR-IV-2133 XP SRAM 144Mb (x36) CY7C4142KV13">
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR4" />
+		<parameter name="MEM_QDR4_SPEEDBIN_ENUM" value="QDR4_SPEEDBIN_2133" />
+		<parameter name="PHY_QDR4_DEFAULT_REF_CLK_FREQ" value="1" />
+		<parameter name="PHY_QDR4_MEM_CLK_FREQ_MHZ" value="1066.667" />
+		<parameter name="PHY_QDR4_DEFAULT_IO" value="1" />
+		<parameter name="MEM_QDR4_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR4_BL" value="2" />
+		<parameter name="MEM_QDR4_TRL_CYC" value="8" />
+		<parameter name="MEM_QDR4_TWL_CYC" value="5" />
+	</preset>
+	<preset name="QDR-IV-1866 XP SRAM 144Mb (x36) CY7C4142KV13" kind="altera_emif_s10" version="18.1" description="QDR-IV-1866 XP SRAM 144Mb (x36) CY7C4142KV13">
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR4" />
+		<parameter name="MEM_QDR4_SPEEDBIN_ENUM" value="QDR4_SPEEDBIN_1866" />
+		<parameter name="PHY_QDR4_DEFAULT_REF_CLK_FREQ" value="1" />
+		<parameter name="PHY_QDR4_MEM_CLK_FREQ_MHZ" value="933.333" />
+		<parameter name="PHY_QDR4_DEFAULT_IO" value="1" />
+		<parameter name="MEM_QDR4_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR4_BL" value="2" />
+		<parameter name="MEM_QDR4_TRL_CYC" value="8" />
+		<parameter name="MEM_QDR4_TWL_CYC" value="5" />
+	</preset>
+</presets></ip>

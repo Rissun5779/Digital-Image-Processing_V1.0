@@ -1,0 +1,123 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions and other 
+-- software and tools, and its AMPP partner logic functions, and any output 
+-- files from any of the foregoing (including device programming or simulation 
+-- files), and any associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License Subscription 
+-- Agreement, Intel FPGA IP License Agreement, or other applicable 
+-- license agreement, including, without limitation, that your use is for the 
+-- sole purpose of programming logic devices manufactured by Intel and sold by 
+-- Intel or its authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+
+LIBRARY fourteennm;
+USE fourteennm.all;
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+ENTITY  ${output_name}   IS
+    PORT
+    (
+@@ set i 0
+@@  foreach { port direction width pragma } $ports_list {
+@@  incr i 4
+@@  incr width -1
+@@      if { $width == 0 } {
+@@          if { $i == [llength $ports_list] } {
+        $port : $direction STD_LOGIC
+@@          } else {
+        $port : $direction STD_LOGIC;   
+@@          }
+@@      } else {
+@@          if { $i == [llength $ports_list] } {
+        $port : $direction STD_LOGIC_VECTOR ($width DOWNTO 0)
+@@          } else {
+        $port : $direction STD_LOGIC_VECTOR ($width DOWNTO 0);
+@@          }
+@@      }
+@@  }
+    );
+END ${output_name};
+
+ARCHITECTURE RTL OF ${output_name} IS
+
+    ATTRIBUTE ALTERA_ATTRIBUTE : string;
+@@  foreach { port direction width } $wire_list {
+@@      if { $width == 0 } {
+    SIGNAL $port : STD_LOGIC;
+@@      } else {
+    SIGNAL $port : STD_LOGIC_VECTOR ($width DOWNTO 0);
+@@      }
+@@  }
+@@  if { $glitch_free } {
+    
+    SIGNAL clkselect_wire : STD_LOGIC_VECTOR (1 DOWNTO 0);
+@@      if { $enable_register_type == 1 } {
+    SIGNAL enaout : STD_LOGIC;
+    SIGNAL select_reg : STD_LOGIC_VECTOR (1 DOWNTO 0)
+    -- synopsys translate_off
+      := (OTHERS => '0')
+    -- synopsys translate_on
+    ;
+    SIGNAL select_enable_wire : STD_LOGIC_VECTOR (1 DOWNTO 0);
+    ATTRIBUTE ALTERA_ATTRIBUTE OF select_reg : SIGNAL IS "POWER_UP_LEVEL=LOW";
+@@      }
+@@      if { $num_clocks > 1 } {
+    COMPONENT ${output_name}_clksel_mux
+    PORT (
+        mux_inclk0x : IN STD_LOGIC;
+        mux_inclk1x : IN STD_LOGIC;
+        mux_inclk2x : IN STD_LOGIC;
+        mux_inclk3x : IN STD_LOGIC;
+        mux_clkselect : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
+        mux_outclk : OUT STD_LOGIC
+    );
+    END COMPONENT;
+@@      }
+@@      if { $clock_enable } {
+    COMPONENT stratix10_clk_gate
+    PORT (
+        gate_enable : IN STD_LOGIC;
+        gate_inclk : IN STD_LOGIC;
+        gate_outclk : OUT STD_LOGIC
+    );
+    END COMPONENT;
+@@      }
+@@      if { $clock_divide } {
+    COMPONENT fourteennm_clk_divider
+    PORT (
+        div_inclk : IN STD_LOGIC;
+        clock_div1 : OUT STD_LOGIC;
+        clock_div2 : OUT STD_LOGIC;
+        clock_div4 : OUT STD_LOGIC
+    );
+    END COMPONENT;
+@@      }
+@@  }
+BEGIN
+END RTL;
+
+@@  if { $num_clocks > 1 } {
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+ENTITY ${output_name}_clksel_mux IS
+    PORT
+    (
+        mux_inclk0x : IN STD_LOGIC;
+        mux_inclk1x : IN STD_LOGIC;
+        mux_inclk2x : IN STD_LOGIC;
+        mux_inclk3x : IN STD_LOGIC;
+        mux_clkselect : IN STD_LOGIC_VECTOR (1 DOWNTO 0);
+        mux_outclk : OUT STD_LOGIC
+    );
+END ${output_name}_clksel_mux
+ARCHITECTURE RTL OF ${output_name}_clksel_mux IS
+BEGIN
+    mux_outclk <= mux_inclk0x when (mux_clkselect(0)='0' and mux_clkselect(1)='0') else
+        mux_inclk1x when (mux_clkselect(0)='0' and mux_clkselect(1)='1') else
+        mux_inclk2x when (mux_clkselect(0)='1' and mux_clkselect(1)='0') else
+        mux_inclk3x;
+END RTL;
+@@  }

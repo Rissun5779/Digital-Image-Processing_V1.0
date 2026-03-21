@@ -1,0 +1,28 @@
+[Interfaces|PCI Express]
+Stratix V Hard IP for PCI Express with SR-IOV Intel FPGA IP = "%t" "%w/../../common/lib/megawizard.pl" --wizard_file:"%w/altera_pcie_sriov_hw.tcl" --wizard:altera_pcie_sriov --familyparameter:device_family --early_gen:on %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<VISIBILITY FOR_CREATE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Stratix V"   SUPPORT_CHECK="ON" />
+<LANGUAGES   AHDL="OFF" />
+<ALIAS>Stratix V PCIe SRIOV Bridge v13.1</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v14.0</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v14.1</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v14.0.1</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v14.0.2</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v13.1.1</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v13.1.2</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v13.1.3</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v15.0</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v15.1</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v15.0.1</ALIAS>
+<ALIAS>Stratix V PCIe SRIOV Bridge v15.0.2</ALIAS>
+<ALIAS>Stratix V Hard IP for PCI Express with SR-IOV v16.0</ALIAS>
+<ALIAS>Stratix V Hard IP for PCI Express with SR-IOV v16.1</ALIAS>
+<ALIAS>Stratix V Hard IP for PCI Express with SR-IOV v17.0</ALIAS>
+<ALIAS>Stratix V Hard IP for PCI Express with SR-IOV v17.1</ALIAS>
+<ALIAS>Stratix V Hard IP for PCI Express with SR-IOV v18.0</ALIAS>
+<ALIAS>Stratix V Hard IP for PCI Express with SR-IOV Intel FPGA IP</ALIAS>
+</INFO>
+

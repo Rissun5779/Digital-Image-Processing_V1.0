@@ -1,0 +1,63 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part          $param0
+@@ set symbols_per_clock    $param1
+@@ set support_aux          $param2
+@@ set support_aud          $param3
+@@ set support_deep_color   $param4
+
+# qsys scripting (.tcl) file for gxb_tx_reset
+package require -exact qsys 16.0
+
+create_system {gxb_tx_reset}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE $device_part
+set_project_property HIDE_FROM_IP_CATALOG {true}
+
+# Instances and instance parameters
+# (disabled instances are intentionally culled)
+add_instance xcvr_reset_control_0 altera_xcvr_reset_control 
+set_instance_parameter_value xcvr_reset_control_0 {CHANNELS} {4}
+set_instance_parameter_value xcvr_reset_control_0 {PLLS} {1}
+set_instance_parameter_value xcvr_reset_control_0 {SYS_CLK_IN_MHZ} {100}
+set_instance_parameter_value xcvr_reset_control_0 {SYNCHRONIZE_RESET} {1}
+set_instance_parameter_value xcvr_reset_control_0 {REDUCED_SIM_TIME} {1}
+set_instance_parameter_value xcvr_reset_control_0 {gui_split_interfaces} {0}
+set_instance_parameter_value xcvr_reset_control_0 {TX_PLL_ENABLE} {1}
+set_instance_parameter_value xcvr_reset_control_0 {T_PLL_POWERDOWN} {1000}
+set_instance_parameter_value xcvr_reset_control_0 {SYNCHRONIZE_PLL_RESET} {1}
+set_instance_parameter_value xcvr_reset_control_0 {TX_ENABLE} {1}
+set_instance_parameter_value xcvr_reset_control_0 {TX_PER_CHANNEL} {0}
+set_instance_parameter_value xcvr_reset_control_0 {gui_tx_auto_reset} {0}
+set_instance_parameter_value xcvr_reset_control_0 {T_TX_ANALOGRESET} {70000}
+set_instance_parameter_value xcvr_reset_control_0 {T_TX_DIGITALRESET} {70000}
+set_instance_parameter_value xcvr_reset_control_0 {T_PLL_LOCK_HYST} {0}
+set_instance_parameter_value xcvr_reset_control_0 {gui_pll_cal_busy} {0}
+set_instance_parameter_value xcvr_reset_control_0 {RX_ENABLE} {0}
+set_instance_parameter_value xcvr_reset_control_0 {RX_PER_CHANNEL} {0}
+set_instance_parameter_value xcvr_reset_control_0 {gui_rx_auto_reset} {0}
+set_instance_parameter_value xcvr_reset_control_0 {T_RX_ANALOGRESET} {40}
+set_instance_parameter_value xcvr_reset_control_0 {T_RX_DIGITALRESET} {4000}
+
+# exported interfaces
+set_instance_property xcvr_reset_control_0 AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {gxb_tx_reset.qsys}

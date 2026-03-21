@@ -1,0 +1,68 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include "kissfft/kiss_fft.h"
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS       1000
+#define FFT_SIZE    8
+#define SCALE      1000  // 浮點數放大倍率
+
+void print_int(int n)
+{
+    char buf[12];
+    int i = 0, j;
+    if(n == 0) { alt_putchar('0'); return; }
+    if(n < 0) { alt_putchar('-'); n = -n; }
+    while(n > 0) {
+        buf[i++] = '0' + (n % 10);
+        n /= 10;
+    }
+    for(j = i-1; j >=0; j--) alt_putchar(buf[j]);
+}
+
+void print_fft(int index, kiss_fft_cpx val)
+{
+    int re_scaled = (int)(val.r * SCALE);  // 放大浮點數
+    int im_scaled = (int)(val.i * SCALE);
+
+    alt_putchar('F'); alt_putchar('F'); alt_putchar('T'); alt_putchar('[');
+    print_int(index);
+    alt_putchar(']'); alt_putchar(' ');
+
+    print_int(re_scaled);
+    alt_putchar('+');
+    print_int(im_scaled);
+    alt_putchar('i');
+    alt_putchar('\n');
+}
+
+int main()
+{
+    alt_printf("--- KissFFT Nios V Example ----\n");
+
+    // FFT input/output buffer
+    kiss_fft_cpx in[FFT_SIZE];
+    kiss_fft_cpx out[FFT_SIZE];
+
+    for(int i=0; i<FFT_SIZE; i++){
+        in[i].r = i;   // example input
+        in[i].i = 0;
+    }
+
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg){
+        alt_printf("FFT allocation failed!\n");
+        return -1;
+    }
+
+    kiss_fft(cfg, in, out);
+
+    for(int i=0; i<FFT_SIZE; i++){
+        print_fft(i, out[i]);
+    }
+
+    kiss_fft_free(cfg);
+    alt_printf("=== Done ===\n");
+    return 0;
+}

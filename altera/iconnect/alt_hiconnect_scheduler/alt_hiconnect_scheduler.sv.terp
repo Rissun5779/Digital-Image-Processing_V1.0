@@ -1,0 +1,391 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// ------------------------------------------
+// Simple scheduler
+//
+// Creates pop signals for the input buffers and 
+// crossbar routing signals, given requests from 
+// each input.
+// ------------------------------------------
+
+`timescale 1 ns / 1 ns
+
+// ------------------------------------------
+// Generation parameters:
+//   output_name:         $output_name
+//   NUM_INPUTS:          $num_inputs
+//   NUM_OUTPUTS:         $num_outputs
+//   MULTIBEAT_PACKETS:   $multibeat_packets
+//   CONNECTIVITY:        "$connectivity"
+//   BUFFER_DEPTHS        "$buffer_depth_string"
+//   MAX_PENDING_PACKETS: "$max_pending_packets"
+// ------------------------------------------
+
+module $output_name
+#(
+    parameter NUM_INPUTS = $num_inputs,
+              NUM_OUTPUTS = $num_outputs,
+              MULTIBEAT_PACKETS = $multibeat_packets
+)
+(
+    // ------------------------------------------
+    // Request interfaces
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    input                            req${i}_valid,
+    input  [NUM_OUTPUTS - 1 : 0]     req${i}_select,
+    input                            req${i}_startofpacket,
+    input                            req${i}_endofpacket,
+    input  [1 : 0]                   req${i}_data,
+
+@@ }
+
+    // ------------------------------------------
+    // Response acceptance signals
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    input                            rsp${i}_returned,
+@@ }
+    
+    // ------------------------------------------
+    // Demux select signals
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+@@ set w [ dict get $fanout_by_input $i ]
+    output reg [$w - 1 : 0] demux${i}_select,
+@@ }
+
+    // ------------------------------------------
+    // Mux select signals
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_outputs } { incr i } {
+@@ set w [ dict get $fanin_by_output $i ]
+    output reg [$w - 1 : 0]  mux${i}_select,
+@@ }
+
+    // ------------------------------------------
+    // Input buffer pop signals
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    output reg                       pop${i},
+@@ }
+
+    // ------------------------------------------
+    // Output buffer stop signals (active low)
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_outputs } { incr i } {
+    input                            stop${i}_n,
+@@ }
+
+    input                        clk,
+    input                        reset
+);
+
+    localparam BUFFER_WIDTH = 3 + NUM_OUTPUTS;
+
+    // ------------------------------------------
+    // FIFO stage
+    //
+    // Push the input requests into a FIFO because
+    // we cannot backpressure.
+    // ------------------------------------------
+
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {   
+    wire [NUM_OUTPUTS - 1 : 0] fifo${i}_select;
+    wire                       fifo${i}_valid;
+    wire                       fifo${i}_endofpacket;
+    wire [1 : 0]               fifo${i}_data;
+    wire                       fifo${i}_pop;
+    wire                       fifo${i}_empty;
+
+    // fifo${i} contains valid data as long as it's not empty
+    assign fifo${i}_valid = !fifo${i}_empty;
+
+@@ set buffer_depth [ lindex $buffer_depths $i ]
+    alt_st_reg_scfifo
+    #(
+        .PAYLOAD_WIDTH (BUFFER_WIDTH),
+        .DEPTH         ($buffer_depth)
+    )
+    fifo${i}
+    (
+        .clk           (clk),
+        .reset         (reset),
+                                          
+        .in_payload    ({req${i}_endofpacket, req${i}_select, req${i}_data}),
+        .write         (req${i}_valid), // valid
+        .full          (),
+                                          
+        .out_payload   ({fifo${i}_endofpacket, fifo${i}_select, fifo${i}_data}),
+        .empty         (fifo${i}_empty),
+        .read          (fifo${i}_pop)   //ready
+    );
+
+@@ }
+
+    // ------------------------------------------
+    // Ordering stage
+    //
+    // Ensures that responses do not pass each other by
+    // blocking subsequent non-posted commands.
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {   
+    wire [NUM_OUTPUTS - 1 : 0] ordering${i}_select;
+    wire                       ordering${i}_valid;
+    wire                       ordering${i}_endofpacket;
+    wire [1 : 0]               ordering${i}_data;
+    wire                       ordering${i}_pop;
+
+@@ set fanout [ dict get $fanout_by_input $i ]
+@@ if { $fanout > 1 } {
+@@
+    wire  fifo${i}_dest_changed;
+    wire  fifo${i}_nonposted_transaction;
+    wire  has_pending_responses${i};
+    wire  stall${i};
+    wire  nonposted_cmd_accepted${i};
+
+    assign fifo${i}_dest_changed = fifo${i}_data[0];
+    assign fifo${i}_nonposted_transaction = fifo${i}_data[1];
+
+    // Stall scheduling of transactions originating from master ${i} when we have 
+    // pending responses and there isn't a change in destination (slave)
+    assign stall${i} = has_pending_responses${i} && fifo${i}_dest_changed;
+
+    // The pending response counter for master ${i} is incremented when a valid non-posted
+    // command comes out of fifo${i}, the downstream skid buffer isn't full, and scheduling
+    // isn't currently stalled for master ${i}
+    assign nonposted_cmd_accepted${i} = (MULTIBEAT_PACKETS) ? 
+            fifo${i}_valid && fifo${i}_nonposted_transaction && fifo${i}_endofpacket && fifo${i}_pop :
+            fifo${i}_valid && fifo${i}_nonposted_transaction && fifo${i}_pop;
+
+@@ set width [ dict get $counter_width_by_input $i ]
+@@
+    alt_hiconnect_cmd_rsp_counter
+    #(
+        .COUNTER_W (${width})
+    ) 
+    cmd_rsp_ctr${i}
+    (
+        .clk                        (clk),
+        .reset                      (reset),
+        .nonposted_cmd_accepted     (nonposted_cmd_accepted${i}), // increment
+        .response_accepted          (rsp${i}_returned),           // decrement
+        .has_pending_responses      (has_pending_responses${i})   // count > 0
+    );
+
+    assign ordering${i}_select = fifo${i}_select;
+
+    // Fill the ordering skid buffer when we aren't being stalled by outstanding responses, and the
+    // request fifo fifo${i} has valid data (isn't empty)
+    assign ordering${i}_valid  = fifo${i}_valid && !stall${i};
+    assign ordering${i}_data   = fifo${i}_data;
+    assign ordering${i}_endofpacket = fifo${i}_endofpacket;
+
+    // Pop the request fifo fifo${i} when the ordering skid buffer has space, and we aren't being
+    // stalled by outstanding responses
+    assign fifo${i}_pop = ordering${i}_pop && !stall${i};
+
+@@ } else {
+
+    assign ordering${i}_select = fifo${i}_select;
+    assign ordering${i}_valid  = fifo${i}_valid;
+    assign ordering${i}_data   = fifo${i}_data;
+    assign ordering${i}_endofpacket = fifo${i}_endofpacket;
+    assign fifo${i}_pop = ordering${i}_pop;
+
+@@ }
+@@ }
+
+    // ------------------------------------------
+    // Skid buffer
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {   
+
+    wire [NUM_OUTPUTS - 1 : 0] skid${i}_select;
+    wire                       skid${i}_valid;
+    wire                       skid${i}_endofpacket;
+    wire [1 : 0]               skid${i}_data;
+    wire                       skid${i}_pop;
+
+    alt_hiconnect_pipeline_base
+    #(
+        .SYMBOLS_PER_BEAT (1),
+        .BITS_PER_SYMBOL  (BUFFER_WIDTH)
+    )
+    skid${i}
+    (
+        .clk        (clk),      
+        .reset      (reset),
+
+        .in_ready   (ordering${i}_pop),   // Not full
+        .in_valid   (ordering${i}_valid),
+        .in_data    ({ordering${i}_endofpacket, ordering${i}_select, ordering${i}_data}),
+
+        // Pop the next piece of data off the ordering skid buffer when master ${i} has won
+        // arbitration, and we are ready to arbitrate the next transaction
+        .out_ready  (skid${i}_pop),
+        .out_valid  (skid${i}_valid),    // Not empty
+        .out_data   ({skid${i}_endofpacket, skid${i}_select, skid${i}_data})
+    );
+
+    assign skid${i}_pop = pop${i};
+
+@@ }
+
+@@ set req_by_input_and_output [ dict create ]
+@@
+@@ proc is_connected { in out connection_set } {
+@@    set connection "$in:$out"
+@@    if { [ dict size $connection_set ] == 0 } {
+@@       return 1
+@@    }
+@@    return [ dict exists $connection_set $connection ]
+@@ }
+@@
+@@ proc get_req_on_arb { in out req_by_input_and_output } {
+@@    return [ dict get $req_by_input_and_output in${in}_out${out} ]
+@@ }
+
+    // ------------------------------------------
+    // Arbitration
+    //
+    // Look at the select signals from the FIFO heads
+    // and decide which one wins.
+    // ------------------------------------------
+@@ # Init an array of indices, one per master. They're used
+@@ # for master-centric slave indexing below.
+@@ # This is needed because we loop over slaves, then masters... need
+@@ # to keep per-master state over all slaves.
+@@ array set master_centric_slave_index {}
+@@ for { set j 0 } { $j < $num_inputs } { incr j } {
+@@   set master_centric_slave_index($j) 0
+@@ }
+@@ for { set i 0 } { $i < $num_outputs } { incr i } {
+@@ set w [ dict get $fanin_by_output $i ]
+@@ set needs_arb [expr { $w > 1 }]
+    wire [$w - 1 : 0] arb${i}_requests;
+   @@ if { $needs_arb } {
+    wire [$w - 1 : 0] arb${i}_eop;
+   @@ }
+    wire [$w - 1 : 0] arb${i}_grant;
+
+   @@ set r 0
+   @@ for { set j 0 } { $j < $num_inputs } { incr j } {
+      @@ if { [ is_connected $j $i $connection_set ] } {
+    assign arb${i}_requests[$r] = skid${j}_select[$master_centric_slave_index($j)] && skid${j}_valid && stop${i}_n; // Request from master ${j} to slave ${i}
+         @@ dict set req_by_input_and_output in${j}_out${i} $r
+         @@ incr r 
+         @@ incr master_centric_slave_index($j)
+      @@ }
+   @@ }
+   
+   @@ if { $needs_arb } {
+      @@ for { set j 0 } { $j < $num_inputs } { incr j } {
+         @@ if { [ is_connected $j $i $connection_set ] } {
+            @@ set req [ get_req_on_arb $j $i $req_by_input_and_output ]
+    assign arb${i}_eop[$req] = skid${j}_endofpacket;
+         @@ }
+      @@ }
+
+    // Arbiter that handles arbitration of masters competing for slave ${i}
+    alt_hiconnect_arb_top
+    #(
+        .NUM_INPUTS ($w),
+        .MULTIBEAT_PACKETS (MULTIBEAT_PACKETS)
+    )
+    arb${i}
+    (
+        .clk        (clk),
+        .reset      (reset),
+        .requests   (arb${i}_requests), // Requests from all masters connected to slave ${i}
+        .eop        (arb${i}_eop),
+        .grant      (arb${i}_grant)     // Grants to all masters connected to slave ${i}
+    );
+   @@ } else {
+    // Tie arb${i}_grant high since we have only one master
+    assign arb${i}_grant = 1'b1;
+
+   @@ }
+@@ }
+
+    // ------------------------------------------
+    // The registered grant may result in stale grants (i.e. a grant
+    // to an input that is no longer requesting).
+    //
+    // Instead of underflow protection in the FIFOs, we'll qualify
+    // the pop signal so that it is only active if the input is
+    // requesting.
+    //
+    // For master m, slave s:
+    // skid{m}_select[s] is needed to qualify pop{m} since arb{s}_grant
+    // is pipelined (and therefore delayed) inside the alt_hiconnect_arb_top,
+    // and therefore master {m} may no longer be requesting slave {s}.
+    //
+    // Within the inner loop, per a specific master, over its 
+    // connected slaves cs, we keep track of an index for skid{m}_select[{cs}.
+    // This supports the "compact" channel encoding used within the router2, 
+    // mux2, demux2 components and connections in the crossbar.
+    // ------------------------------------------
+    always_comb begin
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+        // Pop master ${i}'s input buffer when master ${i} is requesting access to any connected slave,
+        // is granted access to that slave, and the granted slave's output buffer isn't full.
+        pop${i} = skid${i}_valid && (
+   @@ # Don't bother with an array of master-centric indices, since
+   @@ # we loop over masters, then slaves.
+   @@ set connected_slave_index 0
+   @@ for { set j 0 } { $j < $num_outputs } { incr j } {
+      @@ if { [ is_connected $i $j $connection_set ] } {
+         @@ set req [ get_req_on_arb $i $j $req_by_input_and_output ]
+            (arb${j}_grant[${req}] && skid${i}_select[${connected_slave_index}] && stop${j}_n) ||
+         @@ incr connected_slave_index
+      @@ }
+   @@ }
+            1'b0);
+
+@@ }
+    end
+
+
+    // ------------------------------------------
+    // Demux select signals
+    // ------------------------------------------
+    always @(posedge clk) begin
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+   @@ set k 0
+   @@ for { set j 0 } { $j < $num_outputs } { incr j } {
+      @@ if { [ is_connected $i $j $connection_set ] } {
+         @@ set req [ get_req_on_arb $i $j $req_by_input_and_output ]
+        // One-hot select signal for master ${i}'s demux to choose which slave's mux this packet routes to
+        demux${i}_select[$k] <= skid${i}_select[${k}];
+         @@ incr k
+      @@ }
+   @@ }
+
+@@ }
+    end
+
+    // ------------------------------------------
+    // Mux select signals
+    // ------------------------------------------
+    always @(posedge clk) begin
+@@ for { set i 0 } { $i < $num_outputs } { incr i } {  
+        // One-hot select signal for slave ${i}'s mux to choose which master's packet to accept
+        mux${i}_select <= arb${i}_grant;
+@@ }
+    end
+
+endmodule
+

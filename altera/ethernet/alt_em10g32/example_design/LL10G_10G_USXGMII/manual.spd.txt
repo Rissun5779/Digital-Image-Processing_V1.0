@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+<file path="simulation/ed_sim/models/tb_top.sv" type="SYSTEM_VERILOG">
+<include path="simulation/ed_sim/models/tb_testcase.sv" />
+</file>
+<topLevel name="tb_top" />
+<file path="rtl/alt_mge_channel.v" type="VERILOG" />
+<topLevel name="alt_mge_channel" />
+<file path="rtl/alt_mge_multi_channel.sv" type="SYSTEM_VERILOG" />
+<topLevel name="alt_mge_multi_channel" />
+<file path="rtl/alt_mge_reset_synchronizer.v" type="VERILOG" />
+<topLevel name="alt_mge_reset_synchronizer" />
+</simPackage>

@@ -1,0 +1,12 @@
+#
+# Altera IP Opt In Level
+#
+# EA  - Early Access
+# DEF - Default.  Illegal in 16.0.  Also, if you're at
+#       default level you should remove your IP from this
+#       list and decouple yourself from altera_hwtcl_ipri.tcl
+
+EMIF EA
+HSSI EA
+MERLIN EA
+

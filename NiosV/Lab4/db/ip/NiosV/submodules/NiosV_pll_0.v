@@ -20,10 +20,10 @@ module  NiosV_pll_0(
 	altera_pll #(
 		.fractional_vco_multiplier("false"),
 		.reference_clock_frequency("50.0 MHz"),
-		.operation_mode("direct"),
+		.operation_mode("normal"),
 		.number_of_clocks(2),
 		.output_clock_frequency0("100.000000 MHz"),
-		.phase_shift0("0 ps"),
+		.phase_shift0("-3833 ps"),
 		.duty_cycle0(50),
 		.output_clock_frequency1("100.000000 MHz"),
 		.phase_shift1("-3000 ps"),

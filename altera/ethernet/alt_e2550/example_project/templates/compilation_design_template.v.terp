@@ -1,0 +1,60 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1ps/1ps
+module ${module_name} (
+@@ set comma ","
+@@ set count 0
+@@ foreach port $ports width $widths direction $directions {
+@@ incr count
+@@ if {$count >= $port_count} {set comma ""}
+@@ if {$width == 1} {
+@@ set width_expr ""
+@@ } else {
+@@ set msb [expr {$width - 1}]
+@@ set width_expr "\[${msb}:0\]"
+@@ }
+    ${direction} wire ${width_expr} ${port}${comma}
+@@ }
+);
+
+    wire pll_powerdown = 1'b0;
+@@ if {$speed == 50} {
+    wire tx_serial_clk_gt;
+    wire [1:0] tx_serial_clk = {2{tx_serial_clk_gt}};
+@@ } else {
+    wire tx_serial_clk;
+@@ }
+    wire pll_cal_busy;
+    wire tx_pll_locked;
+
+    atx_pll_e50g atx (
+        .pll_cal_busy           (pll_cal_busy),
+        .pll_locked             (tx_pll_locked),
+        .pll_powerdown          (pll_powerdown),
+        .pll_refclk0            (clk_ref),
+@@ if {$speed == 50} {
+        .tx_serial_clk_gt       (tx_serial_clk_gt)
+@@ } else {
+        .tx_serial_clk_gt       (tx_serial_clk)
+@@ }
+    );
+
+    ex_${speed}g av_top (
+@@ foreach port $ports {
+        .${port}(${port}),
+@@ }
+        .tx_serial_clk(tx_serial_clk),
+        .tx_pll_locked(tx_pll_locked)
+    );
+endmodule

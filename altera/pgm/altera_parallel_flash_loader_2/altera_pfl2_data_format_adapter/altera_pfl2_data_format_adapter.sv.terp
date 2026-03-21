@@ -1,0 +1,560 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// (C) 2001-2013 Altera Corporation. All rights reserved.
+// Your use of Altera Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Altera Program License Subscription 
+// Agreement, Altera MegaCore Function License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Altera and sold by 
+// Altera or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+ 
+// \$Id: //acds/rel/13.1/ip/.../avalon-st_data_format_adapter.sv.terp#1 $
+// \$Revision: #1 $
+// \$Date: 2013/09/21 $
+// \$Author: dmunday $
+
+// altera message_off 10036
+// altera message_off 10230
+// altera message_off 10858
+// --------------------------------------------------------------------------------
+//| Avalon Streaming Data Adapter
+// --------------------------------------------------------------------------------
+
+`timescale 1ns / 100ps
+
+// ------------------------------------------
+// Generation parameters:
+//   output_name:        $output_name
+//   usePackets:         $usePackets
+//   hasInEmpty:         $hasInEmpty
+//   inEmptyWidth:       $inEmptyWidth
+//   hasOutEmpty:        $hasOutEmpty 
+//   outEmptyWidth:      $outEmptyWidth
+//   inDataWidth:        $inDataWidth
+//   outDataWidth:       $outDataWidth
+//   channelWidth:       $channelWidth
+//   inErrorWidth:       $inErrorWidth
+//   outErrorWidth:      $outErrorWidth
+//   inSymbolsPerBeat:   $inSymbolsPerBeat
+//   outSymbolsPerBeat:  $outSymbolsPerBeat
+//   maxState:           $maxState
+//   stateWidth:         $stateWidth
+//   maxChannel:         $maxChannel
+//   symbolWidth:        $symbolWidth
+//   numMemSymbols:      $numMemSymbols
+//   symbolWidth:        $symbolWidth
+
+
+// ------------------------------------------
+
+@@set maxMemSymbol [expr $numMemSymbols - 1 ]
+@@set maxInSymbol  [expr $inSymbolsPerBeat - 1 ]
+@@set maxOutSymbol [expr $outSymbolsPerBeat - 1 ]
+@@set multichannel   [expr $maxChannel > 0 ]
+module $output_name (
+ // Interface: in
+ output reg         in_ready,
+ input              in_valid,
+@@ if {$inDataWidth==1} {
+ input              in_data,
+@@ } else {
+ input [$inDataWidth-1 : 0]    in_data,
+@@ }
+@@ if {$channelWidth>0} {
+@@ if {$channelWidth==1} {
+ input              in_channel,
+@@ } else {                          
+ input [$channelWidth-1 : 0] in_channel,
+@@ }
+@@ }                         
+@@ if {$inErrorWidth>0} {
+@@ if {$inErrorWidth==1} {
+ input              in_error,
+@@ } else {                         
+ input [$inErrorWidth-1 : 0] in_error,
+@@ }
+@@ }                         
+@@ if {$usePackets} {
+ input              in_startofpacket,
+ input              in_endofpacket,
+@@ }
+@@ if {$hasInEmpty} {
+@@ if {$inEmptyWidth==1} {
+ input              in_empty,
+@@ } else {                        
+ input [$inEmptyWidth-1 : 0] in_empty,
+@@ }
+@@ }                     
+ // Interface: out
+ input                out_ready,
+ output reg           out_valid,
+@@ if {$outDataWidth==1} {
+ output reg           out_data,
+@@ } else {
+ output reg [$outDataWidth-1: 0]  out_data,
+@@ }
+@@ if {$channelWidth>0} {
+@@ if {$channelWidth==1} {
+ output reg           out_channel,
+@@ } else {                         
+ output reg [$channelWidth-1: 0] out_channel,
+@@ }
+@@ }                         
+@@ if {$outErrorWidth>0} {
+@@ if {$outErrorWidth==1} {
+ output reg            out_error,
+@@ } else {                           
+ output reg [$outErrorWidth-1 : 0] out_error,
+@@ }
+@@ }                          
+@@ if {$usePackets} {
+ output reg           out_startofpacket,
+ output reg           out_endofpacket,
+@@ }
+@@ if {$hasOutEmpty} {
+@@ if {$outEmptyWidth==1} {
+ output reg           out_empty,
+@@ } else {                           
+ output reg [$outEmptyWidth-1 : 0] out_empty,
+@@ }
+@@ }                      
+
+  // Interface: clk
+ input              clk,
+ // Interface: reset
+ input              reset_n
+
+);
+
+@@if {$outSymbolsPerBeat != $inSymbolsPerBeat } {
+
+
+   // ---------------------------------------------------------------------
+   //| Signal Declarations
+   // ---------------------------------------------------------------------
+@@if {$channelWidth == 0} {
+   reg         state_read_addr;
+@@} else {                           
+   reg  [$channelWidth-1:0]   state_read_addr;
+@@}                                     
+   wire [$stateWidth-1:0]   state_from_memory;
+   reg  [$stateWidth-1:0]   state;
+   reg  [$stateWidth-1:0]   new_state;
+   reg  [$stateWidth-1:0]   state_d1;
+    
+   reg            in_ready_d1;
+@@if {$channelWidth == 0} {
+   reg            mem_readaddr; 
+   reg            mem_readaddr_d1;
+@@} else {
+   reg [$channelWidth-1:0] mem_readaddr; 
+   reg [$channelWidth-1:0] mem_readaddr_d1;
+@@}          
+   reg            a_ready;
+   reg            a_valid;
+@@if {$channelWidth == 0} {
+   reg            a_channel;
+@@} else {
+   reg [$channelWidth-1:0]    a_channel;
+@@}                           
+   @@for {set sym 0} {$sym <= $maxInSymbol} {incr sym} {
+   reg [$symbolWidth-1:0]    a_data${sym}; 
+   @@}
+   reg            a_startofpacket;
+   reg            a_endofpacket;
+@@if {$inEmptyWidth == 0} {
+   reg            a_empty;
+@@} else {
+   reg  [$inEmptyWidth-1:0]   a_empty;
+@@}
+@@if {$inErrorWidth == 0} {
+   reg            a_error;
+@@} else {
+   reg  [$inErrorWidth-1:0]   a_error;
+@@}
+   reg            b_ready;
+   reg            b_valid;
+@@if {$channelWidth == 0} {
+   reg            b_channel;
+@@} else {
+   reg  [$channelWidth-1:0]   b_channel;
+@@}                           
+   reg  [$outDataWidth-1:0]   b_data;
+   reg            b_startofpacket; 
+   wire           b_startofpacket_wire; 
+   reg            b_endofpacket; 
+@@if {$outEmptyWidth == 0} {
+   reg            b_empty;   
+@@} else {
+   reg  [$outEmptyWidth-1:0]   b_empty;
+@@}
+@@if {$outErrorWidth == 0} {
+   reg            b_error; 
+@@} else {  
+   reg  [$inErrorWidth-1:0]   b_error; 
+@@}            
+   @@for {set sym 0} {$sym <= $maxMemSymbol} {incr sym} {
+   reg            mem_write${sym};
+   reg  [$symbolWidth-1:0]   mem_writedata${sym};
+   wire [$symbolWidth-1:0]   mem_readdata${sym};
+   wire           mem_waitrequest${sym};
+   reg  [$symbolWidth-1:0]   mem${sym}[0:$maxChannel];
+@@}
+   reg            sop_mem_writeenable;
+   reg            sop_mem_writedata;
+   wire           mem_waitrequest_sop; 
+
+   wire           state_waitrequest;
+   reg            state_waitrequest_d1; 
+
+   @@if {$channelWidth == 0} {
+   reg            in_channel = 0;
+   reg            out_channel;
+@@}
+
+@@if {!$usePackets} {
+   reg in_startofpacket = 0;
+   reg in_endofpacket   = 0;
+   reg out_startofpacket;
+   reg out_endofpacket;
+@@}
+
+@@if {!$hasInEmpty} {
+   reg  [$inSymbolsPerBeat-1:0] in_empty = 0;
+@@}
+@@if {!$hasOutEmpty} {
+   reg  [$outSymbolsPerBeat-1:0] out_empty;
+@@}
+
+@@if {$inErrorWidth == 0} {
+   reg in_error = 0;
+   reg out_error; 
+@@} 
+
+@@if { $outSymbolsPerBeat > $inSymbolsPerBeat } {
+@@if {$inErrorWidth == 0} {                           
+   wire           error_from_mem;
+   reg            error_mem_writedata;
+@@} else {
+   wire [$inErrorWidth-1:0] error_from_mem;
+   reg  [$inErrorWidth-1:0] error_mem_writedata;
+@@}
+   reg          error_mem_writeenable;
+   @@}
+
+@@if {!$multichannel} {
+   reg  [$stateWidth-1:0]   state_register;
+   reg            sop_register; 
+@@if {$inErrorWidth==0} {
+   reg            error_register;
+@@} else {
+   reg  [$inErrorWidth-1:0]   error_register;
+@@}
+@@for {set mem 0} {$mem <= $maxMemSymbol} {incr mem} {
+   reg  [$symbolWidth-1:0]   data${mem}_register;
+@@} 
+@@}
+
+   // ---------------------------------------------------------------------
+   //| Input Register Stage
+   // ---------------------------------------------------------------------
+   always @(posedge clk or negedge reset_n) begin
+      if (!reset_n) begin
+         a_valid   <= 0;
+         a_channel <= 0;
+@@for {set sym 0} {$sym <= $maxInSymbol} {incr sym} {
+         a_data${sym}   <= 0;
+@@}
+         a_startofpacket <= 0;
+         a_endofpacket   <= 0;
+         a_empty <= 0; 
+         a_error <= 0;
+      end else begin
+         if (in_ready) begin
+            a_valid   <= in_valid;
+            a_channel <= in_channel;
+            a_error   <= in_error;
+@@for {set sym 0} {$sym <= $maxInSymbol} {incr sym} {
+@@set symInv [expr $maxInSymbol - $sym ]
+@@set right [expr $symbolWidth * $symInv]
+@@set left [expr [expr $right + $symbolWidth] - 1]
+@@ if {$inDataWidth==1} {
+            a_data${sym} <= in_data;
+@@} else {                         
+            a_data${sym} <= in_data[${left}:${right}];
+@@}                                   
+@@}
+            a_startofpacket <= in_startofpacket;
+            a_endofpacket   <= in_endofpacket;
+            a_empty         <= 0; 
+            if (in_endofpacket)
+               a_empty <= in_empty;
+         end
+      end 
+   end
+
+   always @* begin 
+@@if { $outSymbolsPerBeat > $inSymbolsPerBeat } {
+      state_read_addr = in_channel;
+@@} else {
+      state_read_addr = a_channel;
+      if (in_ready)
+         state_read_addr = in_channel;
+@@}
+   end
+   
+@@if {$multichannel} {
+   // ---------------------------------------------------------------------
+   //| State Memory
+   // ---------------------------------------------------------------------
+   ${output_name}_state_ram state_ram ( 
+   .clk            (clk),
+   .reset_n        (reset_n),
+   .rd0_address    (state_read_addr),
+   .rd0_readdata   (state_from_memory),
+   .wr_address     (a_channel),
+   .wr_writedata   (new_state),
+   .wr_write       (~state_waitrequest_d1),
+   .wr_waitrequest (state_waitrequest)
+   );
+
+   // ---------------------------------------------------------------------
+   //| Data Memories
+   // ---------------------------------------------------------------------
+   @@for {set mem 0} {$mem <= $maxMemSymbol} {incr mem} {
+   ${output_name}_data_ram data_ram${mem} ( 
+   .clk            (clk),
+   .reset_n        (reset_n),
+   .rd0_address    (mem_readaddr),
+   .rd0_readdata   (mem_readdata${mem}),
+   .wr_address     (a_channel),
+   .wr_writedata   (mem_writedata${mem}),
+   .wr_write       (mem_write${mem}),
+   .wr_waitrequest (mem_waitrequest${mem})
+   );
+   @@}
+
+   @@if {$usePackets} {
+   @@if {$outSymbolsPerBeat > $inSymbolsPerBeat } {
+   ${output_name}_sop_ram sop_ram ( 
+   .clk            (clk),
+   .reset_n        (reset_n),
+   .rd0_address    (mem_readaddr),
+   .rd0_readdata   (b_startofpacket_wire),
+   .wr_address     (a_channel),
+   .wr_writedata   (sop_mem_writedata),
+   .wr_write       (sop_mem_writeenable),
+   .wr_waitrequest (mem_waitrequest_sop)
+   );
+   @@}
+   @@}
+
+   @@if {$inErrorWidth >0 } { 
+   @@if {$inSymbolsPerBeat < $outSymbolsPerBeat } {
+   ${output_name}_error_ram error_ram ( 
+   .clk            (clk),
+   .reset_n        (reset_n),
+   .rd0_address    (mem_readaddr),
+   .rd0_readdata   (error_from_mem),
+   .wr_address     (a_channel),
+   .wr_writedata   (error_mem_writedata),
+   .wr_write       (a_valid),
+   .wr_waitrequest (mem_waitrequest_sop)
+   );
+   @@}
+   @@}
+   @@} #(multichannel) 
+
+   // ---------------------------------------------------------------------
+   //| State & Memory Keepers
+   // ---------------------------------------------------------------------
+   always @(posedge clk or negedge reset_n) begin
+      if (!reset_n) begin
+         in_ready_d1          <= 0;
+         state_d1             <= 0;
+         mem_readaddr_d1      <= 0;
+         state_waitrequest_d1 <= 0;
+      end else begin
+         in_ready_d1          <= in_ready;
+         state_d1             <= state;
+         mem_readaddr_d1      <= mem_readaddr;
+         state_waitrequest_d1 <= state_waitrequest;
+      end
+   end
+   
+@@if {!$multichannel} {
+   always @(posedge clk or negedge reset_n) begin
+      if (!reset_n) begin
+         state_register <= 0;
+         sop_register   <= 0;
+@@for {set mem 0} {$mem <= $maxMemSymbol} {incr mem} {
+         data${mem}_register <= 0;
+@@}
+@@if {$outSymbolsPerBeat > $inSymbolsPerBeat } {
+         error_register <= 0;
+@@}
+      end else begin
+         state_register <= new_state;
+         if (sop_mem_writeenable)
+            sop_register   <= sop_mem_writedata;
+@@if {$outSymbolsPerBeat > $inSymbolsPerBeat } { 
+         if (a_valid)
+            error_register <= error_mem_writedata;
+@@}
+@@for {set mem 0} {$mem <= $maxMemSymbol} {incr mem} {
+         if (mem_write${mem})
+            data${mem}_register <= mem_writedata${mem};
+@@}
+         end
+      end
+   
+      assign state_from_memory = state_register;
+      assign b_startofpacket_wire = sop_register;
+ @@for {set mem 0} {$mem <= $maxMemSymbol} {incr mem} {
+      assign mem_readdata${mem} = data${mem}_register;
+@@}
+@@if {$outSymbolsPerBeat > $inSymbolsPerBeat } {
+      assign error_from_mem = error_register;
+@@}
+@@} #(multichannel)
+   
+   // ---------------------------------------------------------------------
+   //| State Machine
+   // ---------------------------------------------------------------------
+   always @* begin
+
+      
+   b_ready = (out_ready || ~out_valid);
+
+   a_ready   = 0;
+   b_data    = 0;
+   b_valid   = 0;
+   b_channel = a_channel;
+   b_error   = a_error;
+      
+   state = state_from_memory;
+@@if {$outSymbolsPerBeat > $inSymbolsPerBeat } {
+   if (~in_ready_d1)
+      state = state_d1;
+         
+   error_mem_writedata = error_from_mem | a_error;
+   if (state == 0)
+      error_mem_writedata = a_error;
+   b_error = error_mem_writedata;
+@@}          
+      
+   new_state           = state;
+@@for {set mem 0} {$mem <= $maxMemSymbol} {incr mem} {
+   mem_write${mem}          = 0;
+   mem_writedata${mem}      = a_data0;
+@@}
+   sop_mem_writeenable = 0;
+
+   b_endofpacket = a_endofpacket;
+      
+   b_startofpacket = 0;
+      
+@@if {$usePackets} {
+@@if {$outSymbolsPerBeat > $inSymbolsPerBeat } {
+   b_startofpacket = b_startofpacket_wire;
+@@} else {
+   b_endofpacket = 0;
+@@}
+@@}
+   b_empty = 0;
+       
+   case (state) 
+   $stateString
+   endcase
+
+@@if {$multichannel} {
+      in_ready = (a_ready || ~a_valid) && ~state_waitrequest;
+@@} else {
+      in_ready = (a_ready || ~a_valid);
+@@}
+
+      mem_readaddr = in_channel; 
+      if (~in_ready)
+         mem_readaddr = mem_readaddr_d1;
+
+      
+      sop_mem_writedata = 0;
+      if (a_valid)
+         sop_mem_writedata = a_startofpacket;
+      if (b_ready && b_valid && b_startofpacket)
+         sop_mem_writeenable = 1;
+
+   end
+
+
+   // ---------------------------------------------------------------------
+   //| Output Register Stage
+   // ---------------------------------------------------------------------
+   always @(posedge clk or negedge reset_n) begin
+      if (!reset_n) begin
+         out_valid         <= 0;
+         out_data          <= 0;
+         out_channel       <= 0;
+         out_startofpacket <= 0;
+         out_endofpacket   <= 0;
+         out_empty         <= 0;
+         out_error         <= 0;
+      end else begin
+         if (out_ready || ~out_valid) begin
+            out_valid         <= b_valid;
+            out_data          <= b_data;
+            out_channel       <= b_channel; 
+            out_startofpacket <= b_startofpacket;
+            out_endofpacket   <= b_endofpacket;
+            out_empty         <= b_empty;
+            out_error         <= b_error;
+         end
+      end 
+   end
+   
+
+@@} #out!=in 
+
+@@if {$outSymbolsPerBeat == $inSymbolsPerBeat } {
+   always @* begin
+      in_ready = out_ready; 
+      out_valid = in_valid;
+      out_data = in_data;
+@@ if {$channelWidth>0} {
+      out_channel = in_channel;
+@@}        
+@@ if {$outErrorWidth>0} {
+      out_error = in_error;
+@@ }
+@@ if {$usePackets} {
+      out_startofpacket = in_startofpacket;
+      out_endofpacket = in_endofpacket;
+@@ }
+@@ if {$hasOutEmpty && $hasInEmpty} {
+      out_empty = in_empty;
+@@}                                                      
+@@if { ((($hasInEmpty==false) || ($outSymbolsPerBeat == 1)) && ($hasOutEmpty==true)) } {
+      out_empty = 0;
+@@}
+   end
+@@} #out==in
+
+endmodule
+
+   

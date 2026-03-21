@@ -1,0 +1,150 @@
+#include <unistd.h>
+#include "system.h"
+#include <sys/alt_stdio.h>
+#include <stdarg.h>
+#include "kissfft/kiss_fft.h"
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS       1000
+#define FFT_SIZE 8
+
+// ===================== custom_printf =====================
+void print_int(int n) {
+    char buf[12]; // 最多 10 位數 + 符號
+    int i = 0;
+    int is_negative = 0;
+
+    if (n == 0) {
+        alt_putchar('0');
+        return;
+    }
+
+    if (n < 0) {
+        is_negative = 1;
+        if (n == -2147483648) {
+            alt_putchar('-');
+            alt_putchar('2');
+            n = 147483648;
+        } else {
+            n = -n;
+        }
+    }
+
+    while (n > 0) {
+        buf[i++] = (n % 10) + '0';
+        n /= 10;
+    }
+
+    if (is_negative && n != -2147483648) alt_putchar('-');
+
+    for (int j = i - 1; j >= 0; j--) {
+        alt_putchar(buf[j]);
+    }
+}
+
+void print_float(float f, int precision) {
+    if (f < 0) {
+        alt_putchar('-');
+        f = -f;
+    }
+
+    int integer_part = (int)f;
+    print_int(integer_part);
+    alt_putchar('.');
+
+    float fractional_part = f - (float)integer_part;
+
+    for (int i = 0; i < precision; i++) {
+        fractional_part *= 10.0f;
+        int digit = (int)(fractional_part + 0.5f); // 四捨五入
+        alt_putchar(digit + '0');
+        fractional_part -= digit;
+    }
+}
+
+int parse_precision(const char** p) {
+    int precision = 6; // default
+    if (**p == '0') {
+        (*p)++;
+        if (**p >= '0' && **p <= '9') {
+            precision = **p - '0';
+            (*p)++;
+        }
+    }
+    return precision;
+}
+
+void custom_printf(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    for (const char* p = format; *p != '\0'; p++) {
+        if (*p == '%') {
+            p++;
+            int precision = 6;
+            if (*p == '0') {
+                precision = parse_precision(&p);
+            }
+
+            switch (*p) {
+                case 'd':
+                    print_int(va_arg(args, int));
+                    break;
+                case 'f':
+                    print_float((float)va_arg(args, double), precision);
+                    break;
+                case 'c':
+                    alt_putchar((char)va_arg(args, int));
+                    break;
+                case 's': {
+                    char* s = va_arg(args, char*);
+                    while (*s) alt_putchar(*s++);
+                    break;
+                }
+                default:
+                    alt_putchar(*p);
+            }
+        } else {
+            alt_putchar(*p);
+        }
+    }
+
+    va_end(args);
+}
+// ===================== custom_printf end =====================
+
+int main()
+{
+    custom_printf("--- KissFFT Nios V/g Example ----\n");
+
+    // FFT input/output buffer
+    kiss_fft_cpx in[FFT_SIZE];
+    kiss_fft_cpx out[FFT_SIZE];
+
+    // 建立簡單測試訊號：純實部
+    for(int i=0; i<FFT_SIZE; i++){
+        in[i].r = (float)i;
+        in[i].i = 0.0f;
+    }
+
+    // 建立 FFT 配置 (forward FFT)
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg){
+        custom_printf("FFT allocation failed!\n");
+        return -1;
+    }
+
+    // 執行 FFT
+    kiss_fft(cfg, in, out);
+
+    // 印出結果
+    for(int i=0; i<FFT_SIZE; i++){
+        custom_printf("FFT[%d] = %0.3f + %0.3fi\n", i, out[i].r, out[i].i);
+    }
+
+    // 釋放資源
+    kiss_fft_free(cfg);
+    custom_printf("=== Done ===\n");
+
+    return 0;
+}

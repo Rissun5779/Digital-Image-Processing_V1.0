@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="GIGE-1.25Gbps"
+     kind="altera_xcvr_native_a10"
+     version="All"
+     description="">
+   <parameter name="enable_port_tx_pma_elecidle" value="0" />
+   <parameter name="pll_select" value="0" />
+   <parameter name="rx_ppm_detect_threshold" value="1000" />
+   <parameter name="std_low_latency_bypass_enable" value="0" />
+   <parameter name="enable_ports_pipe_sw" value="0" />
+   <parameter name="enable_port_rx_std_bitrev_ena" value="0" />
+   <parameter name="enable_port_rx_std_pcfifo_full" value="0" />
+   <parameter name="enable_port_rx_polinv" value="0" />
+   <parameter name="enable_port_tx_pma_div_clkout" value="0" />
+   <parameter name="enable_port_rx_seriallpbken" value="0" />
+   <parameter name="enable_port_rx_std_bitslipboundarysel" value="0" />
+   <parameter name="enable_port_rx_std_rmfifo_empty" value="0" />
+   <parameter name="enable_port_rx_pma_clkout" value="0" />
+   <parameter name="std_rx_rmfifo_pattern_p" value="664956" />
+   <parameter name="enable_port_rx_std_rmfifo_full" value="0" />
+   <parameter name="std_rx_rmfifo_pattern_n" value="702083" />
+   <parameter name="std_rx_bitrev_enable" value="0" />
+   <parameter name="std_rx_word_aligner_renumber" value="3" />
+   <parameter name="std_pcs_pma_width" value="10" />
+   <parameter name="bonded_mode" value="not_bonded" />
+   <parameter name="enable_ports_pipe_rx_elecidle" value="0" />
+   <parameter name="enable_port_rx_std_byterev_ena" value="0" />
+   <parameter name="tx_pma_clk_div" value="1" />
+   <parameter name="std_rx_word_aligner_mode" value="synchronous state machine" />
+   <parameter name="enable_port_tx_pma_rxfound" value="0" />
+   <parameter name="enable_port_tx_polinv" value="0" />
+   <parameter name="channels" value="1" />
+   <parameter name="enable_ports_pipe_g3_analog" value="0" />
+   <parameter name="enable_port_tx_pma_qpipulldn" value="0" />
+   <parameter name="plls" value="1" />
+   <parameter name="enable_port_rx_std_wa_patternalign" value="0" />
+   <parameter name="set_data_rate" value="1250" />
+   <parameter name="duplex_mode" value="duplex" />
+   <parameter name="std_rx_rmfifo_mode" value="gige" />
+   <parameter name="enable_port_rx_pma_qpipullup" value="0" />
+   <parameter name="generate_docs" value="1" />
+   <parameter name="std_rx_word_aligner_pattern" value="124" />
+   <parameter name="cdr_refclk_select" value="0" />
+   <parameter name="std_tx_byterev_enable" value="0" />
+   <parameter name="enable_ports_rx_manual_cdr_mode" value="0" />
+   <parameter name="enable_port_pipe_rx_polarity" value="0" />
+   <parameter name="std_rx_8b10b_enable" value="1" />
+   <parameter name="enable_ports_rx_prbs" value="0" />
+   <parameter name="enable_port_rx_pma_div_clkout" value="0" />
+   <parameter name="enable_port_rx_is_lockedtoref" value="1" />
+   <parameter name="enable_port_tx_std_pcfifo_full" value="0" />
+   <parameter name="enable_port_rx_pma_clkslip" value="0" />
+   <parameter name="enable_port_tx_pma_qpipullup" value="0" />
+   <parameter name="pcie_rate_match" value="Bypass" />
+   <parameter name="enable_port_tx_pma_clkout" value="0" />
+   <parameter name="enable_port_rx_std_bitslip" value="0" />
+   <parameter name="std_tx_bitslip_enable" value="0" />
+   <parameter name="std_tx_8b10b_enable" value="1" />
+   <parameter name="cdr_refclk_cnt" value="1" />
+   <parameter name="std_tx_8b10b_disp_ctrl_enable" value="0" />
+   <parameter name="std_rx_pcfifo_mode" value="low_latency" />
+   <parameter name="set_cdr_refclk_freq" value="125.000" />
+   <parameter name="std_rx_word_aligner_pattern_len" value="7" />
+   <parameter name="std_tx_bitrev_enable" value="0" />
+   <parameter name="std_tx_polinv_enable" value="0" />
+   <parameter name="enable_port_tx_std_pcfifo_empty" value="0" />
+   <parameter name="enable_port_rx_std_wa_a1a2size" value="0" />
+   <parameter name="enable_port_rx_std_pcfifo_empty" value="0" />
+   <parameter name="std_rx_polinv_enable" value="0" />
+   <parameter name="protocol_mode" value="gige" />
+   <parameter name="message_level" value="error" />
+   <parameter name="pma_mode" value="basic" />
+   <parameter name="std_tx_byte_ser_mode" value="Disabled" />
+   <parameter name="enable_port_rx_std_signaldetect" value="0" />
+   <parameter name="std_tx_pcfifo_mode" value="low_latency" />
+   <parameter name="std_rx_word_aligner_rknumber" value="3" />
+   <parameter name="rcfg_enable" value="0" />
+   <parameter name="enable_port_tx_std_bitslipboundarysel" value="0" />
+   <parameter name="enable_port_tx_pma_txdetectrx" value="0" />
+   <parameter name="std_rx_byte_deser_mode" value="Disabled" />
+   <parameter name="enable_ports_pipe_hclk" value="0" />
+   <parameter name="std_rx_byterev_enable" value="0" />
+   <parameter name="enable_port_rx_is_lockedtodata" value="1" />
+   <parameter name="std_rx_word_aligner_rgnumber" value="3" />
+   <parameter name="enable_simple_interface" value="1" />
+   <parameter name="rcfg_iface_enable" value="0" />
+  </preset>
+ </presets>
+</ip>

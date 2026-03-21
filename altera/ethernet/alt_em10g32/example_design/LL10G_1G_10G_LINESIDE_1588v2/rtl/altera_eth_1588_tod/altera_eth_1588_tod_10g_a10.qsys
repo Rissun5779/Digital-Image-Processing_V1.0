@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags="INTERNAL_COMPONENT=true"
+   categories="" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element eth_1588_tod_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10AX115S3F45E2SGE3" />
+ <parameter name="deviceFamily" value="Arria 10" />
+ <parameter name="deviceSpeedGrade" value="2" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="true" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface name="csr" internal="eth_1588_tod_0.csr" type="avalon" dir="end">
+  <port name="csr_readdata" internal="csr_readdata" />
+  <port name="csr_write" internal="csr_write" />
+  <port name="csr_read" internal="csr_read" />
+  <port name="csr_writedata" internal="csr_writedata" />
+  <port name="csr_waitrequest" internal="csr_waitrequest" />
+  <port name="csr_address" internal="csr_address" />
+ </interface>
+ <interface
+   name="csr_clock"
+   internal="eth_1588_tod_0.csr_clock"
+   type="clock"
+   dir="end">
+  <port name="clk" internal="clk" />
+ </interface>
+ <interface
+   name="csr_reset"
+   internal="eth_1588_tod_0.csr_reset"
+   type="reset"
+   dir="end">
+  <port name="rst_n" internal="rst_n" />
+ </interface>
+ <interface
+   name="period_clock"
+   internal="eth_1588_tod_0.period_clock"
+   type="clock"
+   dir="end">
+  <port name="period_clk" internal="period_clk" />
+ </interface>
+ <interface
+   name="period_clock_reset"
+   internal="eth_1588_tod_0.period_clock_reset"
+   type="reset"
+   dir="end">
+  <port name="period_rst_n" internal="period_rst_n" />
+ </interface>
+ <interface
+   name="time_of_day_64b"
+   internal="eth_1588_tod_0.time_of_day_64b"
+   type="conduit"
+   dir="end">
+  <port name="time_of_day_64b" internal="time_of_day_64b" />
+ </interface>
+ <interface
+   name="time_of_day_64b_load"
+   internal="eth_1588_tod_0.time_of_day_64b_load"
+   type="conduit"
+   dir="end">
+  <port name="time_of_day_64b_load_data" internal="time_of_day_64b_load_data" />
+  <port
+     name="time_of_day_64b_load_valid"
+     internal="time_of_day_64b_load_valid" />
+ </interface>
+ <interface
+   name="time_of_day_96b"
+   internal="eth_1588_tod_0.time_of_day_96b"
+   type="conduit"
+   dir="end">
+  <port name="time_of_day_96b" internal="time_of_day_96b" />
+ </interface>
+ <interface
+   name="time_of_day_96b_load"
+   internal="eth_1588_tod_0.time_of_day_96b_load"
+   type="conduit"
+   dir="end">
+  <port name="time_of_day_96b_load_data" internal="time_of_day_96b_load_data" />
+  <port
+     name="time_of_day_96b_load_valid"
+     internal="time_of_day_96b_load_valid" />
+ </interface>
+ <module
+   name="eth_1588_tod_0"
+   kind="altera_eth_1588_tod"
+   version="16.1"
+   enabled="1"
+   autoexport="1">
+  <parameter name="DEFAULT_FNSEC_ADJPERIOD" value="26214" />
+  <parameter name="DEFAULT_FNSEC_PERIOD" value="26214" />
+  <parameter name="DEFAULT_NSEC_ADJPERIOD" value="6" />
+  <parameter name="DEFAULT_NSEC_PERIOD" value="6" />
+  <parameter name="OFFSET_JITTER_WANDER_EN" value="0" />
+  <parameter name="PERIOD_CLOCK_FREQUENCY" value="1" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

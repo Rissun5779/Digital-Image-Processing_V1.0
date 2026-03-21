@@ -1,0 +1,176 @@
+# Display items declarations,,,,,,,,,,,,,,,
+variable interface_100g,,,,,,,,,,,,,,,
+NAME,DIRECTION,UI_DIRECTION,WIDTH_EXPR,ROLE,TERMINATION,TERMINATION_VALUE,SPLIT,SPLIT_COUNT,SPLIT_WIDTH,IFACE_NAME,IFACE_TYPE,IFACE_DIRECTION,DYNAMIC,ELABORATION_CALLBACK,VHDL_TYPE
+clk_ref,input,input,1,clk_ref,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,clk_ref,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reset_async,input,input,1,reset_async,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,reset_async,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_serial,input,input,4 + NOT_CAUI4*IS_100G*6,rx_serial,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_serial,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_serial,output,output,4 + NOT_CAUI4*IS_100G*6,tx_serial,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_serial,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+clk_status,input,input,1,clk_status,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,clk_status,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reset_status,input,input,1,reset_status,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,reset_status,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_write,input,input,1,status_write,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_read,input,input,1,status_read,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_addr,input,input,16,status_addr,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_writedata,input,input,32,status_writedata,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_readdata,output,output,32,status_readdata,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_readdata_valid,output,output,1,status_readdata_valid,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_waitrequest,output,output,1,status_waitrequest,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+status_read_timeout,output,output,1,status_read_timeout,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,status_avmm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+clk_txmac,output,output,1,clk_txmac,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,clk_txmac,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+clk_txmac_in,input,input,1,clk_txmac_in,!EXT_TX_PLL,0,NOVAL,NOVAL,NOVAL,clk_txmac_in,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+l8_tx_startofpacket,input,input,1,l8_tx_startofpacket,!SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_tx_endofpacket,input,input,1,l8_tx_endofpacket,!SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_tx_valid,input,input,1,l8_tx_valid,!SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_tx_ready,output,output,1,l8_tx_ready,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_tx_empty,input,input,1,l8_tx_empty,!SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_tx_data,input,input,1,l8_tx_data,!SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+tx_lanes_stable,output,output,1,tx_lanes_stable,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_lanes_stable,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_pcs_ready,output,output,1,rx_pcs_ready,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_pcs_ready,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+clk_rxmac,output,output,1,clk_rxmac,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,clk_rxmac,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+l8_rx_error,output,output,1,l8_rx_error,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_status,output,output,1,l8_rx_status,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_valid,output,output,1,l8_rx_valid,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_startofpacket,output,output,1,l8_rx_startofpacket,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_endofpacket,output,output,1,l8_rx_endofpacket,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_data,output,output,1,l8_rx_data,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_empty,output,output,1,l8_rx_empty,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_fcs_error,output,output,1,l8_rx_fcs_error,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+l8_rx_fcs_valid,output,output,1,l8_rx_fcs_valid,!SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+din_sop,input,input,1,din_sop,SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+din_eop,output,input,1,din_eop,SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+din_idle,input,input,1,din_idle,SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+din_eop_empty,input,input,1,din_eop_empty,SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+din,input,input,1,din,SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+din_req,output,output,1,din_req,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_valid,output,output,1,dout_valid,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_d,output,output,1,dout_d,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_c,output,output,1,dout_c,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_sop,output,output,1,dout_sop,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_eop,output,output,1,dout_eop,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_eop_empty,output,output,1,dout_eop_empty,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+dout_idle,output,output,1,dout_idle,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+rx_error,output,output,1,rx_error,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+rx_status,output,output,1,rx_status,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+rx_fcs_error,output,output,1,rx_fcs_error,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+rx_fcs_valid,output,output,1,rx_fcs_valid,SYNOPT_AVALON,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+pause_insert_tx,input,input,FCBITS,pause_insert_tx,(SYNOPT_PAUSE_TYPE == 0 && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,pause,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+pause_receive_rx,output,output,FCBITS,pause_receive_rx,(SYNOPT_PAUSE_TYPE == 0 && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,pause,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+unidirectional_en,output,output,1,unidirectional_en,!SYNOPT_LINK_FAULT,NOVAL,NOVAL,NOVAL,NOVAL,fault,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+link_fault_gen_en,output,output,1,link_fault_gen_en,!SYNOPT_LINK_FAULT,NOVAL,NOVAL,NOVAL,NOVAL,fault,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+remote_fault_status,output,output,1,remote_fault_status,(!SYNOPT_LINK_FAULT && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,fault,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+local_fault_status,output,output,1,local_fault_status,(!SYNOPT_LINK_FAULT && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,fault,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_octetsOK,output,output,16,rx_inc_octetsOK,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_octetsOK_valid,output,output,1,rx_inc_octetsOK_valid,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_runt,output,output,1,rx_inc_runt,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_64,output,output,1,rx_inc_64,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_127,output,output,1,rx_inc_127,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_255,output,output,1,rx_inc_255,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_511,output,output,1,rx_inc_511,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_1023,output,output,1,rx_inc_1023,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_1518,output,output,1,rx_inc_1518,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_max,output,output,1,rx_inc_max,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_over,output,output,1,rx_inc_over,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_mcast_data_err,output,output,1,rx_inc_mcast_data_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_mcast_data_ok,output,output,1,rx_inc_mcast_data_ok,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_bcast_data_err,output,output,1,rx_inc_bcast_data_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_bcast_data_ok,output,output,1,rx_inc_bcast_data_ok,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_ucast_data_err,output,output,1,rx_inc_ucast_data_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_ucast_data_ok,output,output,1,rx_inc_ucast_data_ok,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_mcast_ctrl,output,output,1,rx_inc_mcast_ctrl,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_bcast_ctrl,output,output,1,rx_inc_bcast_ctrl,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_ucast_ctrl,output,output,1,rx_inc_ucast_ctrl,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_pause,output,output,1,rx_inc_pause,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_fcs_err,output,output,1,rx_inc_fcs_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_fragment,output,output,1,rx_inc_fragment,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_jabber,output,output,1,rx_inc_jabber,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_sizeok_fcserr,output,output,1,rx_inc_sizeok_fcserr,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_pause_ctrl_err,output,output,1,rx_inc_pause_ctrl_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_mcast_ctrl_err,output,output,1,rx_inc_mcast_ctrl_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_bcast_ctrl_err,output,output,1,rx_inc_bcast_ctrl_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_inc_ucast_ctrl_err,output,output,1,rx_inc_ucast_ctrl_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,rx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_octetsOK,output,output,16,tx_inc_octetsOK,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_octetsOK_valid,output,output,1,tx_inc_octetsOK_valid,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_64,output,output,1,tx_inc_64,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_127,output,output,1,tx_inc_127,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_255,output,output,1,tx_inc_255,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_511,output,output,1,tx_inc_511,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_1023,output,output,1,tx_inc_1023,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_1518,output,output,1,tx_inc_1518,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_max,output,output,1,tx_inc_max,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_over,output,output,1,tx_inc_over,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_mcast_data_err,output,output,1,tx_inc_mcast_data_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_mcast_data_ok,output,output,1,tx_inc_mcast_data_ok,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_bcast_data_err,output,output,1,tx_inc_bcast_data_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_bcast_data_ok,output,output,1,tx_inc_bcast_data_ok,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_ucast_data_err,output,output,1,tx_inc_ucast_data_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_ucast_data_ok,output,output,1,tx_inc_ucast_data_ok,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_mcast_ctrl,output,output,1,tx_inc_mcast_ctrl,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_bcast_ctrl,output,output,1,tx_inc_bcast_ctrl,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_ucast_ctrl,output,output,1,tx_inc_ucast_ctrl,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_pause,output,output,1,tx_inc_pause,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_fcs_err,output,output,1,tx_inc_fcs_err,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_fragment,output,output,1,tx_inc_fragment,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_jabber,output,output,1,tx_inc_jabber,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_inc_sizeok_fcserr,output,output,1,tx_inc_sizeok_fcserr,NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tx_in_ptp,input,input,1,tx_in_ptp,(!SYNOPT_PTP && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_in_ptp_asm,input,input,1,tx_in_ptp_asm,(!SYNOPT_PTP || !ENA_CUSTOM_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tx_in_ptp_overwrite,input,input,2,tx_in_ptp_overwrite,(!SYNOPT_PTP && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tx_in_ptp_offset,input,input,16,tx_in_ptp_offset,(!SYNOPT_PTP && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tx_in_tcp_offset,input,input,16,tx_in_tcp_offset,!SYNOPT_PTP,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tx_in_zero_tcp,input,input,1,tx_in_zero_tcp,!SYNOPT_PTP,NOVAL,NOVAL,NOVAL,NOVAL,tx_stats,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#ptp_pkt_out,output,output,1,ptp_pkt_out,(!SYNOPT_PTP && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,ptp_pkt_out,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tod_tx_clk_st2,output,output,96,tod_tx_clk_st2,(!SYNOPT_PTP && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,tod_tx_clk_st2,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tod_txmac_in,input,input,96,tod_txmac_in,!SYNOPT_PTP,NOVAL,NOVAL,NOVAL,NOVAL,tod_txmax_in,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#tod_rxmac_in,input,input,96,tod_rxmac_in,!SYNOPT_PTP,NOVAL,NOVAL,NOVAL,NOVAL,tod_rxmax_in,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tod_exit_cust,output,output,96,tod_exit_cust,(!SYNOPT_PTP || !ENA_CUSTOM_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tod_exit_cust,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+ts_out_cust,output,output,96,ts_out_cust,(!SYNOPT_PTP || !ENA_CUSTOM_PTP),NOVAL,NOVAL,NOVAL,NOVAL,ts_out_cust,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+ts_out_cust_asm,output,output,1,ts_out_cust_asm,(!SYNOPT_PTP || !ENA_CUSTOM_PTP),NOVAL,NOVAL,NOVAL,NOVAL,ts_out_cust_asm,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tod_cust_in,input,input,96,tod_cust_in,(!SYNOPT_PTP || !ENA_CUSTOM_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tod_cust_in,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+#rx_tod,output,output,96,rx_tod,(!SYNOPT_PTP && !COMPATIBLE_PORTS),NOVAL,NOVAL,NOVAL,NOVAL,rx_tod,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_clk,input,input,1,reconfig_clk,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_clk,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_reset,input,input,1,reconfig_reset,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_reset,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_write,input,input,1,reconfig_write,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_write,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_read,input,input,1,reconfig_read,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_read,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_address,input,input,12 + (NOT_CAUI4*IS_100G*2),reconfig_address,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_address,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_writedata,input,input,32,reconfig_writedata,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_writedata,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_readdata,output,output,32,reconfig_readdata,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_readdata,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_waitrequest,output,output,1,reconfig_waitrequest,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_waitrequest,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_to_xcvr,input,input,70*2*(4+(IS_100G*6)),reconfig_to_xcvr,(TARGET_CHIP != 2),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_to_xcvr,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_from_xcvr,output,output,46*2*(4+(IS_100G*6)),reconfig_from_xcvr,(TARGET_CHIP != 2),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_from_xcvr,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+reconfig_busy,input,input,1,reconfig_busy,(TARGET_CHIP != 2),NOVAL,NOVAL,NOVAL,NOVAL,reconfig_busy,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+RX_CORE_CLK,input,input,1,RX_CORE_CLK,true,0,NOVAL,NOVAL,NOVAL,RX_CORE_CLK,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+TX_CORE_CLK,input,input,1,TX_CORE_CLK,true,0,NOVAL,NOVAL,NOVAL,TX_CORE_CLK,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_serial_clk,input,input,4 + (NOT_CAUI4*IS_100G*6),tx_serial_clk,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,tx_serial_clk,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_pll_locked,input,input,1,tx_pll_locked,(TARGET_CHIP != 5),NOVAL,NOVAL,NOVAL,NOVAL,tx_pll_locked,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_error,input,input,1,tx_error,SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_custom_if,STD_LOGIC_VECTOR
+l8_tx_error,input,input,1,l8_tx_error,!SYNOPT_AVALON,0,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,::alt_eth_ultra::interfaces::e_avalon_if,STD_LOGIC_VECTOR
+clk_rx_recover,output,output,1,clk_rx_recover,!(SYNOPT_SYNC_E && TARGET_CHIP == 5),NOVAL,NOVAL,NOVAL,NOVAL,NOVAL,conduit,end,true,NOVAL,STD_LOGIC_VECTOR
+rx_time_of_day_96b_data,input,input,96,rx_time_of_day_96b_data,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,rx_time_of_day_96b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_time_of_day_64b_data,input,input,64,rx_time_of_day_64b_data,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,rx_time_of_day_64b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_time_of_day_96b_data,input,input,96,tx_time_of_day_96b_data,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_time_of_day_96b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_time_of_day_64b_data,input,input,64,tx_time_of_day_64b_data,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_time_of_day_64b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_ingress_timestamp_96b_data,output,output,96,rx_ingress_timestamp_96b_data,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,rx_ingress_timestamp_96b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_ingress_timestamp_96b_valid,output,output,1,rx_ingress_timestamp_96b_valid,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,rx_ingress_timestamp_96b_valid,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_96b_data,output,output,96,tx_egress_timestamp_96b_data,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_96b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_ingress_timestamp_96b,input,input,96,tx_etstamp_ins_ctrl_ingress_timestamp_96b,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_ingress_timestamp_96b,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_96b_valid,output,output,1,tx_egress_timestamp_96b_valid,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_96b_valid,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_96b_fingerprint,output,output,PTP_FP_WIDTH,tx_egress_timestamp_96b_fingerprint,(!SYNOPT_PTP || !SYNOPT_96B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_96b_fingerprint,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_ingress_timestamp_64b_data,output,output,64,rx_ingress_timestamp_64b_data,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,rx_ingress_timestamp_64b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+rx_ingress_timestamp_64b_valid,output,output,1,rx_ingress_timestamp_64b_valid,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,rx_ingress_timestamp_64b_valid,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_64b_data,output,output,64,tx_egress_timestamp_64b_data,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_64b_data,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_ingress_timestamp_64b,input,input,64,tx_etstamp_ins_ctrl_ingress_timestamp_64b,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_ingress_timestamp_64b,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_64b_valid,output,output,1,tx_egress_timestamp_64b_valid,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_64b_valid,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_64b_fingerprint,output,output,PTP_FP_WIDTH,tx_egress_timestamp_64b_fingerprint,(!SYNOPT_PTP || !SYNOPT_64B_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_64b_fingerprint,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_request_valid,input,input,1,tx_egress_timestamp_request_valid,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_request_valid,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_timestamp_request_fingerprint,input,input,PTP_FP_WIDTH,tx_egress_timestamp_request_fingerprint,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_timestamp_request_fingerprint,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_egress_asymmetry_update,input,input,1,tx_egress_asymmetry_update,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_egress_asymmetry_update,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_timestamp_insert,input,input,1,tx_etstamp_ins_ctrl_timestamp_insert,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_timestamp_insert,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_timestamp_format,input,input,1,tx_etstamp_ins_ctrl_timestamp_format,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_timestamp_format,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_residence_time_update,input,input,1,tx_etstamp_ins_ctrl_residence_time_update,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_residence_time_update,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_residence_time_calc_format,input,input,1,tx_etstamp_ins_ctrl_residence_time_calc_format,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_residence_time_calc_format,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_checksum_zero,input,input,1,tx_etstamp_ins_ctrl_checksum_zero,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_checksum_zero,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_checksum_correct,input,input,1,tx_etstamp_ins_ctrl_checksum_correct,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_checksum_correct,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_offset_timestamp,input,input,16,tx_etstamp_ins_ctrl_offset_timestamp,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_offset_timestamp,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_offset_correction_field,input,input,16,tx_etstamp_ins_ctrl_offset_correction_field,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_offset_correction_field,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_offset_checksum_field,input,input,16,tx_etstamp_ins_ctrl_offset_checksum_field,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_offset_checksum_field,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+tx_etstamp_ins_ctrl_offset_checksum_correction,input,input,16,tx_etstamp_ins_ctrl_offset_checksum_correction,(!SYNOPT_PTP),NOVAL,NOVAL,NOVAL,NOVAL,tx_etstamp_ins_ctrl_offset_checksum_correction,conduit,end,false,NOVAL,STD_LOGIC_VECTOR
+endvariable,,,,,,,,,,,,,,,

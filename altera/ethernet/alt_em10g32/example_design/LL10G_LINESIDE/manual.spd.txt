@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+<file path="simulation/ed_sim/models/tb_top_n.sv" type="SYSTEM_VERILOG">
+<include path="simulation/ed_sim/models/tb_testcase.sv" />
+</file>
+<topLevel name="tb_top" />
+<file path="rtl/mdio/altera_eth_mdio.v" type="VERILOG" />
+<topLevel name="altera_eth_mdio" />
+<file path="rtl/fifo_dcfifo/altera_avalon_dc_fifo.v" type="VERILOG" />
+<topLevel name="altera_avalon_dc_fifo" />
+<file path="rtl/fifo_dcfifo/altera_dcfifo_synchronizer_bundle.v" type="VERILOG" />
+<topLevel name="altera_dcfifo_synchronizer_bundle" />
+<file path="rtl/fifo_dcfifo/altera_std_synchronizer_nocut.v" type="VERILOG" />
+<topLevel name="altera_std_synchronizer_nocut" />
+<file path="rtl/fifo_scfifo/altera_avalon_sc_fifo.v" type="VERILOG" />
+<topLevel name="altera_avalon_sc_fifo" />
+<file path="rtl/fifo_stfifo/altera_eth_fifo.v" type="VERILOG" />
+<topLevel name="altera_eth_fifo" />
+<file path="rtl/reset_ctrl/altera_reset_controller.v" type="VERILOG" />
+<topLevel name="altera_reset_controller" />
+<file path="rtl/reset_sync/altera_reset_synchronizer.v" type="VERILOG" />
+<topLevel name="altera_reset_synchronizer" />
+<file path="rtl/reset_csr/reset_csr.v" type="VERILOG" />
+<topLevel name="reset_csr" />
+<file path="rtl/altera_eth_channel.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_eth_channel" />
+<file path="rtl/altera_eth_multi_channel.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_eth_multi_channel" />
+</simPackage>

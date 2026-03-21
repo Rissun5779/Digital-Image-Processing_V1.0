@@ -1,0 +1,9 @@
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/CMakeFiles/main.elf.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/CMakeFiles/create-objdump.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/CMakeFiles/niosv-stack-report.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/CMakeFiles/create-hex.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/CMakeFiles/edit_cache.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/CMakeFiles/rebuild_cache.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/hal_bsp/CMakeFiles/hal2_bsp.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/hal_bsp/CMakeFiles/edit_cache.dir
+/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/app/build/Default/hal_bsp/CMakeFiles/rebuild_cache.dir

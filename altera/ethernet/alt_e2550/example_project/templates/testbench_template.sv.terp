@@ -1,0 +1,304 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ if {$speed == 50} {
+@@     set words 2
+@@     set empty_msb 3
+@@     set data_msb 127
+@@ } else {
+@@     set words 1
+@@     set empty_msb 2
+@@     set data_msb 63
+@@ }
+`timescale 1 ps / 1 ps
+module ${module_name}();
+    reg                 clk_ref = 1'b0;
+    reg                 reconfig_clk=0;
+    reg                 reconfig_reset;
+    reg                 reconfig_write=0;
+    reg                 reconfig_read=0;
+@@ if {$speed == 50} {
+    reg     [10:0]      reconfig_address=0;
+@@ } else {
+    reg     [9:0]       reconfig_address=0;
+@@ }
+    reg     [31:0]      reconfig_writedata=0;
+    wire    [31:0]      reconfig_readdata;
+    wire                reconfig_waitrequest;
+    reg                 clk_status=0;
+    reg                 reset_status=0;
+    reg                 status_write=0;
+    reg                 status_read=0;
+    reg     [15:0]      status_addr=0;
+    reg     [31:0]      status_writedata=0;
+    wire    [31:0]      status_readdata;
+    wire                status_readdata_valid;
+    wire                status_waitrequest;
+@@ if {$speed == 50} {
+    wire    [1:0]       tx_serial;
+    wire    [1:0]       rx_serial = tx_serial;
+@@ } else {
+    wire                tx_serial;
+    wire                rx_serial = tx_serial;
+@@ }
+    wire                clk_txmac;
+    wire                tx_lanes_stable;
+    reg                 l${words}_tx_startofpacket=0;
+    reg                 l${words}_tx_endofpacket=0;
+    reg                 l${words}_tx_valid=0;
+    wire                l${words}_tx_ready;
+    reg     [${empty_msb}:0]       l${words}_tx_empty=0;
+    reg     [${data_msb}:0]     l${words}_tx_data=0;
+    wire                clk_rxmac;
+    wire    [6-1:0]     l${words}_rx_error;
+    wire                l${words}_rx_valid;
+    wire                l${words}_rx_startofpacket;
+    wire                l${words}_rx_endofpacket;
+    wire    [${data_msb}:0]     l${words}_rx_data;
+    wire    [${empty_msb}:0]       l${words}_rx_empty;
+    wire                tx_serial_clk;
+    wire                pll_cal_busy;
+    wire                tx_pll_locked;
+    wire                rx_block_lock;
+    wire                rx_am_lock;
+    wire                rx_pcs_ready;
+    reg                 csr_rst_n;
+    reg                 tx_rst_n = 1'b1;
+    reg                 rx_rst_n = 1'b1;
+    reg                 l1_tx_error = 1'b0;
+
+@@ if {$preamble_pass} {
+    reg     [63:0]      l${words}_tx_preamble = 64'hFB55_5555_5555_55D5;
+    wire    [63:0]      l${words}_rx_preamble;
+@@ }
+
+@@ if {$link_fault} {
+        wire remote_fault_status;
+        wire local_fault_status;
+        wire unidirectional_en;
+        wire link_fault_gen_en;
+@@ }
+
+@@ if {$flow_control} {
+    wire [${fcbits}-1:0]          pause_insert_tx0 = 'd0;
+    wire [${fcbits}-1:0]          pause_insert_tx1 = 'd0;
+    wire [${fcbits}-1:0]          pause_receive_rx;
+@@ }
+
+@@ if {$enable_ptp} {
+@@  if {$time_of_day_format == 0 || $time_of_day_format == 2} {
+    wire [95:0]          tx_time_of_day_96b_data = 'd0;
+    wire [95:0]          rx_time_of_day_96b_data = 'd0;
+    wire [95:0]          tx_etstamp_ins_ctrl_ingress_timestamp_96b = 'd0;
+@@  }
+@@  if {$time_of_day_format == 1 || $time_of_day_format == 2} {    
+    wire [63:0]          tx_time_of_day_64b_data = 'd0;
+    wire [63:0]          rx_time_of_day_64b_data = 'd0;
+    wire [63:0]          tx_etstamp_ins_ctrl_ingress_timestamp_64b = 'd0;
+@@  }    
+    wire                 tx_egress_timestamp_request_valid = 'd0;
+    wire [${tstamp_fp_width}-1:0]         tx_egress_timestamp_request_fingerprint = 'd0;
+    wire                 tx_etstamp_ins_ctrl_timestamp_insert = 'd0;
+    wire                 tx_etstamp_ins_ctrl_timestamp_format = 'd0;
+    wire                 tx_etstamp_ins_ctrl_residence_time_update = 'd0;
+@@  if {$time_of_day_format == 2} {
+    wire                 tx_etstamp_ins_ctrl_residence_time_calc_format = 'd0;
+@@  } 
+    wire                 tx_etstamp_ins_ctrl_checksum_zero = 'd0;
+    wire                 tx_etstamp_ins_ctrl_checksum_correct = 'd0;
+    wire [15:0]          tx_etstamp_ins_ctrl_offset_timestamp = 'd0;
+    wire [15:0]          tx_etstamp_ins_ctrl_offset_correction_field = 'd0;
+    wire [15:0]          tx_etstamp_ins_ctrl_offset_checksum_field = 'd0;
+    wire [15:0]          tx_etstamp_ins_ctrl_offset_checksum_correction = 'd0;
+    wire                 tx_egress_asymmetry_update = 'd0;
+@@  if {$time_of_day_format == 0 || $time_of_day_format == 2} {
+    wire                 tx_egress_timestamp_96b_valid;
+    wire [95:0]          tx_egress_timestamp_96b_data;
+    wire [${tstamp_fp_width}-1:0]         tx_egress_timestamp_96b_fingerprint;
+    wire                 rx_ingress_timestamp_96b_valid;
+    wire [95:0]          rx_ingress_timestamp_96b_data;
+@@  }
+@@  if {$time_of_day_format == 1 || $time_of_day_format == 2} { 
+    wire                 tx_egress_timestamp_64b_valid;
+    wire [63:0]          tx_egress_timestamp_64b_data;
+    wire [${tstamp_fp_width}-1:0]         tx_egress_timestamp_64b_fingerprint;
+    wire                 rx_ingress_timestamp_64b_valid;
+    wire [63:0]          rx_ingress_timestamp_64b_data;
+@@  }
+@@ }
+
+    wire                l${words}_txstatus_valid;
+    wire [39:0]         l${words}_txstatus_data ;
+    wire [6:0]          l${words}_txstatus_error;
+    wire                l${words}_rxstatus_valid;
+    wire [39:0]         l${words}_rxstatus_data ;
+
+    ex_${speed}g dut (
+@@ if {$speed == 50} {
+        .tx_serial_clk({tx_serial_clk,tx_serial_clk}),
+@@ }
+        .*
+    );
+
+    defparam dut.${ip_name}_0.SIM_HURRY          = 1'b1;
+    defparam dut.${ip_name}_0.SIM_SHORT_RST      = 1'b1;
+    defparam dut.${ip_name}_0.SIM_SIMPLE_RATE    = 1'b1;
+    defparam dut.${ip_name}_0.SIM_SHORT_AM       = 1'b1;
+    defparam dut.${ip_name}_0.SIM_EMULATE        = 1'b0;
+
+    atx_pll_e50g atx (
+        .pll_cal_busy       (pll_cal_busy),
+        .pll_locked         (tx_pll_locked),
+        .pll_powerdown      (1'b0),
+        .pll_refclk0        (clk_ref),
+        .tx_serial_clk_gt   (tx_serial_clk)
+    );
+
+    initial begin
+        csr_rst_n = 1'b1;
+        tx_rst_n = 1;
+        rx_rst_n = 1;
+        reconfig_reset = 0;
+        reset_status = 0;
+
+        repeat (10) @(posedge clk_status);
+        csr_rst_n = 1'b0;
+        tx_rst_n = 0;
+        rx_rst_n = 0;
+        reconfig_reset = 1;
+        reset_status = 1;
+
+        repeat (10) @(posedge clk_status);
+        csr_rst_n = 1'b1;
+        tx_rst_n = 1;
+        rx_rst_n = 1;
+        reconfig_reset = 0;
+        reset_status = 0;
+    end
+
+    // wait for RX alignment then enable TX
+
+    initial begin
+        // Print clock info
+        \$display("Ref clock is run at 625 MHz so whole numbers can used for all clock periods.");
+        \$display("Multiply reported frequencies by 33/32 to get actual clock frequencies.");
+
+        repeat (2) @(negedge clk_status);
+        \$display ("Waiting for RX alignment");
+        while (!rx_pcs_ready) @(negedge clk_status);
+        \$display ("RX deskew locked");
+        \$display ("RX lane aligmnent locked");
+
+        @@ if {$link_fault} {
+        \$display ("Waiting for link fault clear");
+        while (local_fault_status || remote_fault_status) @(negedge clk_status);
+        \$display ("Link fault clear");
+        repeat (2) @(negedge clk_status);
+        @@ }
+
+        @(posedge clk_txmac);
+        \$display ("TX enabled");
+        send_packets_${speed}g_avl(10);
+
+        \$display("**");
+        \$display("** Testbench complete.");
+        \$display("**");
+        \$display("*****************************************");
+        #100000;     
+        \$finish();
+    end
+
+    // Actual period ~ 1,551.5 ns
+    // 625 MHz clock is used for simulation
+    // Periods rounded for simulation simplification
+    // Multiply reported frequencies by (33/32) to get correct frequencies
+    always begin
+        #800 clk_ref = ~clk_ref;
+    end
+
+    always begin
+        #5000 clk_status = ~clk_status;
+    end
+
+    task send_packets_${speed}g_avl;
+        input  [31:0]  number_of_packets;
+        integer i,j,k;
+        integer data_word;
+        begin
+            fork
+                for (i = 1; i <= number_of_packets; i = i +1) begin
+                    @(posedge clk_txmac);
+
+                    wait_for_ready_avl;  
+                    \$display("** Sending Packet %d...",i);
+@@ if {$speed == 50} { 
+                    l${words}_tx_data          = 128'hABE42339_F0001E42_339F0100_00000000;
+@@ } else {
+                    l${words}_tx_data          = 64'hfbE42339_00000000;
+@@ }
+                    l${words}_tx_startofpacket = 1'b1;
+                    l${words}_tx_valid         = 1'b1;
+                    wait_for_ready_avl;
+
+@@ if {$speed == 50} {
+                    for (k = 1; k <= 3; k = k +1) begin
+@@ } else {
+                    for (k = 1; k <= 8; k = k +1) begin
+@@ }
+                        data_word = i + (k << 8) + (k << 16) + (k << 24);
+@@ if {$speed == 50} {
+                        l${words}_tx_data          = {{3{data_word}}, i};
+@@ } else {
+                        l${words}_tx_data          = {data_word, i};
+@@ }
+                        l${words}_tx_startofpacket = 1'b0;
+                        l${words}_tx_valid         = 1'b1;
+@@ if {$speed == 50} {
+                        l${words}_tx_endofpacket = (k == 3) ? 1'b1 : 1'b0;
+                        l${words}_tx_empty = (k == 3) ? 'd4 : 'd0;
+@@ } else {
+                        l${words}_tx_endofpacket = (k == 8) ? 1'b1 : 1'b0;
+                        l${words}_tx_empty = (k == 8) ? 'd4 : 'd0;
+@@ }
+                        wait_for_ready_avl;
+                    end
+                
+                    l${words}_tx_data          = 0;
+                    l${words}_tx_endofpacket   = 0;
+                    l${words}_tx_startofpacket = 0;
+                    l${words}_tx_valid         = 0;
+                    l${words}_tx_empty         = 0;
+                end
+            
+                for (j = 1; j <= number_of_packets; j = j+1) begin
+                    while ( !(l${words}_rx_valid && !l${words}_rx_startofpacket && !l${words}_rx_endofpacket)) @(posedge clk_rxmac);
+                    \$display("** Received Packet %d...",l${words}_rx_data[31:0]);
+                    @(posedge clk_rxmac);
+                    while (!l${words}_rx_startofpacket && (j != number_of_packets)) @(posedge clk_rxmac);
+                    @(posedge clk_rxmac);
+                end
+            join
+        end
+    endtask
+
+    task wait_for_ready_avl;
+        #1
+        if(!l${words}_tx_ready) begin
+            while(!l${words}_tx_ready) @(posedge clk_txmac);       
+        end
+        else begin
+            @(posedge clk_txmac);       
+        end
+    endtask // wait_for_ready_avl   
+endmodule // basic_avl_tb_top
+

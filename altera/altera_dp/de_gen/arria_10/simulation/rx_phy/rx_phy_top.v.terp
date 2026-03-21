@@ -1,0 +1,211 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// *********************************************************************
+// Description
+// 
+// Example Design RX Phy Top-level module 
+//
+// *********************************************************************
+
+@@ set rx_aux_gpu           $param0
+
+module rx_phy_top 
+#
+(
+    parameter RX_SYMBOLS_PER_CLOCK = 2,
+    parameter RX_PIXELS_PER_CLOCK = 4,
+    parameter RX_MAX_LANE_COUNT = 4
+)
+(
+    // RX Reference Clock
+    input   wire                                                rx_cdr_refclk,
+    output  wire                                                dp_rx_clk_cal,
+    // RX Reference Reset
+    input   wire                                                rx_cdr_resetn,
+    input   wire                                                video_pll_locked,
+    // RX Link Rate (8bits)
+    input   wire [7:0]                                          dp_rx_link_rate_8bits,
+    // RX Transceiver Reconfiguration Interface (To Arbiter or Altera Reconfig module)
+    input   wire                                                rx_rcfg_mgmt_reset,
+    input   wire                                                rx_rcfg_mgmt_clk,
+    output  wire                                                rx_rcfg_en,
+    output  wire                                                rx_rcfg_write,
+    output  wire                                                rx_rcfg_read,
+    output  wire [11:0]                                         rx_rcfg_address,
+    output  wire [31:0]                                         rx_rcfg_writedata,
+    input   wire [31:0]                                         rx_rcfg_readdata,
+    input   wire                                                rx_rcfg_waitrequest,
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      rx_rcfg_cal_busy,
+    // RX Transceiver Interface
+    output  wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_clkout,
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_serial_data,
+    // To Transceiver Reconfiguration Arbiter
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_rcfg_write,
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_rcfg_read,
+    input   wire [((RX_MAX_LANE_COUNT*10)-1):0]                 gxb_rx_rcfg_address,
+    input   wire [((RX_MAX_LANE_COUNT*32)-1):0]                 gxb_rx_rcfg_writedata,
+    output  wire [((RX_MAX_LANE_COUNT*32)-1):0]                 gxb_rx_rcfg_readdata,
+    output  wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_rcfg_waitrequest,
+    output  wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_rcfg_cal_busy,
+    // To DP RX Core Sub-System
+    input   wire                                                dp_rx_restart,
+    input   wire                                                dp_rx_rcfg_req,
+    output  wire                                                dp_rx_rcfg_ack,
+    output  wire                                                dp_rx_rcfg_busy,
+    input   wire                                                dp_rx_analog_rcfg_req,
+    input   wire [(RX_MAX_LANE_COUNT*2-1):0]					dp_rx_analog_rcfg_vod,
+    input   wire [(RX_MAX_LANE_COUNT*2-1):0]					dp_rx_analog_rcfg_emp,
+    output  wire [((RX_MAX_LANE_COUNT*RX_SYMBOLS_PER_CLOCK*10)-1):0]    dp_rx_parallel_data,
+    output  wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_is_lockedtoref,
+    output  wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_is_lockedtodata,
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_bitslip,
+    output  wire                                                dp_rx_cal_busy,
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_set_locktoref,
+    input   wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_set_locktodata
+);
+
+// ----------------------
+// Local Parameter
+// ----------------------
+
+// ----------------------
+// Signal Declaration
+// ----------------------
+wire                                                        clk_100 = rx_rcfg_mgmt_clk;
+reg                                                         clk_cal;
+wire                                                        reset;
+
+// RX XCVR reset
+wire [(RX_MAX_LANE_COUNT-1):0]                              gxb_rx_analogreset;
+wire [(RX_MAX_LANE_COUNT-1):0]                              gxb_rx_analogreset_ack;  
+wire [(RX_MAX_LANE_COUNT-1):0]                              gxb_rx_digitalreset;
+wire [(RX_MAX_LANE_COUNT-1):0]                              gxb_rx_polinv;
+
+// --------------------------
+// Internal Generated Reset
+// --------------------------
+assign reset    = ~video_pll_locked;
+assign dp_rx_clk_cal = clk_cal;
+
+// ----------------------------------
+// Cal Clock must be half of clk_100
+// ----------------------------------
+always @(negedge rx_cdr_resetn or posedge clk_100)
+    if (~rx_cdr_resetn)
+        clk_cal <= 1'b0;
+    else
+        clk_cal <= ~clk_cal;
+
+// ----------------------
+// Transceiver System
+// ----------------------
+reg [2:0] rx_restart_d;
+wire rx_restart_100 = rx_restart_d[2];
+always @ (posedge clk_100)
+    rx_restart_d <= {rx_restart_d[1:0],dp_rx_restart};
+
+wire dp_rx_xcvr_reset;
+
+gxb_rx_reset gxb_rx_reset_i
+(
+  .clock                (clk_100),
+  .reset                (reset | dp_rx_xcvr_reset | rx_restart_100),
+  .rx_analogreset       (gxb_rx_analogreset),
+  .rx_cal_busy          ({RX_MAX_LANE_COUNT{dp_rx_cal_busy}}),
+  .rx_digitalreset      (gxb_rx_digitalreset),
+  .rx_is_lockedtodata   (dp_rx_is_lockedtodata),
+  .rx_ready             ()
+);
+
+assign dp_rx_cal_busy = |rx_rcfg_cal_busy; 
+
+// Transceiver Reconfiguration
+bitec_reconfig_alt_a10 bitec_reconfig_alt_a10_i
+(
+  .clk                      (clk_100),
+  .reset                    (reset),
+  .rx_analogreset_ack       (&gxb_rx_analogreset_ack),
+ 
+  .rx_link_rate             (dp_rx_link_rate_8bits),
+  .rx_link_rate_strobe      (dp_rx_rcfg_req),
+  .rx_xcvr_busy             (dp_rx_rcfg_busy),
+  .rx_xcvr_reset            (dp_rx_xcvr_reset),
+  .rx_vodemp_strobe			(dp_rx_analog_rcfg_req),
+  .rx_vod					(dp_rx_analog_rcfg_vod),
+  .rx_emp					(dp_rx_analog_rcfg_emp),
+  
+  // TX Reconfig (Not Used)  
+  .tx_analogreset_ack       (1'b0),
+  .tx_link_rate             (8'd0),
+  .tx_vod                   (8'd0),
+  .tx_emp                   (8'd0),
+  .tx_link_rate_strobe      (1'b0),
+  .tx_vodemp_strobe         (1'b0),
+  .tx_mgmt_readdata         (32'd0),
+  .tx_mgmt_waitrequest      (1'b0),
+  .txpll_mgmt_readdata      (32'd0),
+  .txpll_mgmt_waitrequest   (1'b0),
+  .tx_xcvr_cal_busy         (1'b0),
+  .tx_pll_cal_busy          (1'b0),
+
+  .rx_mgmt_chnum            (rx_rcfg_address[11:10]),
+  .rx_mgmt_address          (rx_rcfg_address[9:0]),
+  .rx_mgmt_writedata        (rx_rcfg_writedata),
+  .rx_mgmt_readdata         (rx_rcfg_readdata),
+  .rx_mgmt_write            (rx_rcfg_write),
+  .rx_mgmt_read             (rx_rcfg_read),
+  .rx_mgmt_waitrequest      (rx_rcfg_waitrequest),
+  .rx_xcvr_cal_busy         (dp_rx_cal_busy)
+);
+  defparam  bitec_reconfig_alt_a10_i.RX_LANES = RX_MAX_LANE_COUNT;
+  defparam  bitec_reconfig_alt_a10_i.RX_RATES_NUM = 3;  // Number of data rate supported.
+
+assign dp_rx_rcfg_ack = 1'b1;
+assign rx_rcfg_en = dp_rx_rcfg_busy;
+  
+// Transceiver RX
+gxb_rx gxb_rx_i
+(
+    .rx_cdr_refclk0             (rx_cdr_refclk),
+    .reconfig_clk               ({RX_MAX_LANE_COUNT{clk_100}}),
+    .reconfig_reset             ({RX_MAX_LANE_COUNT{reset}}),
+    .reconfig_write             (gxb_rx_rcfg_write),
+    .reconfig_read              (gxb_rx_rcfg_read),
+    .reconfig_address           (gxb_rx_rcfg_address),
+    .reconfig_writedata         (gxb_rx_rcfg_writedata),
+    .reconfig_readdata          (gxb_rx_rcfg_readdata),
+    .reconfig_waitrequest       (gxb_rx_rcfg_waitrequest),
+    .rx_cal_busy                (gxb_rx_rcfg_cal_busy),
+    .rx_serial_data             (gxb_rx_serial_data),
+    .rx_clkout                  (gxb_rx_clkout),
+
+    .rx_analogreset             (gxb_rx_analogreset),
+    .rx_analogreset_ack         (gxb_rx_analogreset_ack),
+    .rx_digitalreset            (gxb_rx_digitalreset),
+    .rx_set_locktodata          (dp_rx_set_locktodata),
+    .rx_set_locktoref           (dp_rx_set_locktoref),
+    .rx_bitslip                 (dp_rx_bitslip),
+    .rx_coreclkin               (gxb_rx_clkout),
+    .rx_polinv                  (gxb_rx_polinv),
+    .rx_is_lockedtodata         (dp_rx_is_lockedtodata),
+    .rx_is_lockedtoref          (dp_rx_is_lockedtoref),
+    .rx_parallel_data           (dp_rx_parallel_data),
+
+    .unused_rx_parallel_data    ()
+);
+
+assign  gxb_rx_polinv = {RX_MAX_LANE_COUNT{1'b0}};
+
+endmodule
+

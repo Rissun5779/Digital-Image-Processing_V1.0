@@ -1,0 +1,245 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+
+
+
+
+
+
+
+package require -exact qsys 15.0
+
+
+set_module_property DESCRIPTION ""
+set_module_property NAME phylite_niosii_bridge
+set_module_property VERSION 1.0
+set_module_property INTERNAL true
+set_module_property OPAQUE_ADDRESS_MAP true
+set_module_property AUTHOR ""
+set_module_property DISPLAY_NAME phylite_niosii_bridge
+set_module_property INSTANTIATE_IN_SYSTEM_MODULE true
+set_module_property EDITABLE true
+set_module_property REPORT_TO_TALKBACK false
+set_module_property ALLOW_GREYBOX_GENERATION false
+set_module_property REPORT_HIERARCHY false
+
+add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
+set_fileset_property QUARTUS_SYNTH TOP_LEVEL phylite_niosii_bridge
+set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
+set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE true
+add_fileset_file phylite_niosii_bridge.v VERILOG PATH phylite_niosii_bridge.v TOP_LEVEL_FILE
+
+
+
+add_parameter ADDR_WIDTH INTEGER 28
+set_parameter_property ADDR_WIDTH DEFAULT_VALUE 28 
+set_parameter_property ADDR_WIDTH DESCRIPTION "Address width"
+set_parameter_property ADDR_WIDTH HDL_PARAMETER true
+set_parameter_property ADDR_WIDTH VISIBLE false
+
+add_parameter USE_AVL_CTRL INTEGER 1
+set_parameter_property USE_AVL_CTRL DEFAULT_VALUE 1 
+set_parameter_property USE_AVL_CTRL DESCRIPTION "Use PHYLite AVL controller"
+set_parameter_property USE_AVL_CTRL HDL_PARAMETER true
+set_parameter_property USE_AVL_CTRL VISIBLE false
+
+
+
+add_interface core_clk_in conduit end
+set_interface_property core_clk_in associatedClock ""
+set_interface_property core_clk_in associatedReset ""
+set_interface_property core_clk_in ENABLED true
+set_interface_property core_clk_in EXPORT_OF ""
+set_interface_property core_clk_in PORT_NAME_MAP ""
+set_interface_property core_clk_in CMSIS_SVD_VARIABLES ""
+set_interface_property core_clk_in SVD_ADDRESS_GROUP ""
+
+add_interface_port core_clk_in core_clk_in core_clk Input 1
+
+
+add_interface interface_lock_in conduit end
+set_interface_property interface_lock_in associatedClock ""
+set_interface_property interface_lock_in associatedReset ""
+set_interface_property interface_lock_in ENABLED true
+set_interface_property interface_lock_in EXPORT_OF ""
+set_interface_property interface_lock_in PORT_NAME_MAP ""
+set_interface_property interface_lock_in CMSIS_SVD_VARIABLES ""
+set_interface_property interface_lock_in SVD_ADDRESS_GROUP ""
+
+add_interface_port interface_lock_in interface_locked locked Input 1
+
+
+add_interface nios_clock clock start
+set_interface_property nios_clock associatedDirectClock ""
+set_interface_property nios_clock clockRate 0
+set_interface_property nios_clock clockRateKnown true
+set_interface_property nios_clock ENABLED true
+set_interface_property nios_clock EXPORT_OF ""
+set_interface_property nios_clock PORT_NAME_MAP ""
+set_interface_property nios_clock CMSIS_SVD_VARIABLES ""
+set_interface_property nios_clock SVD_ADDRESS_GROUP ""
+
+add_interface_port nios_clock nios_clock clk Output 1
+
+
+add_interface nios_reset reset start
+set_interface_property nios_reset associatedClock nios_clock
+set_interface_property nios_reset associatedDirectReset ""
+set_interface_property nios_reset associatedResetSinks ""
+set_interface_property nios_reset synchronousEdges DEASSERT
+set_interface_property nios_reset ENABLED true
+set_interface_property nios_reset EXPORT_OF ""
+set_interface_property nios_reset PORT_NAME_MAP ""
+set_interface_property nios_reset CMSIS_SVD_VARIABLES ""
+set_interface_property nios_reset SVD_ADDRESS_GROUP ""
+
+add_interface_port nios_reset nios_reset reset_n Output 1
+
+
+add_interface avl_out_interface_conduit conduit end
+set_interface_property avl_out_interface_conduit associatedClock ""
+set_interface_property avl_out_interface_conduit associatedReset ""
+set_interface_property avl_out_interface_conduit ENABLED true
+set_interface_property avl_out_interface_conduit EXPORT_OF ""
+set_interface_property avl_out_interface_conduit PORT_NAME_MAP ""
+set_interface_property avl_out_interface_conduit CMSIS_SVD_VARIABLES ""
+set_interface_property avl_out_interface_conduit SVD_ADDRESS_GROUP ""
+
+
+add_interface_port avl_out_interface_conduit avl_out_clk avl_clk Output 1
+add_interface_port avl_out_interface_conduit avl_out_reset avl_reset_n Output 1
+add_interface_port avl_out_interface_conduit avl_out_read avl_read Output 1
+add_interface_port avl_out_interface_conduit avl_out_write avl_write Output 1
+add_interface_port avl_out_interface_conduit avl_out_byteenable avl_byteenable Output 4
+add_interface_port avl_out_interface_conduit avl_out_writedata avl_writedata Output 32
+add_interface_port avl_out_interface_conduit avl_out_address avl_address Output "ADDR_WIDTH"
+add_interface_port avl_out_interface_conduit avl_out_readdata avl_readdata Input 32
+add_interface_port avl_out_interface_conduit avl_out_readdata_valid avl_readdata_valid Input 1
+add_interface_port avl_out_interface_conduit avl_out_waitrequest avl_waitrequest Input 1
+
+
+add_interface mm_avalon_slave avalon end
+set_interface_property mm_avalon_slave addressUnits WORDS
+set_interface_property mm_avalon_slave associatedClock nios_clock
+set_interface_property mm_avalon_slave associatedReset nios_reset
+set_interface_property mm_avalon_slave bitsPerSymbol 8
+set_interface_property mm_avalon_slave burstOnBurstBoundariesOnly false
+set_interface_property mm_avalon_slave burstcountUnits WORDS
+set_interface_property mm_avalon_slave explicitAddressSpan 16777216
+set_interface_property mm_avalon_slave holdTime 0
+set_interface_property mm_avalon_slave linewrapBursts false
+set_interface_property mm_avalon_slave maximumPendingReadTransactions 1
+set_interface_property mm_avalon_slave maximumPendingWriteTransactions 0
+set_interface_property mm_avalon_slave readLatency 0
+set_interface_property mm_avalon_slave readWaitStates 0
+set_interface_property mm_avalon_slave readWaitTime 0
+set_interface_property mm_avalon_slave setupTime 0
+set_interface_property mm_avalon_slave timingUnits Cycles
+set_interface_property mm_avalon_slave writeWaitTime 0
+set_interface_property mm_avalon_slave ENABLED true
+set_interface_property mm_avalon_slave EXPORT_OF ""
+set_interface_property mm_avalon_slave PORT_NAME_MAP ""
+set_interface_property mm_avalon_slave CMSIS_SVD_VARIABLES ""
+set_interface_property mm_avalon_slave SVD_ADDRESS_GROUP ""
+
+add_interface_port mm_avalon_slave avl_read read Input 1
+add_interface_port mm_avalon_slave avl_write write Input 1
+add_interface_port mm_avalon_slave avl_byteenable byteenable Input 4
+add_interface_port mm_avalon_slave avl_writedata writedata Input 32
+add_interface_port mm_avalon_slave avl_address address Input 24
+add_interface_port mm_avalon_slave avl_readdata readdata Output 32
+add_interface_port mm_avalon_slave avl_readdata_valid readdatavalid Output 1
+add_interface_port mm_avalon_slave avl_waitrequest waitrequest Output 1
+set_interface_assignment mm_avalon_slave embeddedsw.configuration.isFlash 0
+set_interface_assignment mm_avalon_slave embeddedsw.configuration.isMemoryDevice 0
+set_interface_assignment mm_avalon_slave embeddedsw.configuration.isNonVolatileStorage 0
+set_interface_assignment mm_avalon_slave embeddedsw.configuration.isPrintableDevice 0
+
+add_interface reset_source reset start
+set_interface_property reset_source associatedClock clock_source_to_system
+set_interface_property reset_source associatedDirectReset ""
+set_interface_property reset_source associatedResetSinks ""
+set_interface_property reset_source synchronousEdges DEASSERT
+set_interface_property reset_source ENABLED true
+set_interface_property reset_source EXPORT_OF ""
+set_interface_property reset_source PORT_NAME_MAP ""
+set_interface_property reset_source CMSIS_SVD_VARIABLES ""
+set_interface_property reset_source SVD_ADDRESS_GROUP ""
+add_interface_port reset_source reset_source reset_n Output 1
+
+
+add_interface clock_source_to_system clock start
+set_interface_property clock_source_to_system associatedDirectClock ""
+set_interface_property clock_source_to_system clockRate 0
+set_interface_property clock_source_to_system clockRateKnown false
+set_interface_property clock_source_to_system ENABLED true
+set_interface_property clock_source_to_system EXPORT_OF ""
+set_interface_property clock_source_to_system PORT_NAME_MAP ""
+set_interface_property clock_source_to_system CMSIS_SVD_VARIABLES ""
+set_interface_property clock_source_to_system SVD_ADDRESS_GROUP ""
+add_interface_port clock_source_to_system clock_source_to_system clk Output 1
+
+add_interface clock_input_for_system conduit end
+set_interface_property clock_input_for_system associatedClock clock_source_to_system
+set_interface_property clock_input_for_system associatedReset reset_source
+set_interface_property clock_input_for_system ENABLED true
+set_interface_property clock_input_for_system EXPORT_OF ""
+set_interface_property clock_input_for_system PORT_NAME_MAP ""
+set_interface_property clock_input_for_system CMSIS_SVD_VARIABLES ""
+set_interface_property clock_input_for_system SVD_ADDRESS_GROUP ""
+add_interface_port clock_input_for_system clock_input_for_system clock_input_for_system Input 1
+
+add_interface reset_input_for_system conduit end
+set_interface_property reset_input_for_system associatedClock ""
+set_interface_property reset_input_for_system associatedReset ""
+set_interface_property reset_input_for_system ENABLED true
+set_interface_property reset_input_for_system EXPORT_OF ""
+set_interface_property reset_input_for_system PORT_NAME_MAP ""
+set_interface_property reset_input_for_system CMSIS_SVD_VARIABLES ""
+set_interface_property reset_input_for_system SVD_ADDRESS_GROUP ""
+add_interface_port reset_input_for_system reset_input_for_system source Input 1
+
+
+add_interface interface_lock_probe conduit start
+set_interface_property interface_lock_probe associatedClock ""
+set_interface_property interface_lock_probe associatedReset ""
+set_interface_property interface_lock_probe ENABLED true
+set_interface_property interface_lock_probe EXPORT_OF ""
+set_interface_property interface_lock_probe PORT_NAME_MAP ""
+set_interface_property interface_lock_probe CMSIS_SVD_VARIABLES ""
+set_interface_property interface_lock_probe SVD_ADDRESS_GROUP ""
+add_interface_port interface_lock_probe interface_locked_probe probe Output 1
+
+
+add_interface nios_done_in conduit end
+set_interface_property nios_done_in associatedClock ""
+set_interface_property nios_done_in associatedReset ""
+set_interface_property nios_done_in ENABLED true
+set_interface_property nios_done_in EXPORT_OF ""
+set_interface_property nios_done_in PORT_NAME_MAP ""
+set_interface_property nios_done_in CMSIS_SVD_VARIABLES ""
+set_interface_property nios_done_in SVD_ADDRESS_GROUP ""
+
+add_interface_port nios_done_in nios_done_in export Input 1
+
+add_interface nios_done_probe conduit start
+set_interface_property nios_done_probe associatedClock ""
+set_interface_property nios_done_probe associatedReset ""
+set_interface_property nios_done_probe ENABLED true
+set_interface_property nios_done_probe EXPORT_OF ""
+set_interface_property nios_done_probe PORT_NAME_MAP ""
+set_interface_property nios_done_probe CMSIS_SVD_VARIABLES ""
+set_interface_property nios_done_probe SVD_ADDRESS_GROUP ""
+add_interface_port nios_done_probe nios_done_probe probe Output 1
+

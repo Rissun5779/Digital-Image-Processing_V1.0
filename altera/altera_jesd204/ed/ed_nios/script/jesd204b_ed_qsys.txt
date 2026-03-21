@@ -1,0 +1,1101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element $${FILENAME}
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Arria 10";
+         type = "String";
+      }
+   }
+   element core_pll
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element core_pll_reconfig
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element device_clk
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+   element frame_clk
+   {
+      datum _sortIndex
+      {
+         value = "2";
+         type = "int";
+      }
+   }
+   element jesd204b_subsystem_0
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element link_clk
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+   element mgmt_clk
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element nios_subsystem
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element reset_controller_0
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element spi_0
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ #DEVICE_PARAM
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="jesd204b_ed.qpf" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="core_pll_frame_clk_out"
+   internal="core_pll.outclk1"
+   type="clock"
+   dir="start" />
+ <interface
+   name="core_pll_link_clk_out"
+   internal="core_pll.outclk0"
+   type="clock"
+   dir="start" />
+ <interface
+   name="core_pll_locked"
+   internal="core_pll.locked"
+   type="conduit"
+   dir="end" />
+ <interface name="device_clk" internal="device_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="do_not_connect_0"
+   internal="device_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="do_not_connect_1"
+   internal="link_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="do_not_connect_2"
+   internal="frame_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface name="frame_clk" internal="frame_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_frame_reset_n_out_0"
+   internal="jesd204b_subsystem_0.frame_reset_n_out_0" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_csr_rx_testmode"
+   internal="jesd204b_subsystem_0.jesd204b_csr_rx_testmode"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_csr_tx_testmode"
+   internal="jesd204b_subsystem_0.jesd204b_csr_tx_testmode"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_a"
+   internal="jesd204b_subsystem_0.jesd204b_csr_tx_testpattern_a"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_b"
+   internal="jesd204b_subsystem_0.jesd204b_csr_tx_testpattern_b"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_c"
+   internal="jesd204b_subsystem_0.jesd204b_csr_tx_testpattern_c"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_d"
+   internal="jesd204b_subsystem_0.jesd204b_csr_tx_testpattern_d"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_data"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_dlb_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_data_valid"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_dlb_data_valid"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_disperr"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_dlb_disperr"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_errdetect"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_dlb_errdetect"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_kchar_data"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_dlb_kchar_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_frame_error"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_frame_error"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_rx_link"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_rx_link"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_tx_dlb_data"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_tx_dlb_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_tx_dlb_kchar_data"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_tx_dlb_kchar_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_tx_frame_error"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_tx_frame_error"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_tx_frame_ready"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_tx_frame_ready"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_jesd204_tx_link"
+   internal="jesd204b_subsystem_0.jesd204b_jesd204_tx_link"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_pll_locked"
+   internal="jesd204b_subsystem_0.jesd204b_pll_locked"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_cf"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_cf"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_cs"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_cs"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_f"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_f"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_hd"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_hd"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_k"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_k"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_l"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_l"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_lane_powerdown"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_lane_powerdown"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_m"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_m"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_n"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_np"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_np"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_csr_s"
+   internal="jesd204b_subsystem_0.jesd204b_rx_csr_s"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_dev_sync_n"
+   internal="jesd204b_subsystem_0.jesd204b_rx_dev_sync_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_serial_data"
+   internal="jesd204b_subsystem_0.jesd204b_rx_serial_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_seriallpbken"
+   internal="jesd204b_subsystem_0.jesd204b_rx_seriallpbken"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_sof"
+   internal="jesd204b_subsystem_0.jesd204b_rx_sof"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_somf"
+   internal="jesd204b_subsystem_0.jesd204b_rx_somf"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rx_sysref"
+   internal="jesd204b_subsystem_0.jesd204b_rx_sysref"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rxlink_rst_n"
+   internal="jesd204b_subsystem_0.jesd204b_rxlink_rst_n"
+   type="reset"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_rxphy_clk"
+   internal="jesd204b_subsystem_0.jesd204b_rxphy_clk"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_sync_n"
+   internal="jesd204b_subsystem_0.jesd204b_sync_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_cf"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_cf"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_cs"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_cs"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_f"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_f"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_hd"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_hd"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_k"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_k"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_l"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_l"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_lane_powerdown"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_lane_powerdown"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_m"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_m"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_n"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_np"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_np"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_csr_s"
+   internal="jesd204b_subsystem_0.jesd204b_tx_csr_s"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_serial_data"
+   internal="jesd204b_subsystem_0.jesd204b_tx_serial_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_tx_sysref"
+   internal="jesd204b_subsystem_0.jesd204b_tx_sysref"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_txlink_rst_n"
+   internal="jesd204b_subsystem_0.jesd204b_txlink_rst_n"
+   type="reset"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_jesd204b_txphy_clk"
+   internal="jesd204b_subsystem_0.jesd204b_txphy_clk"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_link_reset_n_out_0"
+   internal="jesd204b_subsystem_0.link_reset_n_out_0" />
+ <interface
+   name="jesd204b_subsystem_0_reset_seq_pll_locked_in"
+   internal="jesd204b_subsystem_0.reset_seq_pll_locked_in"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_reset_seq_rx_xcvr_ready_in"
+   internal="jesd204b_subsystem_0.reset_seq_rx_xcvr_ready_in"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_reset_seq_tx_xcvr_ready_in"
+   internal="jesd204b_subsystem_0.reset_seq_tx_xcvr_ready_in"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_reset_seq_xcvr_ready_in"
+   internal="jesd204b_subsystem_0.reset_seq_xcvr_ready_in" />
+ <interface
+   name="jesd204b_subsystem_0_rx_frame_reset_n_out_0"
+   internal="jesd204b_subsystem_0.rx_frame_reset_n_out_0"
+   type="reset"
+   dir="start" />
+ <interface
+   name="jesd204b_subsystem_0_rx_link_reset_n_out_0"
+   internal="jesd204b_subsystem_0.rx_link_reset_n_out_0"
+   type="reset"
+   dir="start" />
+ <interface
+   name="jesd204b_subsystem_0_tx_frame_reset_n_out_0"
+   internal="jesd204b_subsystem_0.tx_frame_reset_n_out_0"
+   type="reset"
+   dir="start" />
+ <interface
+   name="jesd204b_subsystem_0_tx_link_reset_n_out_0"
+   internal="jesd204b_subsystem_0.tx_link_reset_n_out_0"
+   type="reset"
+   dir="start" />
+ <interface
+   name="jesd204b_subsystem_0_xcvr_atx_pll_a10_0_pll_cal_busy"
+   internal="jesd204b_subsystem_0.xcvr_atx_pll_a10_0_pll_cal_busy"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_xcvr_atx_pll_a10_0_pll_locked"
+   internal="jesd204b_subsystem_0.xcvr_atx_pll_a10_0_pll_locked"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_xcvr_reset_control_0_pll_locked"
+   internal="jesd204b_subsystem_0.xcvr_reset_control_0_pll_locked"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_xcvr_reset_control_0_pll_select"
+   internal="jesd204b_subsystem_0.xcvr_reset_control_0_pll_select"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_xcvr_reset_control_0_rx_ready"
+   internal="jesd204b_subsystem_0.xcvr_reset_control_0_rx_ready"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_subsystem_0_xcvr_reset_control_0_tx_ready"
+   internal="jesd204b_subsystem_0.xcvr_reset_control_0_tx_ready"
+   type="conduit"
+   dir="end" />
+ <interface name="lcd_external" internal="nios_subsystem.lcd_external" />
+ <interface name="link_clk" internal="link_clk.clk_in" type="clock" dir="end" />
+ <interface name="mgmt_clk" internal="mgmt_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="mgmt_reset"
+   internal="mgmt_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="pio_control"
+   internal="nios_subsystem.pio_control_external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pio_status"
+   internal="nios_subsystem.pio_status_external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="spi_0_external"
+   internal="spi_0.external"
+   type="conduit"
+   dir="end" />
+ <module name="core_pll" kind="altera_iopll" version="15.1" enabled="1">
+  <parameter name="gui_active_clk" value="false" />
+  <parameter name="gui_actual_duty_cycle0" value="50.0" />
+  <parameter name="gui_actual_duty_cycle1" value="50.0" />
+  <parameter name="gui_actual_duty_cycle10" value="50.0" />
+  <parameter name="gui_actual_duty_cycle11" value="50.0" />
+  <parameter name="gui_actual_duty_cycle12" value="50.0" />
+  <parameter name="gui_actual_duty_cycle13" value="50.0" />
+  <parameter name="gui_actual_duty_cycle14" value="50.0" />
+  <parameter name="gui_actual_duty_cycle15" value="50.0" />
+  <parameter name="gui_actual_duty_cycle16" value="50.0" />
+  <parameter name="gui_actual_duty_cycle17" value="50.0" />
+  <parameter name="gui_actual_duty_cycle2" value="50.0" />
+  <parameter name="gui_actual_duty_cycle3" value="50.0" />
+  <parameter name="gui_actual_duty_cycle4" value="50.0" />
+  <parameter name="gui_actual_duty_cycle5" value="50.0" />
+  <parameter name="gui_actual_duty_cycle6" value="50.0" />
+  <parameter name="gui_actual_duty_cycle7" value="50.0" />
+  <parameter name="gui_actual_duty_cycle8" value="50.0" />
+  <parameter name="gui_actual_duty_cycle9" value="50.0" />
+  <parameter name="gui_actual_output_clock_frequency0" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency1" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency10" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency11" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency12" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency13" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency14" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency15" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency16" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency17" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency2" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency3" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency4" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency5" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency6" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency7" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency8" value="100.0" />
+  <parameter name="gui_actual_output_clock_frequency9" value="100.0" />
+  <parameter name="gui_actual_phase_shift0" value="0.0" />
+  <parameter name="gui_actual_phase_shift1" value="0.0" />
+  <parameter name="gui_actual_phase_shift10" value="0.0" />
+  <parameter name="gui_actual_phase_shift11" value="0.0" />
+  <parameter name="gui_actual_phase_shift12" value="0.0" />
+  <parameter name="gui_actual_phase_shift13" value="0.0" />
+  <parameter name="gui_actual_phase_shift14" value="0.0" />
+  <parameter name="gui_actual_phase_shift15" value="0.0" />
+  <parameter name="gui_actual_phase_shift16" value="0.0" />
+  <parameter name="gui_actual_phase_shift17" value="0.0" />
+  <parameter name="gui_actual_phase_shift2" value="0.0" />
+  <parameter name="gui_actual_phase_shift3" value="0.0" />
+  <parameter name="gui_actual_phase_shift4" value="0.0" />
+  <parameter name="gui_actual_phase_shift5" value="0.0" />
+  <parameter name="gui_actual_phase_shift6" value="0.0" />
+  <parameter name="gui_actual_phase_shift7" value="0.0" />
+  <parameter name="gui_actual_phase_shift8" value="0.0" />
+  <parameter name="gui_actual_phase_shift9" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg0" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg1" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg10" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg11" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg12" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg13" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg14" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg15" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg16" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg17" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg2" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg3" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg4" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg5" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg6" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg7" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg8" value="0.0" />
+  <parameter name="gui_actual_phase_shift_deg9" value="0.0" />
+  <parameter name="gui_cascade_counter0" value="false" />
+  <parameter name="gui_cascade_counter1" value="false" />
+  <parameter name="gui_cascade_counter10" value="false" />
+  <parameter name="gui_cascade_counter11" value="false" />
+  <parameter name="gui_cascade_counter12" value="false" />
+  <parameter name="gui_cascade_counter13" value="false" />
+  <parameter name="gui_cascade_counter14" value="false" />
+  <parameter name="gui_cascade_counter15" value="false" />
+  <parameter name="gui_cascade_counter16" value="false" />
+  <parameter name="gui_cascade_counter17" value="false" />
+  <parameter name="gui_cascade_counter2" value="false" />
+  <parameter name="gui_cascade_counter3" value="false" />
+  <parameter name="gui_cascade_counter4" value="false" />
+  <parameter name="gui_cascade_counter5" value="false" />
+  <parameter name="gui_cascade_counter6" value="false" />
+  <parameter name="gui_cascade_counter7" value="false" />
+  <parameter name="gui_cascade_counter8" value="false" />
+  <parameter name="gui_cascade_counter9" value="false" />
+  <parameter name="gui_cascade_outclk_index" value="0" />
+  <parameter name="gui_clk_bad" value="false" />
+  <parameter name="gui_clock_name_global0" value="false" />
+  <parameter name="gui_clock_name_global1" value="false" />
+  <parameter name="gui_clock_name_global10" value="false" />
+  <parameter name="gui_clock_name_global11" value="false" />
+  <parameter name="gui_clock_name_global12" value="false" />
+  <parameter name="gui_clock_name_global13" value="false" />
+  <parameter name="gui_clock_name_global14" value="false" />
+  <parameter name="gui_clock_name_global15" value="false" />
+  <parameter name="gui_clock_name_global16" value="false" />
+  <parameter name="gui_clock_name_global17" value="false" />
+  <parameter name="gui_clock_name_global2" value="false" />
+  <parameter name="gui_clock_name_global3" value="false" />
+  <parameter name="gui_clock_name_global4" value="false" />
+  <parameter name="gui_clock_name_global5" value="false" />
+  <parameter name="gui_clock_name_global6" value="false" />
+  <parameter name="gui_clock_name_global7" value="false" />
+  <parameter name="gui_clock_name_global8" value="false" />
+  <parameter name="gui_clock_name_global9" value="false" />
+  <parameter name="gui_clock_name_string0" value="link_clk" />
+  <parameter name="gui_clock_name_string1" value="frame_clk" />
+  <parameter name="gui_clock_name_string10" value="outclk10" />
+  <parameter name="gui_clock_name_string11" value="outclk11" />
+  <parameter name="gui_clock_name_string12" value="outclk12" />
+  <parameter name="gui_clock_name_string13" value="outclk13" />
+  <parameter name="gui_clock_name_string14" value="outclk14" />
+  <parameter name="gui_clock_name_string15" value="outclk15" />
+  <parameter name="gui_clock_name_string16" value="outclk16" />
+  <parameter name="gui_clock_name_string17" value="outclk17" />
+  <parameter name="gui_clock_name_string2" value="outclk2" />
+  <parameter name="gui_clock_name_string3" value="outclk3" />
+  <parameter name="gui_clock_name_string4" value="outclk4" />
+  <parameter name="gui_clock_name_string5" value="outclk5" />
+  <parameter name="gui_clock_name_string6" value="outclk6" />
+  <parameter name="gui_clock_name_string7" value="outclk7" />
+  <parameter name="gui_clock_name_string8" value="outclk8" />
+  <parameter name="gui_clock_name_string9" value="outclk9" />
+  <parameter name="gui_device_speed_grade" value="1" />
+  <parameter name="gui_divide_factor_c0" value="6" />
+  <parameter name="gui_divide_factor_c1" value="6" />
+  <parameter name="gui_divide_factor_c10" value="6" />
+  <parameter name="gui_divide_factor_c11" value="6" />
+  <parameter name="gui_divide_factor_c12" value="6" />
+  <parameter name="gui_divide_factor_c13" value="6" />
+  <parameter name="gui_divide_factor_c14" value="6" />
+  <parameter name="gui_divide_factor_c15" value="6" />
+  <parameter name="gui_divide_factor_c16" value="6" />
+  <parameter name="gui_divide_factor_c17" value="6" />
+  <parameter name="gui_divide_factor_c2" value="6" />
+  <parameter name="gui_divide_factor_c3" value="6" />
+  <parameter name="gui_divide_factor_c4" value="6" />
+  <parameter name="gui_divide_factor_c5" value="6" />
+  <parameter name="gui_divide_factor_c6" value="6" />
+  <parameter name="gui_divide_factor_c7" value="6" />
+  <parameter name="gui_divide_factor_c8" value="6" />
+  <parameter name="gui_divide_factor_c9" value="6" />
+  <parameter name="gui_divide_factor_n" value="1" />
+  <parameter name="gui_dps_cntr" value="C0" />
+  <parameter name="gui_dps_dir" value="Positive" />
+  <parameter name="gui_dps_num" value="1" />
+  <parameter name="gui_dsm_out_sel" value="1st_order" />
+  <parameter name="gui_duty_cycle0" value="50.0" />
+  <parameter name="gui_duty_cycle1" value="50.0" />
+  <parameter name="gui_duty_cycle10" value="50.0" />
+  <parameter name="gui_duty_cycle11" value="50.0" />
+  <parameter name="gui_duty_cycle12" value="50.0" />
+  <parameter name="gui_duty_cycle13" value="50.0" />
+  <parameter name="gui_duty_cycle14" value="50.0" />
+  <parameter name="gui_duty_cycle15" value="50.0" />
+  <parameter name="gui_duty_cycle16" value="50.0" />
+  <parameter name="gui_duty_cycle17" value="50.0" />
+  <parameter name="gui_duty_cycle2" value="50.0" />
+  <parameter name="gui_duty_cycle3" value="50.0" />
+  <parameter name="gui_duty_cycle4" value="50.0" />
+  <parameter name="gui_duty_cycle5" value="50.0" />
+  <parameter name="gui_duty_cycle6" value="50.0" />
+  <parameter name="gui_duty_cycle7" value="50.0" />
+  <parameter name="gui_duty_cycle8" value="50.0" />
+  <parameter name="gui_duty_cycle9" value="50.0" />
+  <parameter name="gui_en_adv_params" value="false" />
+  <parameter name="gui_en_dps_ports" value="false" />
+  <parameter name="gui_en_extclkout_ports" value="false" />
+  <parameter name="gui_en_lvds_ports" value="Disabled" />
+  <parameter name="gui_en_phout_ports" value="false" />
+  <parameter name="gui_en_reconf" value="true" />
+  <parameter name="gui_enable_cascade_in" value="false" />
+  <parameter name="gui_enable_cascade_out" value="false" />
+  <parameter name="gui_enable_mif_dps" value="false" />
+  <parameter name="gui_enable_output_counter_cascading" value="false" />
+  <parameter name="gui_extclkout_0_source" value="C0" />
+  <parameter name="gui_extclkout_1_source" value="C0" />
+  <parameter name="gui_fix_vco_frequency" value="false" />
+  <parameter name="gui_fixed_vco_frequency" value="600.0" />
+  <parameter name="gui_frac_multiply_factor" value="1" />
+  <parameter name="gui_fractional_cout" value="32" />
+  <parameter name="gui_mif_generate" value="true" />
+  <parameter name="gui_multiply_factor" value="6" />
+  <parameter name="gui_number_of_clocks" value="2" />
+  <parameter name="gui_operation_mode" value="source synchronous" />
+  #REFCLK_FREQ_PARAM
+  <parameter name="gui_output_clock_frequency10" value="100.0" />
+  <parameter name="gui_output_clock_frequency11" value="100.0" />
+  <parameter name="gui_output_clock_frequency12" value="100.0" />
+  <parameter name="gui_output_clock_frequency13" value="100.0" />
+  <parameter name="gui_output_clock_frequency14" value="100.0" />
+  <parameter name="gui_output_clock_frequency15" value="100.0" />
+  <parameter name="gui_output_clock_frequency16" value="100.0" />
+  <parameter name="gui_output_clock_frequency17" value="100.0" />
+  <parameter name="gui_output_clock_frequency2" value="100.0" />
+  <parameter name="gui_output_clock_frequency3" value="100.0" />
+  <parameter name="gui_output_clock_frequency4" value="100.0" />
+  <parameter name="gui_output_clock_frequency5" value="100.0" />
+  <parameter name="gui_output_clock_frequency6" value="100.0" />
+  <parameter name="gui_output_clock_frequency7" value="100.0" />
+  <parameter name="gui_output_clock_frequency8" value="100.0" />
+  <parameter name="gui_output_clock_frequency9" value="100.0" />
+  <parameter name="gui_phase_shift0" value="0.0" />
+  <parameter name="gui_phase_shift1" value="0.0" />
+  <parameter name="gui_phase_shift10" value="0.0" />
+  <parameter name="gui_phase_shift11" value="0.0" />
+  <parameter name="gui_phase_shift12" value="0.0" />
+  <parameter name="gui_phase_shift13" value="0.0" />
+  <parameter name="gui_phase_shift14" value="0.0" />
+  <parameter name="gui_phase_shift15" value="0.0" />
+  <parameter name="gui_phase_shift16" value="0.0" />
+  <parameter name="gui_phase_shift17" value="0.0" />
+  <parameter name="gui_phase_shift2" value="0.0" />
+  <parameter name="gui_phase_shift3" value="0.0" />
+  <parameter name="gui_phase_shift4" value="0.0" />
+  <parameter name="gui_phase_shift5" value="0.0" />
+  <parameter name="gui_phase_shift6" value="0.0" />
+  <parameter name="gui_phase_shift7" value="0.0" />
+  <parameter name="gui_phase_shift8" value="0.0" />
+  <parameter name="gui_phase_shift9" value="0.0" />
+  <parameter name="gui_phase_shift_deg0" value="0.0" />
+  <parameter name="gui_phase_shift_deg1" value="0.0" />
+  <parameter name="gui_phase_shift_deg10" value="0.0" />
+  <parameter name="gui_phase_shift_deg11" value="0.0" />
+  <parameter name="gui_phase_shift_deg12" value="0.0" />
+  <parameter name="gui_phase_shift_deg13" value="0.0" />
+  <parameter name="gui_phase_shift_deg14" value="0.0" />
+  <parameter name="gui_phase_shift_deg15" value="0.0" />
+  <parameter name="gui_phase_shift_deg16" value="0.0" />
+  <parameter name="gui_phase_shift_deg17" value="0.0" />
+  <parameter name="gui_phase_shift_deg2" value="0.0" />
+  <parameter name="gui_phase_shift_deg3" value="0.0" />
+  <parameter name="gui_phase_shift_deg4" value="0.0" />
+  <parameter name="gui_phase_shift_deg5" value="0.0" />
+  <parameter name="gui_phase_shift_deg6" value="0.0" />
+  <parameter name="gui_phase_shift_deg7" value="0.0" />
+  <parameter name="gui_phase_shift_deg8" value="0.0" />
+  <parameter name="gui_phase_shift_deg9" value="0.0" />
+  <parameter name="gui_phout_division" value="1" />
+  <parameter name="gui_pll_auto_reset" value="false" />
+  <parameter name="gui_pll_bandwidth_preset" value="Low" />
+  <parameter name="gui_pll_cascading_mode" value="adjpllin" />
+  <parameter name="gui_pll_mode" value="Integer-N PLL" />
+  <parameter name="gui_ps_units0" value="ps" />
+  <parameter name="gui_ps_units1" value="ps" />
+  <parameter name="gui_ps_units10" value="ps" />
+  <parameter name="gui_ps_units11" value="ps" />
+  <parameter name="gui_ps_units12" value="ps" />
+  <parameter name="gui_ps_units13" value="ps" />
+  <parameter name="gui_ps_units14" value="ps" />
+  <parameter name="gui_ps_units15" value="ps" />
+  <parameter name="gui_ps_units16" value="ps" />
+  <parameter name="gui_ps_units17" value="ps" />
+  <parameter name="gui_ps_units2" value="ps" />
+  <parameter name="gui_ps_units3" value="ps" />
+  <parameter name="gui_ps_units4" value="ps" />
+  <parameter name="gui_ps_units5" value="ps" />
+  <parameter name="gui_ps_units6" value="ps" />
+  <parameter name="gui_ps_units7" value="ps" />
+  <parameter name="gui_ps_units8" value="ps" />
+  <parameter name="gui_ps_units9" value="ps" />
+  <parameter name="gui_refclk1_frequency" value="100.0" />
+  <parameter name="gui_refclk_switch" value="false" />
+  <parameter name="gui_switchover_delay" value="0" />
+  <parameter name="gui_switchover_mode">Automatic Switchover</parameter>
+  <parameter name="gui_use_NDFB_modes" value="false" />
+  <parameter name="gui_use_locked" value="true" />
+  <parameter name="gui_vco_frequency" value="600.0" />
+  <parameter name="system_info_device_component" value="DEVICE_PARTNAME" />
+  <parameter name="system_info_device_family" value="Arria 10" />
+  <parameter name="system_info_device_speed_grade" value="3" />
+  <parameter name="system_part_trait_speed_grade" value="3" />
+ </module>
+ <module
+   name="core_pll_reconfig"
+   kind="altera_pll_reconfig"
+   version="15.1"
+   enabled="1">
+  <parameter name="ENABLE_BYTEENABLE" value="false" />
+  <parameter name="ENABLE_MIF" value="false" />
+  <parameter name="MIF_FILE_NAME" value="" />
+  <parameter name="device_family" value="Arria 10" />
+ </module>
+ <module name="device_clk" kind="clock_source" version="15.1" enabled="1">
+  #DEVICE_FREQ_PARAM
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
+ </module>
+ <module name="frame_clk" kind="clock_source" version="15.1" enabled="1">
+  #FRAME_FREQ_PARAM
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
+ </module>
+ <module
+   name="jesd204b_subsystem_0"
+   kind="jesd204b_subsystem"
+   version="1.0"
+   enabled="1">
+  <parameter name="AUTO_DEVICE" value="DEVICE_PARTNAME" />
+  <parameter name="AUTO_DEVICE_CLK_CLOCK_DOMAIN" value="3" />
+  #FRAME_CLOCK_PARAM
+  <parameter name="AUTO_DEVICE_CLK_RESET_DOMAIN" value="3" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Arria 10" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="3" />
+  <parameter name="AUTO_FRAME_CLK_CLOCK_DOMAIN" value="7" />
+  <parameter name="AUTO_FRAME_CLK_RESET_DOMAIN" value="7" />
+  <parameter name="AUTO_GENERATION_ID" value="0" />
+  <parameter name="AUTO_LINK_CLK_CLOCK_DOMAIN" value="14" />
+  <parameter name="AUTO_LINK_CLK_RESET_DOMAIN" value="14" />
+  <parameter name="AUTO_MGMT_CLK_CLOCK_DOMAIN" value="15" />
+  <parameter name="AUTO_MGMT_CLK_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_MGMT_CLK_RESET_DOMAIN" value="15" />
+  <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_jesd204b_subsystem_0</parameter>
+ </module>
+ <module name="link_clk" kind="clock_source" version="15.1" enabled="1">
+  #LINK_FREQ_PARAM
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
+ </module>
+ <module name="mgmt_clk" kind="clock_source" version="15.1" enabled="1">
+  <parameter name="clockFrequency" value="100000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
+ </module>
+ <module name="nios_subsystem" kind="nios_subsystem" version="1.0" enabled="1">
+  <parameter name="AUTO_CORE_PLL_SPI_MM_BRIDGE_0_M0_ADDRESS_MAP"><![CDATA[<address-map><slave name='core_pll_reconfig.mgmt_avalon_slave' start='0x0' end='0x800' /><slave name='spi_0.spi_control_port' start='0x800' end='0x820' /></address-map>]]></parameter>
+  <parameter
+     name="AUTO_CORE_PLL_SPI_MM_BRIDGE_0_M0_ADDRESS_WIDTH"
+     value="AddressWidth = 12" />
+  <parameter name="AUTO_DEVICE" value="DEVICE_PARTNAME" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Arria 10" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="3" />
+  <parameter name="AUTO_GENERATION_ID" value="0" />
+  <parameter name="AUTO_JESD204B_SUBSYSTEM_MM_BRIDGE_0_M0_ADDRESS_MAP"><![CDATA[<address-map><slave name='jesd204b_subsystem_0_jesd204b.reconfig_avmm' start='0x0' end='0x4000' /><slave name='jesd204b_subsystem_0_xcvr_atx_pll_a10_0.reconfig_avmm0' start='0x8000' end='0x9000' /><slave name='jesd204b_subsystem_0_jesd204b.jesd204_tx_avs' start='0xC000' end='0xC400' /><slave name='jesd204b_subsystem_0_jesd204b.jesd204_rx_avs' start='0xD000' end='0xD400' /><slave name='jesd204b_subsystem_0_reset_seq.av_csr' start='0xE000' end='0xE100' /></address-map>]]></parameter>
+  <parameter
+     name="AUTO_JESD204B_SUBSYSTEM_MM_BRIDGE_0_M0_ADDRESS_WIDTH"
+     value="AddressWidth = 16" />
+  <parameter name="AUTO_MGMT_CLK_CLOCK_DOMAIN" value="15" />
+  <parameter name="AUTO_MGMT_CLK_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_MGMT_CLK_RESET_DOMAIN" value="15" />
+  <parameter name="AUTO_NIOS2_D_IRQ_INTERRUPTS_USED" value="62" />
+  <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_nios_subsystem</parameter>
+ </module>
+ <module
+   name="reset_controller_0"
+   kind="altera_reset_controller"
+   version="15.1"
+   enabled="1">
+  <parameter name="MIN_RST_ASSERTION_TIME" value="3" />
+  <parameter name="NUM_RESET_INPUTS" value="1" />
+  <parameter name="OUTPUT_RESET_SYNC_EDGES" value="deassert" />
+  <parameter name="RESET_REQUEST_PRESENT" value="0" />
+  <parameter name="RESET_REQ_EARLY_DSRT_TIME" value="1" />
+  <parameter name="RESET_REQ_WAIT_TIME" value="1" />
+  <parameter name="SYNC_DEPTH" value="2" />
+  <parameter name="USE_RESET_REQUEST_IN0" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN1" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN10" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN11" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN12" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN13" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN14" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN15" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN2" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN3" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN4" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN5" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN6" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN7" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN8" value="0" />
+  <parameter name="USE_RESET_REQUEST_IN9" value="0" />
+  <parameter name="USE_RESET_REQUEST_INPUT" value="0" />
+ </module>
+ <module name="spi_0" kind="altera_avalon_spi" version="15.1" enabled="1">
+  <parameter name="avalonSpec" value="2.0" />
+  <parameter name="clockPhase" value="0" />
+  <parameter name="clockPolarity" value="0" />
+  <parameter name="dataWidth" value="24" />
+  <parameter name="disableAvalonFlowControl" value="false" />
+  <parameter name="inputClockRate" value="100000000" />
+  <parameter name="insertDelayBetweenSlaveSelectAndSClk" value="false" />
+  <parameter name="insertSync" value="false" />
+  <parameter name="lsbOrderedFirst" value="false" />
+  <parameter name="masterSPI" value="true" />
+  <parameter name="numberOfSlaves" value="3" />
+  <parameter name="syncRegDepth" value="2" />
+  <parameter name="targetClockRate" value="20000000" />
+  <parameter name="targetSlaveSelectToSClkDelay" value="0.0" />
+ </module>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="nios_subsystem.core_pll_spi_mm_bridge_0_m0"
+   end="core_pll_reconfig.mgmt_avalon_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="nios_subsystem.core_pll_spi_mm_bridge_0_m0"
+   end="spi_0.spi_control_port">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0800" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="nios_subsystem.jesd204b_subsystem_mm_bridge_0_m0"
+   end="jesd204b_subsystem_0.mm_bridge_s0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="15.1" start="mgmt_clk.clk" end="spi_0.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="reset_controller_0.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="device_clk.clk"
+   end="jesd204b_subsystem_0.device_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="frame_clk.clk"
+   end="jesd204b_subsystem_0.frame_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="link_clk.clk"
+   end="jesd204b_subsystem_0.link_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="core_pll_reconfig.mgmt_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="nios_subsystem.mgmt_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="jesd204b_subsystem_0.mgmt_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="device_clk.clk"
+   end="core_pll.refclk" />
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="core_pll.reconfig_from_pll"
+   end="core_pll_reconfig.reconfig_from_pll">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="core_pll_reconfig.reconfig_to_pll"
+   end="core_pll.reconfig_to_pll">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="15.1"
+   start="nios_subsystem.nios2_d_irq"
+   end="spi_0.irq">
+  <parameter name="irqNumber" value="4" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="15.1"
+   start="nios_subsystem.nios2_d_irq"
+   end="jesd204b_subsystem_0.jesd204b_jesd204_rx_int">
+  <parameter name="irqNumber" value="3" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="15.1"
+   start="nios_subsystem.nios2_d_irq"
+   end="jesd204b_subsystem_0.jesd204b_jesd204_tx_int">
+  <parameter name="irqNumber" value="2" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="15.1"
+   start="nios_subsystem.nios2_d_irq"
+   end="jesd204b_subsystem_0.reset_seq_irq">
+  <parameter name="irqNumber" value="5" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="15.1"
+   start="nios_subsystem.nios2_d_irq"
+   end="nios_subsystem.timer_irq">
+  <parameter name="irqNumber" value="1" />
+ </connection>
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="jesd204b_subsystem_0.do_not_connect_reset_0" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="jesd204b_subsystem_0.do_not_connect_reset_1" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="jesd204b_subsystem_0.do_not_connect_reset_2" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="core_pll.reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="reset_controller_0.reset_in0" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_controller_0.reset_out"
+   end="core_pll_reconfig.mgmt_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_controller_0.reset_out"
+   end="nios_subsystem.mgmt_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_controller_0.reset_out"
+   end="jesd204b_subsystem_0.mgmt_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_controller_0.reset_out"
+   end="spi_0.reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_controller_0.reset_out"
+   end="jesd204b_subsystem_0.reset_seq_reset_in0" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="jesd204b_subsystem_0.reset_seq_pll_reset"
+   end="core_pll.reset" />
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

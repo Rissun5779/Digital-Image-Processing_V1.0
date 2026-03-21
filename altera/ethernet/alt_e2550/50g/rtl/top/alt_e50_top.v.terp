@@ -1,0 +1,595 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//------------------------------------------------------------------------------
+// 50G Ethernet IP core top level with Avalon Stream Interface
+// If user want to use custom interface, they can choose alt_e50_cust
+// as top level
+//------------------------------------------------------------------------------
+`timescale 1ps/1ps
+module $qsys_assigned_name #(
+    parameter SIM_HURRY                 = 1'b0, // push through the reset delays
+    parameter SIM_SHORT_RST             = 1'b0, // push through the reset delays
+    parameter SIM_SHORT_AM              = 1'b0, // shorten the AM interval to lock faster
+    parameter SIM_SIMPLE_RATE           = 1'b0, // take a nearby rate to help PLL models
+    parameter SIM_EMULATE               = 1'b0,
+    parameter SYNOPT_DIV40              = 1'b0,
+    parameter SYNOPT_LINK_FAULT         = 1'b0,
+    parameter SYNOPT_READY_LATENCY      = 0,
+    parameter SYNOPT_RSFEC              = 0,
+    parameter SYNOPT_PREAMBLE_PASS      = 1'b0,
+    parameter SYNOPT_TXCRC_PASS         = 1'b0,
+    parameter SYNOPT_FLOW_CONTROL       = 0,
+    parameter SYNOPT_NUMPRIORITY        = 8,
+    parameter SYNOPT_MAC_STATS_COUNTERS = 1,
+    parameter SYNOPT_STRICT_SOP         = 0,
+    parameter TARGET_CHIP               = 5
+)(
+    input wire              clk_ref,
+    input wire              csr_rst_n,
+    input wire              tx_rst_n,
+    input wire              rx_rst_n,
+    input wire[1:0]         rx_serial,
+    output wire[1:0]        tx_serial,
+
+    input [1:0]             tx_serial_clk,
+    input                   tx_pll_locked,
+
+
+    input wire              clk_status,
+    input wire              reset_status,
+    input wire              status_write,
+    input wire              status_read,
+    input wire[15:0]        status_addr,
+    input wire[31:0]        status_writedata,
+    output reg [31:0]       status_readdata,
+    output wire             status_readdata_valid,
+    output reg              status_waitrequest,
+
+    output wire             clk_txmac,
+    input wire              l2_tx_startofpacket,
+    input wire              l2_tx_endofpacket,
+    input wire              l2_tx_valid,
+    output wire             l2_tx_ready,
+    input wire[3:0]         l2_tx_empty,
+    input wire[2*64-1:0]    l2_tx_data,
+
+    output wire             tx_lanes_stable,
+
+    output wire             rx_block_lock,
+    output wire             rx_am_lock,         // currently tied to zero internally
+    output wire             rx_pcs_ready,
+    output wire             clk_rxmac,
+    output wire[5:0]        l2_rx_error,
+    output wire             l2_rx_valid,
+    output wire             l2_rx_startofpacket,
+    output wire             l2_rx_endofpacket,
+    output wire[2*64-1:0]   l2_rx_data,
+    output wire[3:0]        l2_rx_empty,
+
+    output wire [39:0]      l2_rxstatus_data,
+    output wire             l2_rxstatus_valid,
+
+    output wire [39:0]      l2_txstatus_data,
+    output wire             l2_txstatus_valid,
+    output wire [6:0]       l2_txstatus_error,
+
+    input wire[63:0]        l2_tx_preamble,
+    output wire[63:0]       l2_rx_preamble,
+
+    output                  remote_fault_status,
+    output                  local_fault_status,
+    output                  unidirectional_en,
+    output                  link_fault_gen_en,
+
+    // Flow control interface
+    input  [SYNOPT_NUMPRIORITY-1:0] pause_insert_tx0,
+    input  [SYNOPT_NUMPRIORITY-1:0] pause_insert_tx1,
+    output [SYNOPT_NUMPRIORITY-1:0] pause_receive_rx,
+
+    //reconfiguration interface
+    input          reconfig_clk,
+    input          reconfig_reset,
+    input          reconfig_write,
+    input          reconfig_read,
+    input  [10:0]  reconfig_address,
+    input  [31:0]  reconfig_writedata,
+    output [31:0]  reconfig_readdata,
+    output         reconfig_waitrequest
+);
+
+    localparam SIM_EMULATE_INTERNAL = 1'b0;
+
+    localparam WORDS        = 2;
+    localparam WIDTH        = 64;
+    localparam TXEMPTYBITS  = 3;
+    localparam RXEMPTYBITS  = 4;
+    localparam RXERRWIDTH   = 6;
+    localparam RXSTATSWIDTH  = 41;
+
+    //Wire declaration
+    wire [WIDTH-1:0]         tx_mac_preamble;
+    wire [WORDS*WIDTH-1:0]   tx_mac_data;
+    wire [WORDS-1:0]         tx_mac_sop;
+    wire [WORDS-1:0]         tx_mac_eop;
+    wire [WORDS*3-1:0]       tx_mac_eop_empty;
+    wire [WORDS-1:0]         tx_mac_idle;
+    wire [WORDS-1:0]         tx_mac_error;
+    wire                     tx_mac_sclr;
+    wire                     tx_req;
+
+    wire [WIDTH-1:0]         tx_adapter_preamble;
+    wire [WORDS*WIDTH-1:0]   tx_adapter_data;
+    wire [WORDS-1:0]         tx_adapter_sop;
+    wire [WORDS-1:0]         tx_adapter_eop;
+    wire [WORDS*3-1:0]       tx_adapter_eop_empty;
+    wire [WORDS-1:0]         tx_adapter_idle;
+    wire [WORDS-1:0]         tx_adapter_error;
+    wire                     tx_adapter_ready;
+
+    wire [WIDTH-1:0]         tx_fc_preamble;
+    wire [WORDS*WIDTH-1:0]   tx_fc_data;
+    wire [WORDS-1:0]         tx_fc_sop;
+    wire [WORDS-1:0]         tx_fc_eop;
+    wire [WORDS*3-1:0]       tx_fc_eop_empty;
+    wire [WORDS-1:0]         tx_fc_idle;
+    wire [WORDS-1:0]         tx_fc_error;
+    wire                     tx_fc_ready;
+
+    wire [WORDS*WIDTH-1:0]   rx_mac_data;
+    wire [WORDS-1:0]         rx_mac_sop;
+    wire [WORDS-1:0]         rx_mac_idle;
+    wire [WORDS-1:0]         rx_mac_prb;
+    wire [WORDS-1:0]         rx_mac_eop;
+    wire [WORDS*3-1:0]       rx_mac_eop_empty;
+    wire [RXERRWIDTH-1:0]    rx_mac_error;
+    wire                     rx_mac_valid;
+    wire                     rx_mac_sclr;
+    wire                     tx_out_of_rst, rx_out_of_rst;
+    wire                     tx_clk_stable;
+    wire                     l2_tx_error=1'b0;
+    wire [15:0]              rx_inc_octetsOK;
+    wire                     rx_inc_octetsOK_valid;
+    wire [39:0]              rx_mac_stats;
+    wire                     rx_mac_statsvalid;
+    wire                     rx_crc_pt;
+
+    wire                     rx_fpll_locked;
+
+    wire                             fc_sel;
+    wire                             fc_pfc_sel;
+    wire [SYNOPT_NUMPRIORITY-1:0]    fc_ena;
+    wire [SYNOPT_NUMPRIORITY*16-1:0] fc_pause_quanta;
+    wire [SYNOPT_NUMPRIORITY*16-1:0] fc_hold_quanta;
+    wire [SYNOPT_NUMPRIORITY-1:0]    fc_2b_req_mode_sel;
+    wire [SYNOPT_NUMPRIORITY-1:0]    fc_2b_req_mode_csr_req_sel;
+    wire [SYNOPT_NUMPRIORITY-1:0]    fc_req0;
+    wire [SYNOPT_NUMPRIORITY-1:0]    fc_req1;
+    wire [47:0]                      fc_dest_addr;
+    wire [47:0]                      fc_src_addr;
+    wire                             fc_tx_off_en;
+    wire [SYNOPT_NUMPRIORITY-1:0]    fc_rx_pfc_en;
+    wire [47:0]                      fc_rx_dest_addr;
+
+    wire        tx_stats_aclr;
+    wire        rx_stats_aclr;
+
+    reg     sel_cust;
+    reg     sel_txstats;
+    reg     sel_rxstats;
+    reg     sel_other;
+    always @(*) begin
+        sel_cust    = 1'b0;
+        sel_txstats = 1'b0;
+        sel_rxstats = 1'b0;
+        sel_other   = 1'b0;
+        case (status_addr[15:8])
+            8'h03   :   sel_cust    = 1'b1;
+            8'h04   :   sel_cust    = 1'b1;
+            8'h05   :   sel_cust    = 1'b1;
+            8'h06   :   sel_cust    = 1'b1;
+            8'h07   :   sel_cust    = 1'b1;
+            8'h08   :   sel_txstats = 1'b1;
+            8'h09   :   sel_rxstats = 1'b1;
+            default :   sel_other   = 1'b1;
+        endcase
+    end
+
+    wire    read_cust       = sel_cust    && status_read;
+    wire    read_txstats    = sel_txstats && status_read;
+    wire    read_rxstats    = sel_rxstats && status_read;
+    wire    read_other      = sel_other   && status_read;
+
+    wire    write_cust      = sel_cust    && status_write;
+    wire    write_txstats   = sel_txstats && status_write;
+    wire    write_rxstats   = sel_rxstats && status_write;
+    wire    write_other     = sel_other   && status_write;
+
+    wire [31:0] cust_readdata;
+    wire [31:0] rxstat_readdata;
+    wire [31:0] txstat_readdata;
+
+    wire    cust_waitrequest;
+    wire    rxstat_wait_request;
+    wire    txstat_wait_request;
+
+    wire    cust_data_valid;
+    wire    txstat_data_valid;
+    wire    rxstat_data_valid;
+    reg     other_datavalid;
+
+    always @(*) begin
+        case (1'b1)
+            sel_cust    : status_waitrequest = cust_waitrequest;
+            sel_txstats : status_waitrequest = txstat_wait_request;
+            sel_rxstats : status_waitrequest = rxstat_wait_request;
+            default     : status_waitrequest = 1'b0;
+        endcase
+    end
+
+    always @(posedge clk_status) other_datavalid <= read_other;
+
+    // datavalid is OR or all data valids
+    assign status_readdata_valid = rxstat_data_valid || txstat_data_valid || cust_data_valid || other_datavalid;
+
+    // readdata is selected based on data valid signal
+    always @(*) begin
+        case (1'b1)
+            cust_data_valid     : status_readdata = cust_readdata;
+            txstat_data_valid   : status_readdata = txstat_readdata;
+            rxstat_data_valid   : status_readdata = rxstat_readdata;
+            default             : status_readdata = 32'hdeadc0de;
+        endcase
+    end
+
+    generate
+        if (SYNOPT_MAC_STATS_COUNTERS) begin
+            alt_e2550_stats_counters #(
+                .WIDTH  (64)
+            ) txstats (
+                .counter_aclr        (tx_stats_aclr),
+                .csr_reset           (~csr_rst_n),
+                .stats_clk           (clk_status),  // 100 MHz status clk
+                .addr                (status_addr[7:0]),
+                .readdata            (txstat_readdata),
+                .read                (read_txstats),
+                .write               (write_txstats),
+                .writedata           (status_writedata),
+                .data_valid          (txstat_data_valid),
+                .wait_request        (txstat_wait_request),
+                .mac_rst             (!tx_pll_locked),
+
+                .mac_clk             (clk_txmac),
+                .crc_error           (1'b0),
+                .undersized_frame    (1'b0),
+                .oversized_frame_in  (l2_txstatus_error[1]),
+                .payload_len_error   (l2_txstatus_error[2]),
+                .valid_in            (l2_txstatus_valid),
+                .status_data_vector  (l2_txstatus_data)
+            );
+
+            alt_e2550_stats_counters #(
+                .WIDTH  (64)
+            ) rxstats (
+                .counter_aclr        (rx_stats_aclr),
+                .csr_reset           (~csr_rst_n),
+                .stats_clk           (clk_status),  // 100 MHz status clk
+                .addr                (status_addr[7:0]),
+                .readdata            (rxstat_readdata),
+                .read                (read_rxstats),
+                .write               (write_rxstats),
+                .writedata           (status_writedata),
+                .data_valid          (rxstat_data_valid),
+                .wait_request        (rxstat_wait_request),
+                .mac_rst             (!rx_is_lockedtodata),
+
+                .mac_clk             (clk_rxmac),
+                .crc_error           (l2_rx_error[1]),
+                .undersized_frame    (l2_rx_error[2]),
+                .oversized_frame_in  (l2_rx_error[3]),
+                .payload_len_error   (l2_rx_error[4]),
+                .valid_in            (l2_rxstatus_valid),
+                .status_data_vector  (l2_rxstatus_data)
+            );
+        end else begin
+            reg txstat_data_valid_reg;
+            reg rxstat_data_valid_reg;
+            always @(posedge clk_status) begin
+                txstat_data_valid_reg   <= read_txstats;
+                rxstat_data_valid_reg   <= read_rxstats;
+            end
+            assign rxstat_data_valid    = rxstat_data_valid_reg;
+            assign txstat_data_valid    = txstat_data_valid_reg;
+            assign rxstat_readdata      = 32'd0;
+            assign txstat_readdata      = 32'd0;
+
+            assign rxstat_wait_request  = !(read_rxstats || write_rxstats);
+            assign txstat_wait_request  = !(read_txstats || write_txstats);
+        end
+    endgenerate
+
+    alt_e50_cust #(
+        .SIM_HURRY            (SIM_HURRY            ),      // push through the reset delays
+        .SIM_SIMPLE_RATE      (SIM_SIMPLE_RATE      ),      // take a nearby rate to help PLL models
+        .SIM_SHORT_AM         (SIM_SHORT_AM         ),      // shorten the AM interval to lock faster
+        .SIM_EMULATE          (SIM_EMULATE_INTERNAL),
+        .SYNOPT_DIV40         (SYNOPT_DIV40 ),
+        .SYNOPT_PREAMBLE_PASS (SYNOPT_PREAMBLE_PASS ),
+        .SYNOPT_TXCRC_PASS    (SYNOPT_TXCRC_PASS    ),
+        .SYNOPT_LINK_FAULT    (SYNOPT_LINK_FAULT    ),
+    .SYNOPT_STRICT_SOP      (SYNOPT_STRICT_SOP),
+        .SYNOPT_FLOW_CONTROL  (SYNOPT_FLOW_CONTROL  )
+    ) eth_custom (
+        // system resets
+        .csr_rst_n              (csr_rst_n),
+        .tx_rst_n               (tx_rst_n),
+        .rx_rst_n               (rx_rst_n),
+
+        //Sync clear to adaptor
+        .tx_mac_sclr            (tx_mac_sclr),
+        .rx_mac_sclr            (rx_mac_sclr),
+
+        //Stats mem clear signals
+        .tx_stats_aclr      (tx_stats_aclr),
+        .rx_stats_aclr      (rx_stats_aclr),
+
+        //Transceiver clock relationship
+        .tx_serial_clk          (tx_serial_clk),
+        .rx_cdr_refclk          (clk_ref),
+        .pll_locked             (tx_pll_locked),
+        .rx_fpll_locked         (rx_fpll_locked),
+
+        //Serial data
+        .rx_serial_data         (rx_serial),
+        .tx_serial_data         (tx_serial),
+
+        // tx data
+        .tx_clk(clk_txmac), // @ 390.625
+        .tx_clk_stable          (tx_clk_stable),
+
+        //tx interface with adaptor.
+        .tx_req                 (tx_req),
+        .tx_din_preamble        (tx_mac_preamble),
+        .tx_din                 (tx_mac_data), // read left to right
+        .tx_sop                 (tx_mac_sop),
+        .tx_eop                 (tx_mac_eop),
+        .tx_idle                (tx_mac_idle),
+        .tx_eeop                (2'b0),
+        .tx_mty                 (tx_mac_eop_empty), // number of empty bytes in eop word 0..7
+
+        // rx data with adaptor interface
+        .rx_clk                 (clk_rxmac), // @ 390.625 (remote)
+        .rx_valid               (rx_mac_valid),  // when 0 ignore all others
+        .rx_dout                (rx_mac_data), // read left to right
+        .rx_sop                 (rx_mac_sop),
+        .rx_eop                 (rx_mac_eop),
+        .rx_eeop(),
+        .rx_mty                 (rx_mac_eop_empty), // number of empty bytes in eop word 0..7
+        .rx_idle                (rx_mac_idle),
+        .rx_prb                 (rx_mac_prb),
+
+        .rx_block_lock          (rx_block_lock),
+        .rx_am_lock             (rx_am_lock),
+        .rx_pcs_ready           (rx_pcs_ready),
+        .rx_out_of_rst          (rx_out_of_rst),
+        .tx_out_of_rst          (tx_out_of_rst),
+
+        .rx_inc_octetsOK_valid  (rx_inc_octetsOK_valid),
+        .rx_inc_octetsOK        (rx_inc_octetsOK),
+
+        .rx_crc_pt              (rx_crc_pt),
+
+        // management port
+        .avmm_clk               (clk_status),
+        .avmm_clk_stable        (~reset_status),
+        .avmm_write             (write_cust),
+        .avmm_read              (read_cust),
+        .avmm_address           (status_addr),
+        .avmm_write_data        (status_writedata),
+        .avmm_read_data         (cust_readdata),
+        .avmm_read_data_valid   (cust_data_valid),
+        .avmm_waitrequest       (cust_waitrequest),
+
+        // Link Fault Status
+        .remote_fault_status    (remote_fault_status),
+        .local_fault_status     (local_fault_status ),
+        .unidirectional_en      (unidirectional_en ),
+        .link_fault_gen_en      (link_fault_gen_en ),
+
+        // stats vectors
+        .tx_error               (l2_txstatus_error),
+        .tx_stats               (l2_txstatus_data),
+        .tx_stats_valid         (l2_txstatus_valid),
+        .rx_error               (rx_mac_error),
+        .rx_stats               (rx_mac_stats),
+        .rx_stats_valid         (rx_mac_statsvalid),
+
+        //Flow Control
+        .fc_sel                 (fc_sel),
+        .fc_pfc_sel             (fc_pfc_sel),
+        .fc_ena                 (fc_ena),
+        .fc_pause_quanta        (fc_pause_quanta),
+        .fc_hold_quanta         (fc_hold_quanta),
+        .fc_2b_req_mode_sel     (fc_2b_req_mode_sel),
+        .fc_2b_req_mode_csr_req_sel(fc_2b_req_mode_csr_req_sel),
+        .fc_req0                (fc_req0),
+        .fc_req1                (fc_req1),
+        .fc_dest_addr           (fc_dest_addr),
+        .fc_src_addr            (fc_src_addr),
+        .fc_tx_off_en           (fc_tx_off_en),
+        .fc_rx_pfc_en           (fc_rx_pfc_en),
+        .fc_rx_dest_addr        (fc_rx_dest_addr),
+
+        // reconfiguration port
+        .reconfig_clk           (reconfig_clk),
+        .reconfig_reset         (reconfig_reset),
+        .reconfig_write         (reconfig_write),
+        .reconfig_read          (reconfig_read),
+        .reconfig_address       (reconfig_address),
+        .reconfig_write_data    (reconfig_writedata),
+        .reconfig_read_data     (reconfig_readdata),
+        .reconfig_waitrequest   (reconfig_waitrequest)
+    );
+
+    alt_e50_adapter #(
+        .SYNOPT_READY_LATENCY(SYNOPT_READY_LATENCY),
+        .SYNOPT_PREAMBLE_PASS(SYNOPT_PREAMBLE_PASS),
+        .WIDTH(WIDTH),
+        .WORDS(WORDS),
+        .TARGET_CHIP(TARGET_CHIP),
+        .RXERRWIDTH(RXERRWIDTH),
+        .RXSTATSWIDTH(RXSTATSWIDTH),
+        .SIM_EMULATE(SIM_EMULATE_INTERNAL)
+    ) ast (
+        // TX
+        .tx_mac_sclr(tx_mac_sclr),
+        .tx_clk_mac(clk_txmac),            // MAC + PCS clock -390.625Mhz
+
+        .rx_mac_sclr(rx_mac_sclr),
+        .rx_clk_mac(clk_rxmac),            // MAC + PCS clock -390.625Mhz
+        .tx_usr_preamble(l2_tx_preamble),
+        .tx_usr_data(l2_tx_data),
+        .tx_usr_eop_empty(l2_tx_empty),
+        .tx_usr_sop(l2_tx_startofpacket),
+        .tx_usr_eop(l2_tx_endofpacket),
+        .tx_usr_ready(l2_tx_ready),
+        .tx_usr_valid(l2_tx_valid),
+        .tx_usr_error(l2_tx_error),
+
+        .tx_mac_preamble(tx_adapter_preamble),
+        .tx_mac_data(tx_adapter_data),
+        .tx_mac_sop(tx_adapter_sop),
+        .tx_mac_eop(tx_adapter_eop),
+        .tx_mac_eop_empty(tx_adapter_eop_empty),
+        .tx_mac_idle(tx_adapter_idle),
+        .tx_mac_error(tx_adapter_error),
+        .tx_mac_ready(tx_adapter_ready),
+
+        .rx_usr_data(l2_rx_data),
+        .rx_usr_preamble(l2_rx_preamble),
+        .rx_usr_eop_empty(l2_rx_empty),
+        .rx_usr_sop(l2_rx_startofpacket),
+        .rx_usr_eop(l2_rx_endofpacket),
+        .rx_usr_valid(l2_rx_valid),
+        .rx_usr_error(l2_rx_error),
+        .rx_usr_stats({l2_rxstatus_data, l2_rxstatus_valid}),
+
+        .rx_mac_data(rx_mac_data),
+        .rx_mac_sop(rx_mac_sop),
+        .rx_mac_idle(rx_mac_idle),
+        .rx_mac_prb(rx_mac_prb),
+        .rx_mac_eop(rx_mac_eop),
+        .rx_mac_eop_empty(rx_mac_eop_empty),
+        .rx_mac_error(rx_mac_error),
+        .rx_mac_stats({rx_mac_stats, rx_mac_statsvalid}),
+        .rx_mac_valid(rx_mac_valid)
+    );
+
+    generate
+        if (SYNOPT_FLOW_CONTROL) begin: fc_enable
+            alt_e50_fc_top #(
+                .PREAMBLE_PASS        (SYNOPT_PREAMBLE_PASS),
+                .NUMPRIORITY          (SYNOPT_NUMPRIORITY),
+                .ALLOCATE_4B_CRC      (1),
+                .WORDS                (WORDS),
+                .WIDTH                (WIDTH),
+                .TXEMPTYBITS          (TXEMPTYBITS),
+                .RXEMPTYBITS          (RXEMPTYBITS),
+                .RXERRWIDTH           (RXERRWIDTH)
+            ) fc (
+                // Clock & Reset
+                .clk_tx                (clk_txmac),
+                .clk_rx                (clk_rxmac),
+                .reset_tx_n            (~tx_mac_sclr),
+                .reset_rx_n            (~rx_mac_sclr),
+
+                // Input from CSR
+                .cfg_enable            (fc_ena),
+                .cfg_pfc_sel           (fc_pfc_sel),
+                .cfg_pause_quanta      (fc_pause_quanta),
+                .cfg_holdoff_quanta    (fc_hold_quanta),
+                .cfg_2b_req_mode_sel   (fc_2b_req_mode_sel),
+                .cfg_2b_req_mode_csr_req_sel(fc_2b_req_mode_csr_req_sel),
+                .cfg_pause_req0        (fc_req0),
+                .cfg_pause_req1        (fc_req1),
+                .cfg_tx_saddr          (fc_src_addr),
+                .cfg_tx_daddr          (fc_dest_addr),
+                .cfg_rx_daddr          (fc_rx_dest_addr),
+                .cfg_tx_off_en         (fc_tx_off_en),
+                .cfg_rx_pfc_en         (fc_rx_pfc_en),
+                .cfg_rx_crc_pt         (rx_crc_pt),
+
+                .tx_in_ready           (tx_adapter_ready),
+                .tx_in_idle            (tx_adapter_idle),
+                .tx_in_sop             (tx_adapter_sop),
+                .tx_in_eop             (tx_adapter_eop),
+                .tx_in_error           (tx_adapter_error),
+                .tx_in_data            (tx_adapter_data),
+                .tx_in_empty           (tx_adapter_eop_empty),
+                .tx_in_preamble        (tx_adapter_preamble),
+
+                .tx_out_ready          (tx_fc_ready),
+                .tx_out_idle           (tx_fc_idle),
+                .tx_out_sop            (tx_fc_sop),
+                .tx_out_eop            (tx_fc_eop),
+                .tx_out_error          (tx_fc_error),
+                .tx_out_data           (tx_fc_data),
+                .tx_out_empty          (tx_fc_eop_empty),
+                .tx_out_preamble       (tx_fc_preamble),
+                .tx_out_pfc_frame      (),
+                .fc_sel                (fc_sel),
+
+                .rx_data_valid         (1'b1),
+                .tx_data_valid         (1'b1),
+
+                .pause_insert_tx0      (pause_insert_tx0),
+                .pause_insert_tx1      (pause_insert_tx1),
+                .pause_receive_rx      (pause_receive_rx),
+
+                .tx_xoff               (),
+                .tx_xon                (),
+
+                .rx_in_data            (l2_rx_data),
+                .rx_in_sop             (l2_rx_startofpacket),
+                .rx_in_eop             (l2_rx_endofpacket),
+                .rx_in_valid           (l2_rx_valid),
+                .rx_in_empty           (l2_rx_empty),
+                .rx_in_error           (l2_rx_error)
+            );
+            assign tx_mac_preamble = tx_fc_preamble;
+            assign tx_mac_data = tx_fc_data;
+            assign tx_mac_sop = tx_fc_sop;
+            assign tx_mac_eop = tx_fc_eop;
+            assign tx_mac_eop_empty = tx_fc_eop_empty;
+            assign tx_mac_idle = tx_fc_idle;
+            assign tx_mac_error = tx_fc_error;
+            assign tx_fc_ready = tx_req;
+        end else begin
+            assign tx_mac_preamble = tx_adapter_preamble;
+            assign tx_mac_data = tx_adapter_data;
+            assign tx_mac_sop = tx_adapter_sop;
+            assign tx_mac_eop = tx_adapter_eop;
+            assign tx_mac_eop_empty = tx_adapter_eop_empty;
+            assign tx_mac_idle = tx_adapter_idle;
+            assign tx_mac_error = tx_adapter_error;
+            assign tx_adapter_ready = tx_req;
+            assign pause_receive_rx = {SYNOPT_NUMPRIORITY{1'b0}};
+            assign fc_sel = 1'b0;
+        end
+    endgenerate
+
+    assign tx_lanes_stable = tx_out_of_rst;
+
+endmodule
+
+

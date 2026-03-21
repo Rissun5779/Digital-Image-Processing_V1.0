@@ -1,0 +1,13 @@
+[Basic Functions|Clocks; PLLs and Resets|PLL]
+Altera IOPLL v18.1= "%t" "%w/../common/lib/megawizard.pl" --wizard:altera_iopll  --early_gen:on --wizard_file:"%w/top/altera_iopll_hw.tcl" --family_parameter:device_family %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="Arria 10"   SUPPORT_CHECK="ON" /> 
+<LANGUAGES   AHDL="OFF"/>
+<PINPLAN SUPPORTED="ON"/>
+<ALIAS>Altera IOPLL</ALIAS>
+<ALIAS>Altera IOPLL v14.1</ALIAS>
+<ALIAS>Altera IOPLL v14.0</ALIAS>
+<ALIAS>Altera IOPLL v13.1</ALIAS>
+</INFO>

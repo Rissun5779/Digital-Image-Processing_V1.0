@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="Advanced_Clocking_Mode_6x12.5G"
+     kind="altera_sl3"
+     version="All"
+     description="">
+   <parameter name="SELECT_CUSTOM_DEVICE" value="0" />
+   <parameter name="gui_user_input" value="1" />
+   <parameter name="ENABLE_ED_FILESET_SYNTHESIS" value="1" />
+   <parameter name="STREAM" value="FULL" />
+   <parameter name="gui_xcvr_data_rate" value="12.5" />
+   <parameter name="SELECT_ED_FILESET" value="0" />
+   <parameter name="LANES" value="6" />
+   <parameter name="gui_pll_ref_freq" value="312.5" />
+   <parameter name="SELECT_TARGETED_DEVICE" value="1" />
+   <parameter name="meta_frame_length" value="200" />
+   <parameter name="gui_ed_option" value="Advanced_Clocking_Mode_6x12.5G" />
+   <parameter name="gui_clocking_mode" value="true" />
+   <parameter name="ENABLE_ED_FILESET_SIM" value="1" />
+  </preset>
+ </presets>
+</ip>

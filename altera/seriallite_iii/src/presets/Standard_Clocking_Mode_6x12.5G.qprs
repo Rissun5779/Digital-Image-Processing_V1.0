@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="Standard Clocking Mode 6x12.5G"
+     kind="seriallite_iii_a10"
+     version="All"
+     description="">
+   <parameter name="meta_frame_length" value="8191" />
+   <parameter name="BURST_GAP" value="2" />
+   <parameter name="gui_ecc_enable" value="false" />
+   <parameter name="lanes" value="6" />
+   <parameter name="gui_clocking_mode" value="false" />
+   <parameter name="gui_user_clock_frequency" value="177.556818" />
+   <parameter name="gui_xcvr_data_rate" value="12.500000" />
+   <parameter name="gui_pll_ref_freq" value="312.500000" />
+  </preset>
+ </presets>
+</ip>

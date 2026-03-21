@@ -1,0 +1,444 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ # lines started with @@ are treated as tcl code
+@@ set device_part      $param0
+@@ set ed_name          $param1
+@@ set targeted_board   $param2
+@@ set ed_variant       $param3
+@@ set vid_std          $param4
+@@ set base_device      $param5
+@@ set direction        $param6
+@@ set txclk_sw         $param7
+
+set_global_assignment -name FAMILY "Arria 10"
+set_global_assignment -name DEVICE $device_part
+set_global_assignment -name TOP_LEVEL_ENTITY $ed_name
+
+# Pin assignments
+@@ if { $targeted_board == 0 } {
+set_instance_assignment -name VIRTUAL_PIN ON -to cpu_resetn
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[2]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[3]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[4]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[5]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[6]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_g[7]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[0]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[2]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[3]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[4]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[5]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[6]
+set_instance_assignment -name VIRTUAL_PIN ON -to user_led_r[7]
+@@      if { $vid_std == "mr" } {
+set_instance_assignment -name VIRTUAL_PIN ON -to user_pb0
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p1
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p12
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_n12
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p14
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_n14
+set_instance_assignment -name VIRTUAL_PIN ON -to fmcb_la_tx_p15
+@@      } else {
+set_instance_assignment -name VIRTUAL_PIN ON -to sdi_clk148_down
+set_instance_assignment -name VIRTUAL_PIN ON -to sdi_clk148_up
+set_instance_assignment -name VIRTUAL_PIN ON -to sdi_mf0_bypass
+set_instance_assignment -name VIRTUAL_PIN ON -to sdi_mf1_auto_sleep
+set_instance_assignment -name VIRTUAL_PIN ON -to sdi_mf2_mute
+set_instance_assignment -name VIRTUAL_PIN ON -to sdi_tx_sd_hdn
+@@      }
+@@ } elseif { $targeted_board == 2 } {
+set_location_assignment YOUR_PIN_NUM -to clk_fpga_b2_p
+set_location_assignment YOUR_PIN_NUM -to "clk_fpga_b2_p(n)"
+set_location_assignment YOUR_PIN_NUM -to refclk_sdi_p
+set_location_assignment YOUR_PIN_NUM -to "refclk_sdi_p(n)"
+@@      if { !($txclk_sw == 0 || $vid_std == "mr") } {
+set_location_assignment YOUR_PIN_NUM -to refclk_sma_p
+set_location_assignment YOUR_PIN_NUM -to "refclk_sma_p(n)"
+@@      }
+set_location_assignment YOUR_PIN_NUM -to cpu_resetn
+set_location_assignment YOUR_PIN_NUM -to user_led_g[0]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[1]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[2]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[3]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[4]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[5]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[6]
+set_location_assignment YOUR_PIN_NUM -to user_led_g[7]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[0]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[1]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[2]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[3]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[4]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[5]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[6]
+set_location_assignment YOUR_PIN_NUM -to user_led_r[7]
+@@      if { $vid_std == "mr" } {
+set_location_assignment YOUR_PIN_NUM -to user_pb0
+set_location_assignment YOUR_PIN_NUM -to fmcb_gbtclk_m2c_p0
+set_location_assignment YOUR_PIN_NUM -to "fmcb_gbtclk_m2c_p0(n)"
+@@          if { $txclk_sw != 0 } {
+set_location_assignment YOUR_PIN_NUM -to refclk_fmcb_p
+set_location_assignment YOUR_PIN_NUM -to "refclk_fmcb_p(n)"
+@@          }
+set_location_assignment YOUR_PIN_NUM -to "fmcb_dp_m2c_p2(n)"
+set_location_assignment YOUR_PIN_NUM -to fmcb_dp_m2c_p2
+set_location_assignment YOUR_PIN_NUM -to "fmcb_dp_c2m_p0(n)"
+set_location_assignment YOUR_PIN_NUM -to fmcb_dp_c2m_p0
+set_location_assignment YOUR_PIN_NUM -to fmcb_la_tx_p1
+set_location_assignment YOUR_PIN_NUM -to fmcb_la_tx_p12
+set_location_assignment YOUR_PIN_NUM -to fmcb_la_tx_n12
+set_location_assignment YOUR_PIN_NUM -to fmcb_la_tx_p14
+set_location_assignment YOUR_PIN_NUM -to fmcb_la_tx_n14
+set_location_assignment YOUR_PIN_NUM -to fmcb_la_tx_p15
+@@      } else {
+@@          if { $ed_variant == 2 } {
+set_location_assignment YOUR_PIN_NUM -to pcie_ob_refclk_p
+set_location_assignment YOUR_PIN_NUM -to "pcie_ob_refclk_p(n)"
+@@          } elseif { $ed_variant == 1 } {
+set_location_assignment YOUR_PIN_NUM -to refclk_dp_p
+set_location_assignment YOUR_PIN_NUM -to "refclk_dp_p(n)"
+@@          }
+set_location_assignment YOUR_PIN_NUM -to sdi_clk148_down
+set_location_assignment YOUR_PIN_NUM -to sdi_clk148_up
+set_location_assignment YOUR_PIN_NUM -to sdi_tx_p
+set_location_assignment YOUR_PIN_NUM -to "sdi_tx_p(n)"
+set_location_assignment YOUR_PIN_NUM -to sdi_rx_p
+set_location_assignment YOUR_PIN_NUM -to "sdi_rx_p(n)"
+set_location_assignment YOUR_PIN_NUM -to sdi_mf0_bypass
+set_location_assignment YOUR_PIN_NUM -to sdi_mf1_auto_sleep
+set_location_assignment YOUR_PIN_NUM -to sdi_mf2_mute
+set_location_assignment YOUR_PIN_NUM -to sdi_tx_sd_hdn
+@@      }
+@@ } else {
+set_location_assignment PIN_AR36 -to clk_fpga_b2_p
+set_location_assignment PIN_AR37 -to "clk_fpga_b2_p(n)"
+set_location_assignment PIN_L37 -to refclk_sdi_p
+set_location_assignment PIN_L38 -to "refclk_sdi_p(n)"
+@@      if { !($txclk_sw == 0 || $vid_std == "mr") } {
+set_location_assignment PIN_N37 -to refclk_sma_p
+set_location_assignment PIN_N38 -to "refclk_sma_p(n)"
+@@      }
+set_location_assignment PIN_BD27 -to cpu_resetn
+set_location_assignment PIN_L28 -to user_led_g[0]
+set_location_assignment PIN_K26 -to user_led_g[1]
+set_location_assignment PIN_K25 -to user_led_g[2]
+set_location_assignment PIN_L25 -to user_led_g[3]
+set_location_assignment PIN_J24 -to user_led_g[4]
+set_location_assignment PIN_A19 -to user_led_g[5]
+set_location_assignment PIN_C18 -to user_led_g[6]
+set_location_assignment PIN_D18 -to user_led_g[7]
+set_location_assignment PIN_L27 -to user_led_r[0]
+set_location_assignment PIN_J26 -to user_led_r[1]
+set_location_assignment PIN_K24 -to user_led_r[2]
+set_location_assignment PIN_L23 -to user_led_r[3]
+set_location_assignment PIN_B20 -to user_led_r[4]
+set_location_assignment PIN_C19 -to user_led_r[5]
+set_location_assignment PIN_D19 -to user_led_r[6]
+set_location_assignment PIN_M23 -to user_led_r[7]
+@@      if { $vid_std == "mr" } {
+set_location_assignment PIN_T12 -to user_pb0
+set_location_assignment PIN_W8 -to fmcb_gbtclk_m2c_p0
+set_location_assignment PIN_W7 -to "fmcb_gbtclk_m2c_p0(n)"
+@@          if { $txclk_sw != 0 } {
+set_location_assignment PIN_AA8 -to refclk_fmcb_p
+set_location_assignment PIN_AA7 -to "refclk_fmcb_p(n)"
+@@          }
+set_location_assignment PIN_Y6 -to "fmcb_dp_m2c_p2(n)"
+set_location_assignment PIN_Y5 -to fmcb_dp_m2c_p2
+set_location_assignment PIN_AB2 -to "fmcb_dp_c2m_p0(n)"
+set_location_assignment PIN_AB1 -to fmcb_dp_c2m_p0
+set_location_assignment PIN_C15 -to fmcb_la_tx_p1
+set_location_assignment PIN_M13 -to fmcb_la_tx_p12
+set_location_assignment PIN_L14 -to fmcb_la_tx_n12
+set_location_assignment PIN_K20 -to fmcb_la_tx_p14
+set_location_assignment PIN_L19 -to fmcb_la_tx_n14
+set_location_assignment PIN_L20 -to fmcb_la_tx_p15
+@@      } else {
+@@          if { $ed_variant == 2 } {
+set_location_assignment PIN_AN37 -to pcie_ob_refclk_p
+set_location_assignment PIN_AN38 -to "pcie_ob_refclk_p(n)"
+@@          } elseif { $ed_variant == 1 } {
+set_location_assignment PIN_AC37 -to refclk_dp_p
+set_location_assignment PIN_AC38 -to "refclk_dp_p(n)"
+@@          }
+set_location_assignment PIN_E21 -to sdi_clk148_down
+set_location_assignment PIN_E22 -to sdi_clk148_up
+set_location_assignment PIN_D44 -to sdi_tx_p
+set_location_assignment PIN_D43 -to "sdi_tx_p(n)"
+set_location_assignment PIN_H40 -to sdi_rx_p
+set_location_assignment PIN_H39 -to "sdi_rx_p(n)"
+set_location_assignment PIN_AW32 -to sdi_mf0_bypass
+set_location_assignment PIN_AY32 -to sdi_mf1_auto_sleep
+set_location_assignment PIN_AY35 -to sdi_mf2_mute
+set_location_assignment PIN_AW34 -to sdi_tx_sd_hdn
+@@      }
+@@ }
+
+# IO standards
+set_instance_assignment -name IO_STANDARD LVDS -to clk_fpga_b2_p
+set_instance_assignment -name IO_STANDARD LVDS -to "clk_fpga_b2_p(n)"
+set_instance_assignment -name IO_STANDARD LVDS -to refclk_sdi_p
+set_instance_assignment -name IO_STANDARD LVDS -to "refclk_sdi_p(n)"
+@@  if { !($txclk_sw == 0 || $vid_std == "mr") } {
+set_instance_assignment -name IO_STANDARD LVDS -to refclk_sma_p
+set_instance_assignment -name IO_STANDARD LVDS -to "refclk_sma_p(n)"
+@@  }
+@@ if { $vid_std == "mr" } {
+set_instance_assignment -name IO_STANDARD LVDS -to fmcb_gbtclk_m2c_p0
+set_instance_assignment -name IO_STANDARD LVDS -to "fmcb_gbtclk_m2c_p0(n)"
+@@      if { $txclk_sw != 0 } {
+set_instance_assignment -name IO_STANDARD LVDS -to refclk_fmcb_p
+set_instance_assignment -name IO_STANDARD LVDS -to "refclk_fmcb_p(n)"
+@@      }
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_m2c_p2
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to fmcb_dp_c2m_p0
+@@ } else {
+@@      if { $ed_variant == 2 } {
+set_instance_assignment -name IO_STANDARD LVDS -to pcie_ob_refclk_p
+set_instance_assignment -name IO_STANDARD LVDS -to "pcie_ob_refclk_p(n)"
+@@      } elseif { $ed_variant == 1 } {
+set_instance_assignment -name IO_STANDARD LVDS -to refclk_dp_p
+set_instance_assignment -name IO_STANDARD LVDS -to "refclk_dp_p(n)"
+@@      }
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to sdi_tx_p
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to sdi_rx_p
+@@ }
+@@ if { $targeted_board != 0 } {
+set_instance_assignment -name IO_STANDARD "1.8 V" -to cpu_resetn
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_g[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_led_r[7]
+@@      if { $vid_std == "mr" } {
+set_instance_assignment -name IO_STANDARD "1.8 V" -to user_pb0
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p1
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p12
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_n12
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p14
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_n14
+set_instance_assignment -name IO_STANDARD "1.8 V" -to fmcb_la_tx_p15
+@@      } else {
+set_instance_assignment -name IO_STANDARD "1.8 V" -to sdi_clk148_up
+set_instance_assignment -name IO_STANDARD "1.8 V" -to sdi_clk148_down
+set_instance_assignment -name IO_STANDARD "1.8 V" -to sdi_mf0_bypass
+set_instance_assignment -name IO_STANDARD "1.8 V" -to sdi_mf1_auto_sleep
+set_instance_assignment -name IO_STANDARD "1.8 V" -to sdi_mf2_mute
+set_instance_assignment -name IO_STANDARD "1.8 V" -to sdi_tx_sd_hdn
+@@      }
+
+# Current strength and slew rate
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_g[7]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to user_led_r[7]
+@@      if { $vid_std != "mr" } {
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to sdi_clk148_up
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to sdi_clk148_down
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to sdi_mf0_bypass
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to sdi_mf1_auto_sleep
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to sdi_mf2_mute
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to sdi_tx_sd_hdn
+@@      } else {
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_p12
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_n12
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_p14
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_n14
+set_instance_assignment -name CURRENT_STRENGTH_NEW DEFAULT -to fmcb_la_tx_p15
+@@      }
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[0]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[1]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[2]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[3]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[4]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[5]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[6]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_g[7]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[0]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[1]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[2]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[3]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[4]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[5]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[6]
+set_instance_assignment -name SLEW_RATE 1 -to user_led_r[7]
+@@      if { $vid_std != "mr" } {
+set_instance_assignment -name SLEW_RATE 1 -to sdi_clk148_up
+set_instance_assignment -name SLEW_RATE 1 -to sdi_clk148_down
+set_instance_assignment -name SLEW_RATE 1 -to sdi_mf0_bypass
+set_instance_assignment -name SLEW_RATE 1 -to sdi_mf1_auto_sleep
+set_instance_assignment -name SLEW_RATE 1 -to sdi_mf2_mute
+set_instance_assignment -name SLEW_RATE 1 -to sdi_tx_sd_hdn
+@@      } else {
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_p12
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_n12
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_p14
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_n14
+set_instance_assignment -name SLEW_RATE 1 -to fmcb_la_tx_p15
+@@      }
+@@ }
+
+# Pin Input Termination
+set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to clk_fpga_b2_p
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to refclk_sdi_p
+@@  if { !($txclk_sw == 0 || $vid_std == "mr") } {
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to refclk_sma_p
+@@  }
+@@ if { $ed_variant == 2 } {
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to pcie_ob_refclk_p
+@@ } elseif { $ed_variant == 1 && $vid_std != "mr" } {
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to refclk_dp_p
+@@ }
+@@ if { $vid_std == "mr" } {
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to fmcb_gbtclk_m2c_p0
+@@      if { $txclk_sw != 0 } {
+set_instance_assignment -name XCVR_A10_REFCLK_TERM_TRISTATE TRISTATE_OFF -to refclk_fmcb_p
+@@      }
+@@ }
+
+
+# Transceiver analog settings
+@@ if { $vid_std == "mr" } {
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_m2c_p2
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to fmcb_dp_c2m_p0
+set_instance_assignment -name XCVR_A10_RX_LINK SR -to fmcb_dp_m2c_p2
+set_instance_assignment -name XCVR_A10_TX_LINK SR -to fmcb_dp_c2m_p0
+@@ } else {
+set_instance_assignment -name XCVR_A10_TX_LINK SR -to sdi_tx_p
+set_instance_assignment -name XCVR_A10_RX_LINK SR -to sdi_rx_p
+@@      if { $base_device == "NIGHTFURY5ES" } {
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to sdi_tx_p
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to sdi_rx_p
+@@      } else {
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to sdi_tx_p
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to sdi_rx_p
+@@      }
+
+@@      if { $direction != "du" } {
+# Simplex channel merging
+set_instance_assignment -name XCVR_RECONFIG_GROUP 1 -to sdi_tx_p
+set_instance_assignment -name XCVR_RECONFIG_GROUP 1 -to sdi_rx_p
+@@      }
+
+@@ }
+
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON
+
+# File location
+@@ append top_lvl_sdc $ed_name ".sdc"
+@@ append top_lvl_v $ed_name ".v"
+@@ set acds_ver 18.1
+@@ set split_array [split $acds_ver "."]
+@@ set qii_ver [concat [lindex $split_array 0][lindex $split_array 1]]
+set_global_assignment -name SDC_FILE ../rtl/$top_lvl_sdc
+set_global_assignment -name VERILOG_FILE ../rtl/$top_lvl_v
+set_global_assignment -name VERILOG_FILE ../rtl/clock_heartbeat.v
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/a10_reconfig_arbiter.sv
+@@      }
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/edge_detector.sv
+@@ if { $ed_variant == 3 } {
+set_global_assignment -name VERILOG_FILE        ../rtl/vid_pattgen/sdi_ii_colorbar_gen.v
+set_global_assignment -name VERILOG_FILE        ../rtl/vid_pattgen/sdi_ii_ed_vid_pattgen.v
+set_global_assignment -name VERILOG_FILE        ../rtl/vid_pattgen/sdi_ii_makeframe.v
+set_global_assignment -name VERILOG_FILE        ../rtl/vid_pattgen/sdi_ii_patho_gen.v
+set_global_assignment -name QSYS_FILE           ../rtl/vid_pattgen/pattgen_ctrl.qsys
+set_global_assignment -name SDC_FILE            ../rtl/vid_pattgen/jtag.sdc
+@@ } else {
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/loopback_top.v
+@@      if { $direction == "du" } {
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/fifo/sdi_ii_ed_loopback.v -library sdi_du_sys_sdi_ii_rx_phy_mgmt_$qii_ver
+@@      } else {
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/fifo/sdi_ii_ed_loopback.v -library sdi_rx_sys_sdi_ii_rx_phy_mgmt_$qii_ver
+@@      }
+set_global_assignment -name SDC_FILE            ../rtl/loopback/fifo/sdi_ii_ed_loopback.sdc
+@@ }
+@@ if { $direction == "du" } {
+set_global_assignment -name VERILOG_FILE        ../rtl/du/du_top.v -library sdi_du_sys_sdi_ii_rx_phy_mgmt_$qii_ver
+set_global_assignment -name QSYS_FILE           ../rtl/du/sdi_du_sys.qsys
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+set_global_assignment -name QSYS_FILE           ../rtl/du/sdi_rx_phy.qsys
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/du/rcfg_sdi_cdr.sv   -library sdi_rx_phy_altera_xcvr_native_a10_$qii_ver
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/du/sdi_ii_rx_rcfg_a10.sv
+@@      }
+set_global_assignment -name QSYS_FILE           ../rtl/du/tx_pll.qsys
+@@      if { $txclk_sw == 1 } {
+set_global_assignment -name QSYS_FILE           ../rtl/du/tx_pll_alt.qsys
+@@      }
+@@      if { $txclk_sw != 0 } {
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/du/sdi_ii_tx_rcfg_a10.sv
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/du/rcfg_refclk_sw.sv
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/du/rcfg_pll_sw.sv
+@@      }
+@@ } else {
+set_global_assignment -name VERILOG_FILE        ../rtl/rx/rx_top.v -library sdi_rx_sys_sdi_ii_rx_phy_mgmt_$qii_ver
+set_global_assignment -name QSYS_FILE           ../rtl/rx/sdi_rx_sys.qsys
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/rx/rcfg_sdi_cdr.sv   -library sdi_rx_sys_altera_xcvr_native_a10_$qii_ver
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/rx/sdi_ii_rx_rcfg_a10.sv
+@@      }
+set_global_assignment -name VERILOG_FILE        ../rtl/tx/tx_top.v -library sdi_rx_sys_sdi_ii_rx_phy_mgmt_$qii_ver
+set_global_assignment -name QSYS_FILE           ../rtl/tx/sdi_tx_sys.qsys
+set_global_assignment -name QSYS_FILE           ../rtl/tx/tx_pll.qsys
+@@      if { $txclk_sw == 1 } {
+set_global_assignment -name QSYS_FILE           ../rtl/tx/tx_pll_alt.qsys
+@@      }
+@@      if { $txclk_sw != 0 } {
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/tx/sdi_ii_tx_rcfg_a10.sv
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/tx/rcfg_refclk_sw.sv
+set_global_assignment -name SYSTEMVERILOG_FILE  ../rtl/tx/rcfg_pll_sw.sv
+@@      }
+@@ }
+@@ if { $vid_std == "mr" } {
+set_global_assignment -name QSYS_FILE           ../rtl/clk_ctrl.qsys
+@@ } elseif { $ed_variant == 1 } {
+set_global_assignment -name QSYS_FILE           ../rtl/pll_148.qsys
+@@ }
+@@ if { $ed_variant == 2 } {
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/reclock/sdi_reclock.v
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/reclock/pid_controller.v
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/pfd/clock_crossing.v
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/pfd/pfd.v
+set_global_assignment -name SDC_FILE            ../rtl/loopback/pfd/pfd.sdc
+@@ } elseif { $ed_variant == 1 && $vid_std != "mr" } {
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/pfd/clock_crossing.v
+set_global_assignment -name VERILOG_FILE        ../rtl/loopback/pfd/pfd.v
+set_global_assignment -name SDC_FILE            ../rtl/loopback/pfd/pfd.sdc
+@@ }

@@ -1,0 +1,26 @@
+tab: General,,
+,group: Multiplier Configuration,
+,,param: GUI_USE_MULT
+,group: Data Port Widths,
+,,param: GUI_WIDTH_A
+,,param: GUI_WIDTH_B
+,group: How should the width of the 'result' output be determined?,
+,,param: GUI_AUTO_SIZE_RESULT
+,,param: GUI_WIDTH_P
+,,param: GUI_RESULT_WIDTH
+tab: General 2,,
+,group: Datab Input,
+,,param: GUI_B_IS_CONSTANT
+,,param: GUI_CONSTANT_B
+,group: Multiplication Type,
+,,param: GUI_SIGNED_MULT
+,group: Implementation Style,
+,,param: GUI_IMPLEMENTATION
+tab: Pipelining,,
+,group: Do you want to pipeline the function?,
+,,param: GUI_PIPELINE
+,,param: GUI_LATENCY
+,,param: GUI_CLEAR_TYPE
+,,param: GUI_CLKEN
+,group: What type of optimization do you want?,
+,,param: GUI_OPTIMIZE

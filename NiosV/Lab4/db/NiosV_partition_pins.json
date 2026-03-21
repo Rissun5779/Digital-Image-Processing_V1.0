@@ -4,6 +4,10 @@
 			"name" : "Top",
 			"pins" : [
 				{
+					"name" : "sdram_wire_dqm[0]",
+					"strict" : false
+				},
+				{
 					"name" : "sdram_wire_cas_n",
 					"strict" : false
 				},
@@ -180,6 +184,10 @@
 					"strict" : false
 				},
 				{
+					"name" : "sdram_wire_addr[12]",
+					"strict" : false
+				},
+				{
 					"name" : "sdram_wire_addr[11]",
 					"strict" : false
 				},
@@ -237,10 +245,6 @@
 				},
 				{
 					"name" : "sdram_wire_dqm[1]",
-					"strict" : false
-				},
-				{
-					"name" : "sdram_wire_dqm[0]",
 					"strict" : false
 				},
 				{

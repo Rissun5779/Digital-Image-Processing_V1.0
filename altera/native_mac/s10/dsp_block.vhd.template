@@ -1,0 +1,185 @@
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: fourteennm_mac.vhd.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to vhdl file
+@@ #
+@@ # Usage: IP core independent, general vhdl format output for ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+@@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+LIBRARY fourteennm;
+USE fourteennm.fourteennm_components.all;
+
+ENTITY ${output_name} IS
+    PORT
+    (
+@@
+@@  #----- write entity port list -----#
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width widthL} $module_port_list {
+@@      set delim ";"
+@@      set logic_string "STD_LOGIC"
+@@
+@@      if {$port eq $port_last} {
+@@          set delim ""
+@@      }
+@@		if {$port eq "clk"} {
+@@           set width_string "\[2:0\]"
+@@		}
+@@
+@@      if {$width != -1} {
+@@          set logic_string "${logic_string}_VECTOR ([expr {$width+$widthL-1}] DOWNTO $widthL)"
+@@      }
+@@
+        $port       : $direction $logic_string $delim
+@@
+@@  }
+@@
+    );	
+END ${output_name};
+
+ARCHITECTURE SYN OF ${output_name} IS
+
+@@
+@@  #----- write eq signal list -----#
+@@  foreach {name width widthL} $sub_wire_list {
+@@      set logic_string "STD_LOGIC"
+@@
+@@      if {$width != -1} {
+@@          set logic_string "${logic_string}_VECTOR ([expr {$width+$widthL-1}] DOWNTO $widthL)"
+@@      }
+@@
+    SIGNAL $name    : $logic_string ;
+@@
+@@  }
+@@
+
+@@
+@@  #----- write architecture component map information -----#
+@@
+BEGIN
+@@
+@@  foreach {dest src width widthL} $wire_list {
+@@      set width_string ""
+@@
+@@      if {$width != -1} {
+@@          set width_string "([expr {$width+$widthL-1}] DOWNTO $widthL)"
+@@      }
+@@
+    $dest     <= $src$width_string;
+@@
+@@  }
+
+@@
+
+@@
+    ${ip_name}_component : $ip_name
+    GENERIC MAP (
+@@foreach cur_clock $hdl_clocks {
+@@set val [subst $${cur_clock}_derived]
+			$cur_clock => "${val}",
+@@}
+@@
+@@	set delim ","
+@@ # -------- For preadder subtract ----------#
+@@	foreach {name str value} $preadder_subtract_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim 
+@@	}
+@@ # -------- For delay_scanout ----------#
+@@	set delim ","
+@@	foreach {name str value} $delay_scan_out_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim
+@@	}
+@@ # -------- For use_scanin ----------#
+@@	set delim ","
+@@	foreach {name str value} $scan_in_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim 
+@@	}
+@@ # -------- For operand_source ----------#
+@@	set delim ","
+@@	foreach {name str value} $operand_source_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim
+@@	}
+@@ # -------- For signed/Unsigned ----------#
+@@	set delim ","
+@@	foreach {name str value} $signed_unsigned_to_true_false_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim  
+@@	}
+@@ # -------- For use_chainadder ----------#
+@@	set delim ","
+@@	foreach {name str value} $enable_chainin_to_use_chainadder {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim 
+@@	}
+@@ # -------- For double_accum ----------#
+@@	set delim ","
+@@	foreach {name str value} $enable_parameter_enable_double_accum {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim 
+@@	}
+@@ # -------- For operation_mode ----------#
+@@	set delim ","
+@@	foreach {name str value} $operation_mode_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+			$name  => $value$delim 
+@@	}
+@@  set name_last [lindex $params_list end-2]
+@@  foreach {name str value} $params_list  {
+@@      set delim ","
+@@
+@@      if {$str eq "STRING"} {
+@@          set value "\"$value\""
+@@      }
+@@
+@@      if {$name eq $name_last} {
+@@          set delim ""
+@@      } 
+@@
+            $name  => $value$delim
+@@
+@@  }
+@@
+    )
+    PORT MAP (
+@@
+@@  set port_last [lindex $port_map_list end-4]
+@@  foreach {dest src direction width widthL} $port_map_list {
+@@      set delim ","
+@@
+@@      if {$dest eq $port_last} {
+@@          set delim ""
+@@      }
+@@
+        $dest => $src$delim
+@@
+@@  }
+@@
+    );	
+
+END SYN;

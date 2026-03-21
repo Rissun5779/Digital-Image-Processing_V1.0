@@ -1,0 +1,373 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1ps/1ps
+
+ module $qsys_assigned_name #(
+        parameter SIM_HURRY                 = 1'b0, // push through the reset delays
+        parameter SIM_SIMPLE_RATE           = 1'b0, // take a nearby rate to help PLL models
+        parameter SIM_SHORT_RST             = 1'b0,
+        parameter SIM_SHORT_AM              = 1'b0,
+        parameter SYNOPT_DIV40              = 1'b0,
+        parameter SYNOPT_PREAMBLE_PASS      = 1'b0,
+        parameter SYNOPT_TXCRC_PASS         = 1'b0,
+        parameter SIM_EMULATE               = 1'b0,
+        parameter SYNOPT_LINK_FAULT         = 1'b0,
+        parameter SYNOPT_READY_LATENCY      = 0,
+        parameter SYNOPT_RSFEC              = 0,
+        parameter SYNOPT_FLOW_CONTROL       = 0,
+        parameter SYNOPT_NUMPRIORITY        = 8,
+        parameter SYNOPT_MAC_STATS_COUNTERS = 1,
+        parameter SYNOPT_TSTAMP_FP_WIDTH    = 4,
+        parameter SYNOPT_TIME_OF_DAY_FORMAT = 2,
+        parameter SYNOPT_ENABLE_PTP         = 1'b0,
+        parameter SYNOPT_STRICT_SOP         = 0,
+        parameter TARGET_CHIP               = 5
+       )(
+        input  clk_ref,
+        input  csr_rst_n,
+        input  tx_rst_n,
+        input  rx_rst_n,
+        input  rx_serial,
+        output tx_serial,
+
+        input  tx_serial_clk,
+        input  tx_pll_locked,
+
+        input  clk_status,
+        input  reset_status,
+        input  status_write,
+        input  status_read,
+        input  [15:0] status_addr,
+        input  [31:0] status_writedata,
+        output [31:0] status_readdata,
+        output status_readdata_valid,
+        output status_waitrequest,
+
+        output clk_txmac,
+        input  l1_tx_startofpacket,
+        input  l1_tx_endofpacket,
+        input  l1_tx_valid,
+        output l1_tx_ready,
+        input  l1_tx_error,
+        input  [2:0]    l1_tx_empty,
+        input  [63:0]   l1_tx_data,
+        output          tx_lanes_stable,
+
+        output             rx_block_lock,
+        output             rx_am_lock,
+        output rx_pcs_ready,         
+        output clk_rxmac,
+        output [5:0] l1_rx_error,
+        output l1_rx_valid,
+        output l1_rx_startofpacket,
+        output l1_rx_endofpacket,
+        output [63:0]  l1_rx_data,
+        output [2:0] l1_rx_empty,
+
+        output [39:0]      l1_rxstatus_data,
+        output             l1_rxstatus_valid,
+
+        output [39:0]      l1_txstatus_data,
+        output             l1_txstatus_valid,
+        output [6:0]       l1_txstatus_error,
+
+        output             remote_fault_status,
+        output             local_fault_status,
+        output             unidirectional_en,
+        output             link_fault_gen_en, 
+
+        // Flow control interface
+        input  [SYNOPT_NUMPRIORITY-1:0] pause_insert_tx0,
+        input  [SYNOPT_NUMPRIORITY-1:0] pause_insert_tx1,
+        output [SYNOPT_NUMPRIORITY-1:0] pause_receive_rx,
+
+        //PTP interface
+        input [95:0]                        tx_time_of_day_96b_data,
+        input [63:0]                        tx_time_of_day_64b_data,
+        input [95:0]                        rx_time_of_day_96b_data,
+        input [63:0]                        rx_time_of_day_64b_data,
+        input                               tx_egress_timestamp_request_valid,
+        input [SYNOPT_TSTAMP_FP_WIDTH-1:0]  tx_egress_timestamp_request_fingerprint,
+        input                               tx_etstamp_ins_ctrl_timestamp_insert,
+        input                               tx_etstamp_ins_ctrl_timestamp_format,
+        input                               tx_etstamp_ins_ctrl_residence_time_update,
+        input [95:0]                        tx_etstamp_ins_ctrl_ingress_timestamp_96b,
+        input [63:0]                        tx_etstamp_ins_ctrl_ingress_timestamp_64b,
+        input                               tx_etstamp_ins_ctrl_residence_time_calc_format,
+        input                               tx_etstamp_ins_ctrl_checksum_zero,
+        input                               tx_etstamp_ins_ctrl_checksum_correct,
+        input [15:0]                        tx_etstamp_ins_ctrl_offset_timestamp,
+        input [15:0]                        tx_etstamp_ins_ctrl_offset_correction_field,
+        input [15:0]                        tx_etstamp_ins_ctrl_offset_checksum_field,
+        input [15:0]                        tx_etstamp_ins_ctrl_offset_checksum_correction,
+        input                               tx_egress_asymmetry_update,
+        output                              tx_egress_timestamp_96b_valid,
+        output [95:0]                       tx_egress_timestamp_96b_data,
+        output [SYNOPT_TSTAMP_FP_WIDTH-1:0] tx_egress_timestamp_96b_fingerprint,
+        output                              tx_egress_timestamp_64b_valid,
+        output [63:0]                       tx_egress_timestamp_64b_data,
+        output [SYNOPT_TSTAMP_FP_WIDTH-1:0] tx_egress_timestamp_64b_fingerprint,
+        output                              rx_ingress_timestamp_96b_valid,
+        output [95:0]                       rx_ingress_timestamp_96b_data,
+        output                              rx_ingress_timestamp_64b_valid,
+        output [63:0]                       rx_ingress_timestamp_64b_data,
+
+        //reconfiguration interface
+        input          reconfig_clk,
+        input          reconfig_reset,
+        input          reconfig_write,
+        input          reconfig_read,
+        input  [9:0]   reconfig_address,
+        input  [31:0]  reconfig_writedata,
+        output [31:0]  reconfig_readdata,
+        output         reconfig_waitrequest
+  );
+
+localparam SIM_EMULATE_INTERNAL = 1'b0;
+
+localparam WORDS        = 1;
+localparam WIDTH        = 64;
+localparam RXERRWIDTH   = 6;
+localparam RXSTATUSWIDTH  = 3;
+
+wire rx_seriallpbken;
+
+wire [65:0] tx_parallel_data;
+wire [65:0] rx_parallel_data;
+
+wire rx_bitslip;
+wire [7:0] rwire0;
+wire rx_empty;
+wire rx_pempty;
+wire rx_pfull;
+wire rx_full;
+wire tx_pempty;
+wire tx_empty;
+wire tx_pfull;
+wire tx_full;
+wire tx_clk;
+wire rx_clk;
+wire rx_is_lockedtodata;
+wire rx_set_locktoref;
+wire rx_set_locktodata;
+wire tvalid;
+
+wire rx_digitalreset;
+wire tx_digitalreset;
+wire phy_reset;
+
+wire [21:0] tx_path_delay_data;
+wire [21:0] rx_path_delay_data;
+
+// Instantiate core (no PHY or PHY reset controller)
+alt_e25_core #(
+    .SIM_HURRY(SIM_HURRY), // push through the reset delays
+    .SIM_SIMPLE_RATE(SIM_SIMPLE_RATE), // take a nearby rate to help PLL models
+    .SYNOPT_PREAMBLE_PASS(SYNOPT_PREAMBLE_PASS),
+    .SYNOPT_TXCRC_PASS(SYNOPT_TXCRC_PASS),
+    .SYNOPT_RSFEC(SYNOPT_RSFEC),
+    .SIM_SHORT_AM(SIM_SHORT_AM),
+    .SYNOPT_LINK_FAULT(SYNOPT_LINK_FAULT),            
+    .SYNOPT_FLOW_CONTROL(SYNOPT_FLOW_CONTROL),            
+    .SYNOPT_NUMPRIORITY(SYNOPT_NUMPRIORITY),            
+    .SYNOPT_READY_LATENCY(SYNOPT_READY_LATENCY),            
+    .SYNOPT_MAC_STATS_COUNTERS(SYNOPT_MAC_STATS_COUNTERS),
+    .SYNOPT_TSTAMP_FP_WIDTH(SYNOPT_TSTAMP_FP_WIDTH),
+    .SYNOPT_TIME_OF_DAY_FORMAT(SYNOPT_TIME_OF_DAY_FORMAT),
+    .SYNOPT_ENABLE_PTP(SYNOPT_ENABLE_PTP),    
+    .SIM_EMULATE(SIM_EMULATE_INTERNAL),
+    .SYNOPT_STRICT_SOP (SYNOPT_STRICT_SOP), //added back SFD check change for 25G
+    .TARGET_CHIP(TARGET_CHIP)    
+) core (
+	.clk_ref(clk_ref),
+	.clk_rxmac(clk_rxmac),
+	.clk_status(clk_status),
+	.clk_txmac(clk_txmac),
+	.csr_rst_n(csr_rst_n),
+	.phy_reset(phy_reset),
+	.l1_rx_data(l1_rx_data),
+	.l1_rx_empty(l1_rx_empty),
+	.l1_rx_endofpacket(l1_rx_endofpacket),
+	.l1_rx_error(l1_rx_error),
+	.l1_rx_startofpacket(l1_rx_startofpacket),
+	.l1_rx_valid(l1_rx_valid),
+	.l1_rxstatus_data(l1_rxstatus_data),
+	.l1_rxstatus_valid(l1_rxstatus_valid),
+	.l1_tx_data(l1_tx_data),
+	.l1_tx_empty(l1_tx_empty),
+	.l1_tx_endofpacket(l1_tx_endofpacket),
+	.l1_tx_error(l1_tx_error),
+	.l1_tx_ready(l1_tx_ready),
+	.l1_tx_startofpacket(l1_tx_startofpacket),
+	.l1_tx_valid(l1_tx_valid),
+	.l1_txstatus_data(l1_txstatus_data),
+	.l1_txstatus_error(l1_txstatus_error),
+	.l1_txstatus_valid(l1_txstatus_valid),
+	.link_fault_gen_en(link_fault_gen_en),
+	.local_fault_status(local_fault_status),
+	.pause_insert_tx0(pause_insert_tx0),
+	.pause_insert_tx1(pause_insert_tx1),
+	.pause_receive_rx(pause_receive_rx),
+	.remote_fault_status(remote_fault_status),
+	.reset_status(reset_status),
+	.rx_am_lock(rx_am_lock),
+	.rx_bitslip(rx_bitslip),
+	.rx_block_lock(rx_block_lock),
+	.rx_digitalreset(rx_digitalreset),
+	.rx_empty(rx_empty),
+	.rx_full(rx_full),
+	.rx_is_lockedtodata(rx_is_lockedtodata),
+	.rx_parallel_data(rx_parallel_data),
+	.rx_pcs_ready(rx_pcs_ready),
+	.rx_pempty(rx_pempty),
+	.rx_pfull(rx_pfull),
+	.rx_rst_n(rx_rst_n),
+	.rx_seriallpbken(rx_seriallpbken),
+	.rx_set_locktodata(rx_set_locktodata),
+	.rx_set_locktoref(rx_set_locktoref),
+	.status_addr(status_addr),
+	.status_read(status_read),
+	.status_readdata(status_readdata),
+	.status_readdata_valid(status_readdata_valid),
+	.status_waitrequest(status_waitrequest),
+	.status_write(status_write),
+	.status_writedata(status_writedata),
+	.tvalid(tvalid),
+	.tx_digitalreset(tx_digitalreset),
+	.tx_empty(tx_empty),
+	.tx_full(tx_full),
+	.tx_lanes_stable(tx_lanes_stable),
+	.tx_parallel_data(tx_parallel_data),
+	.tx_pempty(tx_pempty),
+	.tx_pfull(tx_pfull),
+	.tx_pll_locked(tx_pll_locked),
+	.tx_rst_n(tx_rst_n),
+	.unidirectional_en(unidirectional_en),
+    .tx_time_of_day_96b_data(tx_time_of_day_96b_data),
+    .tx_time_of_day_64b_data(tx_time_of_day_64b_data),
+    .rx_time_of_day_96b_data(rx_time_of_day_96b_data),
+    .rx_time_of_day_64b_data(rx_time_of_day_64b_data),
+    .tx_egress_timestamp_request_valid(tx_egress_timestamp_request_valid),
+    .tx_egress_timestamp_request_fingerprint(tx_egress_timestamp_request_fingerprint),
+    .tx_etstamp_ins_ctrl_timestamp_insert(tx_etstamp_ins_ctrl_timestamp_insert),
+    .tx_etstamp_ins_ctrl_timestamp_format(tx_etstamp_ins_ctrl_timestamp_format),
+    .tx_etstamp_ins_ctrl_residence_time_update(tx_etstamp_ins_ctrl_residence_time_update),
+    .tx_etstamp_ins_ctrl_ingress_timestamp_96b(tx_etstamp_ins_ctrl_ingress_timestamp_96b),
+    .tx_etstamp_ins_ctrl_ingress_timestamp_64b(tx_etstamp_ins_ctrl_ingress_timestamp_64b),
+    .tx_etstamp_ins_ctrl_residence_time_calc_format(tx_etstamp_ins_ctrl_residence_time_calc_format),
+    .tx_etstamp_ins_ctrl_checksum_zero(tx_etstamp_ins_ctrl_checksum_zero),
+    .tx_etstamp_ins_ctrl_checksum_correct(tx_etstamp_ins_ctrl_checksum_correct),
+    .tx_etstamp_ins_ctrl_offset_timestamp(tx_etstamp_ins_ctrl_offset_timestamp),
+    .tx_etstamp_ins_ctrl_offset_correction_field(tx_etstamp_ins_ctrl_offset_correction_field),
+    .tx_etstamp_ins_ctrl_offset_checksum_field(tx_etstamp_ins_ctrl_offset_checksum_field),
+    .tx_etstamp_ins_ctrl_offset_checksum_correction(tx_etstamp_ins_ctrl_offset_checksum_correction),
+    .tx_egress_asymmetry_update(tx_egress_asymmetry_update),
+    .tx_egress_timestamp_96b_valid(tx_egress_timestamp_96b_valid),
+    .tx_egress_timestamp_96b_data(tx_egress_timestamp_96b_data),
+    .tx_egress_timestamp_96b_fingerprint(tx_egress_timestamp_96b_fingerprint),
+    .tx_egress_timestamp_64b_valid(tx_egress_timestamp_64b_valid),
+    .tx_egress_timestamp_64b_data(tx_egress_timestamp_64b_data),
+    .tx_egress_timestamp_64b_fingerprint(tx_egress_timestamp_64b_fingerprint),
+    .rx_ingress_timestamp_96b_valid(rx_ingress_timestamp_96b_valid),
+    .rx_ingress_timestamp_96b_data(rx_ingress_timestamp_96b_data),
+    .rx_ingress_timestamp_64b_valid(rx_ingress_timestamp_64b_valid),
+    .rx_ingress_timestamp_64b_data(rx_ingress_timestamp_64b_data),
+    .tx_path_delay_data(tx_path_delay_data),
+    .rx_path_delay_data(rx_path_delay_data)
+);
+
+//////////////////////////////////////
+// Serdes lane
+
+wire                pll_powerdown;
+wire                rx_analogreset;
+wire                rx_cal_busy;
+wire                tx_analogreset;
+wire                tx_cal_busy;
+
+// serdes
+alt_e2550_serdes_a10_25g #(
+    .SYNOPT_ENABLE_PTP(SYNOPT_ENABLE_PTP)
+) s0 (
+    .tx_analogreset         (tx_analogreset),
+    .tx_digitalreset        (tx_digitalreset),
+    .rx_analogreset         (rx_analogreset),
+    .rx_digitalreset        (rx_digitalreset),
+    .tx_serial_clk          (tx_serial_clk),
+    .rx_cdr_refclk          (clk_ref),
+    .tx_parallel_data       (tx_parallel_data[63:0]),
+    .tx_control             ({8'h0, tx_parallel_data[65:64]}),
+    .tvalid                 (tvalid),
+    .rx_parallel_data       (rx_parallel_data[63:0]),
+    .rx_control             ({rwire0, rx_parallel_data[65:64]}),
+    .rx_rden                (~rx_empty),
+    .rx_serial_data         (rx_serial),
+    .tx_serial_data         (tx_serial),
+    .tx_clkin               (tx_clk),  
+    .tx_clkout              (),  
+    .tx_pma_div_clkout      (tx_clk),        // 390.625 MHz
+    .rx_clkin               (rx_clk),
+    .rx_clkout              (),
+    .rx_pma_div_clkout      (rx_clk),        // 390.625 MHz
+    .rx_seriallpbken        (rx_seriallpbken),
+    .rx_is_lockedtodata     (rx_is_lockedtodata),
+    .rx_bitslip             (rx_bitslip),
+    .rx_set_locktoref       (rx_set_locktoref),
+    .rx_set_locktodata      (rx_set_locktodata),
+
+    .tx_pempty              (tx_pempty),
+    .tx_pfull               (tx_pfull),  
+    .tx_empty               (tx_empty),
+    .tx_full                (tx_full),
+    .rx_empty               (rx_empty),
+    .rx_pempty              (rx_pempty),
+    .rx_pfull               (rx_pfull),
+    .rx_full                (rx_full),
+    .tx_cal_busy            (tx_cal_busy),
+    .rx_cal_busy            (rx_cal_busy),
+
+    .reconfig_write         (reconfig_write),     
+    .reconfig_read          (reconfig_read),     
+    .reconfig_address       (reconfig_address[9:0]),     
+    .reconfig_writedata     (reconfig_writedata),     
+    .reconfig_readdata      (reconfig_readdata),     
+    .reconfig_waitrequest   (reconfig_waitrequest),     
+    .reconfig_clk           (reconfig_clk),     
+    .reconfig_reset         (reconfig_reset),
+    .tx_path_delay_data     (tx_path_delay_data),
+    .rx_path_delay_data     (rx_path_delay_data)
+);
+
+assign clk_rxmac = rx_clk;
+assign clk_txmac = tx_clk;
+
+// Instantiate PHY reset controller
+a10_rst_ctrl rst_ctrl (
+	.clock(clk_status),
+	.pll_locked(tx_pll_locked),
+	.pll_powerdown(pll_powerdown),
+	.pll_select(1'b0),
+	.reset(phy_reset),
+	.rx_analogreset(rx_analogreset),
+	.rx_cal_busy(rx_cal_busy),
+	.rx_digitalreset(rx_digitalreset),
+	.rx_is_lockedtodata(rx_is_lockedtodata),
+	.rx_ready(),
+	.tx_analogreset(tx_analogreset),
+	.tx_cal_busy(tx_cal_busy),
+	.tx_digitalreset(tx_digitalreset),
+	.tx_ready()
+);
+
+endmodule

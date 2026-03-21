@@ -1,0 +1,105 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part          $param0
+@@ set rx_link_rate         $param1
+@@ set rx_max_lane_count    $param2
+@@ set rx_symbols_per_clock $param3
+@@ set rx_pixels_per_clock  $param4
+@@ set rx_video_bpc         $param5
+@@ set rx_support_ss        $param6
+@@ set rx_support_audio     $param7
+@@ set rx_audio_chans       $param8
+@@ set rx_aux_gpu           $param9
+@@ set rx_support_automated_test    $param10
+@@ set rx_scrambler_seed    $param11
+@@ set rx_aux_debug         $param12
+@@ set rx_export_msa        $param13
+@@ set tx_link_rate         $param14
+@@ set tx_max_lane_count    $param15
+@@ set tx_symbols_per_clock $param16
+@@ set tx_pixels_per_clock  $param17
+@@ set tx_video_bpc         $param18
+@@ set tx_support_ss        $param19
+@@ set tx_support_audio     $param20
+@@ set tx_audio_chans       $param21
+@@ set tx_support_analog_reconfig   $param22
+@@ set tx_support_automated_test    $param23
+@@ set tx_scrambler_seed    $param24
+@@ set tx_aux_debug         $param25
+
+# qsys scripting (.tcl) file for dp_rx
+package require -exact qsys 16.0
+
+create_system {dp_rx}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {false}
+
+# Instances and instance parameters
+# Reset Bridge
+add_instance reset_bridge altera_reset_bridge
+set_instance_parameter_value reset_bridge {ACTIVE_LOW_RESET} {1}
+set_instance_parameter_value reset_bridge {SYNCHRONOUS_EDGES} {none}
+# Clock Source
+add_instance clk_100 clock_source
+set_instance_parameter_value clk_100 {clockFrequency} {100000000.0}
+add_instance clk_16 clock_source
+set_instance_parameter_value clk_16 {clockFrequency} {16000000.0}
+# DP Sink
+add_instance dp_sink altera_dp
+set_instance_parameter_value dp_sink {device_family} {Arria 10}
+set_instance_parameter_value dp_sink {TX_SUPPORT_DP} {0}
+set_instance_parameter_value dp_sink {RX_SUPPORT_DP} {1}
+set_instance_parameter_value dp_sink {RX_MAX_LANE_COUNT} {$rx_max_lane_count}
+set_instance_parameter_value dp_sink {RX_MAX_LINK_RATE} {$rx_link_rate}
+set_instance_parameter_value dp_sink {RX_PIXELS_PER_CLOCK} {$rx_pixels_per_clock}
+set_instance_parameter_value dp_sink {RX_SYMBOLS_PER_CLOCK} {$rx_symbols_per_clock}
+set_instance_parameter_value dp_sink {RX_VIDEO_BPS} {$rx_video_bpc}
+set_instance_parameter_value dp_sink {RX_SUPPORT_SS} {0}
+set_instance_parameter_value dp_sink {RX_SUPPORT_AUDIO} {0}
+set_instance_parameter_value dp_sink {RX_AUDIO_CHANS} {$rx_audio_chans}
+set_instance_parameter_value dp_sink {RX_AUX_GPU} {0}
+set_instance_parameter_value dp_sink {RX_SUPPORT_AUTOMATED_TEST} {$rx_support_automated_test}
+set_instance_parameter_value dp_sink {RX_SUPPORT_GTC} {0}
+set_instance_parameter_value dp_sink {RX_SUPPORT_MST} {0}
+set_instance_parameter_value dp_sink {RX_SCRAMBLER_SEED} {$rx_scrambler_seed}
+set_instance_parameter_value dp_sink {RX_MAX_NUM_OF_STREAMS} {1}
+set_instance_parameter_value dp_sink {RX_AUX_DEBUG} {0}
+set_instance_parameter_value dp_sink {RX_EXPORT_MSA} {$rx_export_msa}
+set_instance_parameter_value dp_sink {RX_IEEE_OUI} {1}
+
+# connections and connection parameters
+
+add_connection reset_bridge.out_reset clk_16.clk_in_reset
+add_connection clk_16.clk dp_sink.aux_clk
+add_connection clk_16.clk_reset dp_sink.aux_reset
+
+add_connection reset_bridge.out_reset clk_100.clk_in_reset
+add_connection clk_100.clk dp_sink.clk
+add_connection clk_100.clk dp_sink.xcvr_mgmt_clk
+add_connection clk_100.clk_reset dp_sink.reset
+
+set_instance_property reset_bridge AUTO_EXPORT {true}
+set_instance_property clk_100 AUTO_EXPORT {true}
+set_instance_property clk_16 AUTO_EXPORT {true}
+set_instance_property dp_sink AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {dp_rx.qsys}

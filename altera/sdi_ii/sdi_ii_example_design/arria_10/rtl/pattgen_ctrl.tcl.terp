@@ -1,0 +1,79 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part  $param0
+
+package require -exact qsys 16.0
+
+create_system {pattgen_ctrl}
+
+set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {false}
+
+add_instance avmm_clk altera_clock_bridge
+set_instance_parameter_value avmm_clk {EXPLICIT_CLOCK_RATE} {100000000.0}
+add_instance avmm_rst altera_reset_bridge
+set_instance_parameter_value avmm_rst {SYNCHRONOUS_EDGES} {none}
+set_instance_parameter_value avmm_rst {ACTIVE_LOW_RESET} {1}
+
+add_instance tx_clkout altera_clock_bridge
+set_instance_parameter_value tx_clkout {EXPLICIT_CLOCK_RATE} {148500000.0}
+
+add_instance pattgen_rst altera_reset_controller
+set_instance_parameter_value pattgen_rst {NUM_RESET_INPUTS} {2}
+
+add_instance pattgen_ctrl_master altera_jtag_avalon_master
+
+add_instance pattgen_ctrl_pio altera_avalon_pio
+set_instance_parameter_value pattgen_ctrl_pio {width} {12}
+set_instance_parameter_value pattgen_ctrl_pio {resetValue} {2048.0}
+
+add_instance mm_clock_crossing_bridge altera_avalon_mm_clock_crossing_bridge
+
+# connections and connection parameters
+add_connection avmm_clk.out_clk mm_clock_crossing_bridge.s0_clk
+add_connection avmm_clk.out_clk pattgen_ctrl_master.clk
+add_connection avmm_rst.out_reset pattgen_ctrl_master.clk_reset
+add_connection tx_clkout.out_clk mm_clock_crossing_bridge.m0_clk
+add_connection tx_clkout.out_clk pattgen_ctrl_pio.clk
+add_connection tx_clkout.out_clk pattgen_rst.clk
+add_connection pattgen_ctrl_master.master_reset mm_clock_crossing_bridge.m0_reset
+add_connection pattgen_ctrl_master.master_reset mm_clock_crossing_bridge.s0_reset
+add_connection pattgen_ctrl_master.master_reset pattgen_ctrl_pio.reset
+
+add_connection pattgen_ctrl_master.master mm_clock_crossing_bridge.s0
+set_connection_parameter_value pattgen_ctrl_master.master/mm_clock_crossing_bridge.s0 arbitrationPriority {1}
+set_connection_parameter_value pattgen_ctrl_master.master/mm_clock_crossing_bridge.s0 baseAddress {0x0000}
+set_connection_parameter_value pattgen_ctrl_master.master/mm_clock_crossing_bridge.s0 defaultConnection {0}
+
+add_connection mm_clock_crossing_bridge.m0 pattgen_ctrl_pio.s1
+set_connection_parameter_value mm_clock_crossing_bridge.m0/pattgen_ctrl_pio.s1 arbitrationPriority {1}
+set_connection_parameter_value mm_clock_crossing_bridge.m0/pattgen_ctrl_pio.s1 baseAddress {0x0000}
+set_connection_parameter_value mm_clock_crossing_bridge.m0/pattgen_ctrl_pio.s1 defaultConnection {0}
+
+set_instance_property avmm_clk AUTO_EXPORT {true}
+set_instance_property avmm_rst AUTO_EXPORT {true}
+set_instance_property tx_clkout AUTO_EXPORT {true}
+set_instance_property pattgen_rst AUTO_EXPORT {true}
+set_instance_property pattgen_ctrl_master AUTO_EXPORT {true}
+set_instance_property pattgen_ctrl_pio AUTO_EXPORT {true}
+set_instance_property mm_clock_crossing_bridge AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+
+save_system {pattgen_ctrl.qsys}

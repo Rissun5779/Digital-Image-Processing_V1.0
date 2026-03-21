@@ -1,0 +1,357 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// altera message_level level1
+// (C) 2001-2013 Altera Corporation. All rights reserved.
+// Your use of Altera Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Altera Program License Subscription 
+// Agreement, Altera MegaCore Function License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Altera and sold by 
+// Altera or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+ 
+// \$Id: //acds/rel/13.1/ip/.../avalon-st_multiplexer.sv.terp#1 $
+// \$Revision: #1 $
+// \$Date: 2013/09/09 $
+// \$Author: dmunday $
+
+
+// --------------------------------------------------------------------------------
+//| Avalon Streaming Multiplexer
+// --------------------------------------------------------------------------------
+
+
+`timescale 1ns / 100ps
+// ------------------------------------------
+// Generation parameters:
+//   output_name:        $output_name
+//   use_packets:        $use_packets
+//   use_empty:          $use_empty
+//   empty_width:        $emptyWidth
+//   data_width:         $dataWidth
+//   channel_width:      $channelWidth
+//   error_width:        $errorWidth
+//   num_inputs:         $numInputs
+//   inChWidth:          $inChWidth
+//   selectWidth:        $selectWidth
+//   selectBits:         $selectBits
+//   channelSelectBits:  $channelSelectBits
+//   inPayloadMap:       $inPayloadMap
+//   outPayloadMap:      $outPayloadMap
+//   inPayloadWidth:     $inPayloadWidth
+//   use_packet_scheduling: $use_packet_scheduling
+//   schedulingSize:        $schedulingSize
+//   schedulingSizeInBits:     $schedulingSizeInBits   
+//   
+// ------------------------------------------
+
+@@ set data "_data"
+@@ set valid "_valid"
+@@ set validwire "_valid_wire"
+@@ set ready "_ready"
+@@ set sop "_startofpacket"
+@@ set eop "_endofpacket"
+@@ set empty "_empty"
+@@ set error "_error"
+@@ set channel "_channel"
+@@ set payload "_payload"
+
+module $output_name (     
+// Interface: out
+@@ if {$channelWidth>0} {
+@@ if {$channelWidth==1} {
+ output reg              out_channel,
+@@ } else {
+ output reg     [$channelWidth-1: 0] out_channel,
+@@ }
+@@ }
+ output reg              out_valid,
+ input                   out_ready,
+@@ if {$dataWidth==1} {
+ output reg              out_data,
+@@ } else {                          
+ output reg    [$dataWidth-1: 0] out_data,
+@@ }                                     
+@@ if {$errorWidth>0} {
+@@ if {$errorWidth==1} {
+ output reg               out_error,
+@@ } else {
+ output reg    [$errorWidth-1 : 0] out_error,
+@@ }
+@@ }
+@@ if {$use_packets} {
+ output reg              out_startofpacket,
+ output reg              out_endofpacket,
+@@ }
+@@ if {$use_empty} {
+@@ if {$emptyWidth==1} {
+ output reg               out_empty,
+@@ } else {
+ output reg    [$emptyWidth-1 : 0] out_empty,
+@@ }
+@@ }
+
+@@for {set i 0} {$i < $numInputs} {incr i} {
+// Interface: in$i
+@@ if {$inChWidth>0} {
+@@ if {$inChWidth==1} {
+ input                    in$i$channel,
+@@ } else {
+ input [$inChWidth-1: 0]  in$i$channel,
+@@ }       
+@@ } 
+ input           in$i$valid,
+ output reg      in$i$ready,
+@@ if {$dataWidth==1} {
+ input           in$i$data,
+@@ } else {
+ input [$dataWidth-1: 0] in$i$data,
+@@ }
+           
+@@ if {$errorWidth>0} {
+@@ if {$errorWidth==1} {
+ input            in$i$error,
+@@ } else {
+ input [$errorWidth-1: 0]  in$i$error,
+@@ }
+@@ }
+@@ if {$use_packets} {
+ input           in$i$sop,
+ input           in$i$eop, 
+@@ }
+@@ if {$use_empty} {
+@@ if {$emptyWidth==1} {
+ input           in$i$empty,
+@@ } else {
+ input [$emptyWidth-1: 0]  in$i$empty,
+@@ }
+@@ }
+@@ }
+  // Interface: clk
+ input              clk,
+ // Interface: reset
+ input              reset_n
+
+/*AUTOARG*/);
+ @@set max_input  [expr $numInputs - 1 ]
+
+   // ---------------------------------------------------------------------
+   //| Signal Declarations
+   // ---------------------------------------------------------------------
+@@set semi ";"
+@@for {set i 0} {$i <= $max_input} {incr i} {
+   reg [$inPayloadWidth -1:0]      in$i$payload$semi
+@@if {$use_packets == "false"} {
+   reg                in$i$eop = 0;
+@@}   
+@@}   
+ 
+   reg [$selectBits]        decision = 0;
+   reg [$selectBits]        select = 0;   
+   reg                selected_endofpacket = 0;
+   reg                selected_valid;
+   wire               out_valid_wire;
+   wire               selected_ready;
+   reg   [$inPayloadWidth -1 :0]   selected_payload;  
+@@if {$use_packet_scheduling} {
+   reg                packet_in_progress;
+@@} else {
+   reg   [$schedulingSize-1:0]      counter;
+@@}   
+   wire [$selectBits]       out_select;   
+   wire [$inPayloadWidth - 1:0]    out_payload;
+
+   // ---------------------------------------------------------------------
+   //| Input Mapping
+   // ---------------------------------------------------------------------
+   always @* begin
+@@ set i 0                                            
+@@ foreach thisPayload $inPayloadMap {      
+     in$i$payload = {$thisPayload};
+@@ incr i
+@@}
+   end
+   
+   // ---------------------------------------------------------------------
+   //| Scheduling Algorithm
+   // ---------------------------------------------------------------------
+   always @* begin
+         
+      decision = 0;
+      case(select) 
+@@for {set i 0} {$i <= $max_input} {incr i} {
+         $i : begin
+@@for {set s $max_input} {$s >= 0} {incr s -1} {
+@@ set s1 [expr $s + 1]
+@@ set in [expr [ expr $s1 + $i ] % $numInputs]
+            if (in$in$valid) decision = $in;
+@@}
+         end  
+@@}
+         default : begin // Same as '0', should never get used.
+@@for {set s $max_input} {$s >= 0} {incr s -1} {
+@@set s1 [expr $s + 1]
+@@set in [expr [ expr $s1 + 0] %$numInputs]
+            if (in$in$valid) decision = $in;
+@@}
+         end  
+      endcase   
+   end
+
+   // ---------------------------------------------------------------------
+   //| Capture Decision
+   // ---------------------------------------------------------------------
+   always @ (negedge reset_n, posedge clk) begin
+      if (!reset_n) begin
+         select <= 0;
+@@if {$use_packet_scheduling == false} {
+         counter <= 0;         
+@@} else {
+         packet_in_progress <= 0;
+@@}         
+      end else begin
+@@if {!$use_packet_scheduling} {
+         counter <= counter - 1;
+         if ((selected_valid == 0) || (selected_endofpacket) || (counter ==0)) begin
+            select <= decision;
+            counter <= $schedulingSize-1;
+         end
+@@} else {
+         if (!selected_valid && !packet_in_progress) begin
+            select <= decision;
+         end else begin
+            packet_in_progress <= 1;
+         end
+         if (selected_endofpacket && selected_valid && selected_ready) begin
+            select <= decision;
+            packet_in_progress <= 0;
+         end
+@@}         
+      end
+   end
+
+
+
+   // ---------------------------------------------------------------------
+   //| Mux
+   // ---------------------------------------------------------------------
+   always @* begin
+      case(select) 
+@@for {set i 0} {$i <= $max_input} {incr i} {
+         $i : begin
+            selected_payload = in$i$payload;         
+            selected_valid   = in$i$valid;
+            selected_endofpacket = in$i$eop;
+         end  
+@@}
+         default : begin
+            selected_payload = in0_payload;         
+            selected_valid = in0_valid;
+            selected_endofpacket = in0_endofpacket;
+         end
+      endcase
+
+   end
+
+   // ---------------------------------------------------------------------
+   //| Back Pressure
+   // ---------------------------------------------------------------------
+   always @* begin
+@@for {set i 0} {$i <= $max_input} {incr i} {  
+      in$i$ready <= ~in$i$valid;
+@@}
+      case(select)
+@@for {set i 0} {$i <= $max_input} {incr i} {  
+      $i : in$i$ready <= selected_ready;
+@@}
+      default : in0_ready <= selected_ready;
+
+endcase // case (select)
+end // always @ *
+
+   // ---------------------------------------------------------------------
+   //| output Pipeline
+   // ---------------------------------------------------------------------
+@@set name "_1stage_pipeline"
+   $output_name$name  #( .PAYLOAD_WIDTH( $inPayloadWidth + $selectWidth ) ) outpipe
+              ( .clk      (clk ),
+                .reset_n  (reset_n  ),
+                .in_ready ( selected_ready ),
+                .in_valid ( selected_valid ),
+                .in_payload ({select,selected_payload}),
+                .out_ready(out_ready ),
+                .out_valid(out_valid_wire),
+                .out_payload({out_select,out_payload}) );
+
+
+   // ---------------------------------------------------------------------
+   //| Output Mapping
+   // ---------------------------------------------------------------------
+   always @* begin
+      out_valid   = out_valid_wire;
+@@ if {$channelWidth==1} {
+      out_channel = out_select;
+@@ } else {
+      out_channel[$channelSelectBits] = out_select;
+@@}
+      {$outPayloadMap} = out_payload;
+   end
+endmodule //
+
+//  --------------------------------------------------------------------------------
+// | single buffered pipeline stage
+//  --------------------------------------------------------------------------------
+module $output_name$name
+  #( parameter PAYLOAD_WIDTH = 8 )
+    ( input                             clk,
+         input                          reset_n,
+         output reg                     in_ready,
+         input                          in_valid,
+         input      [PAYLOAD_WIDTH-1:0] in_payload,
+         input                          out_ready,
+         output reg                     out_valid,
+         output reg [PAYLOAD_WIDTH-1:0] out_payload
+      );
+   reg                                  in_ready1;
+
+
+   always @* begin
+      in_ready = out_ready || ~out_valid;
+      //     in_ready = in_ready1;
+      //     if (!out_ready)
+      //       in_ready = 0;
+   end
+   always @ (negedge reset_n, posedge clk) begin
+      if (!reset_n) begin
+         in_ready1 <= 0;
+         out_valid <= 0;
+         out_payload <= 0;
+      end else begin
+         in_ready1 <= out_ready || !out_valid;
+         if (in_valid) begin
+            out_valid <= 1;
+         end else if (out_ready) begin
+            out_valid <= 0;
+         end
+         if(in_valid && in_ready) begin
+            out_payload <= in_payload;
+         end
+      end // else: !if(!reset_n)
+   end // always @ (negedge reset_n, posedge clk)
+
+endmodule //

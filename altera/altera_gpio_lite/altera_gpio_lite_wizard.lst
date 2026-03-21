@@ -1,0 +1,16 @@
+[Basic Functions|I/O]
+Altera GPIO Lite v18.1 = "%t" "%w/../common/lib/megawizard.pl" --wizard_file:"%w/altera_gpio_lite_hw.tcl" --wizard:altera_gpio_lite --familyparameter:device_family --early_gen:on %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | Zippleback | MAX 10 FPGA | MAX 10"   SUPPORT_CHECK="ON" />
+<LANGUAGES AHDL="OFF"/>
+<PINPLAN SUPPORTED="OFF"/>
+<ALIAS>Altera GPIO Lite v13.1</ALIAS>
+<ALIAS>Altera GPIO Lite v14.0</ALIAS>
+<ALIAS>Altera GPIO Lite v14.1</ALIAS>
+<ALIAS>Altera GPIO Lite v15.0</ALIAS>
+<ALIAS>Altera GPIO Lite v15.1</ALIAS>
+<ALIAS>Altera GPIO Lite v16.0</ALIAS>
+<ALIAS>Altera GPIO Lite v16.1</ALIAS>
+</INFO>

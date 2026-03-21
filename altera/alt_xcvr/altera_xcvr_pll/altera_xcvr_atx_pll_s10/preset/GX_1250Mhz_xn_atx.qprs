@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="GX 2500Mbps xN Non-Bonded"
+     kind="altera_xcvr_atx_pll_s10"
+     version="All"
+     description="">
+   <parameter name="enable_16G_path" value="0" />
+   <parameter name="enable_fractional" value="0" />
+   <parameter name="refclk_cnt" value="1" />
+   <parameter name="set_auto_reference_clock_frequency" value="100.0" />
+   <parameter name="enable_mcgb_pcie_clksw" value="0" />
+   <parameter name="enable_pll_reconfig" value="0" />
+   <parameter name="refclk_index" value="0" />
+   <parameter name="enable_mcgb" value="1" />
+   <parameter name="enable_8G_path" value="1" />
+   <parameter name="enable_pcie_clk" value="0" />
+   <parameter name="set_output_clock_frequency" value="1250.0" />
+   <parameter name="message_level" value="error" />
+   <parameter name="bw_sel" value="low" />
+   <parameter name="enable_bonding_clks" value="0" />
+   <parameter name="enable_hfreq_clk" value="1" />
+   <parameter name="prot_mode" value="Basic" />
+   <parameter name="mcgb_div" value="1" />
+   <parameter name="primary_pll_buffer" value="GX clock output buffer" />
+   <parameter name="generate_docs" value="1" />
+   <parameter name="mcgb_aux_clkin_cnt" value="0" />
+  </preset>
+ </presets>
+</ip>

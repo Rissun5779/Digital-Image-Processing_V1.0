@@ -1,0 +1,153 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// ------------------------------------------
+// Multiplexer
+// ------------------------------------------
+
+`timescale 1 ns / 1 ns
+`default_nettype none
+
+// ------------------------------------------
+// Generation parameters:
+//   output_name:         $output_name
+//   NUM_INPUTS:          $num_inputs
+//   ST_DATA_W:           $st_data_w
+//   USE_READY:           $use_ready
+//   USE_SELECT:          $use_select
+//   ENABLE_EOP_EVENTS:   $enable_eop_events
+// ------------------------------------------
+
+module $output_name
+(
+@@ if { $use_select } {
+    input wire [$num_inputs-1 : 0] sel,
+@@ }
+
+    // ----------------------
+    // Sinks
+    // ----------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    input wire                    sink${i}_valid,
+    input wire [$st_data_w-1 : 0] sink${i}_data,
+    input wire                    sink${i}_startofpacket,
+    input wire                    sink${i}_endofpacket,
+@@     if { $use_ready } {
+    output wire                   sink${i}_ready,
+@@     }
+
+@@ }
+
+    // ----------------------
+    // Source
+    // ----------------------
+    output wire                    src_valid,
+    output wire [$st_data_w-1 : 0] src_data,
+    output wire                    src_startofpacket,
+    output wire                    src_endofpacket,
+@@ if { $use_ready } {
+    input  wire                    src_ready,
+@@ }
+
+@@ if { $enable_eop_events } {
+    // ----------------------
+    // EOP events
+    // ----------------------
+    output wire                    eop_event,
+@@ }    
+
+    // ----------------------
+    // Clock & Reset
+    // ----------------------
+    input wire clk,
+    input wire reset
+);
+    localparam PAYLOAD_W = $st_data_w + 2;
+    localparam NUM_INPUTS = $num_inputs;
+
+    // ------------------------------------------
+    // Signals
+    // ------------------------------------------
+    wire [NUM_INPUTS - 1 : 0] valid;
+    reg  [PAYLOAD_W - 1 : 0]  src_payload;
+
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    wire [PAYLOAD_W - 1 : 0] sink${i}_payload;
+@@ }
+
+@@ if { $use_select == 0 } {
+    wire [$num_inputs-1 : 0] sel;
+    assign sel = valid;
+@@ }
+
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    assign valid[$i] = sink${i}_valid;
+@@ }
+ 
+    // ------------------------------------------
+    // Valid simplification: ignores select lines
+    // ------------------------------------------
+    assign src_valid = |valid;
+
+@@ if { $enable_eop_events } {
+@@     if { $use_ready } {
+    assign eop_event = src_valid && src_endofpacket && src_ready;
+@@     } else {
+    assign eop_event = src_valid && src_endofpacket;
+@@     }
+@@ }
+
+    // ------------------------------------------
+    // Simple and-or mux, based on one-hot select lines.
+    //
+    // TODO (from prototype, and new ideas):
+    // 1. Investigate duplication of sel lines.
+    // 2. Consider just using the valid signal, drop the sel.
+    // 3. Consider converting sel into a binary select to gain
+    //    4:1 muxing instead of 3:1.
+    // ------------------------------------------
+    always_comb begin
+        src_payload =
+@@ set LAST [ expr $num_inputs - 1 ]
+@@ for { set i 0 } { $i < $LAST } { incr i } {
+            sink${i}_payload & {PAYLOAD_W {sel[$i]} } |
+@@ }
+            sink${LAST}_payload & {PAYLOAD_W {sel[$LAST]} };
+    end
+
+    // ------------------------------------------
+    // Payload Mapping
+    // ------------------------------------------
+@@ for { set i 0 } { $i < $num_inputs } { incr i } {
+    assign sink${i}_payload = {sink${i}_data, sink${i}_startofpacket, sink${i}_endofpacket};
+@@ }
+
+    assign {src_data, src_startofpacket, src_endofpacket} = src_payload;
+
+@@ if { $use_ready } {
+    // ------------------------------------------
+    // Backpressure
+    //
+    // Allow the "stop soon" signals to flow through the
+    // mux. We may eventually pull these out as side
+    // channels instead of making them part of the mux's
+    // streaming interfaces.
+    // ------------------------------------------
+@@     for { set i 0 } { $i < $num_inputs } { incr i } {
+    assign sink${i}_ready = src_ready;
+@@     }
+@@ }
+
+endmodule
+
+`default_nettype wire

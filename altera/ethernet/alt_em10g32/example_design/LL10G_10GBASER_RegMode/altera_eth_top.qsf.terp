@@ -1,0 +1,144 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2014 Altera Corporation. All rights reserved.
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, the Altera Quartus II License Agreement,
+# the Altera MegaCore Function License Agreement, or other 
+# applicable license agreement, including, without limitation, 
+# that your use is for the sole purpose of programming logic 
+# devices manufactured by Altera and sold by Altera or its 
+# authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 14.1a10s.0 Build 636 11/23/2014 SJ Full Version
+# Date created = 16:10:43  November 25, 2014
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		altera_eth_top_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Arria 10"
+set_global_assignment -name DEVICE $DEVICE
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 14.1A10S.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:10:43  NOVEMBER 25, 2014"
+set_global_assignment -name LAST_QUARTUS_VERSION 15.1.0
+set_global_assignment -name TOP_LEVEL_ENTITY altera_eth_top
+set_global_assignment -name VERILOG_FILE adapters/mod_adapters/avalon_st_adapter_avalon_st_rx.v
+set_global_assignment -name VERILOG_FILE adapters/mod_adapters/avalon_st_adapter_avalon_st_tx.v
+set_global_assignment -name QIP_FILE rtl/eth_traffic_controller/eth_std_traffic_controller_top.qip
+@@ if { $qsys_pro == 0 } {
+set_global_assignment -name QSYS_FILE rtl/fifo_scfifo/sc_fifo.qsys
+set_global_assignment -name QSYS_FILE rtl/address_decoder/address_decode.qsys
+set_global_assignment -name QSYS_FILE rtl/xcvr_reset_controller/reset_control.qsys
+set_global_assignment -name QSYS_FILE rtl/mac/low_latency_mac.qsys
+set_global_assignment -name QSYS_FILE rtl/phy/low_latency_baser.qsys
+set_global_assignment -name QSYS_FILE rtl/pll_atxpll/altera_xcvr_atx_pll_ip.qsys
+set_global_assignment -name QSYS_FILE rtl/IOPLL_half_clk/IOPLL_half_clk.qsys
+@@ } else {
+set_global_assignment -name QSYS_FILE rtl/fifo_scfifo/sc_fifo.qsys
+set_global_assignment -name PBIP_FILE rtl/fifo_scfifo/ip/sc_fifo/sc_fifo_rx_sc_fifo.ip
+set_global_assignment -name PBIP_FILE rtl/fifo_scfifo/ip/sc_fifo/sc_fifo_tx_sc_fifo.ip
+set_global_assignment -name QSYS_FILE rtl/address_decoder/address_decode.qsys
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_clk_csr.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_eth_gen_mon.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_master_0.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_merlin_master_translator_0.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_mm_to_mac.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_mm_to_phy.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_rx_sc_fifo.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_rx_xcvr_clk.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_tx_sc_fifo.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_tx_xcvr_clk.ip
+set_global_assignment -name PBIP_FILE rtl/address_decoder/ip/address_decode/address_decode_tx_xcvr_half_clk.ip
+set_global_assignment -name PBIP_FILE rtl/xcvr_reset_controller/reset_control.ip
+set_global_assignment -name PBIP_FILE rtl/mac/low_latency_mac.ip
+set_global_assignment -name PBIP_FILE rtl/phy/low_latency_baser.ip
+set_global_assignment -name PBIP_FILE rtl/pll_atxpll/altera_xcvr_atx_pll_ip.ip
+set_global_assignment -name PBIP_FILE rtl/IOPLL_half_clk/IOPLL_half_clk.ip
+@@ }
+set_global_assignment -name VERILOG_FILE rtl/altera_eth_10g_mac_base_r_low_latency_wrap.v -library low_latency_mac_alt_em10g32_141
+set_global_assignment -name VERILOG_FILE rtl/altera_eth_10g_mac_base_r_low_latency.v -library low_latency_mac_alt_em10g32_141
+set_global_assignment -name VERILOG_FILE altera_eth_top.sv
+set_global_assignment -name SDC_FILE altera_eth_top.sdc
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+
+@@ if { $virtual == 0 } {
+# =================================================================
+# Pin & Location Assignments
+# =================================================================
+# PLEASE ADD LOCATION ASSIGNMENT FOR YOUR BOARD HERE !!
+@@ }
+
+$VIRTUAL_PIN -to sfp_txdisable
+$VIRTUAL_PIN -to tx_ready_export_n
+$VIRTUAL_PIN -to rx_ready_export_n
+$VIRTUAL_PIN -to block_lock_n
+$VIRTUAL_PIN -to SFPP_RATE_SEL
+
+$VIRTUAL_PIN -to master_reset_n
+
+@@ if { $virtual == 0 } {
+$VIRTUAL_PIN -to csr_clk
+$VIRTUAL_PIN -to ref_clk_clk
+@@ }
+
+@@ if { $virtual == 0 } {
+    @@ for {set lane 0} {$lane < $CHANNEL} {incr lane} {
+# Channel ${lane}
+$VIRTUAL_PIN -to tx_serial_data[${lane}]
+$VIRTUAL_PIN -to rx_serial_data[${lane}]
+    @@ }
+@@ }
+
+@@ if { $virtual == 0 } {
+# =================================================================
+@@ }
+
+# IO Standard
+set_instance_assignment -name IO_STANDARD LVDS -to csr_clk
+set_instance_assignment -name IO_STANDARD LVDS -to ref_clk_clk
+set_instance_assignment -name IO_STANDARD LVDS -to debug_clk
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to tx_serial_data[*]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to rx_serial_data[*]
+
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON
+
+# Clock termination setting
+set_instance_assignment -name XCVR_REFCLK_PIN_TERMINATION AC_COUPLING -to csr_clk
+set_instance_assignment -name XCVR_REFCLK_PIN_TERMINATION AC_COUPLING -to ref_clk_clk
+set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to debug_clk
+
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+
+
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE altera_eth_top.stp
+set_global_assignment -name SIGNALTAP_FILE altera_eth_top.stp

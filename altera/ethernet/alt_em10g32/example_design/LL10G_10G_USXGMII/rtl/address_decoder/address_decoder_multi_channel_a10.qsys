@@ -1,0 +1,1277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element channel_0
+   {
+      datum _sortIndex
+      {
+         value = "2";
+         type = "int";
+      }
+   }
+   element channel_0.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "131072";
+         type = "String";
+      }
+   }
+   element channel_1
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element channel_1.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "196608";
+         type = "String";
+      }
+   }
+   element channel_10
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element channel_10.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "786432";
+         type = "String";
+      }
+   }
+   element channel_11
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element channel_11.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "851968";
+         type = "String";
+      }
+   }
+   element channel_2
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element channel_2.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "262144";
+         type = "String";
+      }
+   }
+   element channel_3
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element channel_3.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "327680";
+         type = "String";
+      }
+   }
+   element channel_4
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element channel_4.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "393216";
+         type = "String";
+      }
+   }
+   element channel_5
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+   }
+   element channel_5.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "458752";
+         type = "String";
+      }
+   }
+   element channel_6
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element channel_6.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "524288";
+         type = "String";
+      }
+   }
+   element channel_7
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element channel_7.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "589824";
+         type = "String";
+      }
+   }
+   element channel_8
+   {
+      datum _sortIndex
+      {
+         value = "10";
+         type = "int";
+      }
+   }
+   element channel_8.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "655360";
+         type = "String";
+      }
+   }
+   element channel_9
+   {
+      datum _sortIndex
+      {
+         value = "11";
+         type = "int";
+      }
+   }
+   element channel_9.avalon_universal_slave_0
+   {
+      datum baseAddress
+      {
+         value = "720896";
+         type = "String";
+      }
+   }
+   element csr_clk
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+   element master
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10AX115S4F45I3SGE2" />
+ <parameter name="deviceFamily" value="Arria 10" />
+ <parameter name="deviceSpeedGrade" value="3" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="channel_0"
+   internal="channel_0.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_1"
+   internal="channel_1.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_10"
+   internal="channel_10.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_11"
+   internal="channel_11.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_2"
+   internal="channel_2.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_3"
+   internal="channel_3.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_4"
+   internal="channel_4.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_5"
+   internal="channel_5.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_6"
+   internal="channel_6.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_7"
+   internal="channel_7.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_8"
+   internal="channel_8.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="channel_9"
+   internal="channel_9.avalon_anti_slave_0"
+   type="avalon"
+   dir="start" />
+ <interface name="csr_clk" internal="csr_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="csr_clk_reset"
+   internal="csr_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="slave"
+   internal="master.avalon_anti_master_0"
+   type="avalon"
+   dir="end" />
+ <module
+   name="channel_0"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_1"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_10"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_11"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_2"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_3"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_4"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_5"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_6"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_7"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_8"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module
+   name="channel_9"
+   kind="altera_merlin_slave_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="16" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="1" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="1" />
+  <parameter name="AV_MAX_PENDING_WRITE_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_REQUIRE_UNALIGNED_ADDRESSES" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_TIMING_UNITS" value="1" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="CHIPSELECT_THROUGH_READLATENCY" value="0" />
+  <parameter name="CLOCK_RATE" value="125000000" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="16" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_BYTEENABLE_W" value="4" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="UAV_DATA_W" value="32" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_AV_CLKEN" value="0" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_OUTPUTENABLE" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_UAV_CLKEN" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEBYTEENABLE" value="0" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <module name="csr_clk" kind="clock_source" version="16.0" enabled="1">
+  <parameter name="clockFrequency" value="125000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module
+   name="master"
+   kind="altera_merlin_master_translator"
+   version="16.0"
+   enabled="1">
+  <parameter name="AV_ADDRESSGROUP" value="0" />
+  <parameter name="AV_ADDRESS_SYMBOLS" value="1" />
+  <parameter name="AV_ADDRESS_W" value="20" />
+  <parameter name="AV_ALWAYSBURSTMAXBURST" value="0" />
+  <parameter name="AV_BITS_PER_SYMBOL" value="8" />
+  <parameter name="AV_BURSTBOUNDARIES" value="0" />
+  <parameter name="AV_BURSTCOUNT_SYMBOLS" value="1" />
+  <parameter name="AV_BURSTCOUNT_W" value="3" />
+  <parameter name="AV_BYTEENABLE_W" value="4" />
+  <parameter name="AV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="AV_DATA_HOLD" value="0" />
+  <parameter name="AV_DATA_W" value="32" />
+  <parameter name="AV_INTERLEAVEBURSTS" value="0" />
+  <parameter name="AV_ISBIGENDIAN" value="0" />
+  <parameter name="AV_LINEWRAPBURSTS" value="0" />
+  <parameter name="AV_MAX_PENDING_READ_TRANSACTIONS" value="0" />
+  <parameter name="AV_READLATENCY" value="0" />
+  <parameter name="AV_READ_WAIT" value="0" />
+  <parameter name="AV_REGISTERINCOMINGSIGNALS" value="0" />
+  <parameter name="AV_REGISTEROUTGOINGSIGNALS" value="0" />
+  <parameter name="AV_SETUP_WAIT" value="0" />
+  <parameter name="AV_SYMBOLS_PER_WORD" value="4" />
+  <parameter name="AV_WRITE_WAIT" value="0" />
+  <parameter name="SYNC_RESET" value="0" />
+  <parameter name="UAV_ADDRESSGROUP" value="0" />
+  <parameter name="UAV_ADDRESS_W" value="32" />
+  <parameter name="UAV_BURSTCOUNT_W" value="3" />
+  <parameter name="UAV_CONSTANT_BURST_BEHAVIOR" value="0" />
+  <parameter name="USE_ADDRESS" value="1" />
+  <parameter name="USE_BEGINBURSTTRANSFER" value="0" />
+  <parameter name="USE_BEGINTRANSFER" value="0" />
+  <parameter name="USE_BURSTCOUNT" value="0" />
+  <parameter name="USE_BYTEENABLE" value="0" />
+  <parameter name="USE_CHIPSELECT" value="0" />
+  <parameter name="USE_CLKEN" value="0" />
+  <parameter name="USE_DEBUGACCESS" value="0" />
+  <parameter name="USE_LOCK" value="0" />
+  <parameter name="USE_READ" value="1" />
+  <parameter name="USE_READDATA" value="1" />
+  <parameter name="USE_READDATAVALID" value="0" />
+  <parameter name="USE_READRESPONSE" value="0" />
+  <parameter name="USE_WAITREQUEST" value="1" />
+  <parameter name="USE_WRITE" value="1" />
+  <parameter name="USE_WRITEDATA" value="1" />
+  <parameter name="USE_WRITERESPONSE" value="0" />
+ </module>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_1.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00030000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_0.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00020000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_2.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00040000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_3.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00050000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_4.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00060000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_5.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00070000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_6.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00080000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_7.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00090000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_8.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x000a0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_9.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x000b0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_10.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x000c0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="16.0"
+   start="master.avalon_universal_master_0"
+   end="channel_11.avalon_universal_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x000d0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="master.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_1.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_0.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_2.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_3.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_4.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_5.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_6.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_7.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_8.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_9.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_10.clk" />
+ <connection kind="clock" version="16.0" start="csr_clk.clk" end="channel_11.clk" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="master.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_1.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_0.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_2.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_3.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_4.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_5.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_6.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_7.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_8.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_9.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_10.reset" />
+ <connection
+   kind="reset"
+   version="16.0"
+   start="csr_clk.clk_reset"
+   end="channel_11.reset" />
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

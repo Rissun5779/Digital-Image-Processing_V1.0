@@ -1,0 +1,4 @@
+INTERFACE,OLD_PORT_NAME,NEW_PORT_NAME
+rzqin,rzqin,rzqin
+oct_0_series_termination_control,oct_0_series_termination_control,seriesterminationcontrol
+oct_0_parallel_termination_control,oct_0_parallel_termination_control,parallelterminationcontrol

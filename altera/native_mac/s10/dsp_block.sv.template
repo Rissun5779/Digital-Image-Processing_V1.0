@@ -1,0 +1,200 @@
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: fourteennm_mac.v.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to verilog file
+@@ #
+@@ # Usage: IP core independent, general verilog format output for ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+@@
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module  ${output_name}  (
+@@
+@@  #----- write module port list -----#
+@@  set delim ","
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width wdithL} $module_port_list {
+@@      if {$port eq $port_last} {
+@@          set delim ");"
+@@      }
+@@
+            $port$delim
+@@
+@@  }
+@@
+
+@@
+@@  #----- write input and output port lists -----#
+@@  foreach {port direction width widthL} $module_port_list {
+@@      set dir_string ""
+@@      set width_string ""
+@@
+@@      if {$direction eq "IN"} {
+@@          set dir_string "input"
+@@      } elseif {$direction eq "OUT"} {
+@@          set dir_string "output"
+@@      }
+@@
+@@		if {$port eq "clk"} {
+@@           set width_string "\[2:0\]"
+@@		}
+@@
+@@
+@@      if {$width != -1} {
+@@          set width_string "\[[expr {$width+$widthL-1}]:$widthL\]"
+@@      }
+@@
+            $dir_string $width_string $port;
+@@
+@@  }
+@@
+
+@@
+@@  #----- write output ports wire connections -----#
+@@  foreach {name width widthL} $sub_wire_list {
+@@      set width_string ""
+@@
+@@      if {$width != -1} {
+@@          set width_string "\[[expr {$width+$widthL-1}]:$widthL\]"
+@@      }
+@@
+@@
+            wire $width_string $name;
+@@
+@@  }
+@@
+@@  foreach {dest src width widthL} $wire_list {
+@@      set width_string ""
+@@
+@@      if {$width != -1} {
+@@          set width_string "\[[expr {$width+$widthL-1}]:$widthL\]"
+@@      }
+@@
+            wire $width_string $dest = $src$width_string;    
+@@
+@@  }
+@@
+
+@@
+@@  #----- write component information -----#
+@@
+            $ip_name        ${ip_name}_component (
+@@
+@@  #----- write component port list ------#
+@@  set comp_ports [list]
+@@
+@@
+@@  foreach {port connect direction width widthL} $port_map_list {
+@@      lappend comp_ports $port $connect
+@@  }
+@@
+@@  foreach {port connect} $ports_not_added_list {
+@@      lappend comp_ports $port $connect
+@@  }
+@@
+@@
+@@  set delim ","
+@@  set port_last [lindex $comp_ports end-1]
+@@  foreach {port connect} $comp_ports {
+@@      if {$port eq $port_last} {
+@@          set delim ");"
+@@      }
+@@
+                                        .$port ($connect)$delim
+@@
+@@  }
+@@
+@@  #----- write component parameters -----#
+@@
+            defparam
+
+@@foreach cur_clock $hdl_clocks {
+@@set val [subst $${cur_clock}_derived]
+					${ip_name}_component.${cur_clock}="${val}",
+@@}
+@@ # -------- For preadder subtract ----------#
+@@	set delim ","
+@@	foreach {name str value} $preadder_subtract_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For delay_scanout ----------#
+@@	set delim ","
+@@	foreach {name str value} $delay_scan_out_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For use_scanin ----------#
+@@	set delim ","
+@@	foreach {name str value} $scan_in_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For operand_source ----------#
+@@	set delim ","
+@@	foreach {name str value} $operand_source_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For signed/Unsigned ----------#
+@@	set delim ","
+@@	foreach {name str value} $signed_unsigned_to_true_false_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For use_chainadder ----------#
+@@	set delim ","
+@@	foreach {name str value} $enable_chainin_to_use_chainadder {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For double_accum ----------#
+@@	set delim ","
+@@	foreach {name str value} $enable_parameter_enable_double_accum {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@ # -------- For operation_mode ----------#
+@@	set delim ","
+@@	foreach {name str value} $operation_mode_param_list {
+@@		if {$str eq "STRING"} {
+@@			set value "\"$value\""
+@@		}
+					${ip_name}_component.$name = $value$delim 
+@@	}
+@@  set delim ","
+@@  set name_last [lindex $params_list end-2]
+@@  foreach {name str value} $params_list {
+@@      if {$str eq "STRING"} {
+@@          set value "\"$value\""
+@@      }
+@@
+@@      if {$name eq $name_last} {
+@@          set delim ";"
+@@      }
+@@
+@@
+					${ip_name}_component.$name = $value$delim
+@@
+@@  }
+@@
+
+endmodule

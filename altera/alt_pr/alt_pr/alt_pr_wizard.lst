@@ -1,0 +1,12 @@
+[JTAG-accessible Extensions]
+Partial Reconfiguration v18.1= "%t" "%w/../../common/lib/megawizard.pl" --wizard:alt_pr  --early_gen:on --wizard_file:"%w/alt_pr_hw.tcl" --family_parameter:device_family %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="ALL"   SUPPORT_CHECK="OFF" /> 
+<LANGUAGES   AHDL="OFF"/>
+<PINPLAN SUPPORTED="ON"/>
+<ALIAS>Partial Reconfiguration</ALIAS>
+<ALIAS>Partial Reconfiguration v13.1</ALIAS>
+<ALIAS>Partial Reconfiguration v14.0</ALIAS>
+</INFO>

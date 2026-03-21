@@ -1,0 +1,82 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ set device_part          $param0
+@@ set rx_link_rate         $param1
+@@ set rx_max_lane_count    $param2
+@@ set rx_symbols_per_clock $param3
+@@ set rx_pixels_per_clock  $param4
+@@ set rx_video_bpc         $param5
+@@ set rx_support_ss        $param6
+@@ set rx_support_audio     $param7
+@@ set rx_audio_chans       $param8
+@@ set rx_aux_gpu           $param9
+@@ set rx_support_automated_test    $param10
+@@ set rx_scrambler_seed    $param11
+@@ set rx_aux_debug         $param12
+@@ set rx_export_msa        $param13
+@@ set tx_link_rate         $param14
+@@ set tx_max_lane_count    $param15
+@@ set tx_symbols_per_clock $param16
+@@ set tx_pixels_per_clock  $param17
+@@ set tx_video_bpc         $param18
+@@ set tx_support_ss        $param19
+@@ set tx_support_audio     $param20
+@@ set tx_audio_chans       $param21
+@@ set tx_support_analog_reconfig   $param22
+@@ set tx_support_automated_test    $param23
+@@ set tx_scrambler_seed    $param24
+@@ set tx_aux_debug         $param25
+
+package require -exact qsys 16.0
+
+create_system {gxb_tx_fpll}
+
+#set_project_property DEVICE_FAMILY {Arria 10}
+set_project_property DEVICE {$device_part}
+set_project_property HIDE_FROM_IP_CATALOG {true}
+
+add_instance xcvr_fpll_a10_0 altera_xcvr_fpll_a10
+set_instance_parameter_value xcvr_fpll_a10_0 {enable_bonding_clks} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {enable_cascade_in} {0}
+set_instance_parameter_value xcvr_fpll_a10_0 {enable_mcgb} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {enable_pll_reconfig} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {generate_docs} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_bw_sel} {medium}
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_desired_refclk_frequency} {135.0}
+# FPLL Mode = 0:Core 1:Cascade Source 2:Transceiver
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_fpll_mode} {2}
+@@ if { $tx_link_rate == 30 } {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_hssi_output_clock_frequency} {4050.0}
+@@ } elseif { $tx_link_rate == 20 } {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_hssi_output_clock_frequency} {2700.0}
+@@ } elseif { $tx_link_rate == 10 } {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_hssi_output_clock_frequency} {1350.0}
+@@ } else {
+set_instance_parameter_value xcvr_fpll_a10_0 {gui_hssi_output_clock_frequency} {810.0}
+@@ }
+set_instance_parameter_value xcvr_fpll_a10_0 {pma_width} {20}
+set_instance_parameter_value xcvr_fpll_a10_0 {rcfg_h_file_enable} {0}
+set_instance_parameter_value xcvr_fpll_a10_0 {rcfg_mif_file_enable} {1}
+set_instance_parameter_value xcvr_fpll_a10_0 {rcfg_sv_file_enable} {1}
+
+# exported interfaces
+set_instance_property xcvr_fpll_a10_0 AUTO_EXPORT {true}
+
+# interconnect requirements
+set_interconnect_requirement {\$system} {qsys_mm.clockCrossingAdapter} {HANDSHAKE}
+set_interconnect_requirement {\$system} {qsys_mm.maxAdditionalLatency} {1}
+set_interconnect_requirement {\$system} {qsys_mm.enableEccProtection} {FALSE}
+set_interconnect_requirement {\$system} {qsys_mm.insertDefaultSlave} {FALSE}
+
+save_system {gxb_tx_fpll.qsys}

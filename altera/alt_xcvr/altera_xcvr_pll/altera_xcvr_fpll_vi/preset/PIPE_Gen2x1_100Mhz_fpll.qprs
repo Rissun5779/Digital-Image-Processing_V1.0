@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="PCIe Gen1 and Gen2 Single Lane 100Mhz"
+     kind="altera_xcvr_fpll_a10"
+     version="All"
+     description="FPLL configured for Gen1 and Gen2 Data rates. This same PLL should also be used when running any Gen3 configuration">
+   <parameter name="gui_enable_fractional" value="false" />
+   <parameter name="gui_bw_sel" value="low" />
+   <parameter name="gui_desired_outclk0_frequency" value="500.0" />
+   <parameter name="generate_docs" value="1" />
+   <parameter name="gui_fpll_mode" value="2" />
+   <parameter name="gui_refclk_switch" value="false" />
+   <parameter name="gui_number_of_output_clocks" value="1" />
+   <parameter name="gui_outclk0_phase_shift_unit" value="0" />
+   <parameter name="gui_hssi_prot_mode" value="2" />
+   <parameter name="gui_refclk_index" value="0" />
+   <parameter name="gui_refclk_cnt" value="1" />
+   <parameter name="gui_operation_mode" value="0" />
+   <parameter name="gui_outclk0_actual_phase_shift" value="0 ps" />
+   <parameter name="gui_outclk0_desired_phase_shift" value="0.0" />
+   <parameter name="enable_pll_reconfig" value="0" />
+   <parameter name="gui_hssi_output_clock_frequency" value="2500.0" />
+   <parameter name="gui_actual_outclk0_frequency" value="100.0 MHz" />
+   <parameter name="enable_mcgb" value="0" />
+  </preset>
+ </presets>
+</ip>

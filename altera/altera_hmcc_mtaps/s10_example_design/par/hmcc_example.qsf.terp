@@ -1,0 +1,74 @@
+@@ #
+@@ # Variables used for TERP:
+@@ # device_part       :   specific device part being used
+@@ # num_channels      :   number of channels used
+@@ # data_rate         :   data rate in Gbps
+@@ #
+@@ set quartus_rootdir $::env(QUARTUS_ROOTDIR)
+
+set_global_assignment -name FAMILY "Stratix 10"
+set_global_assignment -name DEVICE $device_part
+set_global_assignment -name TOP_LEVEL_ENTITY hmcc_example
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+#set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+#set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+#set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+
+set_instance_assignment -name IO_STANDARD "1.8 V" -to clk_50
+
+## 125 MHz reference clock for use in loopback configurations.
+#set_location_assignment PIN_BD24 -to clk_125
+#set_instance_assignment -name IO_STANDARD LVDS -to clk_125
+
+# HMC Reference Clock comming from FMC daughter card.
+# Line rate divided by 32 reference clock for link 0 transceivers on FMCB/FMC0
+set_instance_assignment -name IO_STANDARD LVDS -to hssi_refclk
+## Line rate divided by 32 reference clock for link 1 transceivers on FMCA/FMC1
+#set_location_assignment PIN_AL8                -to hssi_refclk
+#set_instance_assignment -name IO_STANDARD LVDS -to hssi_refclk
+
+
+# HMC Control Signals
+#set_location_assignment PIN_AK14 -to hmc_ctrl_cub[0]
+#set_location_assignment PIN_AJ12 -to hmc_ctrl_cub[1]
+#set_location_assignment PIN_AN14 -to hmc_ctrl_cub[2]
+
+# User reset button.
+set_instance_assignment -name IO_STANDARD "1.8 V" -to push_button
+
+#set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ctrl_lxrxps
+#set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ctrl_lxtxps
+set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ctrl_ferr_n
+set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ctrl_p_rst_n
+set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ctrl_scl
+set_instance_assignment -name VIRTUAL_PIN ON -to hmc_ctrl_sda
+set_instance_assignment -name VIRTUAL_PIN ON -to fmc0_scl
+set_instance_assignment -name VIRTUAL_PIN ON -to fmc0_sda
+set_instance_assignment -name VIRTUAL_PIN ON -to push_button
+set_instance_assignment -name VIRTUAL_PIN ON -to heart_beat_n
+set_instance_assignment -name VIRTUAL_PIN ON -to link_init_complete_n
+set_instance_assignment -name VIRTUAL_PIN ON -to test_passed_n
+set_instance_assignment -name VIRTUAL_PIN ON -to test_failed_n
+
+set_global_assignment -name SDC_FILE hmcc_example.sdc
+set_global_assignment -name VERILOG_FILE $quartus_rootdir/../ip/altera/primitives/altera_std_synchronizer/altera_std_synchronizer_nocut.v
+set_global_assignment -name VERILOG_FILE ../src/m20k_2port.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/response_monitor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/request_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/i2c_control.sv
+set_global_assignment -name VERILOG_FILE ../src/i2c_32sub.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/hmcc_example.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../src/atx_pll_recal.sv
+
+set_global_assignment -name QIP_FILE ../../ip/altera_atx_pll_ip/altera_atx_pll_ip.qip
+set_global_assignment -name QIP_FILE ../../ip/altera_hmcc_ip/altera_hmcc_ip.qip
+set_global_assignment -name QIP_FILE ../../ip/bidir_pin/bidir_pin.qip
+set_global_assignment -name QIP_FILE ../../ip/AVMM/AVMM.qip
+

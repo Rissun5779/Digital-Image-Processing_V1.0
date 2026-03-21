@@ -1,0 +1,111 @@
+module ${output_name}  (
+@@if { $total_clks_used > 1 } {
+	input  wire [${total_clks_used}-1:0] clk,
+	input  wire [${total_clks_used}-1:0] ena,
+@@} elseif { $total_clks_used > 0 } {
+    input  wire                          clk,
+    input  wire                          ena,
+@@}
+@@if { $single_clear == "true" } {
+    input  wire                          aclr,
+@@} else {
+    input  wire [1:0]                    aclr,
+@@}
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    input  wire                          accumulate,
+@@}        
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    input  wire [31:0]                   ax,
+@@}        
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    input  wire [31:0]                   ay,
+@@}        
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    input  wire [31:0]                   az,
+@@}        
+@@if { [lsearch -nocase $interfaces "chainin"] != -1 } {
+    input  wire [31:0]                   chainin,
+@@}
+@@if { [lsearch -nocase $interfaces "chainout"] != -1 } {
+    output wire [31:0]                   chainout,
+@@}
+    output wire [31:0]                   result
+
+	);
+@@if { $total_clks_used > 0 } {
+    wire [${total_clks_used}-1:0] clk_vec;
+    wire [${total_clks_used}-1:0] ena_vec;
+@@}
+@@if { $single_clear == "true" } {
+    wire [1:0]                   aclr_vec;
+@@}
+@@if { $total_clks_used > 1 } {
+    assign clk_vec = clk;
+    assign ena_vec = ena;
+@@} elseif { $total_clks_used > 0 } {
+    assign clk_vec[0] = clk;
+    assign ena_vec[0] = ena;
+@@}
+@@if { $single_clear == "true" } {
+    assign aclr_vec[1] = aclr;
+    assign aclr_vec[0] = aclr;
+@@}
+
+twentynm_fp_mac  #(
+@@foreach cur_clock $hdl_clocks {
+@@set val [subst $${cur_clock}_derived]
+    .${cur_clock}("${val}"),
+@@}
+    .use_chainin("${use_chainin}"),
+    .operation_mode("${OPERATION}"),
+    .adder_subtract("${adder_subtract}")
+) $OPERATION (
+@@ set clk_assignment "\}"
+@@ set ena_assignment "\}"
+@@for {set i 0} {$i < $total_clks_used} {incr i} {
+@@ if { $i != 0 } {set clk_assignment ",${clk_assignment}" }
+@@ if { $i != 0 } {set ena_assignment ",${ena_assignment}" }
+@@  set clk_assignment "clk_vec\[${i}\]${clk_assignment}"
+@@  set ena_assignment "ena_vec\[${i}\]${ena_assignment}"
+@@}
+@@for {set i $total_clks_used} {$i < 3} {incr i} {
+@@ if { $i != 0 } {set clk_assignment ",${clk_assignment}" }
+@@ if { $i != 0 } {set ena_assignment ",${ena_assignment}" }
+@@  set clk_assignment "1'b0${clk_assignment}"
+@@  set ena_assignment "1'b0${ena_assignment}"
+@@}
+@@ set clk_assignment "\{${clk_assignment}"
+@@ set ena_assignment "\{${ena_assignment}"
+    .clk($clk_assignment),
+    .ena($ena_assignment),
+@@if { $single_clear == "true" } {
+    .aclr(aclr_vec),
+@@} else {
+    .aclr(aclr),
+@@}
+@@if { [lsearch -nocase $interfaces "accumulate"] != -1 } {
+    .accumulate(accumulate),
+@@}
+@@if { [lsearch -nocase $interfaces "ax"] != -1 } {
+    .ax(ax),
+@@}
+@@if { [lsearch -nocase $interfaces "ay"] != -1 } {
+    .ay(ay),
+@@}
+@@if { [lsearch -nocase $interfaces "az"] != -1 } {
+    .az(az),
+@@}
+
+@@if { $use_chainin } {
+    .chainin(chainin),
+@@} else {
+    .chainin(32'b0),
+@@}
+    .resulta(result),
+@@if { $use_chainout } {
+    .chainout(chainout)
+@@} else {
+    .chainout()
+@@}
+);
+endmodule

@@ -1,0 +1,627 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// *********************************************************************
+// Description
+// 
+// DisplayPort Design Example Top-level module 
+//
+// *********************************************************************
+
+@@ set top_level_name           $param0
+@@ set rx_max_lane_count        $param1
+@@ set rx_symbols_per_clock     $param2
+@@ set rx_pixels_per_clock      $param3
+@@ set rx_video_bpc             $param4
+@@ set rx_support_ss            $param5
+@@ set rx_support_audio         $param6
+@@ set rx_audio_chans           $param7
+@@ set rx_export_msa            $param8
+@@ set rx_aux_gpu               $param9
+@@ set tx_max_lane_count        $param10
+@@ set tx_symbols_per_clock     $param11
+@@ set tx_pixels_per_clock      $param12
+@@ set tx_video_bpc             $param13
+@@ set tx_support_ss            $param14
+@@ set tx_support_audio         $param15
+@@ set tx_audio_chans           $param16
+@@ set tx_support_analog_reconfig   $param17
+
+module $top_level_name 
+#(
+    parameter RX_MAX_LANE_COUNT = $rx_max_lane_count,
+    parameter TX_MAX_LANE_COUNT = $tx_max_lane_count
+    
+)
+(
+    //Clocks Inputs
+    input  wire                             cpu_resetn,                 //1.8V    //CPU Reset Pushbutton (TR=0)
+    input  wire                             refclk1_p,                  //LVDS XCVR reference clock - 100MHz (Programmable Si570) or SMA input
+
+    //FPGA Mezzanine Card (FMC)
+	//XCVR Interface
+    input  wire [1:0]                       fmca_gbtclk_m2c_p,          //Transciever Ref Clocks
+    input  wire [(RX_MAX_LANE_COUNT-1):0]   fmca_dp_m2c_p,              //Transceiver Data FPGA RX
+    output wire [(TX_MAX_LANE_COUNT-1):0]   fmca_dp_c2m_p,              //Transceiver Data FPGA TX
+
+    //Arria 10 LDVS can be Input or Output, not Bidirectional	
+    output wire                             fmca_la_rx_p_6,             // RX_HPD
+    input  wire                             fmca_la_tx_p_10,            // RX Cable Detect
+    input  wire                             fmca_la_rx_n_8,             // RX Power Detect (invert)
+    input  wire                             fmca_la_tx_n_9,             // RX Aux In
+    output wire                             fmca_la_rx_n_6,             // RX Aux Out
+    output wire                             fmca_la_tx_p_9,             // RX Aux OE
+    output wire                             fmca_la_tx_n_12,            // TX CAD
+    input  wire                             fmca_la_rx_n_9,             // TX HPD
+    input  wire                             fmca_la_tx_p_12,            // TX Aux In
+    output wire                             fmca_la_rx_p_10,            // TX Aux Out
+    output wire                             fmca_la_rx_n_10,            // TX Aux OE
+	
+    // I2C interface to Paratech Retimer PS8460
+    inout  wire                             fmca_la_tx_p_0,             // PS8460_SDA
+    inout  wire                             fmca_la_tx_n_0,             // PS8460_SCL
+    output wire                             fmca_la_rx_n_0,             // PS8460_EQ0
+    output wire                             fmca_la_rx_p_0,             // PS8460_EQ1
+    output wire                             fmca_la_tx_p_1,             // PS8460_PDN
+    output wire                             fmca_la_tx_n_1,             // PS8460_CFG0
+    output wire                             fmca_la_tx_p_2,             // PS8460_CFG1
+    output wire                             fmca_la_tx_n_2,             // PS8460_CFG2
+
+    //User-IO
+    input  wire [2:0]                       user_pb,                    //1.8V    //User Pushbuttons (TR=0)
+    output wire [7:0]                       user_led_g                  //1.8V    //User LEDs
+);
+
+
+// -------------------------------------------------------------------------
+// Local Parameter
+// -------------------------------------------------------------------------
+localparam RX_SYMBOLS_PER_CLOCK = $rx_symbols_per_clock;
+localparam RX_PIXELS_PER_CLOCK = $rx_pixels_per_clock;
+@@ if { $rx_support_audio } {
+localparam RX_AUDIO_CHANS = $rx_audio_chans;
+@@ }
+localparam RX_VIDEO_BPC = $rx_video_bpc;
+localparam TX_SYMBOLS_PER_CLOCK = $tx_symbols_per_clock;
+localparam TX_PIXELS_PER_CLOCK = $tx_pixels_per_clock;
+@@ if { $tx_support_audio } {
+localparam TX_AUDIO_CHANS = $tx_audio_chans;
+@@ }
+localparam TX_VIDEO_BPC = $tx_video_bpc;
+localparam DPRIO_ADDRESS_WIDTH = 12;
+localparam DPRIO_DATA_WIDTH = 32;
+
+// -------------------------------------------------------------------------
+// Bitec DP Daughter Card Revision.
+// -------------------------------------------------------------------------
+localparam BITEC_DP_CARD_REV = 0; // 0 = Bitec FMC DP card rev.4 - 8,
+                                  // 1 = rev.9 or later
+
+// -------------------------------------------------------------------------
+// Signal Declaration
+// -------------------------------------------------------------------------
+// From Video PLL 
+wire                                                dp_rx_vid_clk;
+wire                                                clk_16;
+wire                                                video_pll_locked;
+
+// From/To Video Buffering Module
+wire [((RX_PIXELS_PER_CLOCK*RX_VIDEO_BPC*3)-1):0]   dp_rx_vid_data;
+wire [(RX_PIXELS_PER_CLOCK-1):0]                    dp_rx_vid_valid;
+wire                                                dp_rx_vid_locked;
+wire                                                dp_rx_vid_sof;
+wire                                                dp_rx_vid_eof;
+wire                                                dp_rx_vid_sol;
+wire                                                dp_rx_vid_eol;
+wire [(RX_MAX_LANE_COUNT-1):0]                      gxb_rx_clkout;
+@@ if { $rx_export_msa } {
+wire [216:0]                                        dp_rx_msa;
+@@ }
+wire [1:0]                                          dp_rx_link_rate;
+wire [7:0]                                          dp_rx_link_rate_8bits;
+wire [7:0]                                          dp_tx_link_rate_8bits;
+wire                                                tx_vid_clk;
+wire [((TX_PIXELS_PER_CLOCK*TX_VIDEO_BPC*3)-1):0]   tx_vid_data;
+wire                                                tx_vid_hsync;
+wire                                                tx_vid_vsync;
+wire                                                tx_vid_de;
+    
+// From/To Reconfiguration Arbiter
+wire                                                rx_rcfg_en;
+wire                                                rx_rcfg_write;
+wire                                                rx_rcfg_read;
+wire [(DPRIO_ADDRESS_WIDTH)-1:0]                    rx_rcfg_address;
+wire [(DPRIO_DATA_WIDTH)-1:0]                       rx_rcfg_writedata;
+wire [(DPRIO_DATA_WIDTH)-1:0]                       rx_rcfg_readdata;
+wire                                                rx_rcfg_waitrequest;
+wire [RX_MAX_LANE_COUNT-1:0]                        rx_rcfg_cal_busy;
+wire                                                tx_rcfg_en;
+wire                                                tx_rcfg_write;
+wire                                                tx_rcfg_read;
+wire [(DPRIO_ADDRESS_WIDTH)-1:0]                    tx_rcfg_address;
+wire [(DPRIO_DATA_WIDTH)-1:0]                       tx_rcfg_writedata;
+wire [(DPRIO_DATA_WIDTH)-1:0]                       tx_rcfg_readdata;
+wire                                                tx_rcfg_waitrequest;
+wire [TX_MAX_LANE_COUNT-1:0]                        tx_rcfg_cal_busy;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rcfg_write;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rcfg_read;
+wire [(RX_MAX_LANE_COUNT*10)-1:0]                   gxb_rcfg_address;
+wire [(RX_MAX_LANE_COUNT*DPRIO_DATA_WIDTH)-1:0]     gxb_rcfg_writedata;
+wire [(RX_MAX_LANE_COUNT*DPRIO_DATA_WIDTH)-1:0]     gxb_rx_rcfg_readdata;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rx_rcfg_waitrequest;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rx_rcfg_cal_busy;
+wire [(TX_MAX_LANE_COUNT*DPRIO_DATA_WIDTH)-1:0]     gxb_tx_rcfg_readdata;
+wire [TX_MAX_LANE_COUNT-1:0]                        gxb_tx_rcfg_waitrequest;
+wire [TX_MAX_LANE_COUNT-1:0]                        gxb_tx_rcfg_cal_busy;
+
+// From/To Core Qsys-system
+//      DP RX Sus-system
+wire                                                dp_rx_clk_cal;
+wire                                                dp_rx_restart;
+wire                                                dp_rx_rcfg_req;
+wire                                                dp_rx_rcfg_ack;
+wire                                                dp_rx_rcfg_busy;
+wire                                                dp_rx_analog_rcfg_req;
+wire [(RX_MAX_LANE_COUNT*2)-1:0]                    dp_rx_analog_rcfg_vod;
+wire [(RX_MAX_LANE_COUNT*2)-1:0]                    dp_rx_analog_rcfg_emp;
+wire [((RX_MAX_LANE_COUNT*RX_SYMBOLS_PER_CLOCK*10)-1):0]    dp_rx_parallel_data;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_is_lockedtoref;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_is_lockedtodata;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_bitslip;
+wire                                                dp_rx_cal_busy;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_set_locktoref;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_set_locktodata;
+wire [4:0]                                          dp_rx_lane_count;
+
+//      DP TX Sus-system
+wire                                                dp_tx_resetn;
+wire                                                dp_tx_clk_cal;
+@@ if { $tx_support_analog_reconfig } {
+wire                                                dp_tx_rcfg_req;
+wire                                                dp_tx_rcfg_ack;
+wire [(TX_MAX_LANE_COUNT*2)-1:0]                    dp_tx_rcfg_vod;
+wire [(TX_MAX_LANE_COUNT*2)-1:0]                    dp_tx_rcfg_emp;
+@@ }
+wire                                                dp_txpll_rcfg_req;
+wire                                                dp_txpll_rcfg_ack;
+wire                                                dp_tx_rcfg_busy;
+wire [((TX_MAX_LANE_COUNT*TX_SYMBOLS_PER_CLOCK*10)-1):0]    dp_tx_parallel_data;
+wire                                                dp_txpll_powerdown;
+wire [(TX_MAX_LANE_COUNT-1):0]                      dp_tx_cal_busy;
+wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_clkout;
+wire                                                dp_txpll_locked;
+
+@@ if { $tx_support_audio } {
+wire                                                dp_audio_clk;
+wire                                                dp_audio_valid;
+wire                                                dp_audio_mute;
+wire [((TX_AUDIO_CHANS*32)-1):0]                    dp_audio_lpcm_data;
+
+@@}
+
+// I2C Master Avalon interface from/to Core Qsys-system
+wire                                                oc_i2c_avalon_waitrequestn;
+wire [2:0]                                          oc_i2c_avalon_address;
+wire [7:0]                                          oc_i2c_avalon_writedata;
+wire [7:0]                                          oc_i2c_avalon_readdata;
+wire                                                oc_i2c_avalon_chipselect;
+wire                                                oc_i2c_avalon_write;
+
+// -------------------------------------------------------------------------
+// Debounce push button reset.
+// -------------------------------------------------------------------------
+wire                                                cpu_reset;
+wire                                                cpu_reset_n;
+reset_gen #(.CNTR_WIDTH(23)) 
+reset_gen (
+    .pb_resetn  (cpu_resetn),
+    .clk        (refclk1_p),
+    .reset      (cpu_reset),
+    .reset_n    (cpu_reset_n)
+    );
+
+// -------------------------------------------------------------------------
+// DisplayPort Core Qsys system
+// -------------------------------------------------------------------------
+dp_core
+dp_core_i (
+    .cpu_reset_bridge_in_reset_n                    (cpu_reset_n),
+    .clk_100_in_clk                                 (refclk1_p),
+    // -------------------------------------------------------------------
+    // I2C Avalon Interface to Paratech Retimer
+    // -------------------------------------------------------------------
+    .oc_i2c_master_av_slave_translator_av_address		(oc_i2c_avalon_address),
+    .oc_i2c_master_av_slave_translator_av_write	    	(oc_i2c_avalon_write),
+    .oc_i2c_master_av_slave_translator_av_readdata		(oc_i2c_avalon_readdata),
+    .oc_i2c_master_av_slave_translator_av_writedata		(oc_i2c_avalon_writedata),
+    .oc_i2c_master_av_slave_translator_av_waitrequest	(~oc_i2c_avalon_waitrequestn),
+    .oc_i2c_master_av_slave_translator_av_chipselect	(oc_i2c_avalon_chipselect),
+	
+    // -------------------------------------------------------------------
+    // DisplayPort Sink Sub-System
+    // -------------------------------------------------------------------
+    .dp_rx_reset_bridge_in_reset_n                  (video_pll_locked),
+    .dp_rx_clk_16_in_clk                            (clk_16),
+    .dp_rx_dp_sink_clk_cal                          (dp_rx_clk_cal),
+    // Hot Plug Detect Interface
+    .dp_rx_dp_sink_rx_hpd                           (fmca_la_rx_p_6),
+    .dp_rx_dp_sink_rx_cable_detect                  (fmca_la_tx_p_10),
+    .dp_rx_dp_sink_rx_pwr_detect                    (~fmca_la_rx_n_8),
+    // DisplayPort Auxiliarty Interface
+    .dp_rx_dp_sink_rx_aux_in                        (fmca_la_tx_n_9),
+    .dp_rx_dp_sink_rx_aux_out                       (fmca_la_rx_n_6),
+    .dp_rx_dp_sink_rx_aux_oe                        (fmca_la_tx_p_9),
+    // DisplayPort RX Video Protocol Interface (Interface with PCR)
+    .dp_rx_dp_sink_rx_vid_clk                       (dp_rx_vid_clk),
+    .dp_rx_dp_sink_rx_vid_sol                       (dp_rx_vid_sol),
+    .dp_rx_dp_sink_rx_vid_eol                       (dp_rx_vid_eol),
+    .dp_rx_dp_sink_rx_vid_sof                       (dp_rx_vid_sof),
+    .dp_rx_dp_sink_rx_vid_eof                       (dp_rx_vid_eof),
+    .dp_rx_dp_sink_rx_vid_locked                    (dp_rx_vid_locked),
+    .dp_rx_dp_sink_rx_vid_interlace                 (),
+    .dp_rx_dp_sink_rx_vid_field                     (),
+    .dp_rx_dp_sink_rx_vid_overflow                  (),
+    .dp_rx_dp_sink_rx_vid_data                      (dp_rx_vid_data),
+    .dp_rx_dp_sink_rx_vid_valid                     (dp_rx_vid_valid),
+    @@ if { $rx_export_msa } {
+    .dp_rx_dp_sink_rx_msa                           (dp_rx_msa),
+    @@ }
+    .dp_rx_dp_sink_rx_lane_count                    (dp_rx_lane_count),
+    .dp_rx_dp_sink_rx_link_rate                     (dp_rx_link_rate),
+    .dp_rx_dp_sink_rx_link_rate_8bits               (dp_rx_link_rate_8bits),
+    .dp_rx_dp_sink_rx_reconfig_req                  (dp_rx_rcfg_req),
+    .dp_rx_dp_sink_rx_reconfig_ack                  (dp_rx_rcfg_ack),
+    .dp_rx_dp_sink_rx_reconfig_busy                 (dp_rx_rcfg_busy),
+    .dp_rx_dp_sink_rx_analog_reconfig_req           (dp_rx_analog_rcfg_req),
+    .dp_rx_dp_sink_rx_vod                           (dp_rx_analog_rcfg_vod),
+    .dp_rx_dp_sink_rx_emp                           (dp_rx_analog_rcfg_emp),
+    @@ if { $rx_support_ss } {
+    // DisplayPort Secondary Stream Interface
+    .dp_rx_dp_sink_rx_ss_valid                      (),
+    .dp_rx_dp_sink_rx_ss_data                       (),
+    .dp_rx_dp_sink_rx_ss_sop                        (),
+    .dp_rx_dp_sink_rx_ss_eop                        (),
+    .dp_rx_dp_sink_rx_ss_clk                        (dp_audio_clk),
+    @@ }
+    @@ if { $rx_support_audio } {
+    // DisplayPort Audio Interface
+    .dp_rx_dp_sink_rx_audio_valid                   (dp_audio_valid),
+    .dp_rx_dp_sink_rx_audio_mute                    (dp_audio_mute),
+    .dp_rx_dp_sink_rx_audio_infoframe               (),
+    .dp_rx_dp_sink_rx_audio_lpcm_data               (dp_audio_lpcm_data),
+    @@ }    
+    .dp_rx_dp_sink_rx_parallel_data                 (dp_rx_parallel_data),
+    .dp_rx_dp_sink_rx_std_clkout                    (gxb_rx_clkout),
+    .dp_rx_dp_sink_rx_is_lockedtoref                (dp_rx_is_lockedtoref),
+    .dp_rx_dp_sink_rx_is_lockedtodata               (dp_rx_is_lockedtodata),
+    .dp_rx_dp_sink_rx_restart                       (dp_rx_restart),
+    .dp_rx_dp_sink_rx_bitslip                       (dp_rx_bitslip),
+    .dp_rx_dp_sink_rx_cal_busy                      ({RX_MAX_LANE_COUNT{dp_rx_cal_busy}}),
+    .dp_rx_dp_sink_rx_analogreset                   (),
+    .dp_rx_dp_sink_rx_digitalreset                  (),
+    .dp_rx_dp_sink_rx_set_locktoref                 (dp_rx_set_locktoref),
+    .dp_rx_dp_sink_rx_set_locktodata                (dp_rx_set_locktodata),
+    .dp_rx_pio_0_in_port                            (~user_pb[0]),
+    .dp_rx_dp_sink_rx_stream_valid                  (),
+    .dp_rx_dp_sink_rx_stream_clk                    (),
+    .dp_rx_dp_sink_rx_stream_data                   (),
+    .dp_rx_dp_sink_rx_stream_ctrl                   (),
+
+    // -------------------------------------------------------------------
+    // DisplayPort Source Sub-System
+    // -------------------------------------------------------------------
+    .dp_tx_reset_bridge_in_reset_n                  (video_pll_locked),
+    .dp_tx_clk_16_in_clk                            (clk_16),
+    .dp_tx_dp_source_clk_cal                        (dp_tx_clk_cal),
+    // Hot Plug Detect Interface
+    .dp_tx_dp_source_tx_hpd                         (~fmca_la_rx_n_9),
+    // DisplayPort Auxiliarty Interface
+    .dp_tx_dp_source_tx_aux_in                      (fmca_la_tx_p_12),
+    .dp_tx_dp_source_tx_aux_out                     (fmca_la_rx_p_10),
+    .dp_tx_dp_source_tx_aux_oe                      (fmca_la_rx_n_10),
+    // TX Video Signal Interface 
+    .dp_tx_dp_source_tx_vid_clk                     (tx_vid_clk),
+    .dp_tx_dp_source_tx_vid_data                    (tx_vid_data),
+    .dp_tx_dp_source_tx_vid_v_sync                  ({TX_PIXELS_PER_CLOCK{tx_vid_vsync}}),
+    .dp_tx_dp_source_tx_vid_h_sync                  ({TX_PIXELS_PER_CLOCK{tx_vid_hsync}}),
+    .dp_tx_dp_source_tx_vid_de                      ({TX_PIXELS_PER_CLOCK{tx_vid_de}}),
+    @@ if { $tx_support_ss } {
+    // DisplayPort Secondary Stream Interface
+    .dp_tx_dp_source_tx_ss_ready                    (),
+    .dp_tx_dp_source_tx_ss_valid                    (1'b0),
+    .dp_tx_dp_source_tx_ss_data                     (128'd0),
+    .dp_tx_dp_source_tx_ss_sop                      (1'b0),
+    .dp_tx_dp_source_tx_ss_eop                      (1'b0),
+    .dp_tx_dp_source_tx_ss_clk                      (),
+    @@ }
+    @@ if { $tx_support_audio } {
+    // DisplayPort Audio Interface
+    .dp_tx_dp_source_tx_audio_valid                 (dp_audio_valid),
+    .dp_tx_dp_source_tx_audio_mute                  (dp_audio_mute),
+    .dp_tx_dp_source_tx_audio_lpcm_data             (dp_audio_lpcm_data),
+    .dp_tx_dp_source_tx_audio_clk                   (dp_audio_clk),
+    @@ }
+    @@ if { $tx_support_analog_reconfig } {
+	// DisplayPort Analog Reconfiguration Interface
+    .dp_tx_dp_source_tx_analog_reconfig_req         (dp_tx_rcfg_req),
+    .dp_tx_dp_source_tx_analog_reconfig_ack         (dp_tx_rcfg_ack),
+    .dp_tx_dp_source_tx_analog_reconfig_busy        (dp_tx_rcfg_busy),
+    .dp_tx_dp_source_tx_vod                         (dp_tx_rcfg_vod),
+    .dp_tx_dp_source_tx_emp                         (dp_tx_rcfg_emp),
+    @@ }
+    .dp_tx_dp_source_tx_link_rate                   (),
+    .dp_tx_dp_source_tx_link_rate_8bits             (dp_tx_link_rate_8bits),
+    .dp_tx_dp_source_tx_reconfig_req                (dp_txpll_rcfg_req),
+    .dp_tx_dp_source_tx_reconfig_ack                (dp_txpll_rcfg_ack),
+    .dp_tx_dp_source_tx_reconfig_busy               (dp_tx_rcfg_busy),
+    .dp_tx_dp_source_tx_parallel_data               (dp_tx_parallel_data),
+    .dp_tx_dp_source_tx_pll_powerdown               (dp_txpll_powerdown),
+    .dp_tx_dp_source_tx_analogreset                 (),
+    .dp_tx_dp_source_tx_digitalreset                (),
+    .dp_tx_dp_source_tx_cal_busy                    (dp_tx_cal_busy),
+    .dp_tx_dp_source_tx_std_clkout                  (gxb_tx_clkout),
+    .dp_tx_dp_source_tx_pll_locked                  (dp_txpll_locked)
+    );
+
+// -------------------------------------------------------------------------
+// Receiver IP Top Level
+// -------------------------------------------------------------------------
+rx_phy_top
+#(
+    .BITEC_DP_CARD_REV              (BITEC_DP_CARD_REV),
+    .RX_SYMBOLS_PER_CLOCK           (RX_SYMBOLS_PER_CLOCK),
+    .RX_MAX_LANE_COUNT              (RX_MAX_LANE_COUNT)
+)
+rx_phy_top_i
+(
+    // RX Reference Clock
+    .rx_cdr_refclk                  (fmca_gbtclk_m2c_p[0]),
+    .dp_rx_clk_cal                  (dp_rx_clk_cal),
+    // RX Reference Reset
+    .rx_cdr_resetn                  (cpu_reset_n),
+    .video_pll_locked               (video_pll_locked),
+    // RX Link Rate (8bits)
+    .dp_rx_link_rate_8bits          (dp_rx_link_rate_8bits),
+    // RX Transceiver Reconfiguration Interface (To Arbiter or Altera Reconfig module)
+    .rx_rcfg_mgmt_reset             (cpu_reset),
+    .rx_rcfg_mgmt_clk               (refclk1_p),
+    .rx_rcfg_en                     (rx_rcfg_en),
+    .rx_rcfg_write                  (rx_rcfg_write),
+    .rx_rcfg_read                   (rx_rcfg_read),
+    .rx_rcfg_address                (rx_rcfg_address),
+    .rx_rcfg_writedata              (rx_rcfg_writedata),
+    .rx_rcfg_readdata               (rx_rcfg_readdata),
+    .rx_rcfg_waitrequest            (rx_rcfg_waitrequest),
+    .rx_rcfg_cal_busy               (rx_rcfg_cal_busy),
+    // RX Transceiver Interface
+    .gxb_rx_clkout                  (gxb_rx_clkout),
+    .gxb_rx_serial_data             (fmca_dp_m2c_p),
+    .gxb_rx_rcfg_write              (gxb_rcfg_write),
+    .gxb_rx_rcfg_read               (gxb_rcfg_read),
+    .gxb_rx_rcfg_address            (gxb_rcfg_address),
+    .gxb_rx_rcfg_writedata          (gxb_rcfg_writedata),
+    .gxb_rx_rcfg_readdata           (gxb_rx_rcfg_readdata),
+    .gxb_rx_rcfg_waitrequest        (gxb_rx_rcfg_waitrequest),
+    .gxb_rx_rcfg_cal_busy           (gxb_rx_rcfg_cal_busy),
+    // To DP RX Core Sub-System
+    .dp_rx_restart                  (dp_rx_restart),
+    .dp_rx_rcfg_req                 (dp_rx_rcfg_req),
+    .dp_rx_rcfg_ack                 (dp_rx_rcfg_ack),
+    .dp_rx_rcfg_busy                (dp_rx_rcfg_busy),
+    .dp_rx_analog_rcfg_req          (dp_rx_analog_rcfg_req),
+    .dp_rx_analog_rcfg_vod          (dp_rx_analog_rcfg_vod),
+    .dp_rx_analog_rcfg_emp          (dp_rx_analog_rcfg_emp),
+    .dp_rx_parallel_data            (dp_rx_parallel_data),
+    .dp_rx_is_lockedtoref           (dp_rx_is_lockedtoref),
+    .dp_rx_is_lockedtodata          (dp_rx_is_lockedtodata),
+    .dp_rx_bitslip                  (dp_rx_bitslip),
+    .dp_rx_cal_busy                 (dp_rx_cal_busy),
+    .dp_rx_set_locktoref            (dp_rx_set_locktoref),
+    .dp_rx_set_locktodata           (dp_rx_set_locktodata)
+);
+
+// -------------------------------------------------------------------------
+// Video/Image Processing Module Top Level
+// Or
+// Video Buffering Module
+// -------------------------------------------------------------------------
+// ----------------------
+// Video PLL
+// ----------------------
+video_pll_a10 dp_clkrec_video_pll_i
+(
+    .rst      (cpu_reset),
+    .refclk   (refclk1_p),
+    .outclk_0 (dp_rx_vid_clk),
+    .outclk_1 (clk_16),
+    .outclk_2 (),
+    .locked   (video_pll_locked)
+);
+
+bitec_clkrec 
+#(
+    .DEVICE_FAMILY                  ("Arria 10"),
+    .PIXELS_PER_CLOCK               (RX_PIXELS_PER_CLOCK),
+    .BPP                            ((RX_VIDEO_BPC*3)),
+    .CLK_PERIOD_NS                  (62),
+    .FIXED_NVID                     (0)
+)
+bitec_clkrec_i
+(
+    .areset                         (~video_pll_locked),
+    .clk                            (clk_16),               // 16Mhz
+    .clk_135                        (fmca_gbtclk_m2c_p[0]), // 135Mhz 
+
+    .rx_link_clk                    (gxb_rx_clkout[0]),
+    .rx_link_rate                   (dp_rx_link_rate),
+    @@ if { $rx_export_msa } {
+    .rx_msa                         (dp_rx_msa),
+    @@ } else {
+    .rx_msa                         (216'b0),               // RX_EXPORT_MSA has turned off. Please manually specify the correct MSA value.
+    @@ }
+    .vidin_clk                      (dp_rx_vid_clk),
+    .vidin_data                     (dp_rx_vid_data),
+    .vidin_valid                    (|dp_rx_vid_valid),
+    .vidin_locked                   (dp_rx_vid_locked),
+    .vidin_sof                      (dp_rx_vid_sof),
+    .vidin_eof                      (dp_rx_vid_eof),
+    .vidin_sol                      (dp_rx_vid_sol),
+    .vidin_eol                      (dp_rx_vid_eol),
+
+    .reset_out                      (),
+    .rec_clk                        (tx_vid_clk),
+    .vidout                         (tx_vid_data),
+    .hsync                          (tx_vid_hsync),
+    .vsync                          (tx_vid_vsync),
+    .de                             (tx_vid_de)
+);
+
+// -------------------------------------------------------------------------
+// Transmitter IP Top Level
+// -------------------------------------------------------------------------
+tx_phy_top
+#(
+    .BITEC_DP_CARD_REV              (BITEC_DP_CARD_REV),
+    .TX_SYMBOLS_PER_CLOCK           (TX_SYMBOLS_PER_CLOCK),
+    .TX_MAX_LANE_COUNT              (TX_MAX_LANE_COUNT)
+)
+tx_phy_top_i
+(
+    // TX Reference Clock
+    .tx_pll_refclk                  (fmca_gbtclk_m2c_p[0]),
+    .dp_tx_clk_cal                  (dp_tx_clk_cal),
+    // TX Reference Reset
+    .tx_pll_resetn                  (cpu_reset_n),
+    .video_pll_locked               (video_pll_locked),
+    // DP TX FMC Interface
+    .tx_cad                         (fmca_la_tx_n_12),
+    // TX Link Rate (8bits)
+    .dp_tx_link_rate_8bits          (dp_tx_link_rate_8bits),
+    // TX Transceiver Reconfiguration Interface (To Arbiter or Altera Reconfig module)
+    .tx_rcfg_mgmt_reset             (cpu_reset),
+    .tx_rcfg_mgmt_clk               (refclk1_p),
+    .tx_rcfg_en                     (tx_rcfg_en),
+    .tx_rcfg_write                  (tx_rcfg_write),
+    .tx_rcfg_read                   (tx_rcfg_read),
+    .tx_rcfg_address                (tx_rcfg_address),
+    .tx_rcfg_writedata              (tx_rcfg_writedata),
+    .tx_rcfg_readdata               (tx_rcfg_readdata),
+    .tx_rcfg_waitrequest            (tx_rcfg_waitrequest),
+    .tx_rcfg_cal_busy               (tx_rcfg_cal_busy),
+    // TX Transceiver Interface
+    .gxb_tx_clkout                  (gxb_tx_clkout),
+    .gxb_tx_serial_data             (fmca_dp_c2m_p),
+    .gxb_tx_rcfg_write              (gxb_rcfg_write),
+    .gxb_tx_rcfg_read               (gxb_rcfg_read),
+    .gxb_tx_rcfg_address            (gxb_rcfg_address),
+    .gxb_tx_rcfg_writedata          (gxb_rcfg_writedata),
+    .gxb_tx_rcfg_readdata           (gxb_tx_rcfg_readdata),
+    .gxb_tx_rcfg_waitrequest        (gxb_tx_rcfg_waitrequest),
+    .gxb_tx_rcfg_cal_busy           (gxb_tx_rcfg_cal_busy),
+    // To DP TX Core Sub-System 
+    @@ if { $tx_support_analog_reconfig } {
+    .dp_tx_rcfg_req                 (dp_tx_rcfg_req),
+    .dp_tx_rcfg_ack                 (dp_tx_rcfg_ack),
+    .dp_tx_rcfg_vod                 (dp_tx_rcfg_vod),
+    .dp_tx_rcfg_emp                 (dp_tx_rcfg_emp),
+    @@ }
+    .dp_txpll_rcfg_req              (dp_txpll_rcfg_req),
+    .dp_txpll_rcfg_ack              (dp_txpll_rcfg_ack),
+    .dp_tx_rcfg_busy                (dp_tx_rcfg_busy),
+    .dp_tx_parallel_data            (dp_tx_parallel_data),
+    .dp_txpll_powerdown             (dp_txpll_powerdown),
+    .dp_tx_cal_busy                 (dp_tx_cal_busy),
+    .dp_txpll_locked                (dp_txpll_locked)
+);
+
+// -------------------------------------------------------------------------
+// Transceiver Reconfiguration Arbtier
+// -------------------------------------------------------------------------
+a10_reconfig_arbiter 
+#(
+    .LANES                          (RX_MAX_LANE_COUNT),
+    .DPRIO_ADDRESS_WIDTH            ((DPRIO_ADDRESS_WIDTH-2)),
+    .DPRIO_DATA_WIDTH               (DPRIO_DATA_WIDTH),
+    .EXPIRED_COUNTER                (70000000)  // 700ms
+)
+a10_reconfig_arbiter_i
+(
+    .clk                            (refclk1_p),
+    .reset                          (cpu_reset),
+
+    .rx_rcfg_en                     (rx_rcfg_en),
+    .rx_rcfg_ch                     (rx_rcfg_address[11:10]),
+    .rx_reconfig_mgmt_write         (rx_rcfg_write),
+    .rx_reconfig_mgmt_read          (rx_rcfg_read),
+    .rx_reconfig_mgmt_address       (rx_rcfg_address[9:0]),
+    .rx_reconfig_mgmt_writedata     (rx_rcfg_writedata),
+    .rx_reconfig_mgmt_readdata      (rx_rcfg_readdata),
+    .rx_reconfig_mgmt_waitrequest   (rx_rcfg_waitrequest),
+    .rx_reconfig_cal_busy           (rx_rcfg_cal_busy),
+
+    .tx_rcfg_en                     (tx_rcfg_en),
+    .tx_rcfg_ch                     (tx_rcfg_address[11:10]),
+    .tx_reconfig_mgmt_write         (tx_rcfg_write),
+    .tx_reconfig_mgmt_read          (tx_rcfg_read),
+    .tx_reconfig_mgmt_address       (tx_rcfg_address[9:0]),
+    .tx_reconfig_mgmt_writedata     (tx_rcfg_writedata),
+    .tx_reconfig_mgmt_readdata      (tx_rcfg_readdata),
+    .tx_reconfig_mgmt_waitrequest   (tx_rcfg_waitrequest),
+    .tx_reconfig_cal_busy           (tx_rcfg_cal_busy),
+
+    .reconfig_write                 (gxb_rcfg_write),
+    .reconfig_read                  (gxb_rcfg_read),
+    .reconfig_address               (gxb_rcfg_address),
+    .reconfig_writedata             (gxb_rcfg_writedata),
+    .rx_reconfig_readdata           (gxb_rx_rcfg_readdata),
+    .rx_reconfig_waitrequest        (gxb_rx_rcfg_waitrequest),
+    .tx_reconfig_readdata           (gxb_tx_rcfg_readdata),
+    .tx_reconfig_waitrequest        (gxb_tx_rcfg_waitrequest),
+    .rx_cal_busy                    (gxb_rx_rcfg_cal_busy),
+    .tx_cal_busy                    (gxb_tx_rcfg_cal_busy)
+);
+
+// -------------------------------------------------------------------------
+// I2C Master interface 
+//  - I2C is used to configured Paratech Retimer PS8460 on Bitec
+//    FMC Daughter Card rev10 and onwards.
+// -------------------------------------------------------------------------
+oc_i2c_master u_oc_i2c_master (
+	.scl_pad_io	(fmca_la_tx_n_0),
+	.sda_pad_io	(fmca_la_tx_p_0),
+	.wb_rst_i	(cpu_reset),
+	.wb_clk_i	(refclk1_p),
+	.wb_ack_o	(oc_i2c_avalon_waitrequestn),
+	.wb_adr_i	(oc_i2c_avalon_address),
+	.wb_dat_i	(oc_i2c_avalon_writedata),
+	.wb_dat_o	(oc_i2c_avalon_readdata),
+	.wb_stb_i	(oc_i2c_avalon_chipselect),
+	.wb_we_i	(oc_i2c_avalon_write),
+	.wb_inta_o	()
+);
+  
+assign fmca_la_tx_p_1 = cpu_reset_n;	// PS8460_PDN
+assign fmca_la_tx_n_1 = 1'b1;		// PS8460_CFG0
+assign fmca_la_tx_p_2 = 1'b1;		// PS8460_CFG1
+assign fmca_la_tx_n_2 = 1'b1;		// PS8460_CFG2
+assign fmca_la_rx_n_0 = 1'b0;		// PS8460_EQ0
+assign fmca_la_rx_p_0 = 1'b0;		// PS8460_EQ1
+
+// -------------------------------------------------------------------------
+// LED Indication
+// -------------------------------------------------------------------------
+assign user_led_g[0] =  ~dp_rx_vid_locked;
+assign user_led_g[5:1] =  ~(dp_rx_lane_count);
+assign user_led_g[7:6] =  ~(dp_rx_link_rate);
+
+endmodule

@@ -1,0 +1,174 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+#**************************************************************
+# Time Information
+#**************************************************************
+set_time_format -unit ns -decimal_places 3
+
+derive_pll_clocks -create_base_clocks
+derive_clock_uncertainty
+
+#**************************************************************
+# Create clock
+#**************************************************************
+@@  if { $family != "Arria 10" } {
+@@ #***********************************************************
+@@ # V-series device family
+@@ #***********************************************************
+set ch0_coreclk_collection [get_ports -nowarn ch0*coreclk]
+foreach_in_collection port \$ch0_coreclk_collection {
+  set coreclk_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_name -period "148.5MHz" [get_ports \$coreclk_name]
+}
+
+set ch0_coreclk_hd_collection [get_ports -nowarn ch0*coreclk_hd]
+foreach_in_collection port \$ch0_coreclk_hd_collection {
+  set coreclk_hd_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_hd_name -period "74.25MHz" [get_ports \$coreclk_hd_name]
+}
+
+set ch1_coreclk_collection [get_ports -nowarn ch1*coreclk]
+foreach_in_collection port \$ch1_coreclk_collection {
+  set coreclk_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_name -period "148.5MHz" [get_ports \$coreclk_name]
+}
+
+set ch1_coreclk_hd_collection [get_ports -nowarn ch1*coreclk_hd]
+foreach_in_collection port \$ch1_coreclk_hd_collection {
+  set coreclk_hd_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_hd_name -period "74.25MHz" [get_ports \$coreclk_hd_name]
+}
+
+set ch2_coreclk_collection [get_ports -nowarn ch2*coreclk]
+foreach_in_collection port \$ch2_coreclk_collection {
+  set coreclk_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_name -period "148.5MHz" [get_ports \$coreclk_name]
+}
+
+@@      if { ($vid_std == "hd" || $vid_std == "dl") && $hd_freq == "74.25"} {
+set ch0_xcvr_refclk_collection [get_ports -nowarn ch0*xcvr_refclk]
+foreach_in_collection port \$ch0_xcvr_refclk_collection {
+  set xcvr_refclk_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_name -period "74.25MHz" [get_ports \$xcvr_refclk_name]
+}
+
+set ch1_xcvr_refclk_collection [get_ports -nowarn ch1*xcvr_refclk]
+foreach_in_collection port \$ch1_xcvr_refclk_collection {
+  set xcvr_refclk_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_name -period "74.25MHz" [get_ports \$xcvr_refclk_name]
+}
+
+set xcvr_refclk_alt_collection [get_ports -nowarn *xcvr_refclk_alt]
+foreach_in_collection port \$xcvr_refclk_alt_collection {
+  set xcvr_refclk_alt_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_alt_name -period "74.175MHz" [get_ports \$xcvr_refclk_alt_name]
+}
+@@      } else {
+set ch0_xcvr_refclk_collection [get_ports -nowarn ch0*xcvr_refclk]
+foreach_in_collection port \$ch0_xcvr_refclk_collection {
+  set xcvr_refclk_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_name -period "148.5MHz" [get_ports \$xcvr_refclk_name]
+}
+
+set ch1_xcvr_refclk_collection [get_ports -nowarn ch1*xcvr_refclk]
+foreach_in_collection port \$ch1_xcvr_refclk_collection {
+  set xcvr_refclk_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_name -period "148.5MHz" [get_ports \$xcvr_refclk_name]
+}
+
+set xcvr_refclk_alt_collection [get_ports -nowarn *xcvr_refclk_alt]
+foreach_in_collection port \$xcvr_refclk_alt_collection {
+  set xcvr_refclk_alt_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_alt_name -period "148.35MHz" [get_ports \$xcvr_refclk_alt_name]
+}
+@@      }
+
+set ch2_xcvr_refclk_collection [get_ports -nowarn ch2*xcvr_refclk]
+foreach_in_collection port \$ch2_xcvr_refclk_collection {
+  set xcvr_refclk_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_refclk_name -period "148.5MHz" [get_ports \$xcvr_refclk_name]
+}
+
+@@  } else {
+@@ #***********************************************************
+@@ # Arria 10
+@@ #***********************************************************
+set ch0_coreclk_collection [get_ports -nowarn ch0*coreclk]
+foreach_in_collection port \$ch0_coreclk_collection {
+  set coreclk_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_name -period "148.5MHz" [get_ports \$coreclk_name]
+}
+
+set ch1_coreclk_collection [get_ports -nowarn ch1*coreclk]
+foreach_in_collection port \$ch1_coreclk_collection {
+  set coreclk_name [get_port_info -name \$port]
+  create_clock -name \$coreclk_name -period "148.5MHz" [get_ports \$coreclk_name]
+}
+
+set cdr_refclk_collection [get_ports -nowarn *cdr_refclk]
+foreach_in_collection port \$cdr_refclk_collection {
+  set cdr_refclk_name [get_port_info -name \$port]
+  create_clock -name \$cdr_refclk_name -period "148.5MHz" [get_ports \$cdr_refclk_name]
+}
+
+@@      if { $vid_std == "mr" } {
+set pll_refclk_collection [get_ports -nowarn *pll_refclk]
+foreach_in_collection port \$pll_refclk_collection {
+  set pll_refclk_name [get_port_info -name \$port]
+  create_clock -name \$pll_refclk_name -period "297MHz" [get_ports \$pll_refclk_name]
+}
+
+set tx_xcvr_rst_ctrl_clk_collection [get_ports -nowarn *tx_xcvr_rst_ctrl_clk]
+foreach_in_collection port \$tx_xcvr_rst_ctrl_clk_collection {
+  set tx_xcvr_rst_ctrl_clk_name [get_port_info -name \$port]
+  create_clock -name \$tx_xcvr_rst_ctrl_clk_name -period "297MHz" [get_ports \$tx_xcvr_rst_ctrl_clk_name]
+}
+
+set rx_xcvr_rst_ctrl_clk_collection [get_ports -nowarn *rx_xcvr_rst_ctrl_clk]
+foreach_in_collection port \$rx_xcvr_rst_ctrl_clk_collection {
+  set rx_xcvr_rst_ctrl_clk_name [get_port_info -name \$port]
+  create_clock -name \$rx_xcvr_rst_ctrl_clk_name -period "148.5MHz" [get_ports \$rx_xcvr_rst_ctrl_clk_name]
+}
+
+set pll_refclk_alt_collection [get_ports -nowarn *pll_refclk_alt]
+foreach_in_collection port \$pll_refclk_alt_collection {
+  set pll_refclk_alt_name [get_port_info -name \$port]
+  create_clock -name \$pll_refclk_alt_name -period "296.7MHz" [get_ports \$pll_refclk_alt_name]
+}
+@@      } else {
+set pll_refclk_collection [get_ports -nowarn *pll_refclk]
+foreach_in_collection port \$pll_refclk_collection {
+  set pll_refclk_name [get_port_info -name \$port]
+  create_clock -name \$pll_refclk_name -period "148.5MHz" [get_ports \$pll_refclk_name]
+}
+
+set xcvr_rst_ctrl_clk_collection [get_ports -nowarn *xcvr_rst_ctrl_clk]
+foreach_in_collection port \$xcvr_rst_ctrl_clk_collection {
+  set xcvr_rst_ctrl_clk_name [get_port_info -name \$port]
+  create_clock -name \$xcvr_rst_ctrl_clk_name -period "148.5MHz" [get_ports \$xcvr_rst_ctrl_clk_name]
+}
+
+set pll_refclk_alt_collection [get_ports -nowarn *pll_refclk_alt]
+foreach_in_collection port \$pll_refclk_alt_collection {
+  set pll_refclk_alt_name [get_port_info -name \$port]
+  create_clock -name \$pll_refclk_alt_name -period "148.35MHz" [get_ports \$pll_refclk_alt_name]
+}
+@@      }
+@@  }
+
+set reconfig_clk_collection [get_ports -nowarn *reconfig_clk]
+foreach_in_collection port \$reconfig_clk_collection {
+  set reconfig_clk_name [get_port_info -name \$port]
+  create_clock -name \$reconfig_clk_name -period "100MHz" [get_ports \$reconfig_clk_name]
+}

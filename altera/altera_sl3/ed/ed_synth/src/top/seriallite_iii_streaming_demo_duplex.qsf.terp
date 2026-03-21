@@ -1,0 +1,77 @@
+#
+# Notes:
+#
+#
+#   Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+set_global_assignment -name FAMILY "Stratix 10"
+set_global_assignment -name DEVICE $DEVICE
+set_global_assignment -name TOP_LEVEL_ENTITY seriallite_iii_streaming_demo
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "15:12:50  JULY 31, 2014"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 100
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "1.8 V"
+
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx[*]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx[*]
+
+
+# =================================================================
+# Pin & Location Assignments
+# =================================================================
+# PLEASE ADD LOCATION ASSIGNMENT FOR YOUR BOARD HERE !!
+
+set_instance_assignment -name VIRTUAL_PIN ON -to mgmt_reset_n
+set_instance_assignment -name VIRTUAL_PIN ON -to tx_activity_n
+set_instance_assignment -name VIRTUAL_PIN ON -to rx_activity_n
+set_instance_assignment -name VIRTUAL_PIN ON -to src_core_reset_n
+set_instance_assignment -name VIRTUAL_PIN ON -to snk_core_reset_n
+set_instance_assignment -name VIRTUAL_PIN ON -to src_link_up_n
+set_instance_assignment -name VIRTUAL_PIN ON -to snk_link_up_n
+
+# Transceiver analog settings
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to rx
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_0V -to tx
+set_instance_assignment -name XCVR_A10_TX_LINK SR -to tx
+set_instance_assignment -name XCVR_A10_RX_LINK SR -to rx
+
+# Adding files needed
+# Component files & SDC
+set_global_assignment -name QIP_FILE demo_control_source_mgmt/demo_control_source_mgmt.qip
+set_global_assignment -name QIP_FILE demo_control_timer_0/demo_control_timer_0.qip
+set_global_assignment -name QIP_FILE demo_control_reset_bridge_0/demo_control_reset_bridge_0.qip
+set_global_assignment -name QIP_FILE demo_control_nios2_qsys_0/demo_control_nios2_qsys_0.qip
+set_global_assignment -name QIP_FILE demo_control_jtag_uart/demo_control_jtag_uart.qip
+set_global_assignment -name QIP_FILE demo_control_demo_mgmt/demo_control_demo_mgmt.qip
+set_global_assignment -name QIP_FILE demo_control_code_data_memory/demo_control_code_data_memory.qip
+set_global_assignment -name QIP_FILE demo_control_clk/demo_control_clk.qip
+set_global_assignment -name QIP_FILE demo_control/demo_control.qip
+set_global_assignment -name QIP_FILE altera_sl3_dup/altera_sl3_dup.qip
+set_global_assignment -name QIP_FILE altera_sl3_atx_pll/altera_sl3_atx_pll.qip
+set_global_assignment -name QIP_FILE altera_sl3_fpll/altera_sl3_fpll.qip
+set_global_assignment -name SYSTEMVERILOG_FILE src/traffic_gen.sv
+set_global_assignment -name VERILOG_FILE src/traffic_check.v
+set_global_assignment -name VERILOG_FILE src/prbs_poly.v
+set_global_assignment -name VERILOG_FILE src/prbs_generator.v
+set_global_assignment -name VERILOG_FILE src/dp_hs_req.v
+set_global_assignment -name VERILOG_FILE src/dp_hs_resp.v
+set_global_assignment -name SYSTEMVERILOG_FILE src/demo_mgmt.v
+set_global_assignment -name VERILOG_FILE src/seriallite_iii_streaming_demo.v
+set_global_assignment -name SDC_FILE seriallite_iii_streaming_demo.sdc
+
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

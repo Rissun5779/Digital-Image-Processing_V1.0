@@ -1,0 +1,182 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ set ed_variant $param0
+@@ set vid_std    $param1
+module loopback_top #(
+    parameter NUM_STREAMS = 1,
+    parameter VIDEO_STANDARD = "tr"
+) (
+    input  wire                         sdi_tx_clkout,
+    input  wire                         sdi_rx_clkout,
+    input  wire                         sdi_rx_rst_proto,
+    input  wire [NUM_STREAMS*20-1:0]    sdi_rx_dataout,
+    input  wire                         sdi_rx_dataout_valid,
+    input  wire [2:0]                   sdi_rx_std,
+    input  wire [NUM_STREAMS-1:0]       sdi_rx_trs,
+    input  wire [NUM_STREAMS-1:0]       sdi_rx_trs_locked,
+    input  wire                         sdi_rx_frame_locked,
+    input  wire                         sdi_tx_dataout_valid,
+@@ if { $ed_variant == 2 } {
+    input  wire                         sdi_reclk_sysclk,
+    input  wire                         sdi_reclk_rst,
+    input  wire                         sdi_rx_h,
+    input  wire [3:0]                   sdi_rx_format,
+    input  wire                         sdi_rx_clkout_is_ntsc_paln,
+    input  wire [31:0]                  pll_reconfig_readdata,
+    input  wire                         pll_reconfig_waitrequest,
+    input  wire                         pll_locked,
+
+    output wire                         pll_reconfig_write,
+    output wire                         pll_reconfig_read,
+    output wire [31:0]                  pll_reconfig_writedata,
+    output wire [9:0]                   pll_reconfig_address,
+@@ } elseif { $ed_variant == 1 && $vid_std != "mr" } {
+    input  wire                         sdi_rx_h,
+    input  wire [3:0]                   sdi_rx_format,
+
+    output wire                         vcoclk_up,
+    output wire                         vcoclk_down,
+@@ }
+    output wire [NUM_STREAMS*20-1:0]    sdi_tx_datain,
+    output wire                         sdi_tx_datain_valid,
+    output wire                         sdi_tx_trs,
+    output wire [2:0]                   sdi_tx_std
+);
+
+@@ if { $ed_variant == 1 && $vid_std != "mr"} {
+wire tx_clkout_reset_sync_out;
+@@ }
+
+sdi_ii_ed_loopback #(
+    .FAMILY         ("Arria 10"),
+    .VIDEO_STANDARD (VIDEO_STANDARD)
+) data_loopback_inst (
+// Clock and reset
+    .rx_clk              (sdi_rx_clkout),
+    .tx_clk              (sdi_tx_clkout),
+    .rx_rst              (sdi_rx_rst_proto),
+// Inputs
+    .rx_data             (sdi_rx_dataout), 
+    .rx_data_valid       (sdi_rx_dataout_valid),
+    .rx_std              (sdi_rx_std),
+    .rx_trs              (sdi_rx_trs),
+    .rx_trs_locked       (sdi_rx_trs_locked),
+    .rx_frame_locked     (sdi_rx_frame_locked),
+    .tx_data_valid       (sdi_tx_dataout_valid),
+    .rx_ln               ({11*NUM_STREAMS{1'b0}}),
+    .rx_ln_b             ({11*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte1       ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte2       ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte3       ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte4       ({8*NUM_STREAMS{1'b0}}),
+    .rx_line_f0          ({11*NUM_STREAMS{1'b0}}),
+    .rx_line_f1          ({11*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte1_b     ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte2_b     ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte3_b     ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte4_b     ({8*NUM_STREAMS{1'b0}}),
+    .rx_data_b           (20'd0),
+    .rx_data_valid_b     (1'b0),
+    .tx_data_valid_b     (1'b0),
+// Outputs
+    .tx_data             (sdi_tx_datain),
+    .tx_data_valid_out   (sdi_tx_datain_valid),
+    .tx_trs              (sdi_tx_trs),
+    .tx_std              (sdi_tx_std),
+    .tx_ln               (),
+    .tx_ln_b             (),
+    .tx_enable_crc       (),
+    .tx_enable_ln        (),
+    .tx_vpid_overwrite   (),
+    .tx_vpid_byte1       (),
+    .tx_vpid_byte2       (),
+    .tx_vpid_byte3       (),
+    .tx_vpid_byte4       (),
+    .tx_line_f0          (),
+    .tx_line_f1          (),
+    .tx_vpid_byte1_b     (),
+    .tx_vpid_byte2_b     (),
+    .tx_vpid_byte3_b     (),
+    .tx_vpid_byte4_b     (),
+    .tx_trs_b            (),
+    .tx_data_b           (),
+    .tx_data_valid_out_b ()
+);
+
+@@ # Reclocker module is only required for VCXO removal design
+@@ if { $ed_variant == 2 } {
+sdi_reclock #(
+   .VIDEO_STANDARD          (VIDEO_STANDARD)
+) sdi_reclock_inst (
+// Clock and reset
+    .reset                  (sdi_reclk_rst),
+    .sysclk                 (sdi_reclk_sysclk),
+    .rx_clkout              (sdi_rx_clkout),
+    .tx_clkout              (sdi_tx_clkout),
+    .rx_rst_proto           (sdi_rx_rst_proto),
+// Inputs
+    .rx_trs_locked          (sdi_rx_trs_locked),
+    .rx_frame_locked        (sdi_rx_frame_locked),
+    .rx_h                   (sdi_rx_h),
+    .rx_std                 (sdi_rx_std),
+    .rx_format              (sdi_rx_format),
+    .rx_clkout_is_ntsc_paln (sdi_rx_clkout_is_ntsc_paln),
+    .coeff_sd               (32'd1300),
+    .coeff_hd               (32'd1200),
+    .coeff_3g               (32'd1100),
+    .pll_locked             (pll_locked),
+    .waitrequest_signal     (pll_reconfig_waitrequest),
+    .read_data              (pll_reconfig_readdata),
+// Outputs
+    .address_signal         (pll_reconfig_address),
+    .write_data             (pll_reconfig_writedata),
+    .write_signal           (pll_reconfig_write),
+    .read_signal            (pll_reconfig_read)
+);
+@@ # PFD module is required when using with on-board Si516 oscillator
+@@ } elseif { $ed_variant == 1 && $vid_std != "mr" } {
+pfd #(
+   .VIDEO_STANDARD          (VIDEO_STANDARD)
+) pfd_inst (
+// Clocks and reset
+   .rst                     (tx_clkout_reset_sync_out),
+   .rx_rst_proto            (sdi_rx_rst_proto),
+   .rx_clkout               (sdi_rx_clkout),
+   .vcoclk                  (sdi_tx_clkout),
+// Inputs
+   .enable                  (sdi_rx_trs_locked & sdi_rx_frame_locked),
+   .rx_std                  (sdi_rx_std),
+   .rx_format               (sdi_rx_format),
+   .refclk                  (sdi_rx_h),
+// Outputs
+   .up                      (vcoclk_up), 
+   .down                    (vcoclk_down),
+   .clear                   ()
+);
+
+reset_sync #(
+    .NUM_RESET_INPUTS          (1),
+    .RESET_REQ_WAIT_TIME       (1),
+    .MIN_RST_ASSERTION_TIME    (3),
+    .RESET_REQ_EARLY_DSRT_TIME (1)
+) tx_clkout_rst_sync_inst (
+// Clock and reset
+    .reset_in0      (sdi_rx_rst_proto),
+    .clk            (sdi_tx_clkout),
+// Outputs
+    .reset_out      (tx_clkout_reset_sync_out)
+);
+@@ }
+
+endmodule

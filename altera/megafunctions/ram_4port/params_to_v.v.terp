@@ -1,0 +1,142 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: params_to_v.v.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to verilog file
+@@ #
+@@ # Usage: IP core independent, general verilog format output for lpm ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module  ${output_name}  (
+@@
+@@  # output module port list #
+@@  set port_last [lindex $module_port_list end-3]
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $port $port_last]}    {
+    $port);
+@@      } else {
+    $port,
+@@      }
+@@  }
+
+@@  # output input and output port lists #
+@@  foreach {port direction width value} $module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+    input  [$width:0]  $port;
+@@          } else {
+    input    $port;
+@@          }
+@@      } else {
+@@          if {$width!= -1}    {
+    output [$width:0]  $port;
+@@          } else {
+    output   $port;
+@@          }
+@@      }
+@@  }
+`ifndef ALTERA_RESERVED_QIS
+// synopsys translate_off
+`endif
+@@ foreach {num port width} $tri_port_list {
+@@      if {$width != -1} {
+    tri$num [$width:0]  $port;
+@@      } else {
+    tri$num     $port;
+@@      }
+@@ }
+`ifndef ALTERA_RESERVED_QIS
+// synopsys translate_on
+`endif
+
+@@  # output output ports wire connections #
+@@  foreach {name width} $sub_wire_list {
+@@      if {$width !=-1} {
+    wire [$width:0] $name;
+@@      }
+@@  }
+@@  foreach {name_l name_r width widthL} $wire_list {
+@@      if {$width == -1} {
+    wire  $name_l = $name_r;
+@@      } elseif {$widthL ==-1} {
+    wire [$width:$width] $name_l = $name_r[$width:$width];
+@@      } else {
+    wire [$width:$widthL] $name_l = $name_r[$width:$widthL];
+@@      }
+@@  }
+
+@@  # output component information #
+@@  set ip_name_lower [string tolower $ip_name]
+    $ip_name_lower  ${ip_name_lower}_component (
+@@
+@@  # output component port list #
+@@  set size [llength $ports_not_added_list]
+@@  if {$size} {
+@@      foreach {name_l name_r} $port_map_list {
+                .$name_l ($name_r),
+@@      }
+@@      set port_last [lindex $ports_not_added_list end-1]
+@@      foreach {name_l name_r} $ports_not_added_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_l ($name_r));
+@@          } else {
+                .$name_l ($name_r),
+@@          }
+@@      }
+@@  } else {
+@@      set port_last [lindex $port_map_list end-1]
+@@      foreach {name_l name_r} $port_map_list {
+@@          if {[string equal $name_l $port_last]}    {
+                .$name_l ($name_r));
+@@          } else {
+                .$name_l ($name_r),
+@@          }
+@@      }
+@@  }
+@@
+@@  # output component parameters #
+    defparam
+@@      set name_last [lindex $params_list end-1]
+@@      foreach {name value} $params_list  {
+@@          if {[string equal $name $name_last]} {
+        ${ip_name_lower}_component.$name  = $value;
+@@          } elseif {[string equal $name "init_file"]} {
+@@              set file_tail   [string range [file tail $value] end-3 end-1]
+@@              if {[string equal $file_tail "mif"] ||[string equal $value "\"STRING\""]} {
+        ${ip_name_lower}_component.$name = $value,
+@@              } else {
+@@                  set file_name   [string range $value  0 end-5]
+@@                  set file_name   ${file_name}.rif\"
+`ifdef NO_PLI
+        ${ip_name_lower}_component.$name = $file_name
+`else
+        ${ip_name_lower}_component.$name = $value
+`endif
+,
+@@              }
+@@          } else {
+        ${ip_name_lower}_component.$name  = $value,
+@@          }
+@@      }
+
+
+endmodule
+

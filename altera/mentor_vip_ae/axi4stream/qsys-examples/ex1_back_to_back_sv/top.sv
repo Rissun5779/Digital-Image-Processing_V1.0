@@ -1,0 +1,48 @@
+// *****************************************************************************
+//
+// Copyright 2007-2016 Mentor Graphics Corporation
+// All Rights Reserved.
+//
+// THIS WORK CONTAINS TRADE SECRET AND PROPRIETARY INFORMATION WHICH IS THE PROPERTY OF
+// MENTOR GRAPHICS CORPORATION OR ITS LICENSORS AND IS SUBJECT TO LICENSE TERMS.
+//
+// *****************************************************************************
+
+module top ();
+  reg reset_reset_n = 0;
+  reg clk_clk      ;
+   
+  master_test_program #(
+        .AXI4_ID_WIDTH      (8),
+        .AXI4_USER_WIDTH    (4),
+        .AXI4_DEST_WIDTH    (4),
+        .AXI4_DATA_WIDTH    (32)) u_master  (dut.mgc_axi4stream_master_0);
+
+  slave_test_program #(
+        .AXI4_ID_WIDTH      (8),
+        .AXI4_USER_WIDTH    (4),
+        .AXI4_DEST_WIDTH    (4),
+        .AXI4_DATA_WIDTH    (32)) u_slave   (dut.mgc_axi4stream_slave_0);
+
+  monitor_test_program #(
+        .AXI4_ID_WIDTH      (8),
+        .AXI4_USER_WIDTH    (4),
+        .AXI4_DEST_WIDTH    (4),
+        .AXI4_DATA_WIDTH    (32)) u_monitor (
+    dut.mgc_axi4stream_inline_monitor_0.mgc_axi4stream_monitor_0);
+
+  ex1_back_to_back_sv           dut       (.reset_reset_n(reset_reset_n), .clk_clk(clk_clk));
+
+  always begin
+    clk_clk = 0;
+    #100;
+    clk_clk = 1;
+    #100;
+  end
+
+  initial begin
+    reset_reset_n = 0;
+    #1000 reset_reset_n = 1;
+  end
+
+endmodule

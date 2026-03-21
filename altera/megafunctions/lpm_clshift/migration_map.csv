@@ -1,0 +1,24 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_LPM_WIDTH [get_old_param LPM_WIDTH]
+"[exists_old_param USED_PORT_overflow] && [string equal [get_old_param USED_PORT_overflow] "true"]","set_new_param GUI_OVERFLOW "true""
+"![exists_old_param USED_PORT_overflow]","set_new_param GUI_OVERFLOW "false""
+"[exists_old_param USED_PORT_underflow] && [string equal [get_old_param USED_PORT_underflow] "true"]","set_new_param GUI_UNDERFLOW "true""
+"![exists_old_param USED_PORT_underflow]","set_new_param GUI_UNDERFLOW "false""
+"![exists_old_param LPM_PIPELINE]","set_new_param GUI_PIPELINE "No""
+"[exists_old_param LPM_PIPELINE]","set_new_param GUI_PIPELINE "Yes I want an output latency (set the latency cycles below)""
+"[exists_old_param LPM_PIPELINE]","set_new_param GUI_CYCLES_VALUE [get_old_param LPM_PIPELINE]"
+"[exists_old_param USED_PORT_aclr] && [string equal [get_old_param USED_PORT_aclr] "true"]","set_new_param GUI_ASYNC_CLR_INPUT "true""
+"![exists_old_param USED_PORT_aclr]","set_new_param GUI_ASYNC_CLR_INPUT "false""
+"[exists_old_param USED_PORT_clken] && [string equal [get_old_param USED_PORT_clken] "true"]","set_new_param GUI_CLK_ENABLE_INPUT "true""
+"![exists_old_param USED_PORT_clken]","set_new_param GUI_CLK_ENABLE_INPUT "false""
+"[get_old_param LPM_SHIFTTYPE] == "1"","set_new_param GUI_DIRECTION "Arithmetic (left shift pads with 0's and right shift pads with the sign bit)""
+"[get_old_param LPM_SHIFTTYPE] == "0"","set_new_param GUI_DIRECTION "Logical (left and right shifts pad with 0's)""
+"[get_old_param LPM_SHIFTTYPE] == "2"","set_new_param GUI_DIRECTION "Rotate""
+"[get_old_param port_direction] == "0"","set_new_param GUI_OPERATING_MODE "Always shift left""
+"[get_old_param port_direction] == "1"","set_new_param GUI_OPERATING_MODE "Always shift right""
+"[get_old_param port_direction] == "2"","set_new_param GUI_OPERATING_MODE "Create a 'direction' input to allow me to do both (0 shifts left and 1 shifts right)""
+"[get_old_param lpm_widthdist_style] == "0"","set_new_param GUI_DISTANCE "Automatically calculate the width to allow the maximum possible shifting range""
+"[get_old_param lpm_widthdist_style] == "1"","set_new_param GUI_DISTANCE "Restrict the width of the shifting range""
+"[get_old_param lpm_widthdist_style] == "1"","set_new_param GUI_BIT_WIDTH [get_old_param lpm_widthdist]"
+

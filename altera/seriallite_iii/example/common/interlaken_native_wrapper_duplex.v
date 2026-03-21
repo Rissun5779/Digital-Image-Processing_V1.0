@@ -1,0 +1,777 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1 ps / 1 ps
+
+module interlaken_native_wrapper_duplex
+  #(
+    parameter ADDR_WIDTH           = 9, 
+    parameter lanes                = 1,
+    parameter data_rate            = "10312.5 Mbps",
+    parameter pll_ref_freq         = "103.125 MHz",
+    parameter enable_tx_pll        = 0,
+    parameter meta_frame_length    = 8191,
+    parameter PLEX                 = "DUPLEX" 
+   
+  ) (
+    // Management Interface
+    input                         phy_mgmt_clk,
+    input                         phy_mgmt_clk_reset,
+    input       [ADDR_WIDTH-1:0]  phy_mgmt_address,
+    input                         phy_mgmt_read,
+    output      [31:0]            phy_mgmt_readdata,
+    input                         phy_mgmt_write,
+    input       [31:0]            phy_mgmt_writedata,
+    output                        phy_mgmt_waitrequest,
+
+    // HSSI Ports
+    input  wire [lanes-1:0]      tx_serial_clk,    
+    input  wire                  tx_pll_locked, 
+    output wire                  pll_powerdown,
+    output wire                  tx_pcs_ready,
+    output wire                  rx_pcs_ready,
+    input  wire                  rx_cdr_refclk,       
+    output wire [lanes-1:0]      tx_serial_data,       
+    input  wire [lanes-1:0]      rx_serial_data,       
+    input  wire                  tx_coreclkin,         
+    input  wire                  rx_coreclkin,         
+    output wire [lanes-1:0]      tx_clkout,            
+    output wire [lanes-1:0]      rx_clkout,            
+    output wire                  tx_sync_done,
+    input  wire [lanes-1:0]      tx_enh_data_valid,    
+    output wire [lanes-1:0]      tx_fifo_pempty,   
+    output wire [lanes-1:0]      tx_fifo_pfull,
+    input  wire [lanes-1:0]      rx_enh_fifo_rd_en,    
+    output wire [lanes-1:0]      rx_enh_data_valid,    
+    output wire [lanes-1:0]      rx_enh_fifo_full,     
+    output wire [lanes-1:0]      rx_enh_fifo_pfull,    
+    output wire [lanes-1:0]      rx_enh_fifo_pempty,   
+    output wire [lanes-1:0]      rx_block_frame_lock,   
+    output wire [lanes-1:0]      rx_align_val,
+    input  wire [lanes-1:0]      rx_enh_fifo_align_clr,
+    output wire [lanes-1:0]      rx_frame_lock,     
+    output wire [lanes-1:0]      rx_crc32err,      
+    input  wire [lanes*64-1:0]   tx_parallel_data,      
+    input  wire [lanes-1:0]      tx_control,            
+    input  wire [lanes-1:0]      tx_err_ins,            
+    output wire [lanes*64-1:0]   rx_parallel_data,      
+    output wire [lanes-1:0]      rx_control             
+);
+
+
+wire [31:0]      xcvr_readdata;
+wire [lanes*128-1:0]     tx_parallel_data_native;
+wire [lanes*128-1:0]     rx_parallel_data_native;
+wire [lanes*18-1:0]      tx_parallel_ctrl_native;
+wire [lanes*20-1:0]      rx_parallel_ctrl_native;
+
+wire [lanes*64-1:0]     unused_tx_parallel_data;
+wire [lanes*14-1:0]     unused_tx_control;
+wire [lanes*64-1:0]     unused_rx_parallel_data;
+wire [lanes*10-1:0]     unused_rx_control;
+wire [lanes*128-1:0]    interlaken_inst_rx_parallel_data;
+wire [lanes*20-1:0]     interlaken_inst_rx_control;
+
+//wire [lanes-1:0] rx_framing_error;
+//wire [lanes-1:0] rx_scrambler_mismatch;
+//wire [lanes-1:0] rx_missing_sync;
+
+wire             csr_pll_powerdown;   
+wire [lanes-1:0] csr_tx_digitalreset;
+wire [lanes-1:0] csr_rx_analogreset;
+wire [lanes-1:0] csr_rx_digitalreset;
+wire [lanes-1:0] csr_phy_loopback_serial;
+wire [lanes-1:0] csr_rx_set_locktodata;
+wire [lanes-1:0] csr_rx_set_locktoref;   
+wire [lanes-1:0] rx_is_lockedtodata;
+wire [lanes-1:0] rx_is_lockedtoref;   
+
+wire             csr_reset_all;
+wire             csr_reset_rx_digital;
+wire             csr_reset_tx_digital;
+
+wire             reset_controller_pll_powerdown;
+wire [lanes-1:0] reset_controller_tx_digitalreset;
+wire [lanes-1:0] reset_controller_rx_analogreset;         
+wire [lanes-1:0] reset_controller_rx_digitalreset;
+wire [lanes-1:0] reset_controller_tx_ready;
+wire [lanes-1:0] reset_controller_rx_ready;
+
+wire [lanes-1:0]  temp_pcs_dataout0;
+wire [lanes-1:0]  temp_pcs_dataout1;
+wire [lanes-1:0]  temp_pcs_dataout2;
+wire [lanes-1:0]  temp_pcs_dataout3;
+wire [lanes-1:0]  temp_pcs_dataout4;
+wire [lanes-1:0]  temp_pcs_dataout5;
+wire [lanes-1:0]  temp_pcs_dataout6;
+wire [lanes-1:0]  temp_pcs_dataout7;
+wire [lanes-1:0]  temp_pcs_dataout8;
+wire [lanes-1:0]  temp_pcs_dataout9;
+wire [lanes-1:0]  temp_pcs_dataout10;
+wire [lanes-1:0]  temp_pcs_dataout11;
+wire [lanes-1:0]  temp_pcs_dataout12;
+wire [lanes-1:0]  temp_pcs_dataout13;
+wire [lanes-1:0]  temp_pcs_dataout14;
+wire [lanes-1:0]  temp_pcs_dataout15;
+wire [lanes-1:0]  temp_pcs_dataout16;
+wire [lanes-1:0]  temp_pcs_dataout17;
+wire [lanes-1:0]  temp_pcs_dataout18;
+wire [lanes-1:0]  temp_pcs_dataout19;
+wire [lanes-1:0]  temp_pcs_dataout20;
+wire [lanes-1:0]  temp_pcs_dataout21;
+wire [lanes-1:0]  temp_pcs_dataout22;
+wire [lanes-1:0]  temp_pcs_dataout23;
+wire [lanes-1:0]  temp_pcs_dataout24;
+wire [lanes-1:0]  temp_pcs_dataout25;
+wire [lanes-1:0]  temp_pcs_dataout26;
+wire [lanes-1:0]  temp_pcs_dataout27;
+wire [lanes-1:0]  temp_pcs_dataout28;
+wire [lanes-1:0]  temp_pcs_dataout29;
+wire [lanes-1:0]  temp_pcs_dataout30;
+wire [lanes-1:0]  temp_pcs_dataout31;
+
+
+wire [lanes-1:0] pcs_write;
+wire [(lanes*32)-1:0] pcs_datain;
+wire [(lanes*32)-1:0] pcs_dataout;
+
+wire [lanes-1:0]      enables;
+localparam log_width = log2(lanes);
+reg [log_width:0] 	     indir_addr;
+
+ // Start PCS bonding Solution IP logic
+wire [lanes-1:0]      tx_burst_en;
+wire [lanes-1:0]      tx_fifo_full;
+wire [lanes-1:0]      tx_fifo_empty;   
+wire [lanes-1:0]      tx_frame;
+wire [lanes-1:0]      tx_frame_sync;
+reg  [lanes-1:0]      tx_fifo_full_reg;
+localparam sync_depth = 2;
+
+wire [31:0] pma_mgmt_dataout;
+wire [31:0] pcs_mgmt_dataout;
+
+wire [lanes-1:0] rx_framelock_int;   
+wire [lanes-1:0] rx_alignval_int;
+
+wire [lanes-1:0] rx_crc32err_int;
+//wire [lanes-1:0] rx_framing_error_int;
+//wire [lanes-1:0] rx_scrambler_mismatch_int;
+//wire [lanes-1:0] rx_missing_sync_int;
+wire [lanes-1:0] tx_enh_fifo_empty;
+wire [lanes-1:0] tx_enh_fifo_pempty;
+wire [lanes-1:0] tx_enh_fifo_pfull;
+wire [lanes-1:0] rx_enh_fifo_empty;
+wire [lanes-1:0] rx_enh_fifo_pfull_raw;
+wire  soft_csr_write,r_soft_pbip_rst;
+wire xcvr_write;
+wire [lanes-1:0] tx_analogreset,tx_cal_busy,rx_cal_busy;
+wire [lanes-1:0] tx_force_fill;         
+wire xcvr_waitrequest;
+wire [lanes-1:0] rx_enh_blk_lock;
+wire [lanes-1:0] tx_enh_fifo_full;
+
+ /////////////////////////////
+  // Synchronize tx_digitalreset
+  /////////////////////////////
+  alt_xcvr_resync #(
+    .INIT_VALUE (1)
+  ) inst_reconfig_reset_sync (
+    .clk    (tx_coreclkin       ),
+    .reset  (!reset_controller_tx_ready[0]), // tx_digitalreset from reset controller is just fanout from 1 -> many thats why just connecting one bit is enough
+    .d      (1'b0               ),
+    .q      (r_soft_pbip_rst   )
+  );
+
+
+   generate
+      if (lanes > 1)
+	begin
+	   alt_xcvr_interlaken_soft_pbip
+	     #(
+	       .LINKWIDTH(lanes)
+	       ) soft_ip_inst (
+			       .clk(tx_coreclkin),
+			       .reset(r_soft_pbip_rst),
+			       .tx_fifo_full(tx_fifo_full_reg),
+			       .tx_fifo_empty(tx_fifo_empty),			       
+			       .tx_frame(tx_frame_sync),
+			       .tx_burst_en(tx_burst_en),
+			       .tx_sync_done(tx_sync_done),
+			       .tx_force_fill(tx_force_fill)
+			       );
+	end // if (lanes > 1)
+      else
+	begin
+	   assign tx_sync_done = reset_controller_tx_ready;
+	   assign tx_burst_en = 1'b1;
+	   assign tx_force_fill = 1'b0;	   
+	end
+   endgenerate
+   
+		       
+// End PCS bonding soft solution ip logic       
+
+
+// **************************************************************************************************************************** 
+// ****************************instantiate Native PHY below ******************************************************************* 
+ 
+ generate 
+   if (PLEX == "DUPLEX") begin : DUPLEX_WRAPPER
+      native_ilk_wrapper interlaken_inst (
+		.tx_analogreset            (tx_analogreset ),
+		.tx_digitalreset           (csr_tx_digitalreset),
+		.rx_analogreset            (csr_rx_analogreset),
+		.rx_digitalreset           (csr_rx_digitalreset),
+		.tx_cal_busy               (tx_cal_busy),
+		.rx_cal_busy               (rx_cal_busy),
+		.tx_serial_clk0            (tx_serial_clk),
+                //.tx_bonding_clocks         ({lanes{tx_serial_clk}}),
+                //.tx_bonding_clocks         ({lanes{6'h00}}),
+		.rx_cdr_refclk0            (rx_cdr_refclk),
+		.tx_serial_data            (tx_serial_data),
+		.rx_serial_data            (rx_serial_data),
+		.rx_set_locktodata         (csr_rx_set_locktodata),
+		.rx_set_locktoref          (csr_rx_set_locktoref),
+		.rx_is_lockedtoref         (rx_is_lockedtoref),
+		.rx_is_lockedtodata        (rx_is_lockedtodata),
+		.tx_coreclkin              ({lanes{tx_coreclkin}}),
+		.rx_coreclkin              ({lanes{rx_coreclkin}}),
+
+		.tx_clkout                 (tx_clkout),
+		.rx_clkout                 (rx_clkout),
+    .tx_pma_iqtxrx_clkout      (/*unused*/),
+    .rx_pma_iqtxrx_clkout      (/*unused*/),
+		.tx_enh_data_valid         (tx_enh_data_valid | tx_force_fill),
+		.tx_enh_fifo_full          (tx_fifo_full),
+		.tx_enh_fifo_pfull         (tx_enh_fifo_pfull),
+		.tx_enh_fifo_empty         (tx_enh_fifo_empty),
+		.tx_enh_fifo_pempty        (tx_enh_fifo_pempty),
+		.rx_enh_fifo_rd_en         (rx_enh_fifo_rd_en),
+		.rx_enh_data_valid         (rx_enh_data_valid),
+		.rx_enh_fifo_full          (rx_enh_fifo_full),
+		.rx_enh_fifo_pfull         (rx_enh_fifo_pfull_raw),
+		.rx_enh_fifo_empty         (rx_enh_fifo_empty),
+		.rx_enh_fifo_pempty        (rx_enh_fifo_pempty),
+		.rx_enh_fifo_align_val     (rx_align_val),
+		.rx_enh_fifo_align_clr     (rx_enh_fifo_align_clr),
+		.tx_enh_frame              (tx_frame),
+		.tx_enh_frame_burst_en     (tx_burst_en),
+		.tx_enh_frame_diag_status  ({lanes{2'b11}}),
+		.rx_enh_frame              (),
+		.rx_enh_frame_lock         (rx_frame_lock),
+		.rx_enh_frame_diag_status  (),
+		.rx_enh_crc32_err          (rx_crc32err),
+		.rx_enh_blk_lock           (),
+		.tx_parallel_data          (tx_parallel_data_native),
+		.tx_control                (tx_parallel_ctrl_native),
+		.rx_parallel_data          (rx_parallel_data_native),
+		.rx_control                (rx_parallel_ctrl_native),
+		.rx_seriallpbken           (csr_phy_loopback_serial),
+		.reconfig_clk              (phy_mgmt_clk),
+		.reconfig_reset            (phy_mgmt_clk_reset),
+		.reconfig_write            (xcvr_write),
+		.reconfig_read             (phy_mgmt_read),
+		.reconfig_address          (phy_mgmt_address[ADDR_WIDTH-2:0]),
+		.reconfig_writedata        (phy_mgmt_writedata),
+		.reconfig_readdata         (xcvr_readdata),
+		.reconfig_waitrequest      (xcvr_waitrequest)
+
+	);
+   end 
+   else if (PLEX == "TX") begin : NATIVE_WRAPPER_TX
+      native_ilk_wrapper_tx interlaken_tx_inst (
+		.tx_analogreset            (tx_analogreset ),
+		.tx_digitalreset           (csr_tx_digitalreset),
+		.tx_cal_busy               (tx_cal_busy),
+		.tx_serial_clk0            (tx_serial_clk),
+                //.tx_bonding_clocks         ({lanes{tx_serial_clk}}),
+                //.tx_bonding_clocks         ({lanes{6'h00}}),
+		.tx_serial_data            (tx_serial_data),
+		.tx_coreclkin              ({lanes{tx_coreclkin}}),
+		.tx_clkout                 (tx_clkout),
+    .tx_pma_iqtxrx_clkout      (/*unused*/),
+		.tx_enh_data_valid         (tx_enh_data_valid | tx_force_fill),
+		.tx_enh_fifo_full          (tx_fifo_full),
+		.tx_enh_fifo_pfull         (tx_enh_fifo_pfull),
+		.tx_enh_fifo_empty         (tx_enh_fifo_empty),
+		.tx_enh_fifo_pempty        (tx_enh_fifo_pempty),
+		.tx_enh_frame              (tx_frame),
+		.tx_enh_frame_burst_en     (tx_burst_en),
+		.tx_enh_frame_diag_status  ({lanes{2'b11}}),
+		.tx_parallel_data          (tx_parallel_data_native),
+		.tx_control                (tx_parallel_ctrl_native),
+		.reconfig_clk              (phy_mgmt_clk),
+		.reconfig_reset            (phy_mgmt_clk_reset),
+		.reconfig_write            (xcvr_write),
+		.reconfig_read             (phy_mgmt_read),
+		.reconfig_address          (phy_mgmt_address[ADDR_WIDTH-2:0]),
+		.reconfig_writedata        (phy_mgmt_writedata),
+		.reconfig_readdata         (xcvr_readdata),
+		.reconfig_waitrequest      (xcvr_waitrequest)
+	);
+     // Assign non-existing output ports to 0 to get rid of warnings
+     assign rx_cal_busy               = {lanes{1'b0}} ;
+     assign rx_is_lockedtoref         = {lanes{1'b0}};     
+     assign rx_is_lockedtodata        = {lanes{1'b0}};
+     assign rx_clkout                 = {lanes{1'b0}};
+     assign rx_enh_data_valid         = {lanes{1'b0}};
+     assign rx_enh_fifo_full          = {lanes{1'b0}};
+     assign rx_enh_fifo_pfull_raw     = {lanes{1'b0}};
+     assign rx_enh_fifo_empty         = {lanes{1'b0}};
+     assign rx_enh_fifo_pempty        = {lanes{1'b0}};
+     assign rx_align_val              = {lanes{1'b0}};
+     assign rx_frame_lock             = {lanes{1'b0}};
+     assign rx_crc32err               = {lanes{1'b0}};
+     assign rx_enh_blk_lock           = {lanes{1'b0}};
+     assign rx_parallel_data_native   = {lanes{128'b0}};
+     assign rx_parallel_ctrl_native   = {lanes{20'b0}};
+	
+   end
+   else if (PLEX == "RX") begin : NATIVE_WRAPPER_RX
+      native_ilk_wrapper_rx   interlaken_rx_inst (
+		.rx_analogreset            (csr_rx_analogreset),
+		.rx_digitalreset           (csr_rx_digitalreset),
+		.rx_cal_busy               (rx_cal_busy),
+		.rx_cdr_refclk0            (rx_cdr_refclk),
+		.rx_serial_data            (rx_serial_data),
+		.rx_set_locktodata         (csr_rx_set_locktodata),
+		.rx_set_locktoref          (csr_rx_set_locktoref),
+		.rx_is_lockedtoref         (rx_is_lockedtoref),
+		.rx_is_lockedtodata        (rx_is_lockedtodata),
+		.rx_coreclkin              ({lanes{rx_coreclkin}}),
+		.rx_clkout                 (rx_clkout),
+    .rx_pma_iqtxrx_clkout      (/*unused*/),
+		.rx_enh_fifo_rd_en         (rx_enh_fifo_rd_en),
+		.rx_enh_data_valid         (rx_enh_data_valid),
+		.rx_enh_fifo_full          (rx_enh_fifo_full),
+		.rx_enh_fifo_pfull         (rx_enh_fifo_pfull_raw),
+		.rx_enh_fifo_empty         (rx_enh_fifo_empty),
+		.rx_enh_fifo_pempty        (rx_enh_fifo_pempty),
+		.rx_enh_fifo_align_val     (rx_align_val),
+		.rx_enh_fifo_align_clr     (rx_enh_fifo_align_clr),
+		.rx_enh_frame              (),
+		.rx_enh_frame_lock         (rx_frame_lock),
+		.rx_enh_frame_diag_status  (),
+		.rx_enh_crc32_err          (rx_crc32err),
+		.rx_enh_blk_lock           (),
+		.rx_parallel_data          (rx_parallel_data_native),
+                .rx_seriallpbken           (csr_phy_loopback_serial),  
+		.rx_control                (rx_parallel_ctrl_native),
+		.reconfig_clk              (phy_mgmt_clk),
+		.reconfig_reset            (phy_mgmt_clk_reset),
+		.reconfig_write            (xcvr_write),
+		.reconfig_read             (phy_mgmt_read),
+		.reconfig_address          (phy_mgmt_address[ADDR_WIDTH-2:0]),
+		.reconfig_writedata        (phy_mgmt_writedata),
+		.reconfig_readdata         (xcvr_readdata),
+		.reconfig_waitrequest      (xcvr_waitrequest)
+	);
+     // Assign non-existing output ports to 0 to get rid of warnings
+     assign tx_cal_busy        = {lanes{1'b0}} ;
+     assign tx_clkout          = {lanes{1'b0}} ;
+     assign tx_enh_fifo_full   = {lanes{1'b0}} ; 
+     assign tx_enh_fifo_pfull  = {lanes{1'b0}} ; 
+     assign tx_enh_fifo_empty  = {lanes{1'b0}} ; 
+     assign tx_enh_fifo_pempty = {lanes{1'b0}} ; 
+     assign tx_frame           = {lanes{1'b0}}; 
+   end
+ endgenerate   
+
+genvar numlane;   
+ generate
+   for (numlane=0; numlane < lanes; numlane=numlane+1) begin:data_ctrl_bus
+    assign tx_parallel_data_native[128*(numlane+1)-1:128*numlane] =  {63'h0,tx_parallel_data[64*(numlane+1)-1:64*numlane]};
+    assign tx_parallel_ctrl_native[18*(numlane+1)-1:18*numlane]   =  {9'h0,tx_err_ins[numlane],6'h0,tx_control[numlane],~tx_control[numlane]};
+    // following &ing is to make sure rx_ctrl= 1 only when ctrl[1:0]=2'b10 .. 
+    // this makes sure data and corrupted frames not marked for control
+    assign rx_control[numlane]                                    =  rx_parallel_ctrl_native[numlane*20+1] & (~rx_parallel_ctrl_native[numlane*20]);
+    assign rx_parallel_data[64*(numlane+1)-1:64*numlane]          =  rx_parallel_data_native[(numlane*128)+63:numlane*128];
+    assign rx_block_frame_lock[numlane]                           =  rx_parallel_ctrl_native[numlane*20+9];
+   end 
+ endgenerate
+
+// ****************************instantiate Native PHY above ******************************************************************* 
+// **************************************************************************************************************************** 
+   
+   function integer log2;
+      input integer val;
+      begin
+	 log2 = 0;
+	 while (val > 0) begin
+	    val = val >> 1;
+	    log2 = log2 + 1;
+	 end
+      end
+   endfunction
+
+
+   always @(posedge phy_mgmt_clk) begin
+      if (phy_mgmt_address[ADDR_WIDTH-1:2]== 'h020 && soft_csr_write== 1'b1) 
+	begin
+	   indir_addr <= phy_mgmt_writedata[log_width:0];
+	end
+   end   
+   
+   lpm_decode #(
+		.lpm_decodes(lanes),
+		.lpm_type("LPM_DECODE"),
+		.lpm_width(log_width+1)
+		) lpm_decode_indirect (
+				       .data (indir_addr),
+				       .eq (enables)
+				       // synopsys translate_off
+				       ,.aclr (),.clken (),.clock (),.enable ()
+				       // synopsys translate_on
+				       );
+   
+
+   wire enable_pcs;
+   wire [31:0] mgmt_dataout;
+
+   assign enable_pcs = phy_mgmt_address[7] && (phy_mgmt_address[ADDR_WIDTH-1:8]=='b0); //0x200 byte address which is 0x80 word address
+                                                                                      // all upper bits to 0 since DPRIO start @ 'h400
+   
+   assign mgmt_dataout = (!enable_pcs) ? pma_mgmt_dataout: pcs_mgmt_dataout;
+   
+   
+   
+   assign pcs_mgmt_dataout = {|temp_pcs_dataout31, |temp_pcs_dataout30, |temp_pcs_dataout29, |temp_pcs_dataout28, 
+			      |temp_pcs_dataout27, |temp_pcs_dataout26, |temp_pcs_dataout25, |temp_pcs_dataout24, 
+			      |temp_pcs_dataout23, |temp_pcs_dataout22, |temp_pcs_dataout21, |temp_pcs_dataout20, 
+			      |temp_pcs_dataout19, |temp_pcs_dataout18, |temp_pcs_dataout17, |temp_pcs_dataout16, 
+			      |temp_pcs_dataout15, |temp_pcs_dataout14, |temp_pcs_dataout13, |temp_pcs_dataout12, 
+			      |temp_pcs_dataout11, |temp_pcs_dataout10, |temp_pcs_dataout9, |temp_pcs_dataout8, 
+			      |temp_pcs_dataout7, |temp_pcs_dataout6, |temp_pcs_dataout5, |temp_pcs_dataout4, 
+			      |temp_pcs_dataout3, |temp_pcs_dataout2, |temp_pcs_dataout1, |temp_pcs_dataout0 };
+
+   genvar 		i, j;
+   generate
+      for (i = 0; i < lanes; i = i + 1) begin: pcs_lanes_dataout
+	 assign pcs_write[i] = enables[i] & soft_csr_write;
+	 assign pcs_datain[(i*32)+31:(i*32)] = phy_mgmt_writedata;
+	 assign temp_pcs_dataout0[i] = pcs_dataout[(i*32)+0] & enables[i];
+	 assign temp_pcs_dataout1[i] = pcs_dataout[(i*32)+1] & enables[i];
+	 assign temp_pcs_dataout2[i] = pcs_dataout[(i*32)+2] & enables[i];
+	 assign temp_pcs_dataout3[i] = pcs_dataout[(i*32)+3] & enables[i];
+	 assign temp_pcs_dataout4[i] = pcs_dataout[(i*32)+4] & enables[i];
+	 assign temp_pcs_dataout5[i] = pcs_dataout[(i*32)+5] & enables[i];
+	 assign temp_pcs_dataout6[i] = pcs_dataout[(i*32)+6] & enables[i];
+	 assign temp_pcs_dataout7[i] = pcs_dataout[(i*32)+7] & enables[i];
+	 assign temp_pcs_dataout8[i] = pcs_dataout[(i*32)+8] & enables[i];
+	 assign temp_pcs_dataout9[i] = pcs_dataout[(i*32)+9] & enables[i];
+	 assign temp_pcs_dataout10[i] = pcs_dataout[(i*32)+10] & enables[i];
+	 assign temp_pcs_dataout11[i] = pcs_dataout[(i*32)+11] & enables[i];
+	 assign temp_pcs_dataout12[i] = pcs_dataout[(i*32)+12] & enables[i];
+	 assign temp_pcs_dataout13[i] = pcs_dataout[(i*32)+13] & enables[i];
+	 assign temp_pcs_dataout14[i] = pcs_dataout[(i*32)+14] & enables[i];
+	 assign temp_pcs_dataout15[i] = pcs_dataout[(i*32)+15] & enables[i];
+	 assign temp_pcs_dataout16[i] = pcs_dataout[(i*32)+16] & enables[i];
+	 assign temp_pcs_dataout17[i] = pcs_dataout[(i*32)+17] & enables[i];
+	 assign temp_pcs_dataout18[i] = pcs_dataout[(i*32)+18] & enables[i];
+	 assign temp_pcs_dataout19[i] = pcs_dataout[(i*32)+19] & enables[i];
+	 assign temp_pcs_dataout20[i] = pcs_dataout[(i*32)+20] & enables[i];
+	 assign temp_pcs_dataout21[i] = pcs_dataout[(i*32)+21] & enables[i];
+	 assign temp_pcs_dataout22[i] = pcs_dataout[(i*32)+22] & enables[i];
+	 assign temp_pcs_dataout23[i] = pcs_dataout[(i*32)+23] & enables[i];
+	 assign temp_pcs_dataout24[i] = pcs_dataout[(i*32)+24] & enables[i];
+	 assign temp_pcs_dataout25[i] = pcs_dataout[(i*32)+25] & enables[i];
+	 assign temp_pcs_dataout26[i] = pcs_dataout[(i*32)+26] & enables[i];
+	 assign temp_pcs_dataout27[i] = pcs_dataout[(i*32)+27] & enables[i];
+	 assign temp_pcs_dataout28[i] = pcs_dataout[(i*32)+28] & enables[i];
+	 assign temp_pcs_dataout29[i] = pcs_dataout[(i*32)+29] & enables[i];
+	 assign temp_pcs_dataout30[i] = pcs_dataout[(i*32)+30] & enables[i];
+	 assign temp_pcs_dataout31[i] = pcs_dataout[(i*32)+31] & enables[i];
+      end
+   endgenerate
+
+
+// **************************************************************************************************************************** 
+// ****************************instantiate Reset controller ******************************************************************* 
+    altera_xcvr_reset_control
+    #(
+        .CHANNELS               (lanes          ),  // Number of lanes
+        .SYNCHRONIZE_RESET      (0              ),  // (0,1) Synchronize the reset input
+        .SYNCHRONIZE_PLL_RESET  (0              ),  // (0,1) Use synchronized reset input for PLL powerdown
+                                                    // !NOTE! Will prevent PLL merging across reset controllers
+                                                    // !NOTE! Requires SYNCHRONIZE_RESET == 1
+        // Reset timings
+        .SYS_CLK_IN_MHZ         (150            ),  // Clock frequency in MHz. Required for reset timers
+        .REDUCED_SIM_TIME       (1              ),  // (0,1) 1=Reduced reset timings for simulation
+        // PLL options
+        .TX_PLL_ENABLE          (enable_tx_pll  ),  // (0,1) Enable TX PLL reset
+        .PLLS                   (1              ),  // Number of TX PLLs
+        .T_PLL_POWERDOWN        (1000           ),  // pll_powerdown period in ns
+        // TX options
+        .TX_ENABLE              (1              ),  // (0,1) Enable TX resets
+        .TX_PER_CHANNEL         (0              ),  // (0,1) 1=separate TX reset per channel
+        .T_TX_ANALOGRESET       (70000          ),  // tx_analogreset period (after reset removal)
+        .T_TX_DIGITALRESET      (70000          ),  // tx_digitalreset period (after pll_powerdown)
+        .T_PLL_LOCK_HYST        (1000              ),  // Amount of hysteresis to add to pll_locked status signal
+        // RX options
+        .RX_ENABLE              (1              ),  // (0,1) Enable RX resets
+        .RX_PER_CHANNEL         (0              ),  // (0,1) 1=separate RX reset per channel
+        .T_RX_ANALOGRESET       (70000          ),  // rx_analogreset period
+        .T_RX_DIGITALRESET      (4000           )   // rx_digitalreset period (after rx_is_lockedtodata)
+    ) reset_controller (
+      // User inputs and outputs
+      .clock            (phy_mgmt_clk       ),  // System clock
+      .reset            (phy_mgmt_clk_reset),  // Asynchronous reset
+      // Reset signals
+      .pll_powerdown    (reset_controller_pll_powerdown   ),  // reset TX PLL
+      .tx_analogreset   (tx_analogreset                   ),  // reset TX PMA
+      .tx_digitalreset  (reset_controller_tx_digitalreset ),  // reset TX PCS
+      .rx_analogreset   (reset_controller_rx_analogreset  ),  // reset RX PMA
+      .rx_digitalreset  (reset_controller_rx_digitalreset ),  // reset RX PCS
+      // Status output
+      .tx_ready         (reset_controller_tx_ready        ),  // TX is not in reset
+      .rx_ready         (reset_controller_rx_ready        ),  // RX is not in reset
+      // Digital reset override inputs (must by synchronous with clock)
+      .tx_digitalreset_or({lanes{csr_reset_tx_digital}} ), // reset request for tx_digitalreset
+      .rx_digitalreset_or({lanes{csr_reset_rx_digital}} ), // reset request for rx_digitalreset
+      // TX control inputs
+      .pll_locked         (tx_pll_locked /* synthesis altera_attribute="disable_da_rule=r101" */),  // TX PLL is locked status
+      .pll_select         (1'b0                   ),  // Select TX PLL locked signal 
+      .tx_cal_busy        (tx_cal_busy            ),  // TX channel calibration status
+      .tx_manual          ({lanes{1'b1}}          ),  // 1=Manual TX reset mode
+      // RX control inputs
+      .rx_is_lockedtodata (rx_is_lockedtodata     ),  // RX CDR PLL is locked to data status
+      .rx_cal_busy        (rx_cal_busy            ),  // RX channel calibration status
+      .rx_manual          ({lanes{1'b0}}         ) // 1=Manual RX reset mode
+    );
+assign pll_powerdown = reset_controller_pll_powerdown ;
+assign  tx_pcs_ready  = &reset_controller_tx_ready;
+assign  rx_pcs_ready  = &reset_controller_rx_ready;
+// ****************************instantiate Reset controller ******************************************************************* 
+// **************************************************************************************************************************** 
+   
+// **************************************************************************************************************************** 
+// ********************************all required CSRs ************************************************************************** 
+   
+// PMA CSR (Control and status registers) for resets and loopback control
+   alt_xcvr_csr_common #(
+                         .lanes (lanes),
+                         .plls (1),
+                         .rpc (1)
+                         )generic_csr
+     (
+      // user data (avalon-MM formatted) 
+      .clk(phy_mgmt_clk),
+      .reset(phy_mgmt_clk_reset),
+      .address(phy_mgmt_address),
+      .read(phy_mgmt_read),
+      .readdata (pma_mgmt_dataout),
+      .write(phy_mgmt_write),
+      .writedata(phy_mgmt_writedata),
+
+      // transceiver status inputs to this CSR
+      .pll_locked(tx_pll_locked),
+      .rx_is_lockedtoref(rx_is_lockedtoref),
+      .rx_is_lockedtodata(rx_is_lockedtodata),
+      .rx_signaldetect({lanes{1'b0}}),
+      
+      // reset controller outputs
+      .reset_controller_tx_ready(tx_pcs_ready),
+      .reset_controller_rx_ready(rx_pcs_ready),
+      .reset_controller_pll_powerdown(reset_controller_pll_powerdown),
+      .reset_controller_tx_digitalreset(reset_controller_tx_digitalreset),
+      .reset_controller_rx_analogreset(reset_controller_rx_analogreset),
+      .reset_controller_rx_digitalreset(reset_controller_rx_digitalreset),
+
+      // read/write control registers
+      // to reset controller
+      .csr_reset_tx_digital(csr_reset_tx_digital),
+      .csr_reset_rx_digital(csr_reset_rx_digital),
+      .csr_reset_all (csr_reset_all),// power-up to 1 to trigger auto-init sequence
+      // to PMA and PCS reset inputs
+      .csr_pll_powerdown(csr_pll_powerdown),  // reset controller or manual
+      .csr_tx_digitalreset(csr_tx_digitalreset),// reset controller or manual
+      .csr_rx_analogreset(csr_rx_analogreset), // reset controller or manual
+      .csr_rx_digitalreset(csr_rx_digitalreset),// reset controller or manual
+      .csr_phy_loopback_serial(csr_phy_loopback_serial),
+      .csr_rx_set_locktodata(csr_rx_set_locktodata),
+      .csr_rx_set_locktoref(csr_rx_set_locktoref)      
+      );
+   
+// ********************************all required CSRs ************************************************************************** 
+// **************************************************************************************************************************** 
+
+   
+   genvar lanenum;
+   generate
+
+      for (lanenum = 0; lanenum < lanes; lanenum = lanenum + 1) begin: pcs_lanes
+
+
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_wordlock ( 
+							.clk(phy_mgmt_clk),
+							.din(rx_align_val[lanenum]),
+							.dout(rx_alignval_int[lanenum]),
+							.reset_n(1'b1)
+							);
+         
+
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_synclock ( 
+							.clk(phy_mgmt_clk),
+							.din(rx_frame_lock[lanenum]),
+							.dout(rx_framelock_int[lanenum]),
+							.reset_n(1'b1)
+							);
+
+
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_crc32err ( 
+							.clk(phy_mgmt_clk),
+							.din(rx_crc32err[lanenum]),
+							.dout(rx_crc32err_int[lanenum]),
+							.reset_n(1'b1)
+							);
+
+/*	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_framingerr ( 
+							  .clk(phy_mgmt_clk),
+							  .din(rx_framing_error[lanenum]),
+							  .dout(rx_framing_error_int[lanenum]),
+							  .reset_n(!phy_mgmt_clk_reset)
+							  );	 	 
+
+	 
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_scrmmismatch ( 
+							    .clk(phy_mgmt_clk),
+							    .din(rx_scrambler_mismatch[lanenum]),
+							    .dout(rx_scrambler_mismatch_int[lanenum]),
+							    .reset_n(!phy_mgmt_clk_reset)
+							    );
+
+
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_missingsync ( 
+							   .clk(phy_mgmt_clk),
+							   .din(rx_missing_sync[lanenum]),
+							   .dout(rx_missing_sync_int[lanenum]),
+							   .reset_n(!phy_mgmt_clk_reset)
+							   );	 
+*/
+
+	 // synchronizer for rx_enh_fifo_pfull
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_rxpfull ( 
+							.clk(rx_coreclkin),
+							.din(rx_enh_fifo_pfull_raw[lanenum]),
+							.dout(rx_enh_fifo_pfull[lanenum]),
+							.reset_n(1'b1)
+							);							   
+
+	 // synchronizer for tx_frame
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_txframe ( 
+							.clk(tx_coreclkin),
+							.din(tx_frame[lanenum]),
+							.dout(tx_frame_sync[lanenum]),
+							.reset_n(1'b1)
+							);
+         
+
+	 //pempty & empty is async so synchronize it with tx_pld_clk
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_txpempty ( 
+							.clk(tx_coreclkin),
+							.din(tx_enh_fifo_pempty[lanenum]),
+							.dout(tx_fifo_pempty[lanenum]),
+							.reset_n(1'b1)
+							);
+
+	 altera_std_synchronizer #(
+				   .depth (sync_depth)
+				   ) stdsync_txempty ( 
+							.clk(tx_coreclkin),
+							.din(tx_enh_fifo_empty[lanenum]),
+							.dout(tx_fifo_empty[lanenum]),
+							.reset_n(1'b1)
+							);
+
+
+         //pfull is sync to tx_pld_clk. do not need to sync
+         assign tx_fifo_pfull[lanenum] = tx_enh_fifo_pfull[lanenum];
+	 
+	 
+	 wire [95:0] mgmt_signals_in;
+	 wire [0:95] mgmt_signals_out;
+	 assign mgmt_signals_out = 96'd0;
+
+	 assign mgmt_signals_in[95:0] = {
+					 32'b0,
+					 2'b00,
+					 1'b0,//rx_missing_sync_int[lanenum],
+					 1'b0,// rx_scrambler_mismatch_int[lanenum],
+					 rx_crc32err_int[lanenum],
+			                 1'b0,//	 rx_framing_error_int[lanenum],
+					 rx_framelock_int[lanenum],					 
+					 rx_alignval_int[lanenum],
+					 24'b0,		
+					 32'b0
+					 };
+
+	 
+
+	 
+	 alt_xcvr_interlaken_amm_slave #(3,2,32) mgmt_slave (
+							     .clk (phy_mgmt_clk),
+							     .reset (phy_mgmt_clk_reset),
+							     .write (pcs_write[lanenum]),
+							     .address (phy_mgmt_address[1:0]),
+							     .datain (pcs_datain[(32*lanenum)+31:(32*lanenum)]),
+							     .dataout (pcs_dataout[(32*lanenum)+31:(32*lanenum)]),
+							     .busin (mgmt_signals_in),
+							     .busout (mgmt_signals_out)
+							     );
+      end // block: pcs_lanes
+   endgenerate
+
+
+   
+   // generate waitrequest for 'top' channel
+   wire mgmt_waitrequest;
+   altera_wait_generate top_wait (
+				  .rst(phy_mgmt_clk_reset),
+				  .clk(phy_mgmt_clk),
+				  .launch_signal(phy_mgmt_read),
+				  .wait_req(mgmt_waitrequest)
+				  );
+   
+
+ // mux waitrequest
+
+assign phy_mgmt_waitrequest = (|phy_mgmt_address[ADDR_WIDTH-1:10]) ? xcvr_waitrequest : mgmt_waitrequest ;
+assign phy_mgmt_readdata    = (|phy_mgmt_address[ADDR_WIDTH-1:10]) ? xcvr_readdata    : mgmt_dataout ;
+assign xcvr_write           = (|phy_mgmt_address[ADDR_WIDTH-1:10]) ? phy_mgmt_write   : 1'b0         ;
+assign soft_csr_write       = (|phy_mgmt_address[ADDR_WIDTH-1:10]) ? 1'b0             : phy_mgmt_write;
+
+      always @ (posedge tx_coreclkin)
+      begin
+         tx_fifo_full_reg  <= tx_fifo_full;
+      end
+
+endmodule

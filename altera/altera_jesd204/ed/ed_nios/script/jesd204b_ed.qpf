@@ -1,0 +1,6 @@
+QUARTUS_VERSION = "15.1"
+DATE = "17:51:57  July 08, 2015"
+
+# Revisions
+
+PROJECT_REVISION = "jesd204b_ed"

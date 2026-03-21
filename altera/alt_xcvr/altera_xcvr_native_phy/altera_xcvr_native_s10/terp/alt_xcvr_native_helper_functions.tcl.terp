@@ -1,0 +1,703 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+# -------------------------------------------------------------------------- #
+# - 
+# --- This file contains helper functions for Native PHY SDC file
+# -
+# -------------------------------------------------------------------------- #
+set script_dir [file dirname [info script]]
+
+load_package sdc_ext 
+
+if {![info exists native_debug]} {
+  global ::native_debug
+}
+
+set native_debug 0
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to initialize the database of all required pins and      --- #
+# --- registers to create clocks                                         --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc native_initialize_db_${random_str} { native_db } {
+
+  # upvar links one variable to another variable at specified level of execution
+  upvar \$native_db local_native_db
+
+  # Set the GLOBAL_corename in ip_parameters.tcl 
+  global ::GLOBAL_corename
+  global ::native_debug
+
+  # Delete the database if it exists
+  if [info exists local_native_db] {
+    post_message -type info "IP SDC: Database existed before, deleting it now"
+    unset local_native_db
+  } 
+
+  set local_native_db [dict create]
+
+  post_message -type info "IP SDC: Initializing S10 Native PHY database for CORE \$::GLOBAL_corename"
+
+  # Find all the Native PHY instance names in the design
+  set instance_list [native_get_core_instance_list_${random_str} \$::GLOBAL_corename]
+
+  foreach inst_name \$instance_list {
+
+    # Create dictionary of pins
+    post_message -type info "IP SDC: Finding port-to-pin mapping for CORE: \$::GLOBAL_corename INSTANCE: \$inst_name"
+    set all_pins [dict create]
+    native_get_pins_${random_str} \$inst_name \$all_pins
+  
+    # Set the associative array
+    dict set local_native_db \$inst_name \$all_pins
+
+  }
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to find all the Native PHY instance names in TimeQuest   --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc native_get_core_instance_list_${random_str} { core_name } {
+  
+  set instance_list [list]
+  
+  set split_var_name [native_wsplit_${random_str} \$core_name "_altera_xcvr_native_s10"]
+  set ip_top_level [lindex \$split_var_name 0]
+
+  global ::native_debug
+
+  # find all the Native PHY full core instance names
+  set full_instance_list [list]
+  set all_nodes [get_nodes * ]
+  
+  # set show entity name after the collection manager is initialized in get_nodes
+  set_project_mode -always_show_entity_name on
+  
+  set inst_regexp {(^.*}
+  # careful when using $ and \; this is a terp file
+  append inst_regexp {:[A-Za-z0-9\\.\\\\_\\[\\]\\-\\$\(\):]+)\\|}
+  append inst_regexp "\${core_name}" 
+
+  foreach_in_collection node \$all_nodes {
+    set name [ get_node_info -name \$node ]
+
+    if {[regexp -- \$inst_regexp \$name -> hier_name] == 1} {  
+ 
+      if {[lsearch \$full_instance_list [escape_brackets \$hier_name]] == -1} {
+        lappend full_instance_list \$hier_name
+      }
+    }
+  }
+
+  set_project_mode -always_show_entity_name qsf
+  
+  if {[ llength \$full_instance_list ] == 0} {
+     post_message -type warning "IP SDC: The auto-constraining script was not able to detect any instance for core < \$core_name >"
+     post_message -type warning "IP SDC: Make sure the core < \$core_name > is instantiated within another component (wrapper) and it's not the top-level for your project"
+  }
+
+  # Change full instance name to TimeQuest instance name
+  foreach inst \$full_instance_list { 
+    
+    set full_instance_split [ split \$inst | ]  
+    
+    set module_inst_name [ lsearch -inline \$full_instance_split \$ip_top_level:* ]
+    set sta_name [native_get_timequest_name_${random_str} \$inst] 
+    # you can shorten it further by \$module_inst_name
+
+    if {[lsearch \$instance_list [escape_brackets \$sta_name]] == -1} {
+      lappend instance_list \$sta_name
+    } 
+    
+  }
+
+  if { \$native_debug ==1 } {
+    post_message -type info "IP SDC: Instance_list is \$instance_list" 
+  }
+
+  return \$instance_list
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to split up a string based on given substring            --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc native_wsplit_${random_str} {str sep} {
+
+  split [string map [list \$sep \\0] \$str] \\0
+
+}
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to convert the full hierarchy name into a TimeQuest name --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc native_get_timequest_name_${random_str} { hier_name } {
+
+   set sta_name ""
+   for {set inst_start [string first ":" \$hier_name]} {\$inst_start != -1} {} {
+      incr inst_start
+      set inst_end [string first "|" \$hier_name \$inst_start]
+      if {\$inst_end == -1} {
+         append sta_name [string range \$hier_name \$inst_start end]
+         set inst_start -1
+      } else {
+         append sta_name [string range \$hier_name \$inst_start \$inst_end]
+         set inst_start [string first ":" \$hier_name \$inst_end]
+      }
+   }
+   return \$sta_name
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to find all the pins and registers for nodes of interest --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc native_get_pins_${random_str} { inst_name all_pins } {
+
+  global ::native_debug
+
+  # We need to make a local copy of the allpins associative array
+  upvar all_pins native_pins
+
+  # ------------------------------------------------------------------------- #
+  # Define the pins here 
+  # Include regex to grab pins for multiple channels
+  set tx_clkout_pin  "*\$inst_name*ct1_xcvr_native_inst*pldadapt_tx*pld_pcs_tx_clk_out1_dcm"
+  set tx_clkout2_pin "*\$inst_name*ct1_xcvr_native_inst*pldadapt_tx*pld_pcs_tx_clk_out2_dcm"
+  set rx_clkout_pin  "*\$inst_name*ct1_xcvr_native_inst*pldadapt_rx*pld_pcs_rx_clk_out1_dcm"
+  set rx_clkout2_pin "*\$inst_name*ct1_xcvr_native_inst*pldadapt_rx*pld_pcs_rx_clk_out2_dcm"
+
+  # Input clocks to main adapter from aib
+  set aib_fabric_pld_pcs_tx_clk_out_pin     "\$inst_name*ct1_xcvr_native_inst*aib_fabric_pld_pcs_tx_clk_out"
+  set aib_fabric_pld_pma_clkdiv_tx_user_pin "\$inst_name*ct1_xcvr_native_inst*aib_fabric_pld_pma_clkdiv_tx_user"
+  set aib_fabric_pma_aib_tx_clk_pin         "\$inst_name*ct1_xcvr_native_inst*aib_fabric_pma_aib_tx_clk"
+  set aib_fabric_pld_pcs_rx_clk_out_pin     "\$inst_name*ct1_xcvr_native_inst*aib_fabric_pld_pcs_rx_clk_out"
+  set aib_fabric_pld_pma_clkdiv_rx_user_pin "\$inst_name*ct1_xcvr_native_inst*aib_fabric_pld_pma_clkdiv_rx_user"
+  set aib_fabric_rx_transfer_clk_pin        "\$inst_name*ct1_xcvr_native_inst*aib_fabric_rx_transfer_clk"
+
+  # hclk
+  set hclk_pin "*\$inst_name*ct1_xcvr_native_inst*pldadapt_tx*pld_pma_hclk_dcm"
+
+  # TX and RX analog reset synchronizers
+  set tx_analog_reset_resync_reg "*\$inst_name*g_trs.tx_anlg_reset_seq|g_anlg_trs_inst*reset_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+  set rx_analog_reset_resync_reg "*\$inst_name*g_trs.rx_anlg_reset_seq|g_anlg_trs_inst*reset_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+
+  # TX and RX digital reset synchronizers
+  set tx_digital_reset_resync_reg             "*\$inst_name*g_trs.tx_dig_reset_seq|reset_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+  set tx_digital_transfer_ready_resync_reg    "*\$inst_name*g_trs.tx_dig_reset_seq|transfer_ready_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+  set tx_digital_release_aib_first_resync_reg "*\$inst_name*g_trs.tx_dig_reset_seq|release_aib_first_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+  set rx_digital_reset_resync_reg             "*\$inst_name*g_trs.rx_dig_reset_seq|reset_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+  set rx_digital_transfer_ready_resync_reg    "*\$inst_name*g_trs.rx_dig_reset_seq|transfer_ready_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+  set rx_digital_release_aib_first_resync_reg "*\$inst_name*g_trs.rx_dig_reset_seq|release_aib_first_synchronizers|resync_chains*.synchronizer_nocut|din_s1"
+
+  # ------------------------------------------------------------------------- #
+  # Create a dictionary for each clock pin 
+  set native_pins [dict create]
+
+  # ------------------------------------------------------------------------- #
+  set tx_clkout_id [get_pins -compatibility_mode -nowarn \$tx_clkout_pin]
+
+  if {[get_collection_size \$tx_clkout_id] == 0} {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: pld_pcs_tx_clk_out1_dcm does not exist, using pld_pcs_tx_clk_out1_hioint pin instead"
+    }
+    set tx_clkout_id [get_pins -compatibility_mode -nowarn "*\$inst_name*ct1_xcvr_native_inst*pldadapt_tx*pld_pcs_tx_clk_out1_hioint"]
+  }
+
+  if {[get_collection_size \$tx_clkout_id] > 0} {
+    foreach_in_collection clk \$tx_clkout_id {
+      dict lappend native_pins tx_clkout [get_pin_info -name \$clk] 
+      # Pipe clocks
+      dict lappend native_pins tx_clkout_pipe_g2 [get_pin_info -name \$clk]
+      dict lappend native_pins tx_clkout_pipe_g3 [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX CLKOUT node info: [dict get \$native_pins tx_clkout]"
+    }
+
+    dict set native_pins tx_clkout [join [lsort -dictionary [dict get \$native_pins tx_clkout]]]
+    dict set native_pins tx_clkout_pipe_g2 [join [lsort -dictionary [dict get \$native_pins tx_clkout_pipe_g2]]]
+    dict set native_pins tx_clkout_pipe_g3 [join [lsort -dictionary [dict get \$native_pins tx_clkout_pipe_g3]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for TX CLKOUT"
+    }
+  }
+
+
+  # ------------------------------------------------------------------------- #
+  set tx_clkout2_id [get_pins -compatibility_mode -nowarn \$tx_clkout2_pin]
+
+  if {[get_collection_size \$tx_clkout2_id] == 0} {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: pld_pcs_tx_clk_out2_dcm does not exist, using pld_pcs_tx_clk_out2_hioint pin instead"
+    }
+    set tx_clkout2_id [get_pins -compatibility_mode -nowarn "*\$inst_name*ct1_xcvr_native_inst*pldadapt_tx*pld_pcs_tx_clk_out2_hioint"]
+  }
+
+  if {[get_collection_size \$tx_clkout2_id] > 0} {
+    foreach_in_collection clk \$tx_clkout2_id {
+      dict lappend native_pins tx_clkout2 [get_pin_info -name \$clk] 
+      # Pipe clocks
+      dict lappend native_pins tx_clkout2_pipe_g2 [get_pin_info -name \$clk]
+      dict lappend native_pins tx_clkout2_pipe_g3 [get_pin_info -name \$clk]
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX CLKOUT2 node info: [dict get \$native_pins tx_clkout2]"
+    }
+
+    dict set native_pins tx_clkout2 [join [lsort -dictionary [dict get \$native_pins tx_clkout2]]]
+    dict set native_pins tx_clkout2_pipe_g2 [join [lsort -dictionary [dict get \$native_pins tx_clkout2_pipe_g2]]]
+    dict set native_pins tx_clkout2_pipe_g3 [join [lsort -dictionary [dict get \$native_pins tx_clkout2_pipe_g3]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for TX CLKOUT2"
+    }
+  }
+
+
+  # ------------------------------------------------------------------------- #
+  set rx_clkout_id [get_pins -compatibility_mode -nowarn \$rx_clkout_pin]
+
+  if {[get_collection_size \$rx_clkout_id] == 0} {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: pld_pcs_rx_clk_out1_dcm does not exist, using pld_pcs_rx_clk_out1_hioint pin instead"
+    }
+    set rx_clkout_id [get_pins -compatibility_mode -nowarn "*\$inst_name*ct1_xcvr_native_inst*pldadapt_rx*pld_pcs_rx_clk_out1_hioint"]
+  }
+
+  if {[get_collection_size \$rx_clkout_id] > 0} {
+    foreach_in_collection clk \$rx_clkout_id {
+      dict lappend native_pins rx_clkout [get_pin_info -name \$clk]
+      # Pipe clocks
+      dict lappend native_pins rx_clkout_pipe_g2 [get_pin_info -name \$clk]
+      dict lappend native_pins rx_clkout_pipe_g3 [get_pin_info -name \$clk]
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting RX CLKOUT node info: [dict get \$native_pins rx_clkout]"
+    }
+
+    dict set native_pins rx_clkout [join [lsort -dictionary [dict get \$native_pins rx_clkout]]]
+    dict set native_pins rx_clkout_pipe_g2 [join [lsort -dictionary [dict get \$native_pins rx_clkout_pipe_g2]]]
+    dict set native_pins rx_clkout_pipe_g3 [join [lsort -dictionary [dict get \$native_pins rx_clkout_pipe_g3]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for RX CLKOUT"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set rx_clkout2_id [get_pins -compatibility_mode -nowarn \$rx_clkout2_pin]
+
+  if {[get_collection_size \$rx_clkout2_id] == 0} {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: pld_pcs_rx_clk_out2_dcm does not exist, using pld_pcs_rx_clk_out2_hioint pin instead"
+    }
+    set rx_clkout2_id [get_pins -compatibility_mode -nowarn "*\$inst_name*ct1_xcvr_native_inst*pldadapt_t=rx*pld_pcs_rx_clk_out2_hioint"]
+  }
+
+  if {[get_collection_size \$rx_clkout2_id] > 0} {
+    foreach_in_collection clk \$rx_clkout2_id {
+      dict lappend native_pins rx_clkout2 [get_pin_info -name \$clk]
+      # Pipe clocks
+      dict lappend native_pins rx_clkout2_pipe_g2 [get_pin_info -name \$clk]
+      dict lappend native_pins rx_clkout2_pipe_g3 [get_pin_info -name \$clk]
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting RX CLKOUT2 node info: [dict get \$native_pins rx_clkout2]"
+    }
+
+    dict set native_pins rx_clkout2 [join [lsort -dictionary [dict get \$native_pins rx_clkout2]]]
+    dict set native_pins rx_clkout2_pipe_g2 [join [lsort -dictionary [dict get \$native_pins rx_clkout2_pipe_g2]]]
+    dict set native_pins rx_clkout2_pipe_g3 [join [lsort -dictionary [dict get \$native_pins rx_clkout2_pipe_g3]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for RX CLKOUT2"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set pld_pcs_tx_clk_out_id [get_pins -compatibility_mode -nowarn \$aib_fabric_pld_pcs_tx_clk_out_pin]
+
+  if {[get_collection_size \$pld_pcs_tx_clk_out_id] > 0} {
+    foreach_in_collection clk \$pld_pcs_tx_clk_out_id {
+      dict lappend native_pins pld_pcs_tx_clk_out [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting PLD PCS TX CLKOUT node info: [dict get \$native_pins pld_pcs_tx_clk_out]"
+    }
+
+    dict set native_pins pld_pcs_tx_clk_out [join [lsort -dictionary [dict get \$native_pins pld_pcs_tx_clk_out]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for PLD PCS TX CLKOUT"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set pld_pma_clkdiv_tx_user_id [get_pins -compatibility_mode -nowarn \$aib_fabric_pld_pma_clkdiv_tx_user_pin]
+
+  if {[get_collection_size \$pld_pma_clkdiv_tx_user_id] > 0} {
+    foreach_in_collection clk \$pld_pma_clkdiv_tx_user_id {
+      dict lappend native_pins pld_pma_clkdiv_tx_user [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting PLD PMA CLKDIV TX node info: [dict get \$native_pins pld_pma_clkdiv_tx_user]"
+    }
+
+    dict set native_pins pld_pma_clkdiv_tx_user [join [lsort -dictionary [dict get \$native_pins pld_pma_clkdiv_tx_user]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for PLD PMA CLKDIV TX"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set pma_aib_tx_clk_id [get_pins -compatibility_mode -nowarn \$aib_fabric_pma_aib_tx_clk_pin]
+
+  if {[get_collection_size \$pma_aib_tx_clk_id] > 0} {
+    foreach_in_collection clk \$pma_aib_tx_clk_id {
+      dict lappend native_pins pma_aib_tx_clk [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} { 
+      post_message -type info "IP SDC: After getting PMA AIB TX CLK node info: [dict get \$native_pins pma_aib_tx_clk]"
+    }
+
+    dict set native_pins pma_aib_tx_clk [join [lsort -dictionary [dict get \$native_pins pma_aib_tx_clk]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for PMA AIB TX CLK"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set pld_pcs_rx_clk_out_id [get_pins -compatibility_mode -nowarn \$aib_fabric_pld_pcs_rx_clk_out_pin]
+
+  if {[get_collection_size \$pld_pcs_rx_clk_out_id] > 0} {
+    foreach_in_collection clk \$pld_pcs_rx_clk_out_id {
+      dict lappend native_pins pld_pcs_rx_clk_out [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} { 
+      post_message -type info "IP SDC: After getting PLD PCS RX CLKOUT node info: [dict get \$native_pins pld_pcs_rx_clk_out]"
+    }
+
+    dict set native_pins pld_pcs_rx_clk_out [join [lsort -dictionary [dict get \$native_pins pld_pcs_rx_clk_out]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for PLD PCS RX CLKOUT"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set pld_pma_clkdiv_rx_user_id [get_pins -compatibility_mode -nowarn \$aib_fabric_pld_pma_clkdiv_rx_user_pin]
+
+  if {[get_collection_size \$pld_pma_clkdiv_rx_user_id] > 0} {
+    foreach_in_collection clk \$pld_pma_clkdiv_rx_user_id {
+      dict lappend native_pins pld_pma_clkdiv_rx_user [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} { 
+      post_message -type info "IP SDC: After getting PLD PMA CLKDIV RX node info: [dict get \$native_pins pld_pma_clkdiv_rx_user]"
+    }
+
+    dict set native_pins pld_pma_clkdiv_rx_user [join [lsort -dictionary [dict get \$native_pins pld_pma_clkdiv_rx_user]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for PLD PMA CLKDIV RX"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set rx_transfer_clk_id [get_pins -compatibility_mode -nowarn \$aib_fabric_rx_transfer_clk_pin]
+
+  if {[get_collection_size \$rx_transfer_clk_id] > 0} {
+    foreach_in_collection clk \$rx_transfer_clk_id {
+      dict lappend native_pins rx_transfer_clk [get_pin_info -name \$clk]
+      dict lappend native_pins rx_transfer_clk2 [get_pin_info -name \$clk] 
+      dict lappend native_pins rx_transfer_clk_pipe_g2  [get_pin_info -name \$clk]
+      dict lappend native_pins rx_transfer_clk2_pipe_g2 [get_pin_info -name \$clk] 
+      dict lappend native_pins rx_transfer_clk_pipe_g3  [get_pin_info -name \$clk]
+      dict lappend native_pins rx_transfer_clk2_pipe_g3 [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting RX TRANSFER CLK node info: [dict get \$native_pins rx_transfer_clk]"
+    }
+
+    dict set native_pins rx_transfer_clk [join [lsort -dictionary [dict get \$native_pins rx_transfer_clk]]]
+    dict set native_pins rx_transfer_clk2 [join [lsort -dictionary [dict get \$native_pins rx_transfer_clk2]]]
+    dict set native_pins rx_transfer_clk_pipe_g2  [join [lsort -dictionary [dict get \$native_pins rx_transfer_clk_pipe_g2]]]
+    dict set native_pins rx_transfer_clk2_pipe_g2 [join [lsort -dictionary [dict get \$native_pins rx_transfer_clk2_pipe_g2]]]
+    dict set native_pins rx_transfer_clk_pipe_g3  [join [lsort -dictionary [dict get \$native_pins rx_transfer_clk_pipe_g3]]]
+    dict set native_pins rx_transfer_clk2_pipe_g3 [join [lsort -dictionary [dict get \$native_pins rx_transfer_clk2_pipe_g3]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for RX TRANSFER CLK"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set hclk_pin_id [get_pins -compatibility_mode -nowarn \$hclk_pin]
+
+  if {[get_collection_size \$hclk_pin_id] > 0} {
+    foreach_in_collection clk \$hclk_pin_id {
+      dict lappend native_pins hclk [get_pin_info -name \$clk] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting HCLK node info: [dict get \$native_pins hclk_pin]"
+    }
+
+    dict set native_pins hclk [join [lsort -dictionary [dict get \$native_pins hclk]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find pins for HCLK"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set tx_analog_reset_resync_reg_id [get_keepers -nowarn \$tx_analog_reset_resync_reg]
+
+  if {[get_collection_size \$tx_analog_reset_resync_reg_id] > 0} {
+    foreach_in_collection reg \$tx_analog_reset_resync_reg_id {
+      dict lappend native_pins tx_analog_reset_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX analog reset resync node info: [dict get \$native_pins tx_analog_reset_resync]"
+    }
+
+    dict set native_pins tx_analog_reset_resync [join [lsort -dictionary [dict get \$native_pins tx_analog_reset_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for TX analog reset synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set rx_analog_reset_resync_reg_id [get_keepers -nowarn \$rx_analog_reset_resync_reg]
+
+  if {[get_collection_size \$rx_analog_reset_resync_reg_id] > 0} {
+    foreach_in_collection reg \$rx_analog_reset_resync_reg_id {
+      dict lappend native_pins rx_analog_reset_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting RX analog reset resync node info: [dict get \$native_pins rx_analog_reset_resync]"
+    }
+
+    dict set native_pins tx_analog_reset_resync [join [lsort -dictionary [dict get \$native_pins rx_analog_reset_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for RX analog reset synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set tx_digital_reset_resync_reg_id [get_keepers -nowarn \$tx_digital_reset_resync_reg]
+
+  if {[get_collection_size \$tx_digital_reset_resync_reg_id] > 0} {
+    foreach_in_collection reg \$tx_digital_reset_resync_reg_id {
+      dict lappend native_pins tx_digital_reset_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX digital reset resync node info: [dict get \$native_pins tx_digital_reset_resync]"
+    }
+
+    dict set native_pins tx_digital_reset_resync [join [lsort -dictionary [dict get \$native_pins tx_digital_reset_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for TX digital reset synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set rx_digital_reset_resync_reg_id [get_keepers -nowarn \$rx_digital_reset_resync_reg]
+
+  if {[get_collection_size \$rx_digital_reset_resync_reg_id] > 0} {
+    foreach_in_collection reg \$rx_digital_reset_resync_reg_id {
+      dict lappend native_pins rx_digital_reset_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX digital reset resync node info: [dict get \$native_pins rx_digital_reset_resync]"
+    }
+
+    dict set native_pins rx_digital_reset_resync [join [lsort -dictionary [dict get \$native_pins rx_digital_reset_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for RX digital reset synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set tx_digital_transfer_ready_resync_reg_id [get_keepers -nowarn \$tx_digital_transfer_ready_resync_reg]
+
+  if {[get_collection_size \$tx_digital_transfer_ready_resync_reg_id] > 0} {
+    foreach_in_collection reg \$tx_digital_transfer_ready_resync_reg_id {
+      dict lappend native_pins tx_digital_transfer_ready_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX digital transfer_ready resync node info: [dict get \$native_pins tx_digital_transfer_ready_resync]"
+    }
+
+    dict set native_pins tx_digital_transfer_ready_resync [join [lsort -dictionary [dict get \$native_pins tx_digital_transfer_ready_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for TX digital transfer_ready synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set rx_digital_transfer_ready_resync_reg_id [get_keepers -nowarn \$rx_digital_transfer_ready_resync_reg]
+
+  if {[get_collection_size \$rx_digital_transfer_ready_resync_reg_id] > 0} {
+    foreach_in_collection reg \$rx_digital_transfer_ready_resync_reg_id {
+      dict lappend native_pins rx_digital_transfer_ready_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting RX digital transfer_ready resync node info: [dict get \$native_pins rx_digital_transfer_ready_resync]"
+    }
+
+    dict set native_pins rx_digital_transfer_ready_resync [join [lsort -dictionary [dict get \$native_pins rx_digital_transfer_ready_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for RX digital transfer_ready synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set tx_digital_release_aib_first_resync_reg_id [get_keepers -nowarn \$tx_digital_release_aib_first_resync_reg]
+
+  if {[get_collection_size \$tx_digital_release_aib_first_resync_reg_id] > 0} {
+    foreach_in_collection reg \$tx_digital_release_aib_first_resync_reg_id {
+      dict lappend native_pins tx_digital_release_aib_first_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting TX digital release_aib_first resync node info: [dict get \$native_pins tx_digital_release_aib_first_resync]"
+    }
+
+    dict set native_pins tx_digital_release_aib_first_resync [join [lsort -dictionary [dict get \$native_pins tx_digital_release_aib_first_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for TX digital release_aib_first synchronizers"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set rx_digital_release_aib_first_resync_reg_id [get_keepers -nowarn \$rx_digital_release_aib_first_resync_reg]
+
+  if {[get_collection_size \$rx_digital_release_aib_first_resync_reg_id] > 0} {
+    foreach_in_collection reg \$rx_digital_release_aib_first_resync_reg_id {
+      dict lappend native_pins rx_digital_release_aib_first_resync [get_node_info -name \$reg] 
+    }
+
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: After getting RX digital release_aib_first resync node info: [dict get \$native_pins rx_digital_release_aib_first_resync]"
+    }
+
+    dict set native_pins rx_digital_release_aib_first_resync [join [lsort -dictionary [dict get \$native_pins rx_digital_release_aib_first_resync]]]
+
+  } else {
+    if {\$native_debug == 1} {
+      post_message -type info "IP SDC: Could not find registers for RX digital release_aib_first synchronizers"
+    }
+  }
+
+}
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to create clocks for all channels in an instance         --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc native_create_clocks_all_ch_${random_str} { instance clk_group channel_number freq clk_list profile_cnt profile} {
+  global ::native_debug
+
+  set clock_name_list [list]
+
+  foreach clk \$clk_list {
+
+    # Shorten the clock name if multiple profiles are not used
+    if { \$profile_cnt > 1 } { 
+      set clock_name \$instance\|profile\$profile\|\$clk_group\|ch\$channel_number
+    } else {
+      set clock_name \$instance\|\$clk_group\|ch\$channel_number      
+    }
+    # Add the clock name to the list 
+    lappend clock_name_list \$clock_name
+    
+    if { \$native_debug == 1 } {
+      post_message -type info "IP SDC: Clock name = \$clock_name"
+    }
+
+    create_clock \\
+      -name \$clock_name \\
+      -period "\$freq MHz" \\
+      \$clk -add
+
+    incr channel_number
+
+  }
+
+  # Return the list of clock names  
+  return \$clock_name_list
+
+}
+
+

@@ -1,0 +1,31 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_RegAddr [get_old_param RegAddr]
+,set_new_param GUI_RegOutput [get_old_param RegOutput]
+,set_new_param GUI_CLOCK_ENABLE_INPUT_A [get_old_param CLOCK_ENABLE_INPUT_A]
+,set_new_param GUI_CLOCK_ENABLE_OUTPUT_A [get_old_param CLOCK_ENABLE_OUTPUT_A]
+,set_new_param GUI_ADDRESSSTALL_A [get_old_param ADDRESSSTALL_A]
+,set_new_param GUI_AclrAddr [get_old_param AclrAddr]
+,set_new_param GUI_AclrOutput [get_old_param AclrOutput]
+,set_new_param GUI_rden [get_old_param rden]
+,set_new_param GUI_INIT_TO_SIM_X [get_old_param INIT_TO_SIM_X]
+[exists_old_param JTAG_ENABLED],set_new_param GUI_JTAG_ENABLED [get_old_param JTAG_ENABLED]
+[exists_old_param JTAG_ID],set_new_param GUI_JTAG_ID [get_old_param JTAG_ID]
+[exists_old_param INIT_FILE_LAYOUT],set_new_param GUI_INIT_FILE_LAYOUT [get_old_param INIT_FILE_LAYOUT]
+,set_new_param GUI_WIDTH_A [get_old_param WIDTH_A]
+,set_new_param GUI_NUMWORDS_A [get_old_param NUMWORDS_A]
+[get_old_param MAXIMUM_DEPTH] == 0,set_new_param GUI_MAXIMUM_DEPTH 0
+[get_old_param MAXIMUM_DEPTH] != 0,set_new_param GUI_MAXIMUM_DEPTH [get_old_param MAXIMUM_DEPTH]
+[get_old_param RAM_BLOCK_TYPE] == 0,"set_new_param GUI_RAM_BLOCK_TYPE ""Auto"""
+[get_old_param RAM_BLOCK_TYPE] == 1,"set_new_param GUI_RAM_BLOCK_TYPE ""MLAB"""
+"[get_old_param RAM_BLOCK_TYPE] == 2 && [string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param GUI_RAM_BLOCK_TYPE ""M20K"""
+"[get_old_param RAM_BLOCK_TYPE] == 2 && ![string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param GUI_RAM_BLOCK_TYPE ""Auto"""
+[get_old_param RAM_BLOCK_TYPE] == 3,"set_new_param GUI_RAM_BLOCK_TYPE ""M144K"""
+[get_old_param SingleClock] == 1,"set_new_param GUI_SingleClock ""0"""
+[get_old_param SingleClock] == 0,"set_new_param GUI_SingleClock ""1"""
+[exists_old_param BlankMemory] && [get_old_param BlankMemory] == 0,"set_new_param GUI_BlankMemory ""1"""
+[exists_old_param BlankMemory] && [get_old_param BlankMemory] == 1,"set_new_param GUI_BlankMemory ""0"""
+,ignore_new_param GUI_MIFfilename
+,ignore_new_param GUI_WIDTHAD_A
+,ignore_new_param GUI_MODULE_NAME
+

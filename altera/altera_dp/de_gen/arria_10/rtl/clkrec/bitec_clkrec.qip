@@ -1,0 +1,38 @@
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_clkrec.v"]
+set_global_assignment -name MISC_FILE    [file join $::quartus(qip_path) "bitec_clkrec.bsf"]
+set_global_assignment -name SDC_FILE     [file join $::quartus(qip_path) "bitec_clkrec.sdc"]
+
+### THESE ARE NOT EXPOSED IN THE ENCRYPTED VERSION ###
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_vsyngen.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_fpll_cntrl.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_loop_cntrl.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_fpll_calc.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_fpll_reconf.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_fpll_reconf.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_add.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_cdc.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_cdc_fifo.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_cdc_pulse.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_cnt.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_dcfifo.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_dd.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_div.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "bitec_dp_mult.v"]
+
+######################################################
+
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "altera_pll_reconfig_mif_reader.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "altera_pll_reconfig_core.v"]
+set_global_assignment -name VERILOG_FILE [file join $::quartus(qip_path) "altera_pll_reconfig_top.v"]
+
+#set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll_av.qip"]
+#set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll_cv.qip"]
+#set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll_sv.qip"]
+set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll_a10/clkrec_pll_a10.qip"]
+#set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll135_av.qip"]
+#set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll135_cv.qip"]
+#set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll135_sv.qip"]
+set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_pll135_a10/clkrec_pll135_a10.qip"]
+
+set_global_assignment -library "clkrec_pll" -name QIP_FILE [file join $::quartus(qip_path) "clkrec_reset_a10/clkrec_reset_a10.qip"]
+

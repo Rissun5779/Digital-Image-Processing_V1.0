@@ -1,0 +1,9 @@
+#dump -file result.vpd
+
+#dump -add tb_top -depth 1
+#dump -add tb_top.DUT -depth 1
+#dump -add tb_top.DUT.CHANNEL_GEN\[0\].genblk1.u_channel -depth 1
+#dump -add tb_top.DUT.CHANNEL_GEN\[0\].genblk1.u_channel.mac -depth 1
+#dump -add tb_top.DUT.CHANNEL_GEN\[0\].genblk1.u_channel.phy -depth 1
+
+run

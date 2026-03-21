@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="baseDevice" value="Unknown" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element $${FILENAME}
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element clock_bridge_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+   element pcie_channelizer_0
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element rd_desc_tl_0
+   {
+      datum _sortIndex
+      {
+         value = "2";
+         type = "int";
+      }
+   }
+   element rd_desc_tl_1
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element rd_desc_tl_2
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element rd_desc_tl_3
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element rddc_mc_256b
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Stratix V";
+         type = "String";
+      }
+   }
+   element reset_bridge_0
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="Unknown" />
+ <parameter name="deviceFamily" value="Stratix V" />
+ <parameter name="deviceSpeedGrade" value="Unknown" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface name="clk" internal="clock_bridge_0.in_clk" type="clock" dir="end" />
+ <interface
+   name="dc2dmard_instruct"
+   internal="pcie_channelizer_0.DMADesc"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="dmard2dc_status"
+   internal="pcie_channelizer_0.DMAStatus"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="rd_dc_ackwrfetchdt_0"
+   internal="rd_desc_tl_0.RdAckWrFetchDT"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="rd_dc_ackwrfetchdt_1"
+   internal="rd_desc_tl_1.RdAckWrFetchDT"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="rd_dc_ackwrfetchdt_2"
+   internal="rd_desc_tl_2.RdAckWrFetchDT"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="rd_dc_ackwrfetchdt_3"
+   internal="rd_desc_tl_3.RdAckWrFetchDT"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="rd_dc_entries_0"
+   internal="rd_desc_tl_0.desc_entries"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_entries_1"
+   internal="rd_desc_tl_1.desc_entries"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_entries_2"
+   internal="rd_desc_tl_2.desc_entries"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_entries_3"
+   internal="rd_desc_tl_3.desc_entries"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_rxm_0"
+   internal="rd_desc_tl_0.desc_ctrl"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_rxm_1"
+   internal="rd_desc_tl_1.desc_ctrl"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_rxm_2"
+   internal="rd_desc_tl_2.desc_ctrl"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_rxm_3"
+   internal="rd_desc_tl_3.desc_ctrl"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="rd_dc_status2txs_1"
+   internal="rd_desc_tl_1.status2txs"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="rd_dc_status2txs_2"
+   internal="rd_desc_tl_2.status2txs"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="rd_dc_status2txs_3"
+   internal="rd_desc_tl_3.status2txs"
+   type="avalon"
+   dir="start" />
+ <interface
+   name="rd_dc_status2txs_o"
+   internal="rd_desc_tl_0.status2txs"
+   type="avalon"
+   dir="start" />
+ <interface name="rd_dc_status2user_0" internal="rd_desc_tl_0.status2user" />
+ <interface name="rd_dc_status2user_1" internal="rd_desc_tl_1.status2user" />
+ <interface name="rd_dc_status2user_2" internal="rd_desc_tl_2.status2user" />
+ <interface name="rd_dc_status2user_3" internal="rd_desc_tl_3.status2user" />
+ <interface
+   name="rdmc_controlreg_slave"
+   internal="pcie_channelizer_0.ControlReg"
+   type="avalon"
+   dir="end" />
+ <interface
+   name="resetn"
+   internal="reset_bridge_0.in_reset"
+   type="reset"
+   dir="end" />
+ <module
+   name="clock_bridge_0"
+   kind="altera_clock_bridge"
+   version="14.1"
+   enabled="1">
+  <parameter name="DERIVED_CLOCK_RATE" value="0" />
+  <parameter name="EXPLICIT_CLOCK_RATE" value="250" />
+  <parameter name="NUM_CLOCK_OUTPUTS" value="1" />
+ </module>
+ <module
+   name="pcie_channelizer_0"
+   kind="altera_pcie_channelizer"
+   version="14.1"
+   enabled="1">
+  <parameter name="DESC_WIDTH" value="169" />
+  <parameter name="INTENDED_DEVICE_FAMILY" value="Stratix V" />
+  <parameter name="NUMBER_OF_CHANNELS" value="4" />
+  <parameter name="PRIORITY_WEIGHT" value="4" />
+  <parameter name="pcie_qsys" value="1" />
+ </module>
+ <module
+   name="rd_desc_tl_0"
+   kind="altera_pcie_sriov_dma_desc_ctl"
+   version="14.1"
+   enabled="1">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="250" />
+  <parameter name="CHANNELIZER_ENABLE" value="1" />
+  <parameter name="DMA_WIDTH" value="256" />
+  <parameter name="FUNC_NUM" value="128" />
+  <parameter name="READ_CONTROL" value="1" />
+  <parameter name="USER_STATUS" value="0" />
+ </module>
+ <module
+   name="rd_desc_tl_1"
+   kind="altera_pcie_sriov_dma_desc_ctl"
+   version="14.1"
+   enabled="1">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="250" />
+  <parameter name="CHANNELIZER_ENABLE" value="1" />
+  <parameter name="DMA_WIDTH" value="256" />
+  <parameter name="FUNC_NUM" value="129" />
+  <parameter name="READ_CONTROL" value="1" />
+  <parameter name="USER_STATUS" value="0" />
+ </module>
+ <module
+   name="rd_desc_tl_2"
+   kind="altera_pcie_sriov_dma_desc_ctl"
+   version="14.1"
+   enabled="1">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="250" />
+  <parameter name="CHANNELIZER_ENABLE" value="1" />
+  <parameter name="DMA_WIDTH" value="256" />
+  <parameter name="FUNC_NUM" value="130" />
+  <parameter name="READ_CONTROL" value="1" />
+  <parameter name="USER_STATUS" value="0" />
+ </module>
+ <module
+   name="rd_desc_tl_3"
+   kind="altera_pcie_sriov_dma_desc_ctl"
+   version="14.1"
+   enabled="1">
+  <parameter name="AUTO_CLOCK_CLOCK_RATE" value="250" />
+  <parameter name="CHANNELIZER_ENABLE" value="1" />
+  <parameter name="DMA_WIDTH" value="256" />
+  <parameter name="FUNC_NUM" value="131" />
+  <parameter name="READ_CONTROL" value="1" />
+  <parameter name="USER_STATUS" value="0" />
+ </module>
+ <module
+   name="reset_bridge_0"
+   kind="altera_reset_bridge"
+   version="14.1"
+   enabled="1">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="250" />
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="deassert" />
+  <parameter name="USE_RESET_REQUEST" value="0" />
+ </module>
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="pcie_channelizer_0.ControllerStatus_0"
+   end="rd_desc_tl_0.dma_status" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="pcie_channelizer_0.ControllerStatus_1"
+   end="rd_desc_tl_1.dma_status" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="pcie_channelizer_0.ControllerStatus_2"
+   end="rd_desc_tl_2.dma_status" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="pcie_channelizer_0.ControllerStatus_3"
+   end="rd_desc_tl_3.dma_status" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="rd_desc_tl_0.desc_inst"
+   end="pcie_channelizer_0.ControllerDescriptor_0" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="rd_desc_tl_1.desc_inst"
+   end="pcie_channelizer_0.ControllerDescriptor_1" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="rd_desc_tl_2.desc_inst"
+   end="pcie_channelizer_0.ControllerDescriptor_2" />
+ <connection
+   kind="avalon_streaming"
+   version="14.1"
+   start="rd_desc_tl_3.desc_inst"
+   end="pcie_channelizer_0.ControllerDescriptor_3" />
+ <connection
+   kind="clock"
+   version="14.1"
+   start="clock_bridge_0.out_clk"
+   end="pcie_channelizer_0.Clock" />
+ <connection
+   kind="clock"
+   version="14.1"
+   start="clock_bridge_0.out_clk"
+   end="reset_bridge_0.clk" />
+ <connection
+   kind="clock"
+   version="14.1"
+   start="clock_bridge_0.out_clk"
+   end="rd_desc_tl_0.clock" />
+ <connection
+   kind="clock"
+   version="14.1"
+   start="clock_bridge_0.out_clk"
+   end="rd_desc_tl_1.clock" />
+ <connection
+   kind="clock"
+   version="14.1"
+   start="clock_bridge_0.out_clk"
+   end="rd_desc_tl_2.clock" />
+ <connection
+   kind="clock"
+   version="14.1"
+   start="clock_bridge_0.out_clk"
+   end="rd_desc_tl_3.clock" />
+ <connection
+   kind="reset"
+   version="14.1"
+   start="reset_bridge_0.out_reset"
+   end="rd_desc_tl_0.Resetn" />
+ <connection
+   kind="reset"
+   version="14.1"
+   start="reset_bridge_0.out_reset"
+   end="rd_desc_tl_1.Resetn" />
+ <connection
+   kind="reset"
+   version="14.1"
+   start="reset_bridge_0.out_reset"
+   end="rd_desc_tl_2.Resetn" />
+ <connection
+   kind="reset"
+   version="14.1"
+   start="reset_bridge_0.out_reset"
+   end="rd_desc_tl_3.Resetn" />
+ <connection
+   kind="reset"
+   version="14.1"
+   start="reset_bridge_0.out_reset"
+   end="pcie_channelizer_0.resetn" />
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

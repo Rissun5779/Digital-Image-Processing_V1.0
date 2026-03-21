@@ -1,0 +1,194 @@
+set_global_assignment -name FAMILY "$device_family"
+set_global_assignment -name DEVICE $device
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 15.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:51:57  JULY 08, 2015"
+set_global_assignment -name LAST_QUARTUS_VERSION 15.1.0
+set_global_assignment -name TOP_LEVEL_ENTITY jesd204b_ed
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 100
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+@@ if {$ED_DEV_KIT == "A10_FPGA"} {
+# 100MHz mgmt clk
+set_location_assignment PIN_AR36 -to mgmt_clk
+set_location_assignment PIN_AR37 -to "mgmt_clk(n)"
+
+# device_clk
+set_location_assignment PIN_AN8 -to device_clk
+set_location_assignment PIN_AN7 -to "device_clk(n)"
+
+# data path
+set_location_assignment PIN_AW7 -to rx_serial_data[0]
+set_location_assignment PIN_AW8 -to "rx_serial_data[0](n)"
+set_location_assignment PIN_BA7 -to rx_serial_data[1]
+set_location_assignment PIN_BA8 -to "rx_serial_data[1](n)"
+set_location_assignment PIN_AY5 -to rx_serial_data[2]
+set_location_assignment PIN_AY6 -to "rx_serial_data[2](n)"
+set_location_assignment PIN_AV5 -to rx_serial_data[3]
+set_location_assignment PIN_AV6 -to "rx_serial_data[3](n)"
+set_location_assignment PIN_AT5 -to rx_serial_data[4]
+set_location_assignment PIN_AT6 -to "rx_serial_data[4](n)"
+set_location_assignment PIN_AP5 -to rx_serial_data[5]
+set_location_assignment PIN_AP6 -to "rx_serial_data[5](n)"
+set_location_assignment PIN_AN3 -to rx_serial_data[6]
+set_location_assignment PIN_AN4 -to "rx_serial_data[6](n)"
+set_location_assignment PIN_AM5 -to rx_serial_data[7]
+set_location_assignment PIN_AM6 -to "rx_serial_data[7](n)"
+
+set_location_assignment PIN_BC7 -to tx_serial_data[0]
+set_location_assignment PIN_BC8 -to "tx_serial_data[0](n)"
+set_location_assignment PIN_BD5 -to tx_serial_data[1]
+set_location_assignment PIN_BD6 -to "tx_serial_data[1](n)"
+set_location_assignment PIN_BB5 -to tx_serial_data[2]
+set_location_assignment PIN_BB6 -to "tx_serial_data[2](n)"
+set_location_assignment PIN_BC3 -to tx_serial_data[3]
+set_location_assignment PIN_BC4 -to "tx_serial_data[3](n)"
+set_location_assignment PIN_BB1 -to tx_serial_data[4]
+set_location_assignment PIN_BB2 -to "tx_serial_data[4](n)"
+set_location_assignment PIN_BA3 -to tx_serial_data[5]
+set_location_assignment PIN_BA4 -to "tx_serial_data[5](n)"
+set_location_assignment PIN_AY1 -to tx_serial_data[6]
+set_location_assignment PIN_AY2 -to "tx_serial_data[6](n)"
+set_location_assignment PIN_AW3 -to tx_serial_data[7]
+set_location_assignment PIN_AW4 -to "tx_serial_data[7](n)"
+
+#SPI
+set_location_assignment PIN_AR22 -to spi_MISO
+set_location_assignment PIN_AR11 -to spi_MOSI
+set_location_assignment PIN_AT10 -to spi_SCLK
+set_location_assignment PIN_AV14 -to spi_SS_n[0]
+
+#sysref
+set_location_assignment PIN_AV11 -to sysref_out
+set_location_assignment PIN_AW11 -to "sysref_out(n)"
+
+#syncn
+set_location_assignment PIN_AN20 -to sync_n_out
+set_location_assignment PIN_AP19 -to "sync_n_out(n)"
+
+set_location_assignment PIN_E24 -to sma_clkout
+set_location_assignment PIN_T12 -to global_rst_n
+
+@@ }
+
+set_instance_assignment -name IO_STANDARD LVDS -to mgmt_clk
+set_instance_assignment -name IO_STANDARD LVDS -to device_clk
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[0]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[1]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[2]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[3]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[4]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[5]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[6]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to rx_serial_data[7]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[0]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[1]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[2]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[3]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[4]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[5]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[6]
+set_instance_assignment -name IO_STANDARD "HIGH SPEED DIFFERENTIAL I/O" -to tx_serial_data[7]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[4]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[5]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[6]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to rx_serial_data[7]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[0]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[1]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[2]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[3]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[4]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[5]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[6]
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 0_9V -to tx_serial_data[7]
+set_instance_assignment -name IO_STANDARD LVDS -to sysref_out
+set_instance_assignment -name IO_STANDARD LVDS -to "sysref_out(n)"
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "1.8 V"
+set_instance_assignment -name IO_STANDARD LVDS -to sync_n_out
+set_instance_assignment -name IO_STANDARD LVDS -to "sync_n_out(n)"
+
+#Set virtual pins constraint
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_din[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_din_valid[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_din_ready[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_dout[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_dout_valid[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_usr_dout_ready[*]
+set_instance_assignment -name VIRTUAL_PIN ON -to avst_patchk_data_error[*]
+
+set_instance_assignment -name VIRTUAL_PIN ON -to spi_SS_n[1]
+set_instance_assignment -name VIRTUAL_PIN ON -to spi_SS_n[2]
+
+#Source File List
+
+set_global_assignment -name VERILOG_FILE spi_mosi_oe.v
+set_global_assignment -name VERILOG_FILE switch_debouncer.v
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_transport_tx_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_transport_rx_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_deassembler.sv
+set_global_assignment -name SYSTEMVERILOG_FILE transport_layer/altera_jesd204_assembler.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/ramp_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/ramp_checker.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/prbs_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/prbs_checker.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/pattern_generator_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/pattern_checker_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/alternate_generator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE pattern/alternate_checker.sv
+set_global_assignment -name SYSTEMVERILOG_FILE jesd204b_ed.sv
+set_global_assignment -name SDC_FILE jesd204b_ed.sdc
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+@@ if { $qsys_pro == 0 } {
+set_global_assignment -name QSYS_FILE se_outbuf_1bit.qsys
+set_global_assignment -name QSYS_FILE jesd204b_ed_qsys.qsys
+@@ } else {
+set_global_assignment -name PBIP_FILE se_outbuf_1bit.ip
+set_global_assignment -name QSYS_FILE jesd204b_ed_qsys.qsys
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_core_pll.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_core_pll_reconfig.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_device_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_frame_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_link_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_mgmt_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_reset_controller_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_ed_qsys/jesd204b_ed_qsys_spi_0.ip
+set_global_assignment -name QSYS_FILE jesd204b_subsystem.qsys
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_device_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_frame_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_jesd204b.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_link_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_mgmt_clk.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_mm_bridge.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_reset_seq.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_rx_frame_reset_n_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_rx_link_reset_n_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_tx_frame_reset_n_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_tx_link_reset_n_0.ip
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_xcvr_atx_pll_a10_0.ip
+@@ if {$L == 8} {
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_xcvr_atx_pll_a10_1.ip
+@@ }
+set_global_assignment -name PBIP_FILE ip/jesd204b_subsystem/jesd204b_subsystem_xcvr_reset_control_0.ip
+set_global_assignment -name QSYS_FILE nios_subsystem.qsys
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_core_pll_spi_mm_bridge_0.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_jesd204b_subsystem_mm_bridge_0.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_jtag_debug_reset_bridge.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_jtag_uart.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_memory.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_mgmt_clk.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_nios2.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_pio_control.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_pio_status.ip
+set_global_assignment -name PBIP_FILE ip/nios_subsystem/nios_subsystem_timer.ip
+@@ }
+
+set_global_assignment -name PRESERVE_UNUSED_XCVR_CHANNEL ON

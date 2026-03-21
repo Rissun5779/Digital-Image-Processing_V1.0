@@ -1,0 +1,24 @@
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,SYSTEM_INFO,VISIBLE,DESCRIPTION,
+DEVICE_FAMILY,STRING,,Device Family,{device_family},FALSE,Specifies which device family is currently selected.,
+,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,DESCRIPTION,,
+GUI_MODULUS_VALUE,POSITIVE,1,Modulus,TRUE,Maximum count plus 1. The number of unique states in the counter's cycle.,,
+GUI_CLKEN,BOOLEAN,FALSE,Clock Enable,TRUE,Clock enable input to enabe all synchronous activities.,,
+GUI_CNTEN,BOOLEAN,FALSE,Count Enable,TRUE,"Count enable input to disable the count when assered low without affecting sload, sset or sclr.",,
+GUI_CARRYIN,BOOLEAN,FALSE,Carry-in,TRUE,Carry-in to the low-order bit.,,
+GUI_CARRYOUT,BOOLEAN,FALSE,Carry-out,TRUE,Carry-out port of the counter's MSB bit.,,
+GUI_SCLR,BOOLEAN,FALSE,Clear,TRUE,Synchronous clear input that clears the counter on the next active clock edge.,,
+GUI_SLOAD,BOOLEAN,FALSE,Load,TRUE,Synchronous load input that loads the counter with data[] on the next active clock edge.,,
+GUI_SSET,BOOLEAN,FALSE,Set,TRUE,Synchronous set input that sets the counter on the next active clock edge.,,
+GUI_SVALUE,STRING,0,Value,TRUE,Constant value that is loaded on the rising edge of the clock port when the sset port is high.,,
+GUI_ACLR,BOOLEAN,FALSE,Clear,TRUE,Asynchronous clear input.,,
+GUI_ALOAD,BOOLEAN,FALSE,Load,TRUE,Asynchronous load input that ashynchronously loads the counter with the value on the data input.,,
+GUI_ASET,BOOLEAN,FALSE,Set,TRUE,Asynchronous set input. Sepcifies q[] outputs ass all 1's or the value specified by LPM_AVALUE parameter.,,
+GUI_AVALUE,STRING,0,Value,TRUE,Constant value that is loaded when aset is high.,,
+GUI_WIDTH,POSITIVE,8,Width,TRUE,Specifies the width of q[] and data[] ports,,
+,,,,,,,
+#PARAMETER,TYPE,DEFAULT_VALUE,DISPLAY_NAME,AFFECTS_GENERATION,DISPLAY_HINT,ALLOWED_RANGES,DESCRIPTION
+GUI_DIRECTION,INTEGER,0,Direction,TRUE,RADIO,"""0:Up only"" ""1:Down only"" ""2:Create an 'updown' input port to allow me to do both (1 counts up; 0 counts down)""",Choose which direction the counter will go.
+GUI_MODULUS_COUNTER,INTEGER,0,Type,TRUE,RADIO,"""0:Plain binary"" ""1:Modulus""",Choose if the counter will use binary of a modulus.
+GUI_SSET_ALL1,INTEGER,1,Set to,TRUE,RADIO,"""1:All 1's"" ""0:Specify value""",Choose if the synchronous set input will use all 1's or a specified constant
+GUI_ASET_ALL1,INTEGER,1,Set to,TRUE,RADIO,"""1:All 1's"" ""0:Specify value""",Choose if the asynchronous set input will use all 1's or a specified constant

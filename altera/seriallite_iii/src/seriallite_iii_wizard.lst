@@ -1,0 +1,26 @@
+[Interface Protocols|SerialLite]
+Serial Lite III Streaming Intel FPGA IP= "%t" "%w/../../common/lib/megawizard.pl" --wizard_file:"%w/seriallite_iii_sv_hw.tcl" --wizard:seriallite_iii_sv --familyparameter:system_family --early_gen:on %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY SUPPORTED="NONE | Stratix V | Arria V GZ" SUPPORT_CHECK="ON" />
+<LANGUAGES AHDL="OFF" />
+<PINPLAN SUPPORTED="OFF"/>
+<ALIAS>SerialLite III Streaming</ALIAS>
+<ALIAS>SerialLite III Streaming v12.1</ALIAS>
+<ALIAS>SerialLite III Streaming v13.0</ALIAS>
+<ALIAS>SerialLite III Streaming v13.1</ALIAS>
+<ALIAS>SerialLite III Streaming v14.0</ALIAS>
+<ALIAS>SerialLite III Streaming v14.0.2</ALIAS>
+<ALIAS>SerialLite III Streaming v14.1</ALIAS>
+<ALIAS>SerialLite III Streaming v15.0</ALIAS>
+<ALIAS>SerialLite III Streaming v15.1</ALIAS>
+<ALIAS>SerialLite III Streaming v15.1.1</ALIAS>
+<ALIAS>SerialLite III Streaming v15.1.2</ALIAS>
+<ALIAS>SerialLite III Streaming v16.0</ALIAS>
+<ALIAS>SerialLite III Streaming v16.0.2</ALIAS>
+<ALIAS>SerialLite III Streaming v16.1</ALIAS>
+<ALIAS>SerialLite III Streaming v17.0</ALIAS>
+<ALIAS>SerialLite III Streaming v17.1</ALIAS>
+<ALIAS>Serial Lite III Streaming Intel FPGA IP</ALIAS>
+</INFO>

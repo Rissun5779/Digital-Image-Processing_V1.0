@@ -1,0 +1,56 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+project_new -overwrite -part $device -family "${family}" ${dst_path}/${project_name}
+
+# Common project settings
+set_global_assignment -name VERILOG_FILE ${project_name}.v
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name SIP_FILE ../${ip_inst}/${ip_inst}.sip
+set_global_assignment -name QIP_FILE ../${ip_inst}/${ip_inst}.qip
+set_global_assignment -name SDC_FILE ./${project_name}.sdc
+set_global_assignment -name SEARCH_PATH common/
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+
+set_instance_assignment -name GXB_0PPM_CORECLK ON -to rx_serial
+set_instance_assignment -name GXB_0PPM_CORECLK ON -to tx_serial
+
+# Disable warning about pins stuck at VCC and GND
+set_instance_assignment -name MESSAGE_DISABLE 13410 -to reconfig_readdata[31..8]
+
+# Virtual pin assignments
+@@ foreach port $ports {
+set_instance_assignment -name VIRTUAL_PIN ON -to $port
+@@ }
+
+# XCVR voltage assignments. Used to prevent warnings
+set_instance_assignment -name IO_STANDARD "CURRENT MODE LOGIC (CML)" -to rx_serial
+set_instance_assignment -name IO_STANDARD "HSSI DIFFERENTIAL I/O" -to tx_serial
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_1V -to rx_serial
+set_instance_assignment -name XCVR_VCCR_VCCT_VOLTAGE 1_1V -to tx_serial
+
+@@  if {$speed == 25 && $enable_ptp == 1} {
+# need to promote these clock in 1588 variant
+set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to *s0*xcvr*a10_xcvr_25g*g_xcvr_native_insts[*].twentynm_xcvr_native_inst*twentynm_xcvr_native_inst*inst_twentynm_pcs*pld_pma_clkdiv_tx_user
+set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to *s0*xcvr*a10_xcvr_25g*g_xcvr_native_insts[*].twentynm_xcvr_native_inst*twentynm_xcvr_native_inst*inst_twentynm_pcs*pld_pma_clkdiv_rx_user
+@@ }
+
+@@  if {$speed == 50 && $enable_div40 == 1} {
+set_instance_assignment -name GLOBAL_SIGNAL "REGIONAL_CLOCK" -to av_top|alt_e50_0|eth_custom|s0|rx_pma_div_clkout
+@@ }
+
+# ?
+set_global_assignment -name BLOCK_RAM_TO_MLAB_CELL_CONVERSION OFF
+
+export_assignments -reorganize
+project_close

@@ -1,0 +1,22 @@
+CONDITION,DO
+,set_new_param device_family [get_old_param INTENDED_DEVICE_FAMILY]
+,ignore_new_param AUTO_DEVICE
+,ignore_new_param AUTO_BASE_DEVICE
+,ignore_new_param AUTO_DEVICE_SPEEDGRADE
+,ignore_new_param GUI_OCT_CLKBUF_MODE
+,"set_new_param OCT_MODE ""Power-up"""
+"[get_old_param LPM_TYPE] != ""ALT_OCT_POWER""","croak ""Only OCT configured to calibrate on power-up is migratable to Arria 10"""
+,"set_new_param ENABLE_MIGRATABLE_PORT_NAMES ""true"""
+,ignore_new_param OCT_CAL_NUM
+,ignore_new_param OCT_CAL_MODE_0
+,ignore_new_param OCT_CAL_MODE_1
+,ignore_new_param OCT_CAL_MODE_2
+,ignore_new_param OCT_CAL_MODE_3
+,ignore_new_param OCT_CAL_MODE_4
+,ignore_new_param OCT_CAL_MODE_5
+,ignore_new_param OCT_CAL_MODE_6
+,ignore_new_param OCT_CAL_MODE_7
+,ignore_new_param OCT_CAL_MODE_8
+,ignore_new_param OCT_CAL_MODE_9
+,ignore_new_param OCT_CAL_MODE_10
+,ignore_new_param OCT_CAL_MODE_11

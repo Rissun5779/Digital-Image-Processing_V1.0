@@ -1,0 +1,427 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//----------------------------------------------------------------------------------------------
+// This test module uses System Verilog syntax.
+//----------------------------------------------------------------------------------------------
+
+
+`timescale 1 ps / 1 ps
+// console messaging level
+`define VERBOSITY VERBOSITY_INFO
+
+
+
+//local parameters
+`define MODULETYPE              "${MODULE}"
+@@ if {${MODULE} == "Encoder"} {
+`define LLRPERSYMBOL             ${BITSPERSYMBOL}
+@@ } else {
+`define LLRPERSYMBOL             ${LLRPERSYMBOL}
+@@ }
+
+
+
+
+@@ if {${LDPC_TYPE} == "NASA"} {
+@@      get_NASA_parameters nbcheckgroup nbvargroup n ${N} 0
+`define N                       ${n}
+`define K                       14*511 - 18*${N}
+`define NB_CODE                 1
+`define VARIABLE_RATE           0
+@@ } elseif {${LDPC_TYPE} == "WiMedia"} {
+@@      get_Wimedia_parameters nbcheckgroup nbvargroup n ${N} ${RATE} 0
+`define N                       ${n}
+`define K                       (44-${nbcheckgroup})*30
+`define NB_CODE                 4
+`define VARIABLE_RATE           ${ISVARRATE}
+@@ } elseif {${LDPC_TYPE} == "DVB"} {
+@@      get_DVB_parameters nbcheckgroup nbvargroup n [get_DVB_matrixnumber ${N} ${RATE}]
+`define N                       ${n}    
+`define K                       `N-${nbcheckgroup}*360
+`define NB_CODE                 1
+`define VARIABLE_RATE           ${ISVARRATE}
+@@} elseif {${LDPC_TYPE} == "DOCSIS"} {
+`define N                       16200
+`define K                       0
+`define NB_CODE                 3
+`define VARIABLE_RATE           1
+@@}
+
+`define SOFT                    ${SOFTBITS}
+`define TRANSMIT_PARITY         ${TRANSMIT_PARITY}
+`define NB_CHANNEL              1
+`define ST_CHANNEL_W            \$clog2(`NB_CHANNEL)
+
+//BFM related parameters
+`define ST_NUMSYMBOLS           1
+`define ST_ERROR_W              1
+`define ST_MAX_CHANNELS         `NB_CHANNEL-1
+`define ST_READY_LATENCY        0
+`define SOURCE_RESP_TIMEOUT     100000
+
+
+//BFM hierachy
+`define CLK tb.${output_name}_inst_core_clk_bfm
+`define RST tb.${output_name}_inst_core_rst_bfm
+`define SNK tb.${output_name}_inst_core_sink_bfm
+`define SRC tb.${output_name}_inst_core_source_bfm
+
+
+// BACK & FORWARD PRESSUR
+`define BACK_PRESSURE         "false"
+`define FORWARD_PRESSURE      "false"
+
+`define LLR_FILE          "${output_name}_received_llr.txt"
+`define DATA_FILE         "${output_name}_data.txt"
+
+@@ if {${MODULE} == "Encoder"} {
+`define OUT_FILE             "${output_name}_codewords.txt"
+@@ } else {
+`define OUT_FILE             "${output_name}_decoded_codewords.txt"
+@@ }
+`define RATE_FILE            "${output_name}_rate.txt"
+
+module test_program();
+    import verbosity_pkg::*;
+    localparam LPS          = `LLRPERSYMBOL;
+    localparam NBC          = `NB_CODE;
+    localparam S            = (`MODULETYPE=="Encoder")? 1 : `SOFT;
+    localparam LIN          = (`MODULETYPE=="Encoder")? `K : `N;
+    localparam LOUT         = (`TRANSMIT_PARITY || `MODULETYPE=="Encoder")? `N : `K;
+
+    localparam VAR          =  `VARIABLE_RATE;
+    
+    localparam TP           = (`TRANSMIT_PARITY==1)? 1 : 0;    
+    localparam ME           = (`MODULETYPE=="Encoder")? 1 : 0;
+@@  if {${LDPC_TYPE} == "WiMedia"} {
+    localparam LF = (`N==1320)? 4 : 0;
+@@  } else {
+    localparam LF = 0;
+@@ }
+
+    localparam IN_FILE      =  (`MODULETYPE=="Encoder")? `DATA_FILE :`LLR_FILE;
+    localparam RATE_FILE    =  `RATE_FILE;
+
+    string message;
+
+
+    ${output_name}_tb tb ( );
+    int i, j;
+    int total_data_in    = 0;
+    int total_data_out   = 0;
+    int data_counted_in  = 0;
+    int data_counted_out = 0;
+    int bp_idle_table [5:0];
+    int fp_idle_table [5:0];
+    
+    
+    //the ST transaction is defined using SystemVerilog structure data type
+    class src_transaction_class;
+        int                                      idles;
+        bit                                      startofpacket;
+        bit                                      endofpacket;
+        logic  [`ST_ERROR_W-1:0]                 error;
+        logic  [LPS*S-1:0]                       data_symbol;
+        logic  [LPS*S+NBC*VAR-1:0]               data;
+        int                                      rate;
+     
+        int data_count=0, packet_seen=0;
+        int data_file, rate_file_src;
+        int input_data_size, input_data_ismodinw, output_data_size, output_data_ismodinw;
+        int lin, lout;
+        string message;
+
+        function void open_input_files();
+            \$sformat(message, "%m: Opening input files");
+            print(VERBOSITY_DEBUG, message);
+
+            if (VAR == 1) begin
+                rate_file_src = \$fopen(RATE_FILE , "r");
+                if (!rate_file_src)
+                    print(VERBOSITY_ERROR,"Failed to open rate file");
+            end
+            
+            data_file = \$fopen(IN_FILE , "r");
+
+            if (!data_file)
+                print(VERBOSITY_ERROR,"Failed to open data file");
+        endfunction
+
+        function int read_input_data_files();
+            int read_data, read_rate;
+            longint value_data, value_rate;
+            \$sformat(message, "%m: Reading from file line");
+            print(VERBOSITY_DEBUG, message);
+            startofpacket = 1'b0;
+            endofpacket   = 1'b0;
+            error = 1'b0;
+            print(VERBOSITY_DEBUG,"Reading the input files");
+            if (\$feof(data_file)) begin
+                print(VERBOSITY_WARNING,"End of Data file");
+                return -1;
+            end
+            
+
+
+            if (data_count == 0) begin //At the beginning of each frame find the direction and size
+                startofpacket = 1'b1;
+                if (VAR==1) begin
+                    read_rate = \$fscanf(rate_file_src,"%d\\n",value_rate);
+                    rate = value_rate;
+@@ if {${LDPC_TYPE} == "DOCSIS"} {
+                    if (rate==1) begin
+                        lin = (16200-ME*360*5);
+                        lout = (16200-(1-ME)*(1-TP)*360*5);
+                    end else if(rate==2) begin
+                        lin = (5940-ME*180*5);
+                        lout = (5940-(1-ME)*(1-TP)*180*5);
+                    end else if(rate==3) begin
+                        lin = (1120-ME*56*5);
+                        lout = (1120-(1-ME)*(1-TP)*56*5);
+                    end
+@@ } elseif {${LDPC_TYPE} == "WiMedia"} {
+                    if (rate==1) begin
+                        lin = (`N-ME*30*(8+LF));
+                        lout = (`N-(1-ME)*(1-TP)*30*(8+LF));
+                    end else if(rate==2) begin
+                        lin = (`N-ME*30*(10+LF));
+                        lout = (`N-(1-ME)*(1-TP)*30*(10+LF));
+                    end else if(rate==3) begin
+                        lin = (`N-ME*30*(15+LF));
+                        lout = (`N-(1-ME)*(1-TP)*30*(15+LF));
+                    end else if(rate==4) begin
+                        lin = (`N-ME*30*(20+LF));
+                        lout = (`N-(1-ME)*(1-TP)*30*(20+LF));
+                    end    
+@@}                   
+                end
+                else begin
+                    lin = LIN;
+                    lout = LOUT;
+                end
+                input_data_ismodinw = ((lin%LPS)==0)? 0 : 1;
+                input_data_size = lin  / LPS + input_data_ismodinw;
+                output_data_ismodinw = ((lout%LPS)==0)? 0 : 1;
+                output_data_size = lout  / LPS + output_data_ismodinw;
+               
+                total_data_out = total_data_out + output_data_size;
+                total_data_in = total_data_in + input_data_size; 
+            end
+            else begin
+                rate = 0;
+            end
+
+            data_symbol = 0;
+            for (j=0;j<LPS;j++) begin
+                if (data_count*LPS+j > lin-1)
+                    value_data = 0;
+                else begin
+                    read_data = \$fscanf(data_file,"%d\\n",value_data);
+                end
+                data_symbol = data_symbol ^ ({ {((LPS-1)*S){1'b0}}, value_data[S-1:0]}<<(j*S));     
+            end
+            if (rate !=0)
+                data = {{{NBC-1{1'b0}},1'b1}<<(rate-1), data_symbol[LPS*S-1:0]};
+            else
+                data = {{NBC{1'b0}},data_symbol};
+            if (data_count == input_data_size-1 ) begin
+                endofpacket = 1'b1;
+                data_count = 0;
+                packet_seen++;
+            end
+            else begin
+                data_count = data_count + 1;
+            end
+           
+            read_input_data_files = 1;
+        endfunction
+
+        function void send_data();
+            data_counted_in++;
+            \$sformat(message, "%m: Sent Packet");
+            print(VERBOSITY_DEBUG, message);
+            `SRC.set_transaction_idles   (idles);
+            `SRC.set_transaction_sop     (startofpacket);
+            `SRC.set_transaction_eop     (endofpacket);
+            `SRC.set_transaction_data    (data);
+            `SRC.set_transaction_error   (error);
+            `SRC.push_transaction();
+        endfunction
+
+        function void close_input_files();
+            \$sformat(message, "%m: Closing input files");
+            print(VERBOSITY_DEBUG, message);
+            \$fclose(data_file);
+            \$fclose(rate_file_src);
+        endfunction
+    endclass
+  
+  
+    class snk_transaction_class; 
+        int                             idles;
+        bit                             startofpacket;
+        bit                             endofpacket;
+        logic [LPS-1   :0]     data;
+        int out_data_file;
+        int data_count = 0;
+
+        //pop the transaction from Sink BFM queue and get the decriptors
+        function automatic void snk_pop_transaction();
+            data_counted_out++;
+            data_count++;
+            `SNK.pop_transaction();
+            idles         = `SNK.get_transaction_idles();
+            startofpacket = `SNK.get_transaction_sop();
+            endofpacket   = `SNK.get_transaction_eop();
+            data          = `SNK.get_transaction_data();
+        endfunction
+        function void open_output_files();
+            print(VERBOSITY_DEBUG,"Opening the output files");
+            out_data_file = \$fopen(`OUT_FILE , "w");
+            if (!out_data_file)
+                print(VERBOSITY_ERROR,"Failed to open out_data_file file");
+        endfunction
+        function void write_out_result();
+            logic DUT_data;
+            int nbbit;
+            int lout,isnmodm;
+
+            nbbit = LPS;
+            if (endofpacket) begin
+                isnmodm = ((LOUT%LPS)==0)? 0 :1;
+                if (data_count==LOUT/LPS+isnmodm)
+                    nbbit = ((LOUT%LPS)==0)? LPS : (LOUT%LPS);
+                   
+@@              if {${LDPC_TYPE} == "DOCSIS"} {
+                    lout = (16200-(1-ME)*(1-TP)*360*5);
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+                    lout = (5940-(1-ME)*(1-TP)*180*5);    
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+                    lout = (1120-(1-ME)*(1-TP)*56*5);
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+@@              }
+@@              if {${LDPC_TYPE} == "WiMedia"} {
+                    lout = (`N-(1-ME)*(1-TP)*30*(8+LF));
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+                    lout = (`N-(1-ME)*(1-TP)*30*(10+LF));
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+                    lout = (`N-(1-ME)*(1-TP)*30*(15+LF));
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+                    lout = (`N-(1-ME)*(1-TP)*30*(20+LF));
+                    isnmodm = ((lout%LPS)==0)? 0 :1;
+                    if (data_count==lout/LPS+isnmodm)
+                        nbbit = ((lout%LPS)==0)? LPS : (lout%LPS);
+@@              }
+                \$display("endofpacket: data_count is %d, nbbit is %d",data_count, nbbit);
+                data_count = 0;
+            end
+            for (j=0;j<nbbit;j++) begin
+                DUT_data = ((data>>j) &  {{(LPS-1){1'b0}},{1'b1}});
+                \$sformat(message, "%m: Result has been written out");
+                \$fdisplay(out_data_file, "%d", DUT_data);
+            end
+            print(VERBOSITY_DEBUG, message);
+        endfunction   
+        function void close_output_files();
+            print(VERBOSITY_DEBUG,"Closing the output files");
+            \$fclose(out_data_file);
+        endfunction
+    endclass  
+    src_transaction_class src_transaction;
+    snk_transaction_class snk_transaction;
+ 
+    initial
+    begin
+        int l;
+        fp_idle_table[0] = 0; fp_idle_table[1] = 0; fp_idle_table[2] = 0; fp_idle_table[3] = 1;fp_idle_table[4] = 2; fp_idle_table[5] = 3;
+        bp_idle_table[0] = 0; bp_idle_table[1] = 0; bp_idle_table[2] = 0; bp_idle_table[3] = 0;bp_idle_table[4] = 0; bp_idle_table[5] = 2;
+        
+        src_transaction = new();
+        snk_transaction = new();
+        src_transaction.open_input_files();
+        snk_transaction.open_output_files();
+
+        // Initialisation
+        set_verbosity(`VERBOSITY);
+        `SRC.set_response_timeout(`SOURCE_RESP_TIMEOUT);
+        `SRC.init();
+        `SNK.init();
+        `SRC.set_min_transaction_queue_size(5);  //???
+        //wait for reset to de-assert and trigger start_test event
+        // wait(`RST.reset == 1);
+        // `SNK.set_ready(1);
+        wait(`RST.reset == 1);
+        `RST.reset_assert();
+        @(negedge `CLK.clk);
+        `RST.reset_deassert();
+        @(posedge `CLK.clk);
+        fork: test_threads
+            source_data_thread:    begin
+                \$display("SRC data thread");
+                while(src_transaction.read_input_data_files() != -1) begin
+                    if(`FORWARD_PRESSURE=="true")
+                       src_transaction.idles =  fp_idle_table[(\$unsigned(\$random()) % 6)];
+                    else
+                       src_transaction.idles =  0;
+                    src_transaction.send_data();
+                    @(`SRC.signal_min_transaction_queue_size);
+                end
+            end // source_data_thread
+            
+            sink_thread: begin  
+                \$display("SNK data thread");
+                while (1) begin   
+                    `SNK.set_ready(1);                
+                    @ (`SNK.signal_transaction_received);
+                    snk_transaction.snk_pop_transaction();
+                    snk_transaction.write_out_result();
+                    
+                    if(`BACK_PRESSURE=="true")
+                    begin
+                        snk_transaction.idles = bp_idle_table[(\$unsigned(\$random()) % 6)];
+                        `SNK.set_ready(0);
+                        for(l = 0; l < snk_transaction.idles; l++)
+                        begin
+                            @(posedge `CLK.clk);
+                        end
+                    end
+                  
+                    if ((data_counted_out==total_data_out) && (data_counted_in==total_data_in))   begin    
+                        \$display("End of simulation");
+                            break;
+                    end
+                end
+            end // sink_thread
+        join
+        disable test_threads;  // kill any threads still runnin            
+        src_transaction.close_input_files();
+        snk_transaction.close_output_files();
+        \$sformat(message, "%m: Test Finished");
+        print(VERBOSITY_INFO, message);
+        `CLK.clock_stop();  
+        \$stop;
+    end
+endmodule

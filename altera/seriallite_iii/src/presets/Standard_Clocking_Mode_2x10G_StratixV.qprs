@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="Standard Clocking Mode 2x10G"
+     kind="seriallite_iii_sv"
+     version="All"
+     description="">
+   <parameter name="SELECT_TARGETED_DEVICE" value="1" />
+   <parameter name="meta_frame_length" value="200" />
+   <parameter name="BURST_GAP" value="2" />
+   <parameter name="SELECT_CUSTOM_DEVICE" value="1" />
+   <parameter name="lanes" value="2" />
+   <parameter name="SELECT_ED_FILESET" value="0" />
+   <parameter name="gui_clocking_mode" value="false" />
+   <parameter name="ENABLE_ED_FILESET_SIM" value="1" />
+   <parameter name="gui_user_clock_frequency" value="146.484375" />
+   <parameter name="gui_xcvr_data_rate" value="10.312500" />
+   <parameter name="gui_pll_ref_freq" value="644.53125" />
+  </preset>
+ </presets>
+</ip>

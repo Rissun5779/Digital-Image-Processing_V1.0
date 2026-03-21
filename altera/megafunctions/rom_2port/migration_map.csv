@@ -1,0 +1,39 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param GUI_MEM_IN_BITS [get_old_param MEM_IN_BITS]
+[get_old_param MEM_IN_BITS] == 1,set_new_param GUI_MEMSIZE_BITS [get_old_param MEMSIZE]
+[get_old_param MEM_IN_BITS] == 0,set_new_param GUI_MEMSIZE_WORDS [expr "[get_old_param MEMSIZE] / [get_old_param WIDTH_READ_A]"]
+,set_new_param GUI_QA_WIDTH [get_old_param WIDTH_READ_A]
+,set_new_param GUI_QB_WIDTH [get_old_param WIDTH_WRITE_B]
+[get_old_param MAXIMUM_DEPTH] == 0,set_new_param GUI_MAX_DEPTH Auto
+[get_old_param MAXIMUM_DEPTH] != 0,set_new_param GUI_MAX_DEPTH [get_old_param MAXIMUM_DEPTH]
+,set_new_param GUI_VAR_WIDTH [get_old_param VarWidth]
+[get_old_param RAM_BLOCK_TYPE] == 0,"set_new_param GUI_RAM_BLOCK_TYPE ""Auto"""
+[get_old_param RAM_BLOCK_TYPE] == 1,"set_new_param GUI_RAM_BLOCK_TYPE ""MLAB"""
+"[get_old_param RAM_BLOCK_TYPE] == 2 && [string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param GUI_RAM_BLOCK_TYPE ""M20K"""
+"[get_old_param RAM_BLOCK_TYPE] == 2 && ![string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param GUI_RAM_BLOCK_TYPE ""Auto"""
+[get_old_param RAM_BLOCK_TYPE] == 3,"set_new_param GUI_RAM_BLOCK_TYPE ""M144K"""
+[get_old_param Clock] != 5,set_new_param GUI_CLOCK_TYPE [get_old_param Clock]
+[get_old_param Clock] == 5,"set_new_param GUI_CLOCK_TYPE ""4"""
+,set_new_param GUI_RDEN_DOUBLE [get_old_param rden]
+,set_new_param GUI_READ_OUTPUT_PORTS [get_old_param INTENDED_DEVICE_FAMILY]
+,ignore_new_param GUI_READ_OUTPUT_PORTS
+,set_new_param GUI_READ_OUTPUT_QA [get_old_param REGq]
+,set_new_param GUI_READ_OUTPUT_QB [get_old_param OUTDATA_REG_B]
+,set_new_param GUI_CLKEN_INPUT_REG_A [get_old_param CLOCK_ENABLE_INPUT_A]
+,set_new_param GUI_CLKEN_INPUT_REG_B [get_old_param CLOCK_ENABLE_INPUT_B]
+,set_new_param GUI_CLKEN_OUTPUT_REG_A [get_old_param CLOCK_ENABLE_OUTPUT_A]
+,set_new_param GUI_CLKEN_OUTPUT_REG_B [get_old_param CLOCK_ENABLE_OUTPUT_B]
+,set_new_param GUI_CLKEN_ADDRESS_STALL_A [get_old_param ADDRESSSTALL_A]
+,set_new_param GUI_CLKEN_ADDRESS_STALL_B [get_old_param ADDRESSSTALL_B]
+,set_new_param GUI_ACLR_READ_OUTPUT_QA [get_old_param CLRq]
+,set_new_param GUI_ACLR_READ_OUTPUT_QB [get_old_param OUTDATA_ACLR_B]
+[exists_old_param BlankMemory] && [get_old_param BlankMemory] == 0,"set_new_param GUI_BLANK_MEMORY ""1"""
+[exists_old_param BlankMemory] && [get_old_param BlankMemory] == 1,"set_new_param GUI_BLANK_MEMORY ""0"""
+[exists_old_param INIT_FILE_LAYOUT],set_new_param GUI_FILE_LAYOUT [get_old_param INIT_FILE_LAYOUT]
+,ignore_new_param GUI_MIF_FILENAME
+,ignore_new_param GUI_MODULE_NAME
+,ignore_new_param GUI_ADDRESSA_WIDTH
+,ignore_new_param GUI_ADDRESSB_WIDTH
+,ignore_new_param GUI_NUMWORDS_A
+,ignore_new_param GUI_NUMWORDS_B

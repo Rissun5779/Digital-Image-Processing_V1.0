@@ -1,0 +1,572 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ set vid_std      $param0
+@@ set ed_variant   $param1
+@@ set rx_crc       $param2
+@@ set pid_xtrct    $param3
+@@ set pid_ins      $param4
+@@ set txclk_sw     $param5
+@@ set pll_type     $param6
+module du_top #(
+    parameter NUM_STREAMS = 1
+)(
+    // TX Reference Clock
+    input  wire                         tx_pll_refclk,
+@@ if { $txclk_sw != 0 } {
+    input  wire                         tx_pll_refclk_alt,
+@@ }
+    input  wire                         tx_rcfg_mgmt_clk,
+    // RX Reference Clock
+    input  wire                         rx_core_refclk,
+    input  wire                         rx_cdr_refclk,
+    input  wire                         rx_rcfg_mgmt_clk,
+    // TX Reference Reset
+    input  wire                         tx_resetn,
+    input  wire                         tx_rcfg_mgmt_resetn,
+    // RX Reference Reset
+    input  wire                         rx_resetn,
+    input  wire                         rx_rcfg_mgmt_resetn,
+    // TX Video Signal Interface (Could be Interface with CVO)
+    input  wire [NUM_STREAMS*20-1:0]    tx_vid_data,
+    input  wire                         tx_vid_datavalid,
+@@ if { $vid_std != "hd" } {
+    input  wire [2:0]                   tx_vid_std,
+@@ }
+    input  wire                         tx_vid_trs,
+    output wire                         tx_vid_clkout,
+    // RX Video Signal Interface (Could be Interface with CVI)
+    output wire                         rx_vid_clkout,
+    output wire [NUM_STREAMS*20-1:0]    rx_vid_data,
+    output wire                         rx_vid_datavalid,
+    output wire                         rx_vid_locked,
+@@ if { $vid_std != "hd" } {
+    output wire [2:0]                   rx_vid_std,
+@@ }
+    output wire [NUM_STREAMS-1:0]       rx_vid_hsync,
+    output wire [NUM_STREAMS-1:0]       rx_vid_vsync,
+    output wire [NUM_STREAMS-1:0]       rx_vid_f,
+    output wire [NUM_STREAMS-1:0]       rx_vid_trs,
+    // Other SDI TX Video Protocol Interfaces
+    input  wire                         sdi_tx_enable_crc,
+    input  wire                         sdi_tx_enable_ln,
+    input  wire [NUM_STREAMS*11-1:0]    sdi_tx_ln,
+@@ if { $vid_std != "hd" } {
+    input  wire [NUM_STREAMS*11-1:0]    sdi_tx_ln_b,
+@@ }
+@@ if { $pid_ins } {
+    input  wire                         sdi_tx_vpid_overwrite,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte1,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte2,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte3,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte4,
+@@      if { $vid_std != "hd" } {
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte1_b,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte2_b,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte3_b,
+    input  wire [NUM_STREAMS*8-1:0]     sdi_tx_vpid_byte4_b,
+@@      }
+    input  wire [NUM_STREAMS*11-1:0]    sdi_tx_line_f0,
+    input  wire [NUM_STREAMS*11-1:0]    sdi_tx_line_f1,
+@@ }
+    output wire                         sdi_tx_datavalid,
+    // Other SDI RX Video Protocol Interfaces
+    input  wire                         sdi_rx_coreclk_is_ntsc_paln,
+    output wire                         sdi_rx_align_locked,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_trs_locked,
+    output wire                         sdi_rx_clkout_is_ntsc_paln,
+    output wire                         sdi_rx_rst_proto_out,
+@@ if { $rx_crc } {
+    output wire [NUM_STREAMS-1:0]       sdi_rx_crc_error_c,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_crc_error_y,
+@@      if { $vid_std != "hd" } {
+    output wire [NUM_STREAMS-1:0]       sdi_rx_crc_error_c_b,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_crc_error_y_b,
+@@      }
+@@ }
+    output wire [NUM_STREAMS*4-1:0]     sdi_rx_format,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_ap,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_eav,
+    output wire [NUM_STREAMS*11-1:0]    sdi_rx_ln,
+@@ if { $vid_std != "hd" } {
+    output wire [NUM_STREAMS*11-1:0]    sdi_rx_ln_b,
+@@ }
+@@ if { $pid_xtrct } {
+    output wire [NUM_STREAMS*11-1:0]    sdi_rx_line_f0,
+    output wire [NUM_STREAMS*11-1:0]    sdi_rx_line_f1,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte1,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte2,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte3,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte4,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_vpid_checksum_error,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_vpid_valid,
+@@      if { $vid_std != "hd" } {
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte1_b,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte2_b,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte3_b,
+    output wire [NUM_STREAMS*8-1:0]     sdi_rx_vpid_byte4_b,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_vpid_checksum_error_b,
+    output wire [NUM_STREAMS-1:0]       sdi_rx_vpid_valid_b,
+@@      }
+@@ }
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    // RX Transceiver Reconfiguration Interface (To Arbiter)
+    input  wire                         rx_rcfg_cal_busy,
+@@ }
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+    input  wire [31:0]                  rx_rcfg_readdata,
+    input  wire                         rx_rcfg_waitrequest,
+    output wire                         rx_rcfg_write,
+    output wire                         rx_rcfg_read,
+    output wire [9:0]                   rx_rcfg_address,
+    output wire [31:0]                  rx_rcfg_writedata,
+    output wire                         cdr_reconfig_busy,
+@@ }
+@@ if { $ed_variant == 2 } {
+    // TX PLL Reconfiguration Interface
+    input  wire                         tx_fpll_rcfg_write,
+    input  wire                         tx_fpll_rcfg_read,
+    input  wire [31:0]                  tx_fpll_rcfg_writedata,
+    input  wire [9:0]                   tx_fpll_rcfg_address,
+    output wire [31:0]                  tx_fpll_rcfg_readdata,
+    output wire                         tx_fpll_rcfg_waitrequest,
+@@ }
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    // TX Transceiver Reconfiguration Interface (To Arbiter)
+    input  wire                         tx_rcfg_cal_busy,
+@@ }
+@@ if { $txclk_sw == 1 } {
+    input  wire [31:0]                  tx_rcfg_readdata,
+    input  wire                         tx_rcfg_waitrequest,
+    output wire [31:0]                  tx_rcfg_writedata,
+    output wire [ 9:0]                  tx_rcfg_address,
+    output wire                         tx_rcfg_read,
+    output wire                         tx_rcfg_write,
+@@ }
+@@ if { $txclk_sw != 0 } {
+    output wire                         tx_reconfig_busy,
+@@ }
+    // TX Transceiver Interface
+@@ if { $txclk_sw != 0 } {
+    input  wire                         tx_pll_refclk_sel,
+@@ }
+    output wire                         tx_pll_locked,
+@@ if { $txclk_sw == 1 } {
+    output wire                         tx_pll_locked_alt,
+@@ }
+    output wire                         gxb_tx_serial_data,
+    output wire                         gxb_tx_ready,
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    output wire                         gxb_tx_cal_busy,
+    // Duplex Transceiver AVMM Interface
+    input  wire                         gxb_du_rcfg_write,
+    input  wire                         gxb_du_rcfg_read,
+    input  wire [9:0]                   gxb_du_rcfg_address,
+    input  wire [31:0]                  gxb_du_rcfg_writedata,
+    output wire [31:0]                  gxb_du_rcfg_readdata,
+    output wire                         gxb_du_rcfg_waitrequest,
+@@ }
+    // RX Transceiver Interface
+    input  wire                         gxb_rx_serial_data,
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    output wire                         gxb_rx_cal_busy,
+@@ }
+    output wire                         gxb_rx_ready
+);
+
+// ----------------------
+// Signal Declaration
+// ----------------------
+wire                    txpll_powerdown;
+wire                    txpll_serialclk;
+wire                    pll_cal_busy;
+@@ if { $txclk_sw == 1 } {
+wire                    txpll_powerdown_alt;
+wire                    txpll_serialclk_alt;
+wire                    pll_cal_busy_alt;
+wire                    tx_analogreset_ack;
+@@ }
+@@ if { $txclk_sw == 2 } {
+wire [31:0]             tx_rcfg_readdata;
+wire [31:0]             tx_rcfg_writedata;
+wire [ 9:0]             tx_rcfg_address;
+wire                    tx_rcfg_waitrequest;
+wire                    tx_rcfg_read;
+wire                    tx_rcfg_write;
+@@ }
+@@ if { $txclk_sw != 0 } {
+wire                    rst_tx_phy;
+@@ }
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw != 0 } {
+wire                    reconfig_rst_sync;
+@@ }
+@@ if { ($vid_std == "threeg" || $vid_std == "hd") && $txclk_sw != 1 } {
+wire                    gxb_tx_cal_busy;
+wire                    gxb_rx_cal_busy;
+@@ }
+wire                    gxb_ltr;
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+wire                    rx_sdi_start_reconfig;
+wire                    rx_analogreset_ack;
+@@ }
+wire                    rx_is_lockedtoref;
+wire                    rx_is_lockedtodata;
+wire                    rx_phy_is_locked = gxb_ltr ? rx_is_lockedtoref : rx_is_lockedtodata;
+@@ if { $vid_std == "mr" } {
+wire [79:0]             sdi_txdata;
+wire [127:0]            rx_parallel_data;
+wire [79:0]             rxdata_to_sdi = (rx_vid_std[2:1] == 2'b11) ? {rx_parallel_data[103:64], rx_parallel_data[39:0]} : 
+                                        (rx_vid_std[2:1] == 2'b10) ? {40'd0, rx_parallel_data[57:48], rx_parallel_data[41:32], rx_parallel_data[25:16], rx_parallel_data[9:0]} :
+                                                                     {60'd0, rx_parallel_data[41:32], rx_parallel_data[9:0]};
+@@ }
+
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+//---------------------------------------------------------------------------
+// Reset sync instance is generated along with SDI Rx. If you need to use 
+// this instance, make sure that SDI Rx is added into your project as well.
+//---------------------------------------------------------------------------
+reset_sync #(
+    .NUM_RESET_INPUTS          (1),
+    .RESET_REQ_WAIT_TIME       (1),
+    .MIN_RST_ASSERTION_TIME    (3),
+    .RESET_REQ_EARLY_DSRT_TIME (1)
+) reconfig_rst_sync_inst (
+// Input Clock and reset
+    .reset_in0      (~rx_rcfg_mgmt_resetn),
+    .clk            (rx_rcfg_mgmt_clk),
+// Outputs
+    .reset_out      (reconfig_rst_sync)
+);
+
+@@ } elseif { $txclk_sw != 0 } {
+//---------------------------------------------------------------------------
+// Reset sync instance is generated along with SDI Rx. If you need to use 
+// this instance, make sure that SDI Rx is added into your project as well.
+//---------------------------------------------------------------------------
+reset_sync #(
+    .NUM_RESET_INPUTS          (1),
+    .RESET_REQ_WAIT_TIME       (1),
+    .MIN_RST_ASSERTION_TIME    (3),
+    .RESET_REQ_EARLY_DSRT_TIME (1)
+) reconfig_rst_sync_inst (
+// Input Clock and reset
+    .reset_in0      (~tx_rcfg_mgmt_resetn),
+    .clk            (tx_rcfg_mgmt_clk),
+// Outputs
+    .reset_out      (reconfig_rst_sync)
+);
+
+@@ }
+// ----------------------
+// SDI RX Core with PHY
+// ----------------------
+sdi_du_sys  sdi_du_sys_inst (
+// Input Clocks and reset
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+    .reconfig_clk_in_clk                    (rx_rcfg_mgmt_clk),
+    .reconfig_rst_in_reset                  (~rx_rcfg_mgmt_resetn),
+@@ } elseif { $txclk_sw == 1 } {
+    .reconfig_clk_in_clk                    (tx_rcfg_mgmt_clk),
+    .reconfig_rst_in_reset                  (~tx_rcfg_mgmt_resetn),
+@@ }
+    .rx_cdr_refclk_in_clk                   (rx_cdr_refclk),
+    .rx_coreclk_in_clk                      (rx_core_refclk),
+    .rx_phy_rst_ctrl_clk_in_clk             (rx_rcfg_mgmt_clk),
+    .rx_rst_in_reset                        (~rx_resetn),
+    .tx_core_rst_in_reset                   (~(tx_resetn & gxb_tx_ready) ),
+@@ if { $txclk_sw != 0 } {
+    .tx_phy_reset_in_reset                  (~tx_rcfg_mgmt_resetn | rst_tx_phy),
+@@ } else {
+    .tx_phy_reset_in_reset                  (~tx_rcfg_mgmt_resetn),
+@@ }
+    .tx_phy_rst_ctrl_clk_in_clk             (tx_rcfg_mgmt_clk),
+    .du_phy_tx_serial_clk0                  (txpll_serialclk),
+@@ if { $txclk_sw == 1 } {
+    .du_phy_tx_serial_clk1                  (txpll_serialclk_alt),
+@@ }
+
+// Inputs
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .rx_phy_rst_ctrl_rx_cal_busy            (rx_rcfg_cal_busy),
+@@ } else {
+    .rx_phy_rst_ctrl_rx_cal_busy            (gxb_rx_cal_busy),
+@@ }
+    .rx_phy_rst_ctrl_rx_is_lockedtodata     (rx_phy_is_locked),
+    .rx_phy_rst_ctrl_rx_manual              (gxb_rx_ready),
+    .du_phy_rx_serial_data                  (gxb_rx_serial_data),
+    .du_phy_rx_set_locktoref                (gxb_ltr),
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .du_phy_reconfig_write                  (gxb_du_rcfg_write),
+    .du_phy_reconfig_read                   (gxb_du_rcfg_read),
+    .du_phy_reconfig_address                (gxb_du_rcfg_address),
+    .du_phy_reconfig_writedata              (gxb_du_rcfg_writedata),
+@@ }
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+    .du_sdi_rx_sdi_reconfig_done            (cdr_reconfig_busy),
+@@ }
+    .du_sdi_rx_coreclk_is_ntsc_paln         (sdi_rx_coreclk_is_ntsc_paln),
+    .du_sdi_rx_ready                        (gxb_rx_ready),
+@@ if { $vid_std == "mr" } {
+    .du_sdi_rx_datain                       (rxdata_to_sdi),
+@@ }
+    .du_sdi_tx_enable_crc                   (sdi_tx_enable_crc),
+    .du_sdi_tx_enable_ln                    (sdi_tx_enable_ln),
+    .du_sdi_tx_ln                           (sdi_tx_ln),
+@@ if { $vid_std != "hd" } {
+    .du_sdi_tx_ln_b                         (sdi_tx_ln_b),
+    .du_sdi_tx_std                          (tx_vid_std),
+@@ }
+    .du_sdi_tx_datain                       (tx_vid_data),
+    .du_sdi_tx_datain_valid                 (tx_vid_datavalid),
+    .du_sdi_tx_trs                          (tx_vid_trs),
+@@ if { $pid_ins } {
+    .du_sdi_tx_vpid_overwrite               (sdi_tx_vpid_overwrite),
+    .du_sdi_tx_vpid_byte1                   (sdi_tx_vpid_byte1),
+    .du_sdi_tx_vpid_byte2                   (sdi_tx_vpid_byte2),
+    .du_sdi_tx_vpid_byte3                   (sdi_tx_vpid_byte3),
+    .du_sdi_tx_vpid_byte4                   (sdi_tx_vpid_byte4),
+@@      if { $vid_std != "hd" } {
+    .du_sdi_tx_vpid_byte1_b                 (sdi_tx_vpid_byte1_b),
+    .du_sdi_tx_vpid_byte2_b                 (sdi_tx_vpid_byte2_b),
+    .du_sdi_tx_vpid_byte3_b                 (sdi_tx_vpid_byte3_b),
+    .du_sdi_tx_vpid_byte4_b                 (sdi_tx_vpid_byte4_b),
+@@      }
+    .du_sdi_tx_line_f0                      (sdi_tx_line_f0),
+    .du_sdi_tx_line_f1                      (sdi_tx_line_f1),
+@@ }
+@@ if { $txclk_sw == 1 } {
+    .tx_phy_rst_ctrl_pll_select             (tx_pll_refclk_sel),
+    .tx_phy_rst_ctrl_tx_cal_busy            (tx_rcfg_cal_busy | pll_cal_busy | pll_cal_busy_alt),
+    .tx_phy_rst_ctrl_pll_locked             ({tx_pll_locked_alt, tx_pll_locked}),
+@@ } elseif { $vid_std == "tr" || $vid_std == "mr" } {
+    .tx_phy_rst_ctrl_pll_select             (1'b0),
+    .tx_phy_rst_ctrl_tx_cal_busy            (tx_rcfg_cal_busy | pll_cal_busy),
+    .tx_phy_rst_ctrl_pll_locked             (tx_pll_locked),
+@@ } else {
+    .tx_phy_rst_ctrl_pll_select             (1'b0),
+    .tx_phy_rst_ctrl_tx_cal_busy            (gxb_tx_cal_busy | pll_cal_busy),
+    .tx_phy_rst_ctrl_pll_locked             (tx_pll_locked),
+@@ }
+@@ if { $vid_std == "mr" } {
+    .du_phy_tx_control                      (18'd0),
+    .du_phy_tx_enh_data_valid               (1'b1),
+    .du_phy_tx_parallel_data                ({24'd0, sdi_txdata[79:40], 24'd0, sdi_txdata[39:0]}),
+@@ } else {
+    .du_phy_unused_tx_parallel_data         (108'd0),
+@@ }
+
+// Outputs
+    .rx_sdi_clkout_out_clk                  (rx_vid_clkout),
+    .tx_sdi_clkout_out_clk                  (tx_vid_clkout),
+    .rx_phy_rst_ctrl_rx_ready               (gxb_rx_ready),
+    .tx_phy_rst_ctrl_tx_ready               (gxb_tx_ready),
+@@ if { $txclk_sw == 1 } {
+    .tx_phy_rst_ctrl_pll_powerdown          ({txpll_powerdown_alt, txpll_powerdown}),
+    .du_phy_tx_analogreset_ack              (tx_analogreset_ack),
+@@ } else {
+    .tx_phy_rst_ctrl_pll_powerdown          (txpll_powerdown),
+@@ }
+    .du_phy_tx_cal_busy                     (gxb_tx_cal_busy),
+    .du_phy_tx_serial_data                  (gxb_tx_serial_data),
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .du_phy_reconfig_readdata               (gxb_du_rcfg_readdata),
+    .du_phy_reconfig_waitrequest            (gxb_du_rcfg_waitrequest),
+@@ }
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+    .du_phy_rx_analogreset_ack              (rx_analogreset_ack),
+@@ }
+    .du_phy_rx_cal_busy                     (gxb_rx_cal_busy),
+    .du_phy_rx_is_lockedtodata              (rx_is_lockedtodata),
+    .du_phy_rx_is_lockedtoref               (rx_is_lockedtoref),
+@@ if { $vid_std != "mr" } {
+    .du_phy_unused_rx_parallel_data         (),
+@@ } else {
+    .du_phy_rx_parallel_data                (rx_parallel_data),
+    .du_phy_rx_clkout                       (),
+    .du_phy_rx_control                      (),
+    .du_phy_tx_clkout                       (),
+    .du_sdi_tx_dataout                      (sdi_txdata),
+@@ }
+    .du_sdi_tx_dataout_valid                (sdi_tx_datavalid),
+    .du_sdi_rx_dataout                      (rx_vid_data),
+    .du_sdi_rx_dataout_valid                (rx_vid_datavalid),
+    .du_sdi_rx_align_locked                 (sdi_rx_align_locked),
+    .du_sdi_rx_trs_locked                   (sdi_rx_trs_locked),
+    .du_sdi_rx_frame_locked                 (rx_vid_locked),
+    .du_sdi_rx_trs                          (rx_vid_trs),
+    .du_sdi_rx_eav                          (sdi_rx_eav),
+    .du_sdi_rx_ap                           (sdi_rx_ap),
+    .du_sdi_rx_f                            (rx_vid_f),
+    .du_sdi_rx_v                            (rx_vid_vsync),
+    .du_sdi_rx_h                            (rx_vid_hsync),
+    .du_sdi_rx_ln                           (sdi_rx_ln),
+@@ if { $vid_std != "hd" } {
+    .du_sdi_rx_ln_b                         (sdi_rx_ln_b),
+    .du_sdi_rx_std                          (rx_vid_std),
+@@ }
+    .du_sdi_rx_format                       (sdi_rx_format),
+    .du_sdi_rx_rst_proto_out                (sdi_rx_rst_proto_out),
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+    .du_sdi_rx_sdi_start_reconfig           (rx_sdi_start_reconfig),
+@@ }
+@@ if { $rx_crc } {
+    .du_sdi_rx_crc_error_c                  (sdi_rx_crc_error_c),
+    .du_sdi_rx_crc_error_y                  (sdi_rx_crc_error_y),
+@@      if { $vid_std != "hd" } {
+    .du_sdi_rx_crc_error_c_b                (sdi_rx_crc_error_c_b),
+    .du_sdi_rx_crc_error_y_b                (sdi_rx_crc_error_y_b),
+@@      }
+@@ }
+@@ if { $pid_xtrct } {
+    .du_sdi_rx_line_f0                      (sdi_rx_line_f0),
+    .du_sdi_rx_line_f1                      (sdi_rx_line_f1),
+    .du_sdi_rx_vpid_byte1                   (sdi_rx_vpid_byte1),
+    .du_sdi_rx_vpid_byte2                   (sdi_rx_vpid_byte2),
+    .du_sdi_rx_vpid_byte3                   (sdi_rx_vpid_byte3),
+    .du_sdi_rx_vpid_byte4                   (sdi_rx_vpid_byte4),
+    .du_sdi_rx_vpid_checksum_error          (sdi_rx_vpid_checksum_error),
+    .du_sdi_rx_vpid_valid                   (sdi_rx_vpid_valid),
+@@      if { $vid_std != "hd" } {
+    .du_sdi_rx_vpid_byte1_b                 (sdi_rx_vpid_byte1_b),
+    .du_sdi_rx_vpid_byte2_b                 (sdi_rx_vpid_byte2_b),
+    .du_sdi_rx_vpid_byte3_b                 (sdi_rx_vpid_byte3_b),
+    .du_sdi_rx_vpid_byte4_b                 (sdi_rx_vpid_byte4_b),
+    .du_sdi_rx_vpid_checksum_error_b        (sdi_rx_vpid_checksum_error_b),
+    .du_sdi_rx_vpid_valid_b                 (sdi_rx_vpid_valid_b),
+@@      }
+@@ }
+    .du_sdi_rx_clkout_is_ntsc_paln          (sdi_rx_clkout_is_ntsc_paln),
+    .du_sdi_gxb_ltr                         (gxb_ltr)
+);
+
+// -------------------------------
+// TX PLL
+// -------------------------------
+tx_pll tx_pll_inst (
+// Clock and reset
+    .pll_refclk0                (tx_pll_refclk),
+@@ if { $txclk_sw == 2 } {
+    .pll_refclk1                (tx_pll_refclk_alt),
+@@ }
+    .pll_powerdown              (txpll_powerdown),
+@@ if { $ed_variant == 2 || $txclk_sw == 2 } {
+    .reconfig_clk0              (tx_rcfg_mgmt_clk),
+    .reconfig_reset0            (~tx_rcfg_mgmt_resetn),
+
+    // Inputs
+@@ }
+@@ if { $ed_variant == 2 } {
+    .reconfig_write0            (tx_fpll_rcfg_write),
+    .reconfig_read0             (tx_fpll_rcfg_read),
+    .reconfig_address0          (tx_fpll_rcfg_address),
+    .reconfig_writedata0        (tx_fpll_rcfg_writedata),
+@@ } elseif { $txclk_sw == 2 } {
+    .reconfig_write0            (tx_rcfg_write),
+    .reconfig_read0             (tx_rcfg_read),
+    .reconfig_address0          (tx_rcfg_address),
+    .reconfig_writedata0        (tx_rcfg_writedata),
+@@ }
+
+// Outputs
+@@ if { $ed_variant == 2 } {
+    .reconfig_readdata0         (tx_fpll_rcfg_readdata),
+    .reconfig_waitrequest0      (tx_fpll_rcfg_waitrequest),
+    .pll_locked                 (tx_pll_locked),
+@@ } elseif { $txclk_sw == 2 } {
+    .reconfig_readdata0         (tx_rcfg_readdata),
+    .reconfig_waitrequest0      (tx_rcfg_waitrequest),
+    .pll_locked                 (tx_pll_locked),
+@@ } else {
+    .pll_locked                 (tx_pll_locked),
+@@ }
+    .pll_cal_busy               (pll_cal_busy),
+    .tx_serial_clk              (txpll_serialclk)
+);
+
+@@ # Second PLL for PLL switching
+@@ if { $txclk_sw == 1 } {
+tx_pll_alt tx_pll_alt_inst (
+// Clock and reset
+    .pll_refclk0                (tx_pll_refclk_alt),
+    .pll_powerdown              (txpll_powerdown_alt),
+
+// Outputs
+    .pll_locked                 (tx_pll_locked_alt),
+    .pll_cal_busy               (pll_cal_busy_alt),
+    .tx_serial_clk              (txpll_serialclk_alt)
+);
+@@ }
+
+@@ if { $txclk_sw != 0 } {
+// -----------------------------------------
+// Reconfiguration for Tx clock switching
+// -----------------------------------------
+sdi_ii_tx_rcfg_a10 #(
+@@      if { $pll_type == "fPLL" } {
+    .XCVR_RCFG_IF_TYPE      ("fpll"),
+@@      } else {
+    .XCVR_RCFG_IF_TYPE      ("channel"),
+@@      }
+    .ED_TXPLL_SWITCH        ($txclk_sw)
+) tx_reconfig_inst (
+// Clock and reset
+    .reconfig_clk           (tx_rcfg_mgmt_clk),
+    .reconfig_reset         (~tx_rcfg_mgmt_resetn),
+// Inputs
+@@      if { $txclk_sw == 1 } {
+    .tx_cal_busy            (pll_cal_busy | pll_cal_busy_alt | tx_rcfg_cal_busy),
+    .tx_analogreset_ack     (tx_analogreset_ack),
+    .pll_powerdown          (1'b0),
+@@      } else {
+    .tx_cal_busy            (1'b0),
+    .tx_analogreset_ack     (1'b0),
+    .pll_powerdown          (txpll_powerdown),
+@@      }
+    .pll_refclk_sel         (tx_pll_refclk_sel),
+    .reconfig_readdata      (tx_rcfg_readdata),
+    .reconfig_waitrequest   (tx_rcfg_waitrequest),
+// Outputs
+    .reconfig_write         (tx_rcfg_write),
+    .reconfig_read          (tx_rcfg_read),
+    .reconfig_address       (tx_rcfg_address),
+    .reconfig_writedata     (tx_rcfg_writedata),
+    .tx_reconfig_busy       (tx_reconfig_busy),
+    .rst_tx_phy             (rst_tx_phy)
+);
+@@ }
+
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+// -------------------------------
+// Transceiver Reconfiguration
+// -------------------------------
+sdi_ii_rx_rcfg_a10 rx_reconfig_inst (
+// Input Clock and reset
+    .reconfig_clk                           (rx_rcfg_mgmt_clk),
+    .reconfig_reset                         (reconfig_rst_sync),
+// Inputs
+    .reconfig_readdata                      (rx_rcfg_readdata),
+    .reconfig_waitrequest                   (rx_rcfg_waitrequest),
+    .cdr_reconfig_sel                       (rx_vid_std),
+    .cdr_reconfig_req                       (rx_sdi_start_reconfig),
+    .rx_cal_busy                            (rx_rcfg_cal_busy),
+    .rx_analogreset_ack                     (rx_analogreset_ack),
+// Outputs
+    .reconfig_write                         (rx_rcfg_write),
+    .reconfig_read                          (rx_rcfg_read),
+    .reconfig_address                       (rx_rcfg_address),
+    .reconfig_writedata                     (rx_rcfg_writedata),
+    .cdr_reconfig_busy                      (cdr_reconfig_busy)
+);
+
+@@ }
+endmodule

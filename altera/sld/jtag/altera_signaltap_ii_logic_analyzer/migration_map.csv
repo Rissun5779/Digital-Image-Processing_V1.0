@@ -1,0 +1,26 @@
+CONDITION,DO
+,set_new_param device_family [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param sld_data_bits [get_old_param SLD_DATA_BITS]
+,set_new_param sld_sample_depth [get_old_param SLD_SAMPLE_DEPTH]
+,"set_new_param gui_ram_type ""AUTO"" "
+,set_new_param sld_trigger_bits [get_old_param SLD_TRIGGER_BITS]
+,set_new_param sld_trigger_level [get_old_param SLD_TRIGGER_LEVEL]
+,set_new_param sld_trigger_level_pipeline [get_old_param SLD_TRIGGER_LEVEL_PIPELINE]
+,set_new_param sld_node_info [get_old_param SLD_NODE_INFO]
+,set_new_param sld_node_crc_bits [get_old_param SLD_NODE_CRC_BITS]
+,set_new_param sld_node_crc_hiword [get_old_param SLD_NODE_CRC_HIWORD]
+,set_new_param sld_node_crc_loword [get_old_param SLD_NODE_CRC_LOWORD]
+,ignore_new_param sld_enable_advanced_trigger
+,set_new_param sld_storage_qualifier_gap_record [get_old_param SLD_STORAGE_QUALIFIER_GAP_RECORD]
+,set_new_param sld_trigger_in_enabled [get_old_param SLD_TRIGGER_IN_ENABLED]
+[get_old_param SLD_ENABLE_ADVANCED_TRIGGER] == 1,"croak ""Create an instance in the Signal Tap Logic Analyzer tool to use the Advanced Triggers feature. In order to continue using this Signal Tap Logic Analyzer IP instance you will need to remove any Advanced Triggers."""
+[exists_old_param SLD_SEGMENT_SIZE] == 1,"set_new_param gui_use_segmented ""true"" "
+[exists_old_param SLD_SEGMENT_SIZE] == 1,set_new_param gui_num_segments [expr {[get_old_param SLD_SAMPLE_DEPTH] / [get_old_param SLD_SEGMENT_SIZE]}]
+[exists_old_param SLD_SEGMENT_SIZE] == 1,set_new_param sld_segment_size [get_old_param SLD_SEGMENT_SIZE]
+[exists_old_param SLD_SEGMENT_SIZE] == 0,"set_new_param gui_use_segmented ""false"" "
+[exists_old_param SLD_SEGMENT_SIZE] == 0,set_new_param gui_num_segments 2
+[exists_old_param SLD_SEGMENT_SIZE] == 0,set_new_param sld_segment_size 0
+"[get_old_param SLD_STORAGE_QUALIFIER_MODE] == ""OFF""","set_new_param gui_sq ""Continuous"" "
+"[get_old_param SLD_STORAGE_QUALIFIER_MODE] == ""PORT""","set_new_param gui_sq ""Input port"" "
+[exists_old_param USED_PORT_trigger_out] == 1,"set_new_param gui_trigger_out_enabled ""true"""
+[exists_old_param USED_PORT_trigger_out] == 0,"set_new_param gui_trigger_out_enabled ""false"""

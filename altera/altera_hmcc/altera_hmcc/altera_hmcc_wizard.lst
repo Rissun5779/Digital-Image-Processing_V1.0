@@ -1,0 +1,9 @@
+[Interfaces|HMCC]
+Altera HMCC v18.1= "%t" "%w/../../common/lib/megawizard.pl" --wizard_file:"%w/altera_hmcc_hw.tcl" --wizard:altera_hmcc --familyparameter:device_family --early_gen:on %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<VISIBILITY FOR_CREATE="OFF"/> 
+<DEVICE_FAMILY SUPPORTED="NONE | Arria 10" SUPPORT_CHECK="ON" />
+<LANGUAGES AHDL="OFF" VHDL="OFF" />
+</INFO>

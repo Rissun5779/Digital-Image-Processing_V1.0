@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+<file path="models/ip/jesd204b_ed_qsys/jesd204b_ed_qsys_mm_master_bfm_0/altera_avalon_mm_master_bfm_*/sim/verbosity_pkg.sv" type="SYSTEM_VERILOG" />
+<topLevel name="verbosity_pkg" />
+<file path="models/ip/jesd204b_ed_qsys/jesd204b_ed_qsys_mm_master_bfm_0/altera_avalon_mm_master_bfm_*/sim/avalon_mm_pkg.sv" type="SYSTEM_VERILOG" />
+<topLevel name="avalon_mm_pkg" />
+<file path="models/ip/jesd204b_ed_qsys/jesd204b_ed_qsys_mm_master_bfm_0/altera_avalon_mm_master_bfm_*/sim/avalon_utilities_pkg.sv" type="SYSTEM_VERILOG" />
+<topLevel name="avalon_utilities_pkg" />
+<file path="models/ip/jesd204b_ed_qsys/jesd204b_ed_qsys_mm_master_bfm_0/altera_avalon_mm_master_bfm_*/sim/altera_avalon_mm_master_bfm.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_avalon_mm_master_bfm" />
+<file path="models/tb_top.sv" type="SYSTEM_VERILOG" />
+<topLevel name="tb_top" />
+<file path="models/jesd204b_ed.sv" type="SYSTEM_VERILOG" />
+<topLevel name="jesd204b_ed" />
+<file path="spi_mosi_oe.v" type="VERILOG" />
+<topLevel name="spi_mosi_oe" />
+<file path="switch_debouncer.v" type="VERILOG" />
+<topLevel name="switch_debouncer" />
+<file path="pattern/alternate_checker.sv" type="SYSTEM_VERILOG" />
+<topLevel name="alternate_checker" />
+<file path="pattern/alternate_generator.sv" type="SYSTEM_VERILOG" />
+<topLevel name="alternate_generator" />
+<file path="pattern/pattern_checker_top.sv" type="SYSTEM_VERILOG" />
+<topLevel name="pattern_checker_top" />
+<file path="pattern/pattern_generator_top.sv" type="SYSTEM_VERILOG" />
+<topLevel name="pattern_generator_top" />
+<file path="pattern/prbs_checker.sv" type="SYSTEM_VERILOG" />
+<topLevel name="prbs_checker" />
+<file path="pattern/prbs_generator.sv" type="SYSTEM_VERILOG" />
+<topLevel name="prbs_generator" />
+<file path="pattern/ramp_checker.sv" type="SYSTEM_VERILOG" />
+<topLevel name="ramp_checker" />
+<file path="pattern/ramp_generator.sv" type="SYSTEM_VERILOG" />
+<topLevel name="ramp_generator" />
+<file path="transport_layer/altera_jesd204_assembler_nprime12.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_jesd204_assembler_nprime12" />
+<file path="transport_layer/altera_jesd204_deassembler_nprime12.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_jesd204_deassembler_nprime12" />
+<file path="transport_layer/altera_jesd204_assembler.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_jesd204_assembler" />
+<file path="transport_layer/altera_jesd204_deassembler.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_jesd204_deassembler" />
+<file path="transport_layer/altera_jesd204_transport_rx_top.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_jesd204_transport_rx_top" />
+<file path="transport_layer/altera_jesd204_transport_tx_top.sv" type="SYSTEM_VERILOG" />
+<topLevel name="altera_jesd204_transport_tx_top" />
+</simPackage>

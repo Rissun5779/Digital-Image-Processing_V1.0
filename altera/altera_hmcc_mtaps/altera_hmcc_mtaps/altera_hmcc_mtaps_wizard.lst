@@ -1,0 +1,10 @@
+[Memory Interfaces and Controllers]
+Hybrid Memory Cube Controller MTAPS v16.0 = "%t" "%w/../../common/lib/megawizard.pl" --wizard_file:"%w/altera_hmcc_mtaps_hw.tcl" --wizard:altera_hmcc_mtaps --cusp_ip:true --early_gen:on --familyparameter:DEVICE_FAMILY %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<VISIBILITY FOR_CREATE="OFF"/> 
+<DEVICE_FAMILY SUPPORTED="NONE | Arria 10" SUPPORT_CHECK="ON" />
+<LANGUAGES AHDL="OFF" VHDL="OFF" />
+<ALIAS>Hybrid Memory Cube Controller MTAPS v15.1</ALIAS>
+</INFO>

@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdint.h>
+#include "system.h"
+#include "kissfft/kiss_fft.h"
+
+#define FFT_SIZE 8
+
+// 暫時用最簡單的讀取方式，避免複雜的 64-bit 組合語言出錯
+static inline uint32_t get_cycles_32() {
+    uint32_t cycles;
+    // 使用 hex 碼或是簡化的指令，確認硬體是否支援
+    __asm__ __volatile__ ("rdcycle %0" : "=r"(cycles));
+    return cycles;
+}
+
+int main() {
+    // 延遲一下，讓 JTAG 穩定
+    for(volatile int i=0; i<2000000; i++);
+
+    printf("--- Debug Mode: Locating the crash ---\n");
+
+    printf("[1] Checking CSR Support...\n");
+    uint32_t t1 = get_cycles_32();
+    printf("[2] CSR Read Success: %lu\n", t1);
+
+    printf("[3] Allocating FFT...\n");
+    kiss_fft_cfg cfg = kiss_fft_alloc(FFT_SIZE, 0, NULL, NULL);
+    if(!cfg) {
+        printf("!!! FFT Alloc Failed\n");
+        return -1;
+    }
+    printf("[4] FFT Alloc Success\n");
+
+    kiss_fft_cpx in[FFT_SIZE], out[FFT_SIZE];
+    for(int i=0; i<FFT_SIZE; i++) { in[i].r = (float)i; in[i].i = 0.0f; }
+
+    printf("[5] Running FFT...\n");
+    kiss_fft(cfg, in, out);
+    printf("[6] FFT Finished\n");
+
+    printf("FFT[0] = %d (int cast)\n", (int)out[0].r);
+
+    kiss_fft_free(cfg);
+    return 0;
+}

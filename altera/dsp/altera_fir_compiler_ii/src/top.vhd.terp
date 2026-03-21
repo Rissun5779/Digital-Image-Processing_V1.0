@@ -1,0 +1,248 @@
+-- (C) 2001-2018 Intel Corporation. All rights reserved.
+-- Your use of Intel Corporation's design tools, logic functions and other 
+-- software and tools, and its AMPP partner logic functions, and any output 
+-- files from any of the foregoing (including device programming or simulation 
+-- files), and any associated documentation or information are expressly subject 
+-- to the terms and conditions of the Intel Program License Subscription 
+-- Agreement, Intel FPGA IP License Agreement, or other applicable 
+-- license agreement, including, without limitation, that your use is for the 
+-- sole purpose of programming logic devices manufactured by Intel and sold by 
+-- Intel or its authorized distributors.  Please refer to the applicable 
+-- agreement for further details.
+
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use work.auk_dspip_lib_pkg_hpfir.all;
+use work.auk_dspip_math_pkg_hpfir.all;
+
+entity ${entity} is
+  port (
+    clk : in STD_LOGIC;    
+    reset_n : in STD_LOGIC;
+@@if { $ComplexConstant eq "1" } {
+@@set component "core"
+@@if {$coeffReload} {
+    coeff_in_clk : in STD_LOGIC;
+    coeff_in_areset : in STD_LOGIC;
+    coeff_in_address : in STD_LOGIC_VECTOR($busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    coeff_in_data : in STD_LOGIC_VECTOR($busDataWidth-1 downto 0);
+    coeff_in_we : in STD_LOGIC_VECTOR(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    coeff_in_read : in STD_LOGIC;
+    coeff_out_data : out STD_LOGIC_VECTOR($busDataWidth-1 downto 0);
+    coeff_out_valid : out STD_LOGIC_VECTOR(0 downto 0);
+@@}
+@@}
+@@}
+@@if { $ComplexConstant eq "2" } {
+@@set  components [list rr ii ri ir]
+@@foreach component $components {
+@@set ${component}_busAddressWidth $busAddressWidth
+@@set ${component}_busDataWidth $busDataWidth
+@@if {$coeffReload} {
+    coeff_in_clk_${component} : in STD_LOGIC;
+    coeff_in_areset_${component} : in STD_LOGIC;
+    coeff_in_address_${component} : in STD_LOGIC_VECTOR($busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    coeff_in_data_${component} : in STD_LOGIC_VECTOR($busDataWidth-1 downto 0);
+    coeff_in_we_${component} : in STD_LOGIC_VECTOR(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    coeff_in_read_${component} : in STD_LOGIC;
+    coeff_out_data_${component} : out STD_LOGIC_VECTOR($busDataWidth-1 downto 0);
+    coeff_out_valid_${component} : out STD_LOGIC_VECTOR(0 downto 0);
+@@}
+@@}
+@@}
+@@}
+    ast_sink_data : in STD_LOGIC_VECTOR(($bankInWidth + $ComplexConstant*$inputBitWidth) * $inputInterfaceNum + $ModeWidth - 1 downto 0);
+    ast_sink_valid : in STD_LOGIC;
+@@if {$backPressure == "true"} {
+    ast_sink_ready : out STD_LOGIC;
+@@}
+@@if {$chanPerInputInterface > 1} {
+    ast_sink_sop : in STD_LOGIC;
+    ast_sink_eop : in STD_LOGIC;
+@@}
+    ast_sink_error : in STD_LOGIC_VECTOR(1 downto 0);
+    ast_source_data : out STD_LOGIC_VECTOR($outBitWidth * $ComplexConstant*$outputInterfaceNum - 1 downto 0);
+    ast_source_valid : out STD_LOGIC;
+@@if {$backPressure == "true"} {
+    ast_source_ready : in STD_LOGIC;
+@@}
+@@if {$chanPerOutputInterface > 1} {
+    ast_source_sop : out STD_LOGIC;
+    ast_source_eop : out STD_LOGIC;
+    ast_source_channel : out STD_LOGIC_VECTOR(log2_ceil_one($chanPerOutputInterface) - 1 downto 0);
+@@}
+    ast_source_error : out STD_LOGIC_VECTOR(1 downto 0)
+  );
+end ${entity};
+
+
+architecture syn of ${entity} is
+  component ${entity}_ast
+  port (
+    clk : in STD_LOGIC;
+    reset_n : in STD_LOGIC;
+@@if { $ComplexConstant eq "1" } {
+@@set component "core"
+@@if {$coeffReload} {
+    bus_clk            : in std_logic;
+    h_areset           : in std_logic;
+    busIn_a           : in std_logic_vector($busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    busIn_d            : in std_logic_vector($busDataWidth_msb downto 0);
+    busIn_w            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    busIn_read         : in std_logic;
+    busOut_r           : out std_logic_vector($busDataWidth_msb downto 0);
+    busOut_v           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@}
+@@if { $ComplexConstant eq "2" } {
+@@foreach component $components {
+@@set ${component}_busAddressWidth $busAddressWidth
+@@set ${component}_busDataWidth $busDataWidth
+@@if {$coeffReload} {
+    ${component}_bus_clk            : in std_logic;
+    ${component}_h_areset           : in std_logic;
+    ${component}_busIn_a           : in std_logic_vector(${component}_busAddressWidth-1 downto 0);
+@@if {$coefficientWriteable} {
+    ${component}_busIn_d            : in std_logic_vector(${component}_busDataWidth-1 downto 0);
+    ${component}_busIn_w            : in std_logic_vector(0 downto 0);
+@@}
+@@if {$coefficientReadback} {
+    ${component}_busIn_read         : in std_logic;
+    ${component}_busOut_r           : out std_logic_vector(${component}_busDataWidth-1 downto 0);
+    ${component}_busOut_v           : out std_logic_vector(0 downto 0);
+@@}
+@@}
+@@}
+@@}
+    ast_sink_data : in STD_LOGIC_VECTOR(($bankInWidth + $ComplexConstant*$inputBitWidth) * $inputInterfaceNum + $ModeWidth - 1 downto 0);
+    ast_sink_valid : in STD_LOGIC;
+    ast_sink_ready : out STD_LOGIC;
+    ast_sink_sop : in STD_LOGIC;
+    ast_sink_eop : in STD_LOGIC;
+    ast_sink_error : in STD_LOGIC_VECTOR(1 downto 0);
+    ast_source_data : out STD_LOGIC_VECTOR($ComplexConstant*$outBitWidth * $outputInterfaceNum - 1 downto 0);
+    ast_source_ready : in STD_LOGIC;
+    ast_source_valid : out STD_LOGIC;
+    ast_source_sop : out STD_LOGIC;
+    ast_source_eop : out STD_LOGIC;
+    ast_source_channel : out STD_LOGIC_VECTOR(log2_ceil_one($chanPerOutputInterface) - 1 downto 0);
+    ast_source_error : out STD_LOGIC_VECTOR(1 downto 0)
+  );
+end component;
+
+@@if { $ComplexConstant eq "1" } {
+    signal coeff_in_read_sig : std_logic;
+@@}
+@@if { $ComplexConstant eq "2" } {
+@@set  components [list rr ii ri ir]
+@@foreach component $components {
+    signal coeff_in_read_${component}_sig : std_logic;
+@@}
+@@}
+
+begin
+
+@@if { $ComplexConstant eq "1" } {
+@@if {$coeffReload && $coefficientWriteable} {
+    coeff_in_read_sig  <= not(coeff_in_we(0));
+@@} else {
+    coeff_in_read_sig  <= '1';
+@@}
+@@}
+
+@@if { $ComplexConstant eq "2" } {
+@@set  components [list rr ii ri ir]
+@@foreach component $components {
+@@if {$coeffReload && $coefficientWriteable} {
+    coeff_in_read_${component}_sig <= not(coeff_in_we_${component}(0));
+@@} else {
+    coeff_in_read_${component}_sig <= coeff_in_read_${component}(0);
+@@}
+@@}
+@@}
+
+
+  ${entity}_ast_inst : ${entity}_ast
+  port map (
+    clk => clk,
+    reset_n => reset_n,
+@@if { $ComplexConstant eq "1" } {
+@@set component "core"
+@@if {$coeffReload} {
+        bus_clk => coeff_in_clk,
+        h_areset => coeff_in_areset,
+        busIn_a   => coeff_in_address,
+@@if {$coefficientWriteable} {
+        busIn_d   => coeff_in_data,
+        busIn_w   => coeff_in_we,
+@@}
+@@if { $coefficientReadback} {
+        busIn_read  => coeff_in_read_sig,
+        busOut_r  => coeff_out_data,
+        busOut_v  => coeff_out_valid,       
+@@}
+@@}
+@@}
+@@if { $ComplexConstant eq "2" } {
+@@foreach component $components {
+@@set ${component}_busAddressWidth $busAddressWidth
+@@set ${component}_busDataWidth $busDataWidth
+@@if {$coeffReload} {
+        ${component}_bus_clk => coeff_in_clk_${component},
+        ${component}_h_areset => coeff_in_areset_${component},
+        ${component}_busIn_a   => coeff_in_address_${component},
+@@if {$coefficientWriteable} {
+        ${component}_busIn_d   => coeff_in_data_${component},
+        ${component}_busIn_w   => coeff_in_we_${component},
+@@}
+@@if { $coefficientReadback} {
+        ${component}_busIn_read  => coeff_in_read_${component}_sig,
+        ${component}_busOut_r  => coeff_out_data_${component},
+        ${component}_busOut_v  => coeff_out_valid_${component},       
+@@}
+@@}
+@@}
+@@}
+    ast_sink_data => ast_sink_data,
+    ast_source_data => ast_source_data,
+    ast_sink_valid => ast_sink_valid,
+@@if {$backPressure == "true"} {
+        ast_sink_ready => ast_sink_ready,
+        ast_source_ready => ast_source_ready,
+@@} else {
+        ast_sink_ready => open,
+        ast_source_ready => '1',
+@@}
+    ast_source_valid => ast_source_valid,
+@@if {$chanPerInputInterface > 1} {
+        ast_sink_sop => ast_sink_sop,
+        ast_sink_eop => ast_sink_eop,
+@@} else {
+        ast_sink_sop => '0',
+        ast_sink_eop => '0',
+@@}
+    ast_sink_error => ast_sink_error,
+@@if {$chanPerOutputInterface > 1} {
+        ast_source_sop => ast_source_sop,
+        ast_source_eop => ast_source_eop,
+        ast_source_channel => ast_source_channel,
+@@} else {
+        ast_source_sop => open,
+        ast_source_eop => open,
+        ast_source_channel => open,
+@@}
+    ast_source_error => ast_source_error
+  );
+end syn;
+

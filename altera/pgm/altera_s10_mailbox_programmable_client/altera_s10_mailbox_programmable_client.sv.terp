@@ -1,0 +1,293 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// \$Id: //acds/rel/18.1std/ip/pgm/altera_s10_mailbox_programmable_client/altera_s10_mailbox_programmable_client.sv.terp#1 $
+// \$Revision: #1 $
+// \$Date: 2018/07/18 $
+// \$Author: psgswbuild $
+
+// -------------------------------------------------------
+// Generation parameters:
+// length_info: $length_info
+// cmd_info: $cmd_info
+// debug: $debug
+// -------------------------------------------------------
+
+`timescale 1 ns / 1 ns
+module $output_name #(
+        parameter HAS_URGENT            = 0,
+        parameter HAS_STREAM            = 0,
+        parameter STREAM_WIDTH          = 0,
+        parameter HAS_OFFLOAD           = 0,
+        parameter IDLE_TIME 			= 0
+    ) (
+        input               clk,
+        input               reset,
+@@ if {$debug == 1} {
+        input               command_ready,
+        output logic        command_valid,
+        output logic [31:0] command_data,
+        output logic        command_startofpacket,
+        output logic        command_endofpacket,
+        
+        output logic        response_ready,
+        input               response_valid,
+        input [31:0]        response_data,
+        input               response_startofpacket,
+        input               response_endofpacket,
+@@ }
+        input               rsp_ready,
+        output logic        rsp_valid,
+        output logic [31:0] rsp_data,
+        output logic [3:0]  rsp_channel,
+        output logic        rsp_startofpacket,
+        output logic        rsp_endofpacket,
+
+        input               start,
+        output logic        busy
+    );
+
+    // ------------------------------------------------------------
+    // Calculates the ceil(log2()) of the input val.
+    // Limited to a positive 32-bit input value.
+    // ------------------------------------------------------------
+    function integer clog2;
+        input[31:0] val;
+        reg[31:0] i;
+
+        begin
+            i = 1;
+            clog2 = 0;
+
+            while (i < val) begin
+                clog2 = clog2 + 1;
+                i = i[30:0] << 1;
+            end
+        end
+    endfunction
+
+@@ set total_cmds [llength $cmd_info]
+
+	localparam ARG_LENGTH                   = $total_cmds;
+    localparam ARG_LENGTH_MINUS_1           = ARG_LENGTH - 1;
+    localparam IDLE_TIME_TO_BUFFER          = (IDLE_TIME == 1) ? 1 : IDLE_TIME - 1;
+    localparam IDLE_TIME_TO_BUFFER_MINUS_1  = IDLE_TIME_TO_BUFFER - 1;
+    localparam IDLE_TIME_WIDTH              = clog2(IDLE_TIME);
+    localparam ARG_LENGTH_WIDTH             = clog2(ARG_LENGTH);
+    logic [ARG_LENGTH_WIDTH : 0]   counter_sending_pck;
+    logic [ARG_LENGTH_WIDTH : 0]   next_counter_sending_pck;
+    logic                            counter_sending_pck_done;
+
+    logic [IDLE_TIME_WIDTH : 0]   counter_waiting;
+    logic [IDLE_TIME_WIDTH : 0]   next_counter_waiting;
+    logic                            counter_waiting_done;
+
+    logic [31:0]                    arg_count_time;
+    logic [ARG_LENGTH_WIDTH:0]    arg_count_time_to_compare;
+    logic [31:0]                    idle_time;
+    logic [IDLE_TIME_WIDTH:0]     idle_time_to_compare;
+
+@@ if {$debug == 0} {
+    logic               command_ready,
+    logic               command_valid,
+    logic  [31:0]       command_data,
+    logic               command_startofpacket,
+    logic               command_endofpacket,
+    
+    logic               response_ready,
+    logic               response_valid,
+    logic [31:0]        response_data,
+    logic               response_startofpacket,
+    logic               response_endofpacket,
+@@ }
+
+
+    assign arg_count_time            = ARG_LENGTH_MINUS_1;
+    assign arg_count_time_to_compare = arg_count_time[ARG_LENGTH_WIDTH : 0];
+    assign idle_time            = IDLE_TIME_TO_BUFFER_MINUS_1;
+    assign idle_time_to_compare = idle_time[IDLE_TIME_WIDTH : 0];
+    
+    // +-------------------------------------------------------------------------------------------
+    // | Build the array of predefined data for all commands - header and arguments
+    // +-------------------------------------------------------------------------------------------
+@@  set arg_length_minus_1 [expr $total_cmds - 1]
+	logic [33:0]   arg_mem [0: $arg_length_minus_1];
+@@ for {set k 0} {$k < $total_cmds} {incr k} {
+@@ set cmd_value [lindex $cmd_info $k]
+	assign arg_mem[$k]	= $cmd_value;
+@@ }
+
+	// State machine
+    typedef enum bit [2:0]
+    {
+     ST_IDLE           = 3'b001,
+     ST_SEND_PCK       = 3'b010,
+     ST_BUFFER         = 3'b100
+     } t_state;
+    t_state state, next_state;
+
+	// +--------------------------------------------------
+    // | State Machine: update state
+    // +--------------------------------------------------
+    // |
+    always_ff @(posedge clk) begin
+        if (reset)
+            state <= ST_IDLE;
+        else
+            state <= next_state;
+    end
+    // +--------------------------------------------------
+    // | State Machine: next state condition
+    // +--------------------------------------------------
+    always_comb begin
+        next_state  = ST_IDLE;
+        case (state)
+            ST_IDLE: begin
+                next_state  = ST_IDLE;
+                if (start)
+                    next_state <= ST_SEND_PCK;
+            end
+
+            ST_SEND_PCK: begin
+                next_state  = ST_SEND_PCK;
+                if (counter_sending_pck_done) begin 
+                    next_state  = ST_BUFFER ;
+                    if (IDLE_TIME == 1) // idle time is only 1
+                        next_state  = ST_IDLE;
+                end
+                    
+            end
+            
+            ST_BUFFER : begin
+                next_state  = ST_BUFFER ;
+                if (counter_waiting_done)
+                    next_state  = ST_IDLE;
+            end
+        endcase // case (state)
+    end // always_comb
+    
+    // +--------------------------------------------------
+    // | State Machine: state outputs
+    // +--------------------------------------------------
+    always_comb begin
+        case (state)
+            ST_IDLE: begin
+                command_valid 				= '0;
+                busy 		 				= '0;
+                next_counter_sending_pck    = '0;
+				next_counter_waiting    	= '0;
+            end
+            ST_SEND_PCK: begin 
+                command_valid 				= 1;
+                busy 		 				= 1;
+                next_counter_waiting    	= '0;
+                next_counter_sending_pck    = counter_sending_pck;
+                if (command_valid & command_ready) begin
+                	next_counter_sending_pck    = counter_sending_pck + 1;
+                	if (counter_sending_pck_done)
+               			next_counter_sending_pck    = '0;
+               	end 	
+            end
+            ST_BUFFER : begin 
+            	command_valid 				= '0;
+            	busy 		 				= 1;
+                next_counter_sending_pck    = '0;
+              	next_counter_waiting    	= counter_waiting + 1;
+              	if (counter_waiting_done)
+               		next_counter_waiting    	= '0;
+            end
+
+        endcase // case (state)
+    end
+    // | 
+    // +--------------------------------------------------
+    always_ff @(posedge clk) begin
+        if (reset)
+            counter_sending_pck <= '0;
+        else
+            counter_sending_pck <= next_counter_sending_pck;
+    end
+    assign counter_sending_pck_done = ((counter_sending_pck == arg_count_time_to_compare) & command_valid & command_ready);
+
+    always_ff @(posedge clk) begin
+        if (reset)
+            counter_waiting <= '0;
+        else
+            counter_waiting <= next_counter_waiting;
+    end
+    assign counter_waiting_done = (counter_waiting == idle_time_to_compare);
+
+    // +--------------------------------------------------
+    // | Command output mapping
+    // +--------------------------------------------------
+    logic [33:0] arg_value;
+    assign arg_value = arg_mem[counter_sending_pck];
+    always_comb begin 
+    	command_data 			= arg_value[31:0];
+    	command_startofpacket 	= arg_value[33];
+    	command_endofpacket 	= arg_value[32];
+    end
+
+    // +--------------------------------------------------
+    // | Response output mapping
+    // +--------------------------------------------------
+    always_comb begin
+        response_ready    =  rsp_ready;
+        rsp_valid         =  response_valid;
+        rsp_data          =  response_data;
+        rsp_startofpacket =  response_startofpacket;
+        rsp_endofpacket   =  response_endofpacket;
+    end
+    logic [3:0] channel_dly;
+    logic first_word_response_taken;
+    assign first_word_response_taken = response_valid & response_ready & response_startofpacket;
+    always_ff @(posedge clk) begin
+        if (reset)
+            channel_dly <= '0;
+        else begin 
+            if (first_word_response_taken)
+                channel_dly <= response_data[27:24];
+        end
+    end
+
+    assign rsp_channel = first_word_response_taken ? response_data[27:24] : channel_dly;
+
+    
+    // +--------------------------------------------------
+    // | If not debug (export signals to top level for simulation)
+    // | connect to the config stream endpoint
+    // +--------------------------------------------------
+@@ if {$debug == 0} {    
+    config_stream_ep #(
+        .READY_LATENCY  (0),
+        .HAS_URGENT     (0),
+        .HAS_STREAM     (0),
+        .MAX_SIZE       (256),
+        .STREAM_WIDTH   (32),
+        .CLOCK_RATE_CLK (0)
+    ) config_stream_endpoint_0 (
+        .clk                    (clk),
+        .reset                  (reset),
+        .command_ready          (command_ready),
+        .command_valid          (command_valid),
+        .command_data           (command_data),
+        .command_startofpacket  (command_startofpacket),
+        .command_endofpacket    (command_endofpacket),
+        .response_ready         (response_ready),
+        .response_valid         (response_valid),
+        .response_data          (response_data),
+        .response_startofpacket (response_startofpacket),
+        .response_endofpacket   (response_endofpacket)
+    );
+@@ }
+endmodule

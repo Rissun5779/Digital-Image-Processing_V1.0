@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toolkit
+        name="hssi_config"
+        displayName="Transceiver Configuration Console"
+        addMenuItem="false"
+        >
+        <file>com.altera.toolkit.hssiconfig.jar</file>
+        <driverFile>com.altera.toolkit.hssiconfig.jar</driverFile>
+        <description>The Transceiver Configuration Console provides the ability to configure transceiver register space and read the transceiver status during runtime. </description>  
+        <requirement>
+          <type>hssiconfig</type>
+        </requirement>
+</toolkit>

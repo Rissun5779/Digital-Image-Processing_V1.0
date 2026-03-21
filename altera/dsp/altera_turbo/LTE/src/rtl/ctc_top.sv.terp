@@ -1,0 +1,89 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ set sink_data_width_msb [expr {$sink_data_width*$sink_lps - 1}]
+@@ set source_data_width_msb [expr {$source_data_width - 1}]
+@@ set frame_size_width_msb [expr {$frame_size_width - 1}]
+@@ set max_iter_width_msb [expr {$max_iter_width - 1}]
+@@ set dec_in_width [expr $sink_data_width/3]
+@@ set dec_lps $sink_lps
+
+module ${output_name} (
+    input clk, 
+    input reset_n,
+    input sink_valid,
+    input sink_sop,
+    input sink_eop,
+    input [$frame_size_width_msb : 0] sink_blk_size,
+    input [$sink_data_width_msb : 0] sink_data,
+@@ if { !$is_encoder } {
+    input [$max_iter_width_msb : 0] sink_max_iter,
+    input [0 : 0] sel_crc24a,
+@@ }
+    input [1 : 0] sink_error,
+    input source_ready,
+    output sink_ready,
+    output [1 : 0] source_error,
+    output source_sop,
+    output source_eop,
+    output source_valid,
+@@ if { !$is_encoder } {
+    output [$max_iter_width_msb : 0] source_iter,
+    output [0 : 0] crc_pass,
+    output [0 : 0] crc_type,
+@@ }
+    output [$source_data_width_msb : 0] source_data_s,
+    output [$frame_size_width_msb : 0] source_blk_size
+    );
+
+    $module_name #(
+@@ if { !$is_encoder } {
+        .IN_WIDTH_g ($dec_in_width),
+        .IN_LPS_g ($sink_lps),
+        .OUT_WIDTH_g ($source_data_width),
+        .NENGINES_g ($engines),
+        .RAM_TYPE_g ("MLAB"),
+@@ }
+        .DEVICE_FAMILY_g("${device_family}")
+    )
+    ${module_name}_inst (
+        .clk(clk),
+        .reset_n(reset_n),
+        .sink_valid(sink_valid),
+        .sink_sop(sink_sop),
+        .sink_eop(sink_eop),
+        .sink_blk_size(sink_blk_size),
+        .sink_data(sink_data),
+@@ if { !$is_encoder } {
+        .sink_max_iter(sink_max_iter),
+        .sel_crc24a(sel_crc24a),
+@@ }
+        .sink_ready(sink_ready),
+        .sink_error(sink_error),
+        .source_error(source_error),
+        .source_ready(source_ready),
+        .source_sop(source_sop),
+        .source_eop(source_eop),
+        .source_valid(source_valid),
+@@ if { !$is_encoder } {
+        .source_iter(source_iter),
+        .crc_pass(crc_pass),
+        .crc_type(crc_type),
+@@ }
+        .source_data(source_data_s),
+        .source_blk_size(source_blk_size)
+    );
+endmodule
+
+
+

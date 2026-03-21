@@ -1,0 +1,796 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//This reference design file, and your use thereof, is subject to and         
+//governed by the terms and conditions of the applicable Intel Reference     
+//Design License Agreement.  By using this reference design file, you         
+//indicate your acceptance of such terms and conditions between you and       
+//Intel Corporation.  In the event that you do not agree with such terms and 
+//conditions, you may not use the reference design file. Please promptly      
+//destroy any copies you have made.                                           
+//                                                                            
+//This reference design file being provided on an "as-is" basis and as an     
+//accommodation and therefore all warranties, representations or guarantees   
+//of any kind (whether express, implied or statutory) including, without      
+//limitation, warranties of merchantability, non-infringement, or fitness for 
+//a particular purpose, are specifically disclaimed.  By making this          
+//reference design file available, Intel expressly does not recommend,       
+//suggest or require that this reference design file be used in combination   
+//with any other product not provided by Intel.
+
+@@ set top_level_name   $param0
+@@ set vid_std          $param1
+@@ set direction        $param2
+@@ set sd_bitw          $param3
+@@ set rx_crc           $param4
+@@ # Manually overwrite Payload ID Extraction when Direction = Tx
+@@ if { $vid_std != "hd" && $direction == "tx" } {
+@@ set pid_xtrct        1
+@@ } else {
+@@ set pid_xtrct        $param5
+@@ }
+@@ set pid_ins          $param6
+@@ set txclk_sw         $param7
+module $top_level_name (
+//Clocks Inputs
+    input           clk_fpga_b2_p,      //LVDS - CLK_SEL:0 - 100MHz (Programmable Si570) / CLK_SEL:1 - SMA input
+    input           refclk_sdi_p,       //LVDS Si516, Si516_FS:0 - 148.5MHz / Si516_FS:1 - 148.35MHz 
+@@ if { $txclk_sw != 0 && $vid_std != "mr" } {
+    input           refclk_sma_p,       //LVDS - 302MHz default, programmable to 148.3516 MHz from Clock Ctrl GUI
+@@ }
+
+//User-IO--------------------------------------------------------
+    input           cpu_resetn,         //1.8V    //CPU Reset Pushbutton (TR=0)
+@@ if { $vid_std == "mr" } {
+    input           user_pb0,           //1.8V    //User Pushbutton0
+@@ }
+    output  [7:0]   user_led_g,         //1.8V    //User LEDs
+    output  [7:0]   user_led_r,         //1.8V    //User LEDs
+
+//SDI ------------------------------------------------------------
+@@ if { $vid_std != "mr" } {
+    input           sdi_rx_p,           //HIGH SPEED DIFFERENTIAL I/O SDI XCVR RX Serial Data
+    output          sdi_tx_p,           //HIGH SPEED DIFFERENTIAL I/O SDI XCVR TX Serial Data
+    output          sdi_clk148_up,      //Voltage Control for SDI VCXO
+    output          sdi_clk148_down,    //Voltage Control for SDI VCXO
+
+    output          sdi_mf0_bypass,     //1.8V, Rx Equalization Bypass - 0: Normal Operation / 1: No Equalization occurs
+    output          sdi_mf1_auto_sleep, //1.8V, Rx Auto Sleep - 0: Normal Operation / 1: Device will power down when no input detected
+    output          sdi_mf2_mute,       //1.8V, Rx Output Mute - 0: Output Enabled / 1: Output forced to mute state
+    output          sdi_tx_sd_hdn       //1.8V, Tx Output slew rate control - 0: complies with HD / 1: complies with SD
+@@ } else {
+@@      if { $txclk_sw != 0 } {
+    input           refclk_fmcb_p,      //LVDS - 625MHz default, programmable to 296.7033 MHz from Clock Ctrl GUI
+@@      }
+    input           fmcb_gbtclk_m2c_p0, //Transceiver Ref Clocks - 297 / 296.7Mhz
+    input           fmcb_dp_m2c_p2,     //Transceiver Data FPGA RX
+    input           fmcb_la_tx_p1,      //Cable Equalizer lock status
+    output          fmcb_dp_c2m_p0,     //Transceiver Data FPGA TX
+    output          fmcb_la_tx_p12,     //LMH1983 Init
+    output          fmcb_la_tx_n12,     //Field sync signal to LMH1983
+    output          fmcb_la_tx_p14,     //V sync signal to LMH1983
+    output          fmcb_la_tx_n14,     //H sync signal to LMH1983
+    output          fmcb_la_tx_p15      //Powerdown signal to LMK03328
+@@ }
+);
+
+@@ if { $vid_std == "mr" } {
+localparam NUM_STREAMS = 4;
+@@ } else {
+localparam NUM_STREAMS = 1;
+@@ }
+
+// --------------------------------------------
+// Signal Declaration
+// --------------------------------------------
+wire                        sdi_rx_clkout;
+wire                        sdi_tx_clkout;
+wire                        sdi_tx_dataout_valid;
+wire [NUM_STREAMS*20-1:0]   sdi_tx_datain;
+wire                        sdi_tx_datain_valid;
+wire                        sdi_tx_trs;
+@@ if { $pid_ins } {
+wire [NUM_STREAMS*11-1:0]   sdi_tx_line_f0;
+wire [NUM_STREAMS*11-1:0]   sdi_tx_line_f1;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte1;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte2;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte3;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte4;
+@@      if { $vid_std != "hd" } {
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte1_b;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte2_b;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte3_b;
+wire [NUM_STREAMS*8-1:0]    sdi_tx_vpid_byte4_b;
+@@      }
+@@ }
+wire [2:0]                  sdi_tx_std;
+wire [NUM_STREAMS*11-1:0]   sdi_tx_ln;
+@@ if { $vid_std != "hd" } {
+wire [NUM_STREAMS*11-1:0]   sdi_tx_ln_b;
+wire [2:0]                  sdi_rx_std;
+@@ }
+wire                        sdi_rx_align_locked;
+wire [NUM_STREAMS-1:0]      sdi_rx_trs_locked;
+wire                        sdi_rx_frame_locked;
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+wire                        cdr_reconfig_busy;
+wire [31:0]                 rx_rcfg_readdata;
+wire [31:0]                 rx_rcfg_writedata;
+wire [9:0]                  rx_rcfg_address;
+wire                        rx_rcfg_waitrequest;
+wire                        rx_rcfg_write;
+wire                        rx_rcfg_read;
+@@  }
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+wire [31:0]                 gxb_rcfg_writedata;
+wire [9:0]                  gxb_rcfg_address;
+wire                        gxb_rcfg_write;
+wire                        gxb_rcfg_read;
+@@      if { $direction == "du" } {
+wire [31:0]                 gxb_du_rcfg_readdata;
+wire                        gxb_du_rcfg_waitrequest;
+@@      } else {
+wire [31:0]                 gxb_rx_rcfg_readdata;
+wire                        gxb_rx_rcfg_waitrequest;
+wire [31:0]                 gxb_tx_rcfg_readdata;
+wire                        gxb_tx_rcfg_waitrequest;
+@@      }
+wire                        gxb_rx_cal_busy;
+wire                        gxb_tx_cal_busy;
+wire                        rx_rcfg_cal_busy;
+wire                        tx_rcfg_cal_busy;
+@@ }
+wire                        gxb_tx_ready;
+@@ if { $txclk_sw == 1 } {
+wire [31:0]                 tx_rcfg_readdata;
+wire [31:0]                 tx_rcfg_writedata;
+wire [9:0]                  tx_rcfg_address;
+wire                        tx_rcfg_waitrequest;
+wire                        tx_rcfg_write;
+wire                        tx_rcfg_read;
+wire                        tx_reconfig_busy;
+@@ }
+wire                        tx_clkout_hb_rate;
+wire                        rx_clkout_hb_rate;
+@@ if { $vid_std == "mr" } {
+wire                        clk_148m5;
+wire                        trs_locked_led = (sdi_rx_std[2:1] == 2'b11) ? &sdi_rx_trs_locked[3:0] :
+                                             (sdi_rx_std[2:1] == 2'b10) ? &sdi_rx_trs_locked[1:0] :
+                                                                          sdi_rx_trs_locked[0];
+@@ }
+wire                        pattgen_pio_rst;
+wire                        pattgen_rst;
+wire                        pattgen_patho;
+wire                        pattgen_sgmt_frame;
+wire                        pattgen_dl_mapping;
+wire                        pattgen_ntsc_paln;
+wire [3:0]                  pattgen_tx_format;
+
+//------------------------------------------------------------------------------
+// Output pins assignment
+//------------------------------------------------------------------------------
+assign user_led_r[7:0] = 8'hFF;
+@@ if { $vid_std == "mr" } {
+assign user_led_g[7:0] = ~{sdi_rx_std[2:0], tx_clkout_hb_rate, rx_clkout_hb_rate, sdi_rx_align_locked, trs_locked_led, sdi_rx_frame_locked};
+assign fmcb_la_tx_p12 = 1'b1;
+assign fmcb_la_tx_n12 = 1'b1;
+assign fmcb_la_tx_p14 = 1'b1;
+assign fmcb_la_tx_n14 = 1'b1;
+assign fmcb_la_tx_p15 = user_pb0;
+@@ } else {
+@@      if { $vid_std == "hd" } {
+// Hardcoded 3 MSB bits to "001" to indicate it is always HD std
+assign user_led_g[7:0] = ~{3'b001, tx_clkout_hb_rate, rx_clkout_hb_rate, sdi_rx_align_locked, sdi_rx_trs_locked, sdi_rx_frame_locked};
+@@      } else {
+assign user_led_g[7:0] = ~{sdi_rx_std[2:0], tx_clkout_hb_rate, rx_clkout_hb_rate, sdi_rx_align_locked, sdi_rx_trs_locked, sdi_rx_frame_locked};
+@@      }
+assign sdi_mf0_bypass = 1'b0;
+assign sdi_mf1_auto_sleep = 1'b1;
+assign sdi_mf2_mute = 1'b0;
+assign sdi_clk148_up = 1'b1;
+assign sdi_clk148_down = 1'b0;
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+assign sdi_tx_sd_hdn = (sdi_tx_std == 3'd0) ? 1'b1 : 1'b0;
+@@      } else {
+assign sdi_tx_sd_hdn = 1'b0;
+@@      }
+@@ }
+
+@@ if { $vid_std == "mr" } {
+//---------------------------------------------------------------------------------------------------------
+// CLK Control IP to promote refclk_sdi_p to regional clock (refclk_sdi is from another side of the chip)
+// This is essential to provide a free running clock to Rx CDR as refclock
+// because when xcvr is in Lock-To-Reference mode (SD-SDI), the clock needs to be stable
+// and thus, it has to be a different clock from Tx PLL refclock (which will be tuned).
+//---------------------------------------------------------------------------------------------------------
+clk_ctrl clk_ctrl_inst (
+    .inclk (refclk_sdi_p),
+    .outclk (clk_148m5)
+);
+@@ }
+
+//---------------------------------------------------------------------------------------------------------
+// SDI Pattgen with Control
+// To run pattern gen, open System Console from Quartus and type "source ../hwtest/tpg_ctrl.tcl"
+//---------------------------------------------------------------------------------------------------------
+pattgen_ctrl pattgen_ctrl_inst (
+    // Clocks and resets
+    .avmm_clk_in_clk                                (clk_fpga_b2_p),
+    .tx_clkout_in_clk                               (sdi_tx_clkout),
+    .avmm_rst_in_reset_n                            (cpu_resetn),
+    .pattgen_rst_reset_in0                          (~gxb_tx_ready),
+    .pattgen_rst_reset_in1                          (pattgen_pio_rst),
+    .pattgen_rst_reset_out                          (pattgen_rst),
+
+    // Outputs
+    .pattgen_ctrl_pio_out_port                      ({pattgen_pio_rst, pattgen_patho, pattgen_ntsc_paln, pattgen_dl_mapping, pattgen_sgmt_frame, sdi_tx_std, pattgen_tx_format})
+);
+
+sdi_ii_ed_vid_pattgen #(
+    .OUTW_MULTP          (NUM_STREAMS),
+    .SD_BIT_WIDTH        ($sd_bitw),
+@@ if { !($pid_ins || $vid_std == "hd") } {
+    .TEST_GEN_ANC        (1),
+    .TEST_GEN_VPID       (1),
+@@ } else {
+    .TEST_GEN_ANC        (0),
+    .TEST_GEN_VPID       (0),
+@@ }
+    .TEST_VPID_PKT_COUNT (1),
+    .TEST_ERR_VPID       (0),
+    .TEST_VPID_OVERWRITE (1)
+) pattgen (
+    // Clocks and resets
+    .clk          (sdi_tx_clkout),
+    .rst          (pattgen_rst),
+
+    // Inputs
+    .enable       (sdi_tx_dataout_valid),
+    .tx_std       (sdi_tx_std),
+    .tx_format    (pattgen_tx_format),
+    .dl_mapping   (pattgen_dl_mapping),
+    .bar_100_75n  (1'b0),
+    .patho        (pattgen_patho),
+    .blank        (1'b0),
+    .no_color     (1'b0),
+    .sgmt_frame   (pattgen_sgmt_frame),
+    .ntsc_paln    (pattgen_ntsc_paln),
+
+    // Outputs
+    .ln           (sdi_tx_ln),
+@@ if { $vid_std != "hd" } {
+    .ln_b         (sdi_tx_ln_b),
+@@ } else {
+    .ln_b         (),
+@@ }
+@@ if { $pid_ins } {
+    .line_f0      (sdi_tx_line_f0),
+    .line_f1      (sdi_tx_line_f1),
+    .vpid_byte1   (sdi_tx_vpid_byte1),
+    .vpid_byte2   (sdi_tx_vpid_byte2),
+    .vpid_byte3   (sdi_tx_vpid_byte3),
+    .vpid_byte4   (sdi_tx_vpid_byte4),
+@@      if { $vid_std != "hd" } {
+    .vpid_byte1_b (sdi_tx_vpid_byte1_b),
+    .vpid_byte2_b (sdi_tx_vpid_byte2_b),
+    .vpid_byte3_b (sdi_tx_vpid_byte3_b),
+    .vpid_byte4_b (sdi_tx_vpid_byte4_b),
+@@      } else {
+    .vpid_byte1_b (),
+    .vpid_byte2_b (),
+    .vpid_byte3_b (),
+    .vpid_byte4_b (),
+@@      }
+@@ } else {
+    .line_f0      (),
+    .line_f1      (),
+    .vpid_byte1   (),
+    .vpid_byte2   (),
+    .vpid_byte3   (),
+    .vpid_byte4   (),
+    .vpid_byte1_b (),
+    .vpid_byte2_b (),
+    .vpid_byte3_b (),
+    .vpid_byte4_b (),
+@@ }
+    .trs          (sdi_tx_trs),
+    .dout         (sdi_tx_datain),
+    .dout_valid   (sdi_tx_datain_valid)
+);
+
+@@ if { $direction == "du" } {
+// -------------------------------------------------------------------------
+// Duplex mode IP Top Level
+// -------------------------------------------------------------------------
+du_top #(
+    .NUM_STREAMS                    (NUM_STREAMS)
+) du_inst (
+// Clock and reset
+@@      # Use 297Mhz clock from daughter card for Multi rate design
+@@      # Use 148.5MHz clock from on-board Si516 for other rates (VCXO)
+@@      if { $vid_std == "mr" } {
+    .rx_resetn                      (cpu_resetn & ~fmcb_la_tx_p1),
+    .tx_resetn                      (cpu_resetn & user_pb0 & ~pattgen_pio_rst),
+    .rx_cdr_refclk                  (clk_148m5),
+    .rx_core_refclk                 (clk_148m5),
+    .tx_pll_refclk                  (fmcb_gbtclk_m2c_p0),
+@@          if { $txclk_sw != 0 } {
+    .tx_pll_refclk_alt              (refclk_fmcb_p),
+@@          }
+    .tx_rcfg_mgmt_resetn            (cpu_resetn & user_pb0),
+    .tx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+    .rx_rcfg_mgmt_resetn            (cpu_resetn & ~fmcb_la_tx_p1),
+    .rx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+@@      } else {
+    .rx_resetn                      (cpu_resetn),
+    .tx_resetn                      (cpu_resetn & ~pattgen_pio_rst),
+    .rx_cdr_refclk                  (refclk_sdi_p),
+    .rx_core_refclk                 (refclk_sdi_p),
+    .tx_pll_refclk                  (refclk_sdi_p),
+@@          if { $txclk_sw != 0 } {
+    .tx_pll_refclk_alt              (refclk_sma_p),
+@@          }
+    .tx_rcfg_mgmt_resetn            (cpu_resetn),
+    .tx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+    .rx_rcfg_mgmt_resetn            (cpu_resetn),
+    .rx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+@@      }
+
+// Inputs
+@@      if { $vid_std == "mr" } {
+    .gxb_rx_serial_data             (fmcb_dp_m2c_p2),
+@@      } else {
+    .gxb_rx_serial_data             (sdi_rx_p),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_du_rcfg_write              (gxb_rcfg_write),
+    .gxb_du_rcfg_read               (gxb_rcfg_read),
+    .gxb_du_rcfg_address            (gxb_rcfg_address),
+    .gxb_du_rcfg_writedata          (gxb_rcfg_writedata),
+    .rx_rcfg_cal_busy               (rx_rcfg_cal_busy),
+    .tx_rcfg_cal_busy               (tx_rcfg_cal_busy),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_rcfg_readdata               (rx_rcfg_readdata),
+    .rx_rcfg_waitrequest            (rx_rcfg_waitrequest),
+@@      }
+@@      if { $txclk_sw == 1 } {
+    .tx_rcfg_readdata               (tx_rcfg_readdata),
+    .tx_rcfg_waitrequest            (tx_rcfg_waitrequest),
+@@      }
+@@      if { $txclk_sw != 0 } {
+    .tx_pll_refclk_sel              (pattgen_ntsc_paln),
+@@      }
+    .tx_vid_data                    (sdi_tx_datain),
+    .tx_vid_datavalid               (sdi_tx_datain_valid),
+@@      if { $vid_std != "hd" } {
+    .tx_vid_std                     (sdi_tx_std),
+@@      }
+    .tx_vid_trs                     (sdi_tx_trs),
+    .sdi_rx_coreclk_is_ntsc_paln    (1'b0),
+    .sdi_tx_enable_crc              (1'b1),
+    .sdi_tx_enable_ln               (1'b1),
+    .sdi_tx_ln                      (sdi_tx_ln),
+@@      if { $vid_std != "hd" } {
+    .sdi_tx_ln_b                    (sdi_tx_ln_b),
+@@      }
+@@      if { $pid_ins } {
+    .sdi_tx_vpid_overwrite          (1'b0),
+    .sdi_tx_line_f0                 (sdi_tx_line_f0),
+    .sdi_tx_line_f1                 (sdi_tx_line_f1),
+    .sdi_tx_vpid_byte1              (sdi_tx_vpid_byte1),
+    .sdi_tx_vpid_byte2              (sdi_tx_vpid_byte2),
+    .sdi_tx_vpid_byte3              (sdi_tx_vpid_byte3),
+    .sdi_tx_vpid_byte4              (sdi_tx_vpid_byte4),
+@@          if { $vid_std != "hd" } {
+    .sdi_tx_vpid_byte1_b            (sdi_tx_vpid_byte1_b),
+    .sdi_tx_vpid_byte2_b            (sdi_tx_vpid_byte2_b),
+    .sdi_tx_vpid_byte3_b            (sdi_tx_vpid_byte3_b),
+    .sdi_tx_vpid_byte4_b            (sdi_tx_vpid_byte4_b),
+@@          }
+@@      }
+
+// Outputs
+    .rx_vid_clkout                  (sdi_rx_clkout),
+    .rx_vid_data                    (),
+    .rx_vid_datavalid               (),
+@@      if { $vid_std != "hd" } {
+    .rx_vid_std                     (sdi_rx_std),
+@@      }
+    .rx_vid_locked                  (sdi_rx_frame_locked),
+    .rx_vid_hsync                   (),
+    .rx_vid_vsync                   (),
+    .rx_vid_f                       (),
+    .rx_vid_trs                     (),
+    .sdi_rx_rst_proto_out           (),
+    .sdi_rx_align_locked            (sdi_rx_align_locked),
+    .sdi_rx_trs_locked              (sdi_rx_trs_locked),
+    .sdi_rx_clkout_is_ntsc_paln     (),
+    .sdi_rx_format                  (),
+    .sdi_rx_ap                      (),
+    .sdi_rx_eav                     (),
+    .sdi_rx_ln                      (),
+@@      if { $vid_std != "hd" } {
+    .sdi_rx_ln_b                    (),
+@@      }
+@@      if { $rx_crc } {
+    .sdi_rx_crc_error_c             (),
+    .sdi_rx_crc_error_y             (),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_crc_error_c_b           (),
+    .sdi_rx_crc_error_y_b           (),
+@@          }
+@@      }
+@@      if { $pid_xtrct } {
+    .sdi_rx_line_f0                 (),
+    .sdi_rx_line_f1                 (),
+    .sdi_rx_vpid_byte1              (),
+    .sdi_rx_vpid_byte2              (),
+    .sdi_rx_vpid_byte3              (),
+    .sdi_rx_vpid_byte4              (),
+    .sdi_rx_vpid_checksum_error     (),
+    .sdi_rx_vpid_valid              (),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_vpid_byte1_b            (),
+    .sdi_rx_vpid_byte2_b            (),
+    .sdi_rx_vpid_byte3_b            (),
+    .sdi_rx_vpid_byte4_b            (),
+    .sdi_rx_vpid_checksum_error_b   (),
+    .sdi_rx_vpid_valid_b            (),
+@@          }
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .cdr_reconfig_busy              (cdr_reconfig_busy),
+    .rx_rcfg_write                  (rx_rcfg_write),
+    .rx_rcfg_read                   (rx_rcfg_read),
+    .rx_rcfg_address                (rx_rcfg_address),
+    .rx_rcfg_writedata              (rx_rcfg_writedata),
+@@      }
+    .gxb_rx_ready                   (),
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_rx_cal_busy                (gxb_rx_cal_busy),
+    .gxb_du_rcfg_readdata           (gxb_du_rcfg_readdata),
+    .gxb_du_rcfg_waitrequest        (gxb_du_rcfg_waitrequest),
+    .gxb_tx_cal_busy                (gxb_tx_cal_busy),
+@@      }
+@@      # Use daughter card for Multi rate design
+@@      # Use on-board SMB connectors for other rates
+@@      if { $vid_std == "mr" } {
+    .gxb_tx_serial_data             (fmcb_dp_c2m_p0),
+@@      } else {
+    .gxb_tx_serial_data             (sdi_tx_p),
+@@      }
+    .gxb_tx_ready                   (gxb_tx_ready),
+@@      if { $txclk_sw == 2} {
+    .tx_reconfig_busy               (),
+@@      } elseif { $txclk_sw == 1} {
+    .tx_reconfig_busy               (tx_reconfig_busy),
+@@      }
+    .tx_pll_locked                  (),
+@@      if { $txclk_sw == 1 } {
+    .tx_pll_locked_alt              (),
+    .tx_rcfg_writedata              (tx_rcfg_writedata),
+    .tx_rcfg_address                (tx_rcfg_address),
+    .tx_rcfg_read                   (tx_rcfg_read),
+    .tx_rcfg_write                  (tx_rcfg_write),
+@@      }
+    .tx_vid_clkout                  (sdi_tx_clkout),
+    .sdi_tx_datavalid               (sdi_tx_dataout_valid)
+);
+@@ } else {
+// -------------------------------------------------------------------------
+// Transmitter IP Top Level
+// -------------------------------------------------------------------------
+tx_top #(
+    .NUM_STREAMS                    (NUM_STREAMS)
+) tx_inst (
+// Clocks and reset
+@@      # Use 297Mhz clock from daughter card for Multi rate design
+@@      # Use 148.5MHz clock from on-board Si516 for other rates (VCXO)
+@@      if { $vid_std == "mr" } {
+    .tx_resetn                      (cpu_resetn & user_pb0 & ~pattgen_pio_rst),
+    .tx_pll_refclk                  (fmcb_gbtclk_m2c_p0),
+@@          if { $txclk_sw != 0 } {
+    .tx_pll_refclk_alt              (refclk_fmcb_p),
+@@          }
+    .tx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+    .tx_rcfg_mgmt_resetn            (cpu_resetn & user_pb0),
+@@      } else {
+    .tx_resetn                      (cpu_resetn & ~pattgen_pio_rst),
+    .tx_pll_refclk                  (refclk_sdi_p),
+@@          if { $txclk_sw != 0 } {
+    .tx_pll_refclk_alt              (refclk_sma_p),
+@@          }
+    .tx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+    .tx_rcfg_mgmt_resetn            (cpu_resetn),
+@@      }
+
+// Inputs
+@@      if { $txclk_sw != 0 } {
+    .tx_pll_refclk_sel              (pattgen_ntsc_paln),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .tx_rcfg_cal_busy               (tx_rcfg_cal_busy),
+@@      }
+    .tx_vid_data                    (sdi_tx_datain),
+    .tx_vid_datavalid               (sdi_tx_datain_valid),
+@@      if { $vid_std != "hd" } {
+    .tx_vid_std                     (sdi_tx_std),
+@@      }
+    .tx_vid_trs                     (sdi_tx_trs),
+    .sdi_tx_enable_crc              (1'b1),
+    .sdi_tx_enable_ln               (1'b1),
+    .sdi_tx_ln                      (sdi_tx_ln),
+@@      if { $vid_std != "hd" } {
+    .sdi_tx_ln_b                    (sdi_tx_ln_b),
+@@      }
+@@      if { $pid_ins } {
+    .sdi_tx_vpid_overwrite          (1'b0),
+    .sdi_tx_line_f0                 (sdi_tx_line_f0),
+    .sdi_tx_line_f1                 (sdi_tx_line_f1),
+    .sdi_tx_vpid_byte1              (sdi_tx_vpid_byte1),
+    .sdi_tx_vpid_byte2              (sdi_tx_vpid_byte2),
+    .sdi_tx_vpid_byte3              (sdi_tx_vpid_byte3),
+    .sdi_tx_vpid_byte4              (sdi_tx_vpid_byte4),
+@@          if { $vid_std != "hd" } {
+    .sdi_tx_vpid_byte1_b            (sdi_tx_vpid_byte1_b),
+    .sdi_tx_vpid_byte2_b            (sdi_tx_vpid_byte2_b),
+    .sdi_tx_vpid_byte3_b            (sdi_tx_vpid_byte3_b),
+    .sdi_tx_vpid_byte4_b            (sdi_tx_vpid_byte4_b),
+@@          }
+@@      }
+@@      if { $txclk_sw == 1 } {
+    .tx_rcfg_readdata               (tx_rcfg_readdata),
+    .tx_rcfg_waitrequest            (tx_rcfg_waitrequest),
+    .gxb_tx_rcfg_write              (gxb_rcfg_write),
+    .gxb_tx_rcfg_read               (gxb_rcfg_read),
+    .gxb_tx_rcfg_address            (gxb_rcfg_address),
+    .gxb_tx_rcfg_writedata          (gxb_rcfg_writedata),
+@@      }
+
+// Outputs
+    .tx_vid_clkout                  (sdi_tx_clkout),
+    .tx_pll_locked                  (),
+@@      if { $txclk_sw == 2} {
+    .tx_reconfig_busy               (),
+@@      } elseif { $txclk_sw == 1} {
+    .tx_reconfig_busy               (tx_reconfig_busy),
+@@      }
+@@      if { $txclk_sw == 1 } {
+    .tx_pll_locked_alt              (),
+    .tx_rcfg_writedata              (tx_rcfg_writedata),
+    .tx_rcfg_address                (tx_rcfg_address),
+    .tx_rcfg_read                   (tx_rcfg_read),
+    .tx_rcfg_write                  (tx_rcfg_write),
+    .gxb_tx_rcfg_readdata           (gxb_tx_rcfg_readdata),
+    .gxb_tx_rcfg_waitrequest        (gxb_tx_rcfg_waitrequest),
+@@      }
+@@      # Use daughter card for Multi rate design
+@@      # Use on-board SMB connectors for other rates
+@@      if { $vid_std == "mr" } {
+    .gxb_tx_serial_data             (fmcb_dp_c2m_p0),
+@@      } else {
+    .gxb_tx_serial_data             (sdi_tx_p),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_tx_cal_busy                (gxb_tx_cal_busy),
+@@      }
+    .gxb_tx_ready                   (gxb_tx_ready),
+    .sdi_tx_datavalid               (sdi_tx_dataout_valid)
+);
+
+// -------------------------------------------------------------------------
+// Receiver IP Top Level
+// -------------------------------------------------------------------------
+rx_top #(
+    .NUM_STREAMS                    (NUM_STREAMS)
+) rx_inst (
+// Clock and reset
+@@      if { $vid_std == "mr" } {
+    .rx_resetn                      (cpu_resetn & ~fmcb_la_tx_p1),
+    .rx_core_refclk                 (clk_148m5),
+    .rx_cdr_refclk                  (clk_148m5),
+    .rx_rcfg_mgmt_resetn            (cpu_resetn & ~fmcb_la_tx_p1),
+    .rx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+@@      } else {
+    .rx_resetn                      (cpu_resetn),
+    .rx_core_refclk                 (refclk_sdi_p),
+    .rx_cdr_refclk                  (refclk_sdi_p),
+    .rx_rcfg_mgmt_resetn            (cpu_resetn),
+    .rx_rcfg_mgmt_clk               (clk_fpga_b2_p),
+@@      }
+
+// Inputs
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .rx_rcfg_cal_busy               (rx_rcfg_cal_busy),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_rcfg_readdata               (rx_rcfg_readdata),
+    .rx_rcfg_waitrequest            (rx_rcfg_waitrequest),
+    .gxb_rx_rcfg_write              (gxb_rcfg_write),
+    .gxb_rx_rcfg_read               (gxb_rcfg_read),
+    .gxb_rx_rcfg_address            (gxb_rcfg_address),
+    .gxb_rx_rcfg_writedata          (gxb_rcfg_writedata),
+@@      }
+@@      if { $vid_std == "mr" } {
+    .gxb_rx_serial_data             (fmcb_dp_m2c_p2),
+@@      } else {
+    .gxb_rx_serial_data             (sdi_rx_p),
+@@      }
+    .sdi_rx_coreclk_is_ntsc_paln    (1'b0),
+
+// Outputs
+    .rx_vid_clkout                  (sdi_rx_clkout),
+    .rx_vid_data                    (),
+    .rx_vid_datavalid               (),
+@@      if { $vid_std != "hd" } {
+    .rx_vid_std                     (sdi_rx_std),
+@@      }
+    .rx_vid_locked                  (sdi_rx_frame_locked),
+    .rx_vid_hsync                   (),
+    .rx_vid_vsync                   (),
+    .rx_vid_f                       (),
+    .rx_vid_trs                     (),
+    .sdi_rx_rst_proto_out           (),
+    .sdi_rx_align_locked            (sdi_rx_align_locked),
+    .sdi_rx_trs_locked              (sdi_rx_trs_locked),
+    .sdi_rx_clkout_is_ntsc_paln     (),
+    .sdi_rx_format                  (),
+    .sdi_rx_ap                      (),
+    .sdi_rx_eav                     (),
+    .sdi_rx_ln                      (),
+@@      if { $vid_std != "hd" } {
+    .sdi_rx_ln_b                    (),
+@@      }
+@@      if { $rx_crc } {
+    .sdi_rx_crc_error_c             (),
+    .sdi_rx_crc_error_y             (),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_crc_error_c_b           (),
+    .sdi_rx_crc_error_y_b           (),
+@@          }
+@@      }
+@@      if { $pid_xtrct } {
+    .sdi_rx_line_f0                 (),
+    .sdi_rx_line_f1                 (),
+    .sdi_rx_vpid_byte1              (),
+    .sdi_rx_vpid_byte2              (),
+    .sdi_rx_vpid_byte3              (),
+    .sdi_rx_vpid_byte4              (),
+    .sdi_rx_vpid_checksum_error     (),
+    .sdi_rx_vpid_valid              (),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_vpid_byte1_b            (),
+    .sdi_rx_vpid_byte2_b            (),
+    .sdi_rx_vpid_byte3_b            (),
+    .sdi_rx_vpid_byte4_b            (),
+    .sdi_rx_vpid_checksum_error_b   (),
+    .sdi_rx_vpid_valid_b            (),
+@@          }
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .cdr_reconfig_busy              (cdr_reconfig_busy),
+    .rx_rcfg_write                  (rx_rcfg_write),
+    .rx_rcfg_read                   (rx_rcfg_read),
+    .rx_rcfg_address                (rx_rcfg_address),
+    .rx_rcfg_writedata              (rx_rcfg_writedata),
+    .gxb_rx_rcfg_readdata           (gxb_rx_rcfg_readdata),
+    .gxb_rx_rcfg_waitrequest        (gxb_rx_rcfg_waitrequest),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_rx_cal_busy                (gxb_rx_cal_busy),
+@@      }
+    .gxb_rx_ready                   ()
+);
+@@ }
+
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+// -------------------------------------------------------------------------
+// Transceiver Reconfiguration Arbiter
+// -------------------------------------------------------------------------
+a10_reconfig_arbiter #(
+    .LANES                 (1),
+    .DPRIO_ADDRESS_WIDTH  (10), 
+    .DPRIO_DATA_WIDTH     (32)
+) u_rcfg_arb(
+// Clocks and reset
+    .clk                            (clk_fpga_b2_p),
+    .reset                          (~cpu_resetn),
+// Inputs
+    .rx_rcfg_ch                     (2'b00),
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_rcfg_en                     (cdr_reconfig_busy),
+    .rx_reconfig_mgmt_write         (rx_rcfg_write),
+    .rx_reconfig_mgmt_read          (rx_rcfg_read),
+    .rx_reconfig_mgmt_address       (rx_rcfg_address),
+    .rx_reconfig_mgmt_writedata     (rx_rcfg_writedata),
+@@          if { $direction == "du" } {
+    .rx_reconfig_readdata           (gxb_du_rcfg_readdata),
+    .rx_reconfig_waitrequest        (gxb_du_rcfg_waitrequest),
+@@          } else {
+    .rx_reconfig_readdata           (gxb_rx_rcfg_readdata),
+    .rx_reconfig_waitrequest        (gxb_rx_rcfg_waitrequest),
+@@          }
+@@      } else {
+    .rx_rcfg_en                     (1'b0),
+    .rx_reconfig_mgmt_write         (1'b0),
+    .rx_reconfig_mgmt_read          (1'b0),
+    .rx_reconfig_mgmt_address       (10'd0),
+    .rx_reconfig_mgmt_writedata     (32'd0),
+    .rx_reconfig_readdata           (32'd0),
+    .rx_reconfig_waitrequest        (1'b0),
+@@      }
+    .rx_cal_busy                    (gxb_rx_cal_busy),
+    .tx_rcfg_ch                     (2'b00),
+@@      if { $txclk_sw == 1 } {
+    .tx_rcfg_en                     (tx_reconfig_busy),
+    .tx_reconfig_mgmt_write         (tx_rcfg_write),
+    .tx_reconfig_mgmt_read          (tx_rcfg_read),
+    .tx_reconfig_mgmt_address       (tx_rcfg_address),
+    .tx_reconfig_mgmt_writedata     (tx_rcfg_writedata),
+@@          if { $direction == "du" } {
+    .tx_reconfig_readdata           (gxb_du_rcfg_readdata),
+    .tx_reconfig_waitrequest        (gxb_du_rcfg_waitrequest),
+@@          } else {
+    .tx_reconfig_readdata           (gxb_tx_rcfg_readdata),
+    .tx_reconfig_waitrequest        (gxb_tx_rcfg_waitrequest),
+@@          }
+@@      } else {
+    .tx_rcfg_en                     (1'b0),
+    .tx_reconfig_mgmt_write         (1'b0),
+    .tx_reconfig_mgmt_read          (1'b0),
+    .tx_reconfig_mgmt_address       (10'd0),
+    .tx_reconfig_mgmt_writedata     (32'd0),
+    .tx_reconfig_readdata           (32'd0),
+    .tx_reconfig_waitrequest        (1'b0),
+@@      }
+    .tx_cal_busy                    (gxb_tx_cal_busy),
+
+// Outputs
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_reconfig_mgmt_readdata      (rx_rcfg_readdata),
+    .rx_reconfig_mgmt_waitrequest   (rx_rcfg_waitrequest),
+@@      } else {
+    .rx_reconfig_mgmt_readdata      (),
+    .rx_reconfig_mgmt_waitrequest   (),
+@@      }
+    .rx_reconfig_cal_busy           (rx_rcfg_cal_busy),
+@@      if { $txclk_sw == 1 } {
+    .tx_reconfig_mgmt_readdata      (tx_rcfg_readdata),
+    .tx_reconfig_mgmt_waitrequest   (tx_rcfg_waitrequest),
+@@      } else {
+    .tx_reconfig_mgmt_readdata      (),
+    .tx_reconfig_mgmt_waitrequest   (),
+@@      }
+    .tx_reconfig_cal_busy           (tx_rcfg_cal_busy),
+    .reconfig_write                 (gxb_rcfg_write),
+    .reconfig_read                  (gxb_rcfg_read),
+    .reconfig_address               (gxb_rcfg_address),
+    .reconfig_writedata             (gxb_rcfg_writedata)
+);
+
+@@ }
+// -------------------------------------------------------------------------
+// Clock heartbeat for LED
+// -------------------------------------------------------------------------
+clock_heartbeat tx_clkout_hb_inst (
+    .clk_in     (sdi_tx_clkout),
+    .clk_out    (tx_clkout_hb_rate)
+);
+
+clock_heartbeat rx_clkout_hb_inst (
+    .clk_in     (sdi_rx_clkout),
+    .clk_out    (rx_clkout_hb_rate)
+);
+
+endmodule

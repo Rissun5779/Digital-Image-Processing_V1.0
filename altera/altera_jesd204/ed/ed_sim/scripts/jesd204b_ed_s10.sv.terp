@@ -1,0 +1,499 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// (C) 2001-2016 Altera Corporation. All rights reserved.
+// Your use of Altera Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Altera Program License Subscription 
+// Agreement, Altera MegaCore Function License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Altera and sold by 
+// Altera or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+
+module jesd204b_ed  # (
+   parameter LINK              = 1,  // Number of links, a link composed of multiple lanes
+             L                 = ${L},  // Number of lanes per converter device
+             M                 = ${M},  // Number of converters per converter device
+             F                 = ${F},  // Number of octets per frame
+             S                 = ${S},  // Number of transmitter samples per converter per frame
+             N                 = ${N}, // Number of converter bits per converter
+             N_PRIME           = ${N_PRIME}, // Number of transmitted bits per sample 
+             CS                = ${CS},  // Number of control bits per conversion sample				 
+             F1_FRAMECLK_DIV   = 4,  // Frame clk divider for transport layer when F=1. Valid value = 1 or 4. Default parameter used in all F value scenarios.
+             F2_FRAMECLK_DIV   = 2,  // Frame clk divider for transport layer when F=2. Valid value = 1 or 2. For F=4 & 8, this parameter is not used.
+             FRAMECLK_DIV      = (F==1)? F1_FRAMECLK_DIV : (F==2)? F2_FRAMECLK_DIV : 1,
+             POLYNOMIAL_LENGTH = 9,
+             FEEDBACK_TAP      = 5,
+             TL_DATA_BUS_WIDTH    = (F==8)? 480 : (F==4)? (8*4*L*N/N_PRIME) : (F==2) ? (F2_FRAMECLK_DIV*8*2*L*N/N_PRIME) : (F==1) ? (F1_FRAMECLK_DIV*8*1*L*N/N_PRIME) : 1,
+             TL_CONTROL_BUS_WIDTH = ( (CS==0) ? 1 : (TL_DATA_BUS_WIDTH/N*CS) )
+)(
+   input  wire                                  mgmt_clk,
+   input  wire                                  refclk_core,
+   input  wire                                  refclk_xcvr,
+
+   // SPI signals
+   input  wire                                  spi_MISO,
+   output wire                                  spi_MOSI,
+   output wire                                  spi_SCLK,
+   output wire [2:0]                            spi_SS_n,
+
+   //JESD204B control signals
+   output wire                                  sysref_out,
+   output wire                                  sync_n_out,
+
+   //RX/TX serial data input/output
+   input  wire [LINK*L-1:0]                     rx_serial_data,
+   output wire [LINK*L-1:0]                     tx_serial_data,
+
+   // Av-ST user Data
+   input  wire [LINK*TL_DATA_BUS_WIDTH-1:0]     avst_usr_din,
+   input  wire [LINK-1:0]                       avst_usr_din_valid,
+   output wire [LINK-1:0]                       avst_usr_din_ready,
+   output wire [LINK*TL_DATA_BUS_WIDTH-1:0]     avst_usr_dout,
+   output wire [LINK-1:0]                       avst_usr_dout_valid,
+   input  wire [LINK-1:0]                       avst_usr_dout_ready,
+   output wire [LINK-1:0]                       avst_patchk_data_error,	
+   
+   //Push Button Inputs
+   input  wire                                  global_rst_n,
+	
+   //Interrupts
+   output wire [LINK-1:0]                       tx_link_error,
+   output wire [LINK-1:0]                       rx_link_error,
+   output wire [LINK-1:0][L-1:0]                rx_seriallpbken,
+   output wire [LINK-1:0][3:0]                  csr_tx_testmode,
+   output wire [LINK-1:0][3:0]                  csr_rx_testmode
+);
+
+   localparam XCVR_PLL_PER_LINK             = divceil(L, 5);
+
+   wire [LINK-1:0][L-1:0]                     tx_serial_data_reordered;
+   wire [LINK-1:0][L-1:0]                     rx_serial_data_reordered;
+   wire [31:0]                                io_control;
+   wire [31:0]                                io_status;
+   wire                                       core_pll_locked;
+   wire [LINK-1:0][XCVR_PLL_PER_LINK-1:0]     xcvr_pll_locked;
+   wire [LINK-1:0][L-1:0]                     xcvr_pll_locked_bus;
+   wire [LINK-1:0][L-1:0]                     xcvr_rst_ctrl_tx_ready;
+   wire [LINK-1:0][L-1:0]                     xcvr_rst_ctrl_rx_ready;
+   wire [LINK-1:0][L-1:0]                     tx_ready_or_tx_csr_lane_powerdown;
+   wire [LINK-1:0][L-1:0]                     rx_ready_or_rx_csr_lane_powerdown;
+   //wire [LINK-1:0][L-1:0]                     rx_seriallpbken;
+   wire [LINK-1:0][L-1:0]                     rxphy_clk;
+   wire [LINK-1:0][L-1:0]                     txphy_clk;
+   wire [LINK-1:0][L-1:0]                     rx_csr_lane_powerdown;
+   wire [LINK-1:0][4:0]                       rx_csr_np;
+   wire [LINK-1:0]                            rx_csr_hd;
+   wire [LINK-1:0][1:0]                       rx_csr_cs;
+   wire [LINK-1:0][4:0]                       rx_csr_cf;
+   wire [LINK-1:0][4:0]                       rx_csr_s;
+   wire [LINK-1:0][4:0]                       rx_csr_n;
+   wire [LINK-1:0][7:0]                       rx_csr_m;
+   wire [LINK-1:0][4:0]                       rx_csr_l;
+   wire [LINK-1:0][4:0]                       rx_csr_k;
+   wire [LINK-1:0][7:0]                       rx_csr_f;
+   wire [LINK-1:0][L-1:0]                     tx_csr_lane_powerdown;
+   wire [LINK-1:0][4:0]                       tx_csr_cf;
+   wire [LINK-1:0]                            tx_csr_hd;
+   wire [LINK-1:0][4:0]                       tx_csr_s;
+   wire [LINK-1:0][4:0]                       tx_csr_np;
+   wire [LINK-1:0][4:0]                       tx_csr_n;
+   wire [LINK-1:0][1:0]                       tx_csr_cs;
+   wire [LINK-1:0][7:0]                       tx_csr_m;
+   wire [LINK-1:0][4:0]                       tx_csr_k;
+   wire [LINK-1:0][7:0]                       tx_csr_f;
+   wire [LINK-1:0][4:0]                       tx_csr_l;
+   //wire [LINK-1:0][3:0]                       csr_tx_testmode;
+   //wire [LINK-1:0][3:0]                       csr_rx_testmode;
+   wire [LINK-1:0]                            rx_dev_sync_n;
+   wire [LINK-1:0]                            sync_n;
+   wire [LINK-1:0]                            dev_lane_aligned;
+   wire [LINK-1:0]                            alldev_lane_aligned;
+   wire [LINK-1:0]                            mdev_sync_n;
+   wire [LINK-1:0]                            tx_dev_sync_n;
+   wire [LINK-1:0]                            tx_sysref;
+   wire [LINK-1:0]                            rx_sysref;
+   wire                                       sysref;
+
+   wire [LINK-1:0][(L*32)-1:0]                jesd204_tx_link_data;
+   wire [LINK-1:0]                            jesd204_tx_link_valid;
+   wire [LINK-1:0][(L*32)-1:0]                jesd204_rx_link_data;
+   wire [LINK-1:0]                            jesd204_rx_link_valid;
+   wire [LINK-1:0]                            jesd204_rx_link_ready;
+   wire [LINK-1:0]                            jesd204_tx_frame_error;
+   wire [LINK-1:0]                            jesd204_tx_frame_ready;
+   wire [LINK-1:0]                            jesd204_rx_frame_error;
+   wire [LINK-1:0][31:0]                      jesd204_rx_dlb_disperr;
+   wire [LINK-1:0][31:0]                      jesd204_rx_dlb_errdetect;
+   wire [LINK-1:0][31:0]                      jesd204_rx_dlb_kchar_data;
+   wire [LINK-1:0][7:0]                       jesd204_rx_dlb_data_valid;
+   wire [LINK-1:0][255:0]                     jesd204_rx_dlb_data;
+
+   wire [LINK-1:0][TL_DATA_BUS_WIDTH-1:0]     assembler_din;
+   wire [LINK-1:0]                            assembler_din_valid;
+   wire [LINK-1:0]                            assembler_din_ready;
+   wire [LINK-1:0][TL_DATA_BUS_WIDTH-1:0]     deassembler_dout;
+   wire [LINK-1:0]                            deassembler_dout_valid_bus;
+   wire [LINK-1:0]                            deassembler_dout_ready;
+   wire [LINK-1:0][TL_DATA_BUS_WIDTH-1:0]     avst_usr_din_reordered;
+
+   wire [LINK-1:0][TL_DATA_BUS_WIDTH-1:0]     avst_patgen_dout;
+   wire [LINK-1:0]                            avst_patgen_data_valid;
+   wire [LINK-1:0]                            avst_patgen_ready_in;
+   wire [LINK-1:0][TL_DATA_BUS_WIDTH-1:0]     avst_patchk_din;
+   wire [LINK-1:0]                            avst_patchk_data_valid;
+   wire [LINK-1:0]                            avst_patchk_data_ready;
+
+   wire                                       link_clk;
+   wire                                       frame_clk;
+   wire [LINK-1:0]                            tx_link_rst_n;
+   wire [LINK-1:0]                            rx_link_rst_n;
+   wire [LINK-1:0]                            tx_frame_rst_n;
+   wire [LINK-1:0]                            rx_frame_rst_n;
+
+   wire [LINK-1:0]                            all_tx_ready;
+   wire [LINK-1:0]                            all_rx_ready;
+   wire [LINK-1:0]                            tx_xcvr_ready_in;
+   wire [LINK-1:0]                            rx_xcvr_ready_in;
+
+   wire                                       hw_rst;
+@@ if { $SIM == 0 } {
+   wire                                       jtag_avmm_rst;
+@@ }
+   wire                                       db_global_rst_n;
+   wire                                       mgmt_rst_in_n;
+   wire                                       spi_MOSI_buf;
+
+   genvar i, j;
+
+   //Assign PIO status and control signals
+   assign io_status [0]    = core_pll_locked;
+
+   assign sysref   = io_control [31];
+   assign hw_rst   = io_control [1];
+
+   generate
+      for (i=0; i<LINK; i=i+1) begin: GEN_IO_STATUS_CONTROL
+         assign io_status [(i*3)+1] = tx_xcvr_ready_in[i];
+         assign io_status [(i*3)+2] = rx_xcvr_ready_in[i];
+         assign io_status [(i*3)+3] = avst_patchk_data_error[i];
+         assign io_status [(i*3)+4] = tx_link_error[i];
+         assign io_status [(i*3)+5] = rx_link_error[i];
+
+         assign rx_seriallpbken[i] = {L{io_control[i]}};
+      end
+   endgenerate
+
+   //Assign output signals
+   assign sync_n = rx_dev_sync_n;
+   assign sync_n_out = rx_dev_sync_n;
+
+   assign sysref_out = sysref;
+
+   generate
+      for (i=0; i<LINK; i=i+1) begin: GEN_SYSREF
+         assign tx_sysref[i] = sysref ;
+         assign rx_sysref[i] = sysref ;
+
+         assign jesd204_rx_dlb_disperr[i] = {32{1'b0}};
+         assign jesd204_rx_dlb_errdetect[i] = {32{1'b0}};
+         assign jesd204_rx_dlb_kchar_data[i] = {32{1'b0}};
+         assign jesd204_rx_dlb_data_valid[i] = {8{1'b0}};
+         assign jesd204_rx_dlb_data[i] = {256{1'b0}};
+      end
+   endgenerate
+	
+
+   //De-bounce push button inputs
+   switch_debouncer u_switch_debouncer_global_rst_n (
+      .clk            (mgmt_clk),
+      .reset_n        (1'b1),
+      .data_in        (global_rst_n),
+      .data_out       (db_global_rst_n)
+   );
+
+@@ if { $SIM == 0 } {
+   assign mgmt_rst_in_n = db_global_rst_n & ~hw_rst & ~jtag_avmm_rst;
+@@ } else {
+   assign mgmt_rst_in_n = global_rst_n & ~hw_rst;
+@@ }
+
+
+   //Output IO buffer OE control for spi_MOSI
+   spi_mosi_oe u_spi_mosi (
+      .spi_clk        (spi_SCLK),
+      .mgmt_clk       (mgmt_clk),
+      .rst            (spi_SS_n[0]),
+      .spi_mosi_buf   (spi_MOSI_buf),
+      .spi_mosi       (spi_MOSI)
+   );
+	
+   //QSYS system
+   jesd204b_ed_qsys u_jesd204b_ed_qsys (
+      .refclk_core_clk                                                   (refclk_core), 
+      .do_not_connect_0_reset_n                                          (1'b1),
+      .link_clk_clk                                                      (link_clk),
+      .do_not_connect_1_reset_n                                          (1'b1),
+      .frame_clk_clk                                                     (frame_clk),
+      .do_not_connect_2_reset_n                                          (1'b1),
+      .refclk_xcvr_clk                                                   (refclk_xcvr), 
+      .do_not_connect_3_reset_n                                          (1'b1),
+      .mgmt_clk_clk                                                      (mgmt_clk),
+      .mgmt_reset_reset_n                                                (mgmt_rst_in_n),
+      .core_pll_link_clk_out_clk                                         (link_clk),
+      .core_pll_frame_clk_out_clk                                        (frame_clk),
+      .core_pll_locked_export                                            (core_pll_locked),
+      .spi_0_external_MISO                                               (spi_MISO),
+      .spi_0_external_MOSI                                               (spi_MOSI_buf),
+      .spi_0_external_SCLK                                               (spi_SCLK),
+      .spi_0_external_SS_n                                               (spi_SS_n),
+      .pio_control_external_connection_export                            (io_control),
+      .pio_status_external_connection_export                             (io_status),
+      .jesd204b_subsystem_0_reset_seq_pll_locked_in_reset1_dsrt_qual     (core_pll_locked),
+      .jesd204b_subsystem_0_jesd204b_txlink_rst_n_reset_n                (tx_link_rst_n[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_link_data                (jesd204_tx_link_data[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_link_valid               (jesd204_tx_link_valid[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_link_ready               (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_tx_sysref_export                    (tx_sysref[0]),
+      .jesd204b_subsystem_0_jesd204b_sync_n_export                       (sync_n[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_frame_ready_export       (jesd204_tx_frame_ready[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_l_export                     (tx_csr_l[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_f_export                     (tx_csr_f[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_k_export                     (tx_csr_k[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_m_export                     (tx_csr_m[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_cs_export                    (tx_csr_cs[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_n_export                     (tx_csr_n[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_np_export                    (tx_csr_np[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_s_export                     (tx_csr_s[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_hd_export                    (tx_csr_hd[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_cf_export                    (tx_csr_cf[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_csr_lane_powerdown_export        (tx_csr_lane_powerdown[0]),
+      .jesd204b_subsystem_0_jesd204b_csr_tx_testmode_export              (csr_tx_testmode[0]),
+      .jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_a_export         (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_b_export         (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_c_export         (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_csr_tx_testpattern_d_export         (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_frame_error_export       (jesd204_tx_frame_error[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_dlb_data_export          (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_dlb_kchar_data_export    (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_txphy_clk_export                    (txphy_clk[0]),
+      .jesd204b_subsystem_0_jesd204b_tx_serial_data_tx_serial_data       (tx_serial_data_reordered[0]),
+      .jesd204b_subsystem_0_jesd204b_rxlink_rst_n_reset_n                (rx_link_rst_n[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_link_data                (jesd204_rx_link_data[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_link_valid               (jesd204_rx_link_valid[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_link_ready               (jesd204_rx_link_ready[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_data_export          (jesd204_rx_dlb_data[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_data_valid_export    (jesd204_rx_dlb_data_valid[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_kchar_data_export    (jesd204_rx_dlb_kchar_data[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_errdetect_export     (jesd204_rx_dlb_errdetect[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_dlb_disperr_export       (jesd204_rx_dlb_disperr[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_sysref_export                    (rx_sysref[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_frame_error_export       (jesd204_rx_frame_error[0]),
+      .jesd204b_subsystem_0_jesd204b_csr_rx_testmode_export              (csr_rx_testmode[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_dev_sync_n_export                (rx_dev_sync_n[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_sof_export                       (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_rx_somf_export                      (/*leave open*/),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_f_export                     (rx_csr_f[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_k_export                     (rx_csr_k[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_l_export                     (rx_csr_l[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_m_export                     (rx_csr_m[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_n_export                     (rx_csr_n[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_s_export                     (rx_csr_s[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_cf_export                    (rx_csr_cf[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_cs_export                    (rx_csr_cs[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_hd_export                    (rx_csr_hd[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_np_export                    (rx_csr_np[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_csr_lane_powerdown_export        (rx_csr_lane_powerdown[0]),
+      .jesd204b_subsystem_0_jesd204b_rxphy_clk_export                    (rxphy_clk[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_serial_data_rx_serial_data       (rx_serial_data_reordered[0]),
+      .jesd204b_subsystem_0_jesd204b_rx_seriallpbken_rx_seriallpbken     (rx_seriallpbken[0]),
+      .jesd204b_subsystem_0_xcvr_reset_control_0_tx_ready_tx_ready       (xcvr_rst_ctrl_tx_ready[0]),
+      .jesd204b_subsystem_0_xcvr_reset_control_0_rx_ready_rx_ready       (xcvr_rst_ctrl_rx_ready[0]),
+      .jesd204b_subsystem_0_xcvr_reset_control_0_pll_select_pll_select   (2'b00),
+      .jesd204b_subsystem_0_jesd204b_pll_locked_pll_locked               (xcvr_pll_locked_bus[0]),
+      //.jesd204b_subsystem_0_xcvr_atx_pll_s10_0_mcgb_rst_mcgb_rst         (/*leave open*/),
+      .jesd204b_subsystem_0_xcvr_atx_pll_s10_0_tx_serial_clk_clk         (/*leave open*/),
+      .jesd204b_subsystem_0_xcvr_atx_pll_s10_0_pll_cal_busy_pll_cal_busy (/*leave open*/),
+      .jesd204b_subsystem_0_xcvr_atx_pll_s10_0_pll_locked_pll_locked     (xcvr_pll_locked[0]),
+      //.jesd204b_subsystem_0_xcvr_atx_pll_s10_0_pll_powerdown_pll_powerdown (/*leave open*/),
+      .jesd204b_subsystem_0_xcvr_reset_control_0_pll_locked_pll_locked   (xcvr_pll_locked[0]),
+      .jesd204b_subsystem_0_reset_seq_tx_xcvr_ready_in_reset2_dsrt_qual  (tx_xcvr_ready_in[0]),
+      .jesd204b_subsystem_0_reset_seq_rx_xcvr_ready_in_reset5_dsrt_qual  (rx_xcvr_ready_in[0]),
+      .jesd204b_subsystem_0_tx_link_reset_n_out_0_reset_n                (tx_link_rst_n[0]),
+      .jesd204b_subsystem_0_tx_frame_reset_n_out_0_reset_n               (tx_frame_rst_n[0]),
+      .jesd204b_subsystem_0_rx_link_reset_n_out_0_reset_n                (rx_link_rst_n[0]),
+      .jesd204b_subsystem_0_rx_frame_reset_n_out_0_reset_n               (rx_frame_rst_n[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_rx_int_irq                  (rx_link_error[0]),
+      .jesd204b_subsystem_0_jesd204b_jesd204_tx_int_irq                  (tx_link_error[0]),
+      .jesd204b_subsystem_0_reset_seq_irq_irq                            (/*leave open*/),  
+@@ if { $SIM == 0 } {
+      .jtag_avmm_bridge_master_reset_reset                               (jtag_avmm_rst),
+@@ }
+      .jtag_reset_in_reset_reset_n                                       (1'b1)
+   );
+
+   generate
+      for (i=0; i<LINK; i=i+1) begin: GEN_BLOCK
+         assign xcvr_pll_locked_bus[i] = {L{xcvr_pll_locked[i][0]}};
+         assign rx_serial_data_reordered[i] = rx_serial_data[i*L+L-1:i*L];
+         assign tx_serial_data[i*L+L-1:i*L] = tx_serial_data_reordered[i];
+			
+         //OR XCVR ready signals with CSR lane powerdown signals on per lane basis. This is to ensure that when a lane
+         //is powered down, its ready signal remains asserted and does not interfere with SW XCVR ready checking algorithms
+         for (j=0; j<L; j=j+1) begin: GEN_XCVR_READY_OR_CSR_LANE_POWERDOWN
+            assign tx_ready_or_tx_csr_lane_powerdown[i][j] = xcvr_rst_ctrl_tx_ready[i][j] | tx_csr_lane_powerdown[i][j];
+            assign rx_ready_or_rx_csr_lane_powerdown[i][j] = xcvr_rst_ctrl_rx_ready[i][j] | rx_csr_lane_powerdown[i][j];
+         end
+
+         assign all_tx_ready[i]  = &tx_ready_or_tx_csr_lane_powerdown[i];
+         assign all_rx_ready[i]  = &rx_ready_or_rx_csr_lane_powerdown[i];
+         assign tx_xcvr_ready_in[i] = all_tx_ready[i];
+         assign rx_xcvr_ready_in[i] = all_rx_ready[i];
+
+         assign avst_usr_din_reordered[i] = avst_usr_din[TL_DATA_BUS_WIDTH*(i+1)-1:TL_DATA_BUS_WIDTH*i];
+         assign assembler_din[i]          = csr_tx_testmode[i] == 4'b0000 ? avst_usr_din_reordered[i] : avst_patgen_dout[i];
+         assign assembler_din_valid[i]    = csr_tx_testmode[i] == 4'b0000 ? avst_usr_din_valid[i]  : avst_patgen_data_valid[i];
+         assign avst_usr_din_ready[i]     = csr_tx_testmode[i] == 4'b0000 ? assembler_din_ready[i] : 1'b0;
+         assign avst_patgen_ready_in[i]   = assembler_din_ready[i];
+
+         //Altera Transport Layer (TX)
+         altera_jesd204_transport_tx_top #(
+            .L               (L),
+            .F               (F),
+            .N               (N),
+            .N_PRIME         (N_PRIME),
+            .CS              (CS),
+            .F1_FRAMECLK_DIV (F1_FRAMECLK_DIV),
+            .F2_FRAMECLK_DIV (F2_FRAMECLK_DIV),
+            .RECONFIG_EN     (1)
+         ) u_jesd204b_transport_tx (
+            .txlink_rst_n                (tx_link_rst_n[i]),
+            .txframe_rst_n               (tx_frame_rst_n[i]),
+            .txframe_clk                 (frame_clk),
+            .txlink_clk                  (link_clk),
+            .jesd204_tx_datain           (assembler_din[i]),
+            .jesd204_tx_controlin        ({TL_CONTROL_BUS_WIDTH{1'b0}}),
+            .jesd204_tx_data_valid       (assembler_din_valid[i]),
+            .jesd204_tx_link_early_ready (jesd204_tx_frame_ready[i]),
+            .csr_l                       (tx_csr_l[i]),
+            .csr_f                       (tx_csr_f[i]),
+            .csr_n                       (tx_csr_n[i]),
+            .jesd204_tx_data_ready       (assembler_din_ready[i]),
+            .jesd204_tx_link_error       (jesd204_tx_frame_error[i]),
+            .jesd204_tx_link_datain      (jesd204_tx_link_data[i]),
+            .jesd204_tx_link_data_valid  (jesd204_tx_link_valid[i])
+         );
+
+         //Altera Transport Layer (RX)
+         altera_jesd204_transport_rx_top #(
+            .L               (L),
+            .F               (F),
+            .N               (N),
+            .CS              (CS),
+            .N_PRIME         (N_PRIME),
+            .F1_FRAMECLK_DIV (F1_FRAMECLK_DIV),
+            .F2_FRAMECLK_DIV (F2_FRAMECLK_DIV),
+            .RECONFIG_EN     (1)
+         ) u_jesd204b_transport_rx (
+            .rxlink_rst_n               (rx_link_rst_n[i]),
+            .rxframe_rst_n              (rx_frame_rst_n[i]),
+            .rxframe_clk                (frame_clk),
+            .rxlink_clk                 (link_clk),
+            .jesd204_rx_link_datain     (jesd204_rx_link_data[i]),
+            .jesd204_rx_link_data_valid (jesd204_rx_link_valid[i]),
+            .jesd204_rx_data_ready      (deassembler_dout_ready[i]),
+            .csr_l                      (rx_csr_l[i]),
+            .csr_f                      (rx_csr_f[i]),
+            .csr_n                      (rx_csr_n[i]),
+            .jesd204_rx_dataout         (deassembler_dout[i]),
+            .jesd204_rx_controlout      (), //for CS=0, connection to this port is not needed
+            .jesd204_rx_link_error      (jesd204_rx_frame_error[i]),
+            .jesd204_rx_data_valid      (deassembler_dout_valid_bus[i]),
+            .jesd204_rx_link_data_ready (jesd204_rx_link_ready[i])
+         );
+
+         pattern_generator_top #(
+            .FRAMECLK_DIV      (FRAMECLK_DIV),
+            .M                 (M),
+            .N                 (N),
+            .S                 (S),
+            .POLYNOMIAL_LENGTH (POLYNOMIAL_LENGTH),
+            .FEEDBACK_TAP      (FEEDBACK_TAP),
+            .REVERSE_DATA      (0)
+         ) u_gen (
+            .clk               (frame_clk),
+            .rst_n             (tx_frame_rst_n[i]),
+            .csr_tx_testmode   (csr_tx_testmode[i]),
+            .csr_m             (tx_csr_m[i]),
+            .csr_s             (tx_csr_s[i]),
+            .error_inject      (1'b0),
+            .ready             (avst_patgen_ready_in[i]),
+            .valid             (avst_patgen_data_valid[i]),
+            .avst_dataout      (avst_patgen_dout[i])
+         );
+
+         pattern_checker_top #(
+            .FRAMECLK_DIV      (FRAMECLK_DIV),
+            .M                 (M),
+            .N                 (N),
+            .S                 (S),
+            .POLYNOMIAL_LENGTH (POLYNOMIAL_LENGTH),
+            .FEEDBACK_TAP      (FEEDBACK_TAP),
+            .ERR_THRESHOLD     (1),
+            .REVERSE_DATA      (0)
+         ) u_chk (
+            .clk              (frame_clk),
+            .rst_n            (rx_frame_rst_n[i]),
+            .csr_rx_testmode  (csr_rx_testmode[i]),
+            .csr_m            (rx_csr_m[i]),
+            .csr_s            (rx_csr_s[i]),
+            .ready            (avst_patchk_data_ready[i]),
+            .valid            (avst_patchk_data_valid[i]),
+            .avst_datain      (avst_patchk_din[i]),
+            .err_out          (avst_patchk_data_error[i])
+         );
+         assign avst_usr_dout[TL_DATA_BUS_WIDTH*(i+1)-1:TL_DATA_BUS_WIDTH*i] = deassembler_dout[i];
+         assign avst_usr_dout_valid[i]                                       = deassembler_dout_valid_bus[i];
+         assign deassembler_dout_ready[i]                                    = csr_rx_testmode[i] == 4'b0000 ? avst_usr_dout_ready[i] : avst_patchk_data_ready[i];
+   end
+   endgenerate
+
+   assign avst_patchk_din          = deassembler_dout;
+   assign avst_patchk_data_valid   = deassembler_dout_valid_bus;
+
+   // --------------------------------------------------
+   // Calculates the divceil of the input value (m/n)
+   // --------------------------------------------------
+   function integer divceil;
+      input integer m;
+      input integer n;
+      integer i;
+
+      begin
+         i = m % n;
+         divceil = (m/n);
+
+         if (i > 0) begin
+            divceil = divceil + 1;
+         end
+
+      end
+   endfunction
+
+endmodule
+

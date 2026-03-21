@@ -1,0 +1,54 @@
+
+
+// Infrastructure components
+../../demo/src/dp_sync.v
+../../demo/src/dp_hs_req.v
+../../demo/src/dp_hs_resp.v
+
+// Source Components
+$SRC_SIM_LOCATION/seriallite_iii_sv/seriallite_iii_streaming_source.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_source_mac.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_source_csr.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_source_control.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_source_application.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_source_adaptation.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_source_adaptation_ecc.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_dp_sync.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/cadence/interlaken_phy_ip_tx.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/source_absorber.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/control_word_decoder.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/aclr_filter.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/dcfifo_s5m20k.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/delay_regs.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/eq_5_ena.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/gray_cntr_5_sl.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/gray_to_bin_5.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/neq_5_ena.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/s5m20k_ecc_1r1w.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/sync_regs_aclr_m2.v
+$SRC_SIM_LOCATION/seriallite_iii_sv/wys_lut.v
+
+// Sink Components
+$SNK_SIM_LOCATION/seriallite_iii_sv/core_reset_logic.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/seriallite_iii_streaming_sink.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_mac.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_csr.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_application.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_alignment.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_adaptation.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_dcfifo.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/altera_sl3_sink_dcfifo_fifo.v
+$SNK_SIM_LOCATION/seriallite_iii_sv/cadence/interlaken_phy_ip_rx.v
+
+// Demo Components
+../../demo/src/traffic_gen.sv
+../../demo/src/prbs_generator.v
+../../demo/src/prbs_poly.v
+../../demo/src/traffic_check.v
+../../demo/src/source_reconfig.v
+../../demo/src/sink_reconfig.v
+
+// Testbench Components
+../skew_insertion.v
+../testbench.sv
+../test_env.v

@@ -1,0 +1,7 @@
+tab: Altclkctrl,
+,"text: <html>Altclkctrl represents clock buffers that drive the Global Clock Network, the Regional Clock Network, <br>and the dedicated External Clock path. </html> "
+,param: CLOCK_TYPE
+,param: NUMBER_OF_CLOCKS
+,param: GUI_USE_ENA
+,param: ENA_REGISTER_MODE
+,param: USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION

@@ -121,9 +121,9 @@ VCCPD3A                      : AA10      : power  :                   : 2.5V    
 GND                          : AA11      : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA12      :        :                   :         : 3A        :                
 sdram_wire_we_n              : AA13      : output : 2.5 V             :         : 3B        : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : AA14      :        :                   :         : 3B        :                
+HEX_3[7]                     : AA14      : output : 2.5 V             :         : 3B        : N              
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA15      :        :                   :         : 3B        :                
-HEX_1[7]                     : AA16      : output : 2.5 V             :         : 4A        : N              
+RESERVED_INPUT_WITH_WEAK_PULLUP : AA16      :        :                   :         : 4A        :                
 VCCIO4A                      : AA17      : power  :                   : 2.5V    : 4A        :                
 HEX_2[2]                     : AA18      : output : 2.5 V             :         : 4A        : Y              
 HEX_3[5]                     : AA19      : output : 2.5 V             :         : 4A        : Y              
@@ -329,7 +329,7 @@ sdram_wire_dq[12]            : AH8       : bidir  : 2.5 V             :         
 sdram_wire_dq[11]            : AH9       : bidir  : 2.5 V             :         : 3B        : Y              
 sdram_wire_dq[8]             : AH10      : bidir  : 2.5 V             :         : 3B        : Y              
 GND                          : AH11      : gnd    :                   :         :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AH12      :        :                   :         : 3B        :                
+clk_sdram                    : AH12      : output : 2.5 V             :         : 3B        : Y              
 sdram_wire_addr[11]          : AH13      : output : 2.5 V             :         : 3B        : Y              
 sdram_wire_addr[1]           : AH14      : output : 2.5 V             :         : 3B        : Y              
 sdram_wire_addr[8]           : AH15      : output : 2.5 V             :         : 3B        : Y              
@@ -337,7 +337,7 @@ VCCIO4A                      : AH16      : power  :                   : 2.5V    
 HEX_0[4]                     : AH17      : output : 2.5 V             :         : 4A        : Y              
 HEX_0[6]                     : AH18      : output : 2.5 V             :         : 4A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : AH19      :        :                   :         : 4A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AH20      :        :                   :         : 4A        :                
+HEX_2[7]                     : AH20      : output : 2.5 V             :         : 4A        : N              
 GND                          : AH21      : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AH22      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AH23      :        :                   :         : 4A        :                
@@ -361,10 +361,10 @@ sdram_wire_dq[9]             : AJ10      : bidir  : 2.5 V             :         
 sdram_wire_dq[7]             : AJ11      : bidir  : 2.5 V             :         : 3B        : Y              
 sdram_wire_ba[1]             : AJ12      : output : 2.5 V             :         : 3B        : Y              
 VCCIO3B                      : AJ13      : power  :                   : 2.5V    : 3B        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AJ14      :        :                   :         : 3B        :                
+sdram_wire_addr[12]          : AJ14      : output : 2.5 V             :         : 3B        : Y              
 VREFB3BN0                    : AJ15      : power  :                   :         : 3B        :                
-HEX_0[7]                     : AJ16      : output : 2.5 V             :         : 4A        : N              
-HEX_3[7]                     : AJ17      : output : 2.5 V             :         : 4A        : N              
+RESERVED_INPUT_WITH_WEAK_PULLUP : AJ16      :        :                   :         : 4A        :                
+RESERVED_INPUT_WITH_WEAK_PULLUP : AJ17      :        :                   :         : 4A        :                
 GND                          : AJ18      : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AJ19      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AJ20      :        :                   :         : 4A        :                
@@ -394,7 +394,7 @@ sdram_wire_addr[0]           : AK14      : output : 2.5 V             :         
 GND                          : AK15      : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AK16      :        :                   :         : 4A        :                
 VREFB4AN0                    : AK17      : power  :                   :         : 4A        :                
-HEX_2[7]                     : AK18      : output : 2.5 V             :         : 4A        : N              
+RESERVED_INPUT_WITH_WEAK_PULLUP : AK18      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AK19      :        :                   :         : 4A        :                
 VCCIO4A                      : AK20      : power  :                   : 2.5V    : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AK21      :        :                   :         : 4A        :                
@@ -930,7 +930,7 @@ GND                          : W11       : gnd    :                   :         
 VCC                          : W12       : power  :                   : 1.1V    :           :                
 GND                          : W13       : gnd    :                   :         :           :                
 VCC                          : W14       : power  :                   : 1.1V    :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : W15       :        :                   :         : 3B        :                
+HEX_1[7]                     : W15       : output : 2.5 V             :         : 3B        : N              
 HEX_2[6]                     : W16       : output : 2.5 V             :         : 4A        : Y              
 HEX_0[0]                     : W17       : output : 2.5 V             :         : 4A        : Y              
 GND                          : W18       : gnd    :                   :         :           :                
@@ -961,7 +961,7 @@ GND                          : Y12       : gnd    :                   :         
 VCC                          : Y13       : power  :                   : 1.1V    :           :                
 GND                          : Y14       : gnd    :                   :         :           :                
 GND                          : Y15       : gnd    :                   :         :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : Y16       :        :                   :         : 3B        :                
+HEX_0[7]                     : Y16       : output : 2.5 V             :         : 3B        : N              
 HEX_2[3]                     : Y17       : output : 2.5 V             :         : 4A        : Y              
 HEX_2[4]                     : Y18       : output : 2.5 V             :         : 4A        : Y              
 HEX_3[0]                     : Y19       : output : 2.5 V             :         : 4A        : Y              

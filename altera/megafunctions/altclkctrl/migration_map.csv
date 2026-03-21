@@ -1,0 +1,18 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param NUMBER_OF_CLOCKS [get_old_param clock_inputs]
+,set_new_param GUI_USE_ENA true
+[string equal -nocase [get_old_param ENA_REGISTER_MODE] "always enabled"],set_new_param GUI_USE_ENA false
+[string equal -nocase [get_old_param USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION] "OFF"],set_new_param USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION false
+[string equal -nocase [get_old_param USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION] "ON"],set_new_param USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION true
+[string equal -nocase [get_old_param clock_type] "AUTO"],set_new_param CLOCK_TYPE 0
+[string equal -nocase [get_old_param clock_type] "Global Clock"],set_new_param CLOCK_TYPE 1
+[string equal -nocase [get_old_param clock_type] "Regional Clock"],set_new_param CLOCK_TYPE 2
+[string equal -nocase [get_old_param clock_type] "Dual-Regional Clock"],set_new_param CLOCK_TYPE 3
+[string equal -nocase [get_old_param clock_type] "External Clock Output"],set_new_param CLOCK_TYPE 4
+[string equal -nocase [get_old_param clock_type] "Periphery clock"],set_new_param CLOCK_TYPE 5
+[string equal -nocase [get_old_param clock_type] "Large Periphery Clock"],set_new_param CLOCK_TYPE 6
+[string equal -nocase [get_old_param ENA_REGISTER_MODE] "None"],set_new_param ENA_REGISTER_MODE 0
+[string equal -nocase [get_old_param ENA_REGISTER_MODE] "falling edge"],set_new_param ENA_REGISTER_MODE 1
+[string equal -nocase [get_old_param ENA_REGISTER_MODE] "double register"],set_new_param ENA_REGISTER_MODE 2
+[string equal -nocase [get_old_param ENA_REGISTER_MODE] "always enabled"],set_new_param ENA_REGISTER_MODE 3

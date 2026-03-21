@@ -1,0 +1,114 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// altera_nd_stream_id_decoder.v
+
+// This file was auto-generated as a prototype implementation of a module
+// created in component editor.  It ties off all outputs to ground and
+// ignores all inputs.  It needs to be edited to make it do something
+// useful.
+// 
+// This file will not be automatically regenerated.  You should check it in
+// to your version control system if you want to keep it.
+
+`timescale 1 ps / 1 ps
+// ------------------------------------------
+// Generation parameters:
+//   output_name:         $output_name
+//   NUM_ENDPOINTS:       $num_endpoints
+// ------------------------------------------
+module $output_name 
+(
+	input              						clk,
+	input              						reset,
+	
+	// Input signals from the stream controller 
+	input  [3:0] 							stream_select,
+	input         							stream_active,
+	
+	// Output signals to control the mux 
+	@@ for { set i 0 } { $i < $num_endpoints } { incr i } {
+	output logic       						stream_active_$i,
+	@@}
+	output logic [$num_endpoints-1 : 0]    	mux_sel_out
+	);
+	localparam NUM_ENDPOINTS = $num_endpoints;
+	logic [3:0] stream_select_reg;
+	// create a edge when stream avtive goest from low to high
+	logic stream_active_dly;
+	logic stream_active_pusle;
+	logic stream_active_pusle_reg;
+	assign stream_active_pusle = stream_active && !stream_active_dly;
+	always_ff @(posedge clk) begin
+        if (reset) begin
+            stream_active_dly 		<= '0;
+            stream_active_pusle_reg <= '0;
+        end
+        else begin
+            stream_active_dly 		<= stream_active;
+            stream_active_pusle_reg <= stream_active_pusle;
+        end
+    end	
+
+    // Load the stream ID
+    always_ff @(posedge clk) begin
+        if (reset)
+            stream_select_reg <= '0;
+        else begin
+        	if (stream_active_pusle)
+            	stream_select_reg <= stream_select;
+        end
+    end	
+
+ 	one_hot 
+    #(
+        .WIDTH    (NUM_ENDPOINTS)
+    ) 
+    bin2onehot
+    (
+      .in         (stream_select_reg),
+      .out        (mux_sel_out)
+	);
+    always_comb begin
+        if (stream_active_dly) begin
+        @@ for { set i 0 } { $i < $num_endpoints } { incr i } {
+            stream_active_$i = mux_sel_out[$i];
+        @@}
+        end
+        else begin
+        @@ for { set i 0 } { $i < $num_endpoints } { incr i } {
+           stream_active_$i = '0; 
+        @@}
+        end
+    
+    end
+    
+
+
+endmodule
+// +------------------------------------------------------
+// | convert binary to onehot as the mux use onehot coding
+// +------------------------------------------------------
+module one_hot (in,out);
+
+parameter WIDTH = 64;
+
+input [3:0] in;
+output logic [WIDTH-1:0] out;
+
+always_comb begin
+	out = 0;
+	out[in] = 1'b1;
+end
+
+endmodule

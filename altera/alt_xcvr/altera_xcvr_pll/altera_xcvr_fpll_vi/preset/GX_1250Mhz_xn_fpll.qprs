@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="GX 2500Mbps xN Non-Bonded"
+     kind="altera_xcvr_fpll_a10"
+     version="All"
+     description="">
+   <parameter name="enable_mcgb_pcie_clksw" value="0" />
+   <parameter name="mcgb_aux_clkin_cnt" value="0" />
+   <parameter name="gui_enable_fractional" value="false" />
+   <parameter name="gui_bw_sel" value="low" />
+   <parameter name="generate_docs" value="1" />
+   <parameter name="gui_fpll_mode" value="2" />
+   <parameter name="gui_refclk_switch" value="false" />
+   <parameter name="gui_hssi_prot_mode" value="0" />
+   <parameter name="gui_refclk_index" value="0" />
+   <parameter name="gui_refclk_cnt" value="1" />
+   <parameter name="gui_operation_mode" value="0" />
+   <parameter name="enable_hfreq_clk" value="1" />
+   <parameter name="enable_bonding_clks" value="0" />
+   <parameter name="enable_pll_reconfig" value="0" />
+   <parameter name="gui_hssi_output_clock_frequency" value="1250.0" />
+   <parameter name="mcgb_div" value="1" />
+   <parameter name="enable_mcgb" value="1" />
+  </preset>
+ </presets>
+</ip>

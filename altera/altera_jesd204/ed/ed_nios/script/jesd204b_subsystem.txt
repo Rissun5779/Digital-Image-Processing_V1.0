@@ -1,0 +1,1039 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags=""
+   categories="System" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element $${FILENAME}
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Arria 10";
+         type = "String";
+      }
+   }
+   element device_clk
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+   element frame_clk
+   {
+      datum _sortIndex
+      {
+         value = "2";
+         type = "int";
+      }
+   }
+   element jesd204b
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element link_clk
+   {
+      datum _sortIndex
+      {
+         value = "1";
+         type = "int";
+      }
+   }
+   element mgmt_clk
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element mm_bridge
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element reset_seq
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element rx_frame_reset_n_0
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element rx_link_reset_n_0
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+   }
+   element tx_frame_reset_n_0
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element tx_link_reset_n_0
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element xcvr_atx_pll_a10_0
+   {
+      datum _sortIndex
+      {
+         value = "11";
+         type = "int";
+      }
+   }
+   element xcvr_reset_control_0
+   {
+      datum _sortIndex
+      {
+         value = "10";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ #DEVICE_PARAM
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="jesd204b_ed.qpf" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface name="device_clk" internal="device_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="do_not_connect_reset_0"
+   internal="device_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="do_not_connect_reset_1"
+   internal="link_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface
+   name="do_not_connect_reset_2"
+   internal="frame_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface name="frame_clk" internal="frame_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="jesd204b_csr_rx_testmode"
+   internal="jesd204b.csr_rx_testmode"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_csr_tx_testmode"
+   internal="jesd204b.csr_tx_testmode"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_csr_tx_testpattern_a"
+   internal="jesd204b.csr_tx_testpattern_a"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_csr_tx_testpattern_b"
+   internal="jesd204b.csr_tx_testpattern_b"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_csr_tx_testpattern_c"
+   internal="jesd204b.csr_tx_testpattern_c"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_csr_tx_testpattern_d"
+   internal="jesd204b.csr_tx_testpattern_d"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_dlb_data"
+   internal="jesd204b.jesd204_rx_dlb_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_dlb_data_valid"
+   internal="jesd204b.jesd204_rx_dlb_data_valid"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_dlb_disperr"
+   internal="jesd204b.jesd204_rx_dlb_disperr"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_dlb_errdetect"
+   internal="jesd204b.jesd204_rx_dlb_errdetect"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_dlb_kchar_data"
+   internal="jesd204b.jesd204_rx_dlb_kchar_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_frame_error"
+   internal="jesd204b.jesd204_rx_frame_error"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_int"
+   internal="jesd204b.jesd204_rx_int"
+   type="interrupt"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_rx_link"
+   internal="jesd204b.jesd204_rx_link"
+   type="avalon_streaming"
+   dir="start" />
+ <interface
+   name="jesd204b_jesd204_tx_dlb_data"
+   internal="jesd204b.jesd204_tx_dlb_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_tx_dlb_kchar_data"
+   internal="jesd204b.jesd204_tx_dlb_kchar_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_tx_frame_error"
+   internal="jesd204b.jesd204_tx_frame_error"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_tx_frame_ready"
+   internal="jesd204b.jesd204_tx_frame_ready"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_tx_int"
+   internal="jesd204b.jesd204_tx_int"
+   type="interrupt"
+   dir="end" />
+ <interface
+   name="jesd204b_jesd204_tx_link"
+   internal="jesd204b.jesd204_tx_link"
+   type="avalon_streaming"
+   dir="end" />
+ <interface
+   name="jesd204b_pll_locked"
+   internal="jesd204b.pll_locked"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_cf"
+   internal="jesd204b.rx_csr_cf"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_cs"
+   internal="jesd204b.rx_csr_cs"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_f"
+   internal="jesd204b.rx_csr_f"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_hd"
+   internal="jesd204b.rx_csr_hd"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_k"
+   internal="jesd204b.rx_csr_k"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_l"
+   internal="jesd204b.rx_csr_l"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_lane_powerdown"
+   internal="jesd204b.rx_csr_lane_powerdown"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_m"
+   internal="jesd204b.rx_csr_m"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_n"
+   internal="jesd204b.rx_csr_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_np"
+   internal="jesd204b.rx_csr_np"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_csr_s"
+   internal="jesd204b.rx_csr_s"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_dev_sync_n"
+   internal="jesd204b.rx_dev_sync_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_serial_data"
+   internal="jesd204b.rx_serial_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_seriallpbken"
+   internal="jesd204b.rx_seriallpbken"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_sof"
+   internal="jesd204b.rx_sof"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_somf"
+   internal="jesd204b.rx_somf"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rx_sysref"
+   internal="jesd204b.rx_sysref"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_rxlink_rst_n"
+   internal="jesd204b.rxlink_rst_n"
+   type="reset"
+   dir="end" />
+ <interface
+   name="jesd204b_rxphy_clk"
+   internal="jesd204b.rxphy_clk"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_sync_n"
+   internal="jesd204b.sync_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_cf"
+   internal="jesd204b.tx_csr_cf"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_cs"
+   internal="jesd204b.tx_csr_cs"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_f"
+   internal="jesd204b.tx_csr_f"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_hd"
+   internal="jesd204b.tx_csr_hd"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_k"
+   internal="jesd204b.tx_csr_k"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_l"
+   internal="jesd204b.tx_csr_l"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_lane_powerdown"
+   internal="jesd204b.tx_csr_lane_powerdown"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_m"
+   internal="jesd204b.tx_csr_m"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_n"
+   internal="jesd204b.tx_csr_n"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_np"
+   internal="jesd204b.tx_csr_np"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_csr_s"
+   internal="jesd204b.tx_csr_s"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_serial_data"
+   internal="jesd204b.tx_serial_data"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_tx_sysref"
+   internal="jesd204b.tx_sysref"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="jesd204b_txlink_rst_n"
+   internal="jesd204b.txlink_rst_n"
+   type="reset"
+   dir="end" />
+ <interface
+   name="jesd204b_txphy_clk"
+   internal="jesd204b.txphy_clk"
+   type="conduit"
+   dir="end" />
+ <interface name="link_clk" internal="link_clk.clk_in" type="clock" dir="end" />
+ <interface name="mgmt_clk" internal="mgmt_clk.clk_in" type="clock" dir="end" />
+ <interface
+   name="mgmt_reset"
+   internal="mgmt_clk.clk_in_reset"
+   type="reset"
+   dir="end" />
+ <interface name="mm_bridge_s0" internal="mm_bridge.s0" type="avalon" dir="end" />
+ <interface
+   name="reset_seq_irq"
+   internal="reset_seq.av_csr_irq"
+   type="interrupt"
+   dir="end" />
+ <interface
+   name="reset_seq_pll_locked_in"
+   internal="reset_seq.reset1_dsrt_qual"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="reset_seq_pll_reset"
+   internal="reset_seq.reset_out0"
+   type="reset"
+   dir="start" />
+ <interface
+   name="reset_seq_reset_in0"
+   internal="reset_seq.reset_in0"
+   type="reset"
+   dir="end" />
+ <interface
+   name="reset_seq_rx_xcvr_ready_in"
+   internal="reset_seq.reset5_dsrt_qual"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="reset_seq_tx_xcvr_ready_in"
+   internal="reset_seq.reset2_dsrt_qual"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="rx_frame_reset_n_out_0"
+   internal="rx_frame_reset_n_0.out_reset"
+   type="reset"
+   dir="start" />
+ <interface
+   name="rx_link_reset_n_out_0"
+   internal="rx_link_reset_n_0.out_reset"
+   type="reset"
+   dir="start" />
+ <interface
+   name="tx_frame_reset_n_out_0"
+   internal="tx_frame_reset_n_0.out_reset"
+   type="reset"
+   dir="start" />
+ <interface
+   name="tx_link_reset_n_out_0"
+   internal="tx_link_reset_n_0.out_reset"
+   type="reset"
+   dir="start" />
+ <interface
+   name="xcvr_atx_pll_a10_0_pll_cal_busy"
+   internal="xcvr_atx_pll_a10_0.pll_cal_busy"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="xcvr_atx_pll_a10_0_pll_locked"
+   internal="xcvr_atx_pll_a10_0.pll_locked"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="xcvr_reset_control_0_pll_locked"
+   internal="xcvr_reset_control_0.pll_locked"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="xcvr_reset_control_0_pll_select"
+   internal="xcvr_reset_control_0.pll_select"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="xcvr_reset_control_0_rx_ready"
+   internal="xcvr_reset_control_0.rx_ready"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="xcvr_reset_control_0_tx_ready"
+   internal="xcvr_reset_control_0.tx_ready"
+   type="conduit"
+   dir="end" />
+ <module name="device_clk" kind="clock_source" version="15.1" enabled="1">
+  #DEVICE_FREQ_PARAM
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
+ </module>
+ <module name="frame_clk" kind="clock_source" version="15.1" enabled="1">
+  #FRAME_FREQ_PARAM
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module name="jesd204b" kind="altera_jesd204" version="15.1" enabled="1">
+  <parameter name="ADJCNT" value="0" />
+  <parameter name="ADJDIR" value="0" />
+  <parameter name="AUTO_DEVICE" value="DEVICE_PARTNAME" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="3" />
+  <parameter name="BID" value="0" />
+  #CORE_PARAM
+  <parameter name="DID" value="0" />
+  <parameter name="GUI_EN_CFG_F" value="false" />
+  <parameter name="JESDV" value="1" />
+  <parameter name="LID0" value="0" />
+  <parameter name="LID1" value="1" />
+  <parameter name="LID2" value="2" />
+  <parameter name="LID3" value="3" />
+  <parameter name="LID4" value="4" />
+  <parameter name="LID5" value="5" />
+  <parameter name="LID6" value="6" />
+  <parameter name="LID7" value="7" />
+  <parameter name="OPTIMIZE" value="0" />
+  <parameter name="PHADJ" value="0" />
+  <parameter name="RES1" value="0" />
+  <parameter name="RES2" value="0" />
+  <parameter name="TERMINATE_RECONFIG_EN" value="false" />
+  <parameter name="TEST_COMPONENTS_EN" value="false" />
+  <parameter name="part_trait_bd" value="NIGHTFURY5ES2" />
+  <parameter name="part_trait_dp" value="DEVICE_PARTNAME" />
+  <parameter name="rcfg_jtag_enable" value="false" />
+  <parameter name="set_capability_reg_enable" value="false" />
+  <parameter name="set_csr_soft_logic_enable" value="false" />
+  <parameter name="set_prbs_soft_logic_enable" value="false" />
+  <parameter name="set_user_identifier" value="0" />
+ </module>
+ <module name="link_clk" kind="clock_source" version="15.1" enabled="1">
+  #LINK_FREQ_PARAM
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module name="mgmt_clk" kind="clock_source" version="15.1" enabled="1">
+  <parameter name="clockFrequency" value="100000000" />
+  <parameter name="clockFrequencyKnown" value="true" />
+  <parameter name="inputClockFrequency" value="0" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
+ </module>
+ <module
+   name="mm_bridge"
+   kind="altera_avalon_mm_bridge"
+   version="15.1"
+   enabled="1">
+  <parameter name="ADDRESS_UNITS" value="SYMBOLS" />
+  <parameter name="ADDRESS_WIDTH" value="20" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Arria 10" />
+  <parameter name="DATA_WIDTH" value="32" />
+  <parameter name="LINEWRAPBURSTS" value="0" />
+  <parameter name="MAX_BURST_SIZE" value="1" />
+  <parameter name="MAX_PENDING_RESPONSES" value="4" />
+  <parameter name="PIPELINE_COMMAND" value="1" />
+  <parameter name="PIPELINE_RESPONSE" value="1" />
+  <parameter name="SYMBOL_WIDTH" value="8" />
+  <parameter name="SYSINFO_ADDR_WIDTH" value="16" />
+  <parameter name="USE_AUTO_ADDRESS_WIDTH" value="1" />
+  <parameter name="USE_RESPONSE" value="0" />
+ </module>
+ <module
+   name="reset_seq"
+   kind="altera_reset_sequencer"
+   version="15.1"
+   enabled="1">
+  <parameter name="ENABLE_CSR" value="1" />
+  <parameter name="ENABLE_RESET_REQUEST_INPUT" value="0" />
+  <parameter name="LIST_ASRT_DELAY" value="0,0,0,0,0,0,0,0,0,0" />
+  <parameter name="LIST_ASRT_SEQ" value="0,1,2,3,4,5,6,7,8,9" />
+  <parameter name="LIST_DSRT_DELAY">2,2,2,20,0,2,20,0,0,0</parameter>
+  <parameter name="LIST_DSRT_SEQ" value="0,1,2,3,4,5,6,7,8,9" />
+  <parameter name="MIN_ASRT_TIME" value="20" />
+  <parameter name="NUM_INPUTS" value="1" />
+  <parameter name="NUM_OUTPUTS" value="8" />
+  <parameter name="USE_DSRT_QUAL" value="0,1,1,0,0,1,0,0,0,0" />
+ </module>
+ <module
+   name="rx_frame_reset_n_0"
+   kind="altera_reset_bridge"
+   version="15.1"
+   enabled="1">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  #FRAMERESET_PARAM
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="deassert" />
+  <parameter name="USE_RESET_REQUEST" value="0" />
+ </module>
+ <module
+   name="rx_link_reset_n_0"
+   kind="altera_reset_bridge"
+   version="15.1"
+   enabled="1">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  #LINKRESET_PARAM
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="deassert" />
+  <parameter name="USE_RESET_REQUEST" value="0" />
+ </module>
+ <module
+   name="tx_frame_reset_n_0"
+   kind="altera_reset_bridge"
+   version="15.1"
+   enabled="1">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  #FRAMERESET_PARAM
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="deassert" />
+  <parameter name="USE_RESET_REQUEST" value="0" />
+ </module>
+ <module
+   name="tx_link_reset_n_0"
+   kind="altera_reset_bridge"
+   version="15.1"
+   enabled="1">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  #LINKRESET_PARAM
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="deassert" />
+  <parameter name="USE_RESET_REQUEST" value="0" />
+ </module>
+ <module
+   name="xcvr_atx_pll_a10_0"
+   kind="altera_xcvr_atx_pll_a10"
+   version="15.1"
+   enabled="1">
+  <parameter name="base_device" value="NIGHTFURY5ES2" />
+  <parameter name="bw_sel" value="medium" />
+  <parameter name="device" value="DEVICE_PARTNAME" />
+  <parameter name="device_family" value="Arria 10" />
+  <parameter name="enable_16G_path" value="0" />
+  <parameter name="enable_8G_path" value="1" />
+  <parameter name="enable_atx_to_fpll_cascade_out" value="0" />
+  <parameter name="enable_bonding_clks" value="0" />
+  <parameter name="enable_cascade_out" value="0" />
+  <parameter name="enable_debug_ports_parameters" value="0" />
+  <parameter name="enable_fb_comp_bonding" value="0" />
+  <parameter name="enable_fractional" value="0" />
+  <parameter name="enable_hfreq_clk" value="0" />
+  <parameter name="enable_hip_cal_done_port" value="0" />
+  <parameter name="enable_manual_configuration" value="1" />
+  <parameter name="enable_mcgb" value="0" />
+  <parameter name="enable_mcgb_pcie_clksw" value="0" />
+  <parameter name="enable_pcie_clk" value="0" />
+  <parameter name="enable_pld_atx_cal_busy_port" value="1" />
+  <parameter name="enable_pld_mcgb_cal_busy_port" value="0" />
+  <parameter name="enable_pll_reconfig" value="1" />
+  <parameter name="generate_add_hdl_instance_example" value="0" />
+  <parameter name="generate_docs" value="1" />
+  <parameter name="mcgb_aux_clkin_cnt" value="0" />
+  <parameter name="mcgb_div" value="1" />
+  <parameter name="message_level" value="error" />
+  <parameter name="pma_width" value="64" />
+  <parameter name="primary_pll_buffer">GX clock output buffer</parameter>
+  <parameter name="prot_mode" value="Basic" />
+  <parameter name="rcfg_debug" value="0" />
+  <parameter name="rcfg_file_prefix">altera_xcvr_atx_pll_a10</parameter>
+  <parameter name="rcfg_h_file_enable" value="1" />
+  <parameter name="rcfg_jtag_enable" value="0" />
+  <parameter name="rcfg_mif_file_enable" value="0" />
+  <parameter name="rcfg_multi_enable" value="0" />
+  <parameter name="rcfg_param_vals1" value="" />
+  <parameter name="rcfg_param_vals2" value="" />
+  <parameter name="rcfg_profile_cnt" value="2" />
+  <parameter name="rcfg_profile_select" value="1" />
+  <parameter name="rcfg_sv_file_enable" value="0" />
+  <parameter name="rcfg_txt_file_enable" value="0" />
+  <parameter name="refclk_cnt" value="1" />
+  <parameter name="refclk_index" value="0" />
+  <parameter name="select_manual_config" value="false" />
+  <parameter name="set_altera_xcvr_atx_pll_a10_calibration_en" value="1" />
+  #ATSPLL_PARAM
+  <parameter name="set_capability_reg_enable" value="0" />
+  <parameter name="set_csr_soft_logic_enable" value="0" />
+  <parameter name="set_fref_clock_frequency" value="100.0" />
+  <parameter name="set_hip_cal_en" value="0" />
+  <parameter name="set_k_counter" value="1" />
+  <parameter name="set_l_cascade_counter" value="4" />
+  <parameter name="set_l_counter" value="2" />
+  <parameter name="set_m_counter" value="1" />
+  <parameter name="set_manual_reference_clock_frequency" value="100.0" />
+  <parameter name="set_output_clock_frequency" value="ATXPLLFEQ" />
+  <parameter name="set_ref_clk_div" value="1" />
+  <parameter name="set_user_identifier" value="0" />
+  <parameter name="silicon_rev" value="false" />
+  <parameter name="support_mode" value="user_mode" />
+  <parameter name="test_mode" value="0" />
+ </module>
+ <module
+   name="xcvr_reset_control_0"
+   kind="altera_xcvr_reset_control"
+   version="15.1"
+   enabled="1">
+  #RSTCTRL_PARAM
+  <parameter name="REDUCED_SIM_TIME" value="1" />
+  <parameter name="RX_ENABLE" value="1" />
+  <parameter name="RX_PER_CHANNEL" value="0" />
+  <parameter name="SYNCHRONIZE_PLL_RESET" value="0" />
+  <parameter name="SYNCHRONIZE_RESET" value="1" />
+  <parameter name="SYS_CLK_IN_MHZ" value="100" />
+  <parameter name="TX_ENABLE" value="1" />
+  <parameter name="TX_PER_CHANNEL" value="0" />
+  <parameter name="TX_PLL_ENABLE" value="1" />
+  <parameter name="T_PLL_LOCK_HYST" value="0" />
+  <parameter name="T_PLL_POWERDOWN" value="1000" />
+  <parameter name="T_RX_ANALOGRESET" value="70000" />
+  <parameter name="T_RX_DIGITALRESET" value="4000" />
+  <parameter name="T_TX_ANALOGRESET" value="70000" />
+  <parameter name="T_TX_DIGITALRESET" value="70000" />
+  <parameter name="device_family" value="Arria 10" />
+  <parameter name="gui_pll_cal_busy" value="0" />
+  <parameter name="gui_rx_auto_reset" value="0" />
+  <parameter name="gui_split_interfaces" value="0" />
+  <parameter name="gui_tx_auto_reset" value="1" />
+ </module>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="mm_bridge.m0"
+   end="reset_seq.av_csr">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xe000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="mm_bridge.m0"
+   end="jesd204b.jesd204_rx_avs">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xd000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="mm_bridge.m0"
+   end="jesd204b.jesd204_tx_avs">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xc000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="mm_bridge.m0"
+   end="jesd204b.reconfig_avmm">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.1"
+   start="mm_bridge.m0"
+   end="xcvr_atx_pll_a10_0.reconfig_avmm0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x8000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="15.1" start="mgmt_clk.clk" end="reset_seq.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="link_clk.clk"
+   end="tx_link_reset_n_0.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="frame_clk.clk"
+   end="tx_frame_reset_n_0.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="link_clk.clk"
+   end="rx_link_reset_n_0.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="frame_clk.clk"
+   end="rx_frame_reset_n_0.clk" />
+ <connection kind="clock" version="15.1" start="mgmt_clk.clk" end="mm_bridge.clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="xcvr_reset_control_0.clock" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="jesd204b.jesd204_rx_avs_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="jesd204b.jesd204_tx_avs_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="device_clk.clk"
+   end="xcvr_atx_pll_a10_0.pll_refclk0" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="jesd204b.reconfig_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="mgmt_clk.clk"
+   end="xcvr_atx_pll_a10_0.reconfig_clk0" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="device_clk.clk"
+   end="jesd204b.rx_pll_ref_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="link_clk.clk"
+   end="jesd204b.rxlink_clk" />
+ <connection
+   kind="clock"
+   version="15.1"
+   start="link_clk.clk"
+   end="jesd204b.txlink_clk" />
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="jesd204b.alldev_lane_aligned"
+   end="jesd204b.dev_lane_aligned">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="xcvr_reset_control_0.pll_powerdown"
+   end="xcvr_atx_pll_a10_0.pll_powerdown">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="xcvr_reset_control_0.rx_analogreset"
+   end="jesd204b.rx_analogreset">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="jesd204b.rx_cal_busy"
+   end="xcvr_reset_control_0.rx_cal_busy">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="xcvr_reset_control_0.rx_digitalreset"
+   end="jesd204b.rx_digitalreset">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="xcvr_reset_control_0.rx_is_lockedtodata"
+   end="jesd204b.rx_islockedtodata">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="xcvr_reset_control_0.tx_analogreset"
+   end="jesd204b.tx_analogreset">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="jesd204b.tx_cal_busy"
+   end="xcvr_reset_control_0.tx_cal_busy">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="jesd204b.tx_dev_sync_n"
+   end="jesd204b.mdev_sync_n">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ <connection
+   kind="conduit"
+   version="15.1"
+   start="xcvr_reset_control_0.tx_digitalreset"
+   end="jesd204b.tx_digitalreset">
+  <parameter name="endPort" value="" />
+  <parameter name="endPortLSB" value="0" />
+  <parameter name="startPort" value="" />
+  <parameter name="startPortLSB" value="0" />
+  <parameter name="width" value="0" />
+ </connection>
+ #SERIALCLK_PARAM
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="reset_seq.csr_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="jesd204b.reconfig_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="xcvr_atx_pll_a10_0.reconfig_reset0" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="mgmt_clk.clk_reset"
+   end="mm_bridge.reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out1"
+   end="xcvr_reset_control_0.reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out2"
+   end="jesd204b.jesd204_tx_avs_rst_n" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out3"
+   end="tx_link_reset_n_0.in_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out4"
+   end="tx_frame_reset_n_0.in_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out5"
+   end="jesd204b.jesd204_rx_avs_rst_n" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out6"
+   end="rx_link_reset_n_0.in_reset" />
+ <connection
+   kind="reset"
+   version="15.1"
+   start="reset_seq.reset_out7"
+   end="rx_frame_reset_n_0.in_reset" />
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

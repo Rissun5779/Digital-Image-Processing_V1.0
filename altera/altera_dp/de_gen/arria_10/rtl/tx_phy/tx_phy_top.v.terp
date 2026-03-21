@@ -1,0 +1,269 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// *********************************************************************
+// Description
+// 
+// Example Design TX Phy Top-level module 
+//
+// *********************************************************************
+
+@@ set tx_support_analog_reconfig   $param0
+
+module tx_phy_top 
+#
+(
+    parameter BITEC_DP_CARD_REV = 0,
+    parameter TX_SYMBOLS_PER_CLOCK = 2,
+    parameter TX_MAX_LANE_COUNT = 4
+)
+(
+   // TX Reference Clock
+    input   wire                                                tx_pll_refclk,
+    output  wire                                                dp_tx_clk_cal,
+    // TX Reference Reset
+    input   wire                                                tx_pll_resetn,
+    input   wire                                                video_pll_locked,
+    // DP TX FMC Interface
+    output  wire                                                tx_cad,
+    // TX Link Rate (8bits)
+    input   wire [7:0]                                          dp_tx_link_rate_8bits,
+    // TX Transceiver Reconfiguration Interface (To Arbiter or Altera Reconfig module)
+    input   wire                                                tx_rcfg_mgmt_reset,
+    input   wire                                                tx_rcfg_mgmt_clk,
+    output  wire                                                tx_rcfg_en,
+    output  wire                                                tx_rcfg_write,
+    output  wire                                                tx_rcfg_read,
+    output  wire [11:0]                                         tx_rcfg_address,
+    output  wire [31:0]                                         tx_rcfg_writedata,
+    input   wire [31:0]                                         tx_rcfg_readdata,
+    input   wire                                                tx_rcfg_waitrequest,
+    input   wire [(TX_MAX_LANE_COUNT-1):0]                      tx_rcfg_cal_busy,
+    // TX Transceiver Interface
+    output  wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_clkout,
+    output  wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_serial_data,
+    input   wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_rcfg_write,
+    input   wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_rcfg_read,
+    input   wire [((TX_MAX_LANE_COUNT*10)-1):0]                 gxb_tx_rcfg_address,
+    input   wire [((TX_MAX_LANE_COUNT*32)-1):0]                 gxb_tx_rcfg_writedata,
+    output  wire [((TX_MAX_LANE_COUNT*32)-1):0]                 gxb_tx_rcfg_readdata,
+    output  wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_rcfg_waitrequest,
+    output  wire [(TX_MAX_LANE_COUNT-1):0]                      gxb_tx_rcfg_cal_busy,
+    // To DP TX Core Sub-System 
+@@ if { $tx_support_analog_reconfig } {
+    input   wire                                                dp_tx_rcfg_req,
+    output  wire                                                dp_tx_rcfg_ack,
+    input   wire [(TX_MAX_LANE_COUNT*2)-1:0]                    dp_tx_rcfg_vod,
+    input   wire [(TX_MAX_LANE_COUNT*2)-1:0]                    dp_tx_rcfg_emp,
+@@ }
+    input   wire                                                dp_txpll_rcfg_req,
+    output  wire                                                dp_txpll_rcfg_ack,
+    output  wire                                                dp_tx_rcfg_busy,
+    input   wire [((TX_MAX_LANE_COUNT*TX_SYMBOLS_PER_CLOCK*10)-1):0]    dp_tx_parallel_data,
+    input   wire                                                dp_txpll_powerdown,
+    output  wire [(TX_MAX_LANE_COUNT-1):0]                      dp_tx_cal_busy,
+    output  wire                                                dp_txpll_locked
+);
+    
+// ----------------------
+// Signal Declaration
+// ----------------------
+wire                                                        clk_100 = tx_rcfg_mgmt_clk;
+wire                                                        reset;
+wire                                                        dp_tx_xcvr_reset;
+
+// TX XCVR FPLL
+wire                                                        txpll_rcfg_write;
+wire                                                        txpll_rcfg_read;
+wire [9:0]                                                  txpll_rcfg_address;
+wire [31:0]                                                 txpll_rcfg_writedata;
+wire [31:0]                                                 txpll_rcfg_readdata;
+wire                                                        txpll_rcfg_waitrequest;
+wire                                                        txpll_rcfg_cal_busy;
+
+// TX XCVR
+wire [5:0]                                                  gxb_tx_bonding_clocks;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_analogreset;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_analogreset_ack;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_digitalreset;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_polinv;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_cal_busy;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_ready;
+wire [(TX_MAX_LANE_COUNT-1):0]                              gxb_tx_coreclkin;
+
+reg                                                         clk_cal;
+
+// --------------------------
+// Internal Generated Reset
+// --------------------------
+assign reset    = ~video_pll_locked;
+assign dp_tx_clk_cal = clk_cal;
+
+// ----------------------------------
+// Cal Clock must be half of clk_100
+// ----------------------------------
+always @(negedge tx_pll_resetn or posedge clk_100)
+    if (~tx_pll_resetn)
+        clk_cal <= 1'b0;
+    else
+        clk_cal <= ~clk_cal;
+
+@@ if { $tx_support_analog_reconfig } {
+assign dp_tx_rcfg_ack = 1'b1;
+@@ }
+assign dp_txpll_rcfg_ack = 1'b1;
+
+// -------------------------------
+// TX XCVR reset
+// -------------------------------
+gxb_tx_reset gxb_tx_reset_i
+(
+    .reset            (reset | dp_tx_xcvr_reset),
+    .clock            (clk_100),
+    .pll_select       (1'b0),
+    .pll_locked       (dp_txpll_locked),
+    .pll_powerdown    (dp_txpll_powerdown),
+    .tx_cal_busy      (gxb_tx_cal_busy),
+    .tx_analogreset   (gxb_tx_analogreset),
+    .tx_digitalreset  (gxb_tx_digitalreset),
+    .tx_ready         (gxb_tx_ready)
+);
+
+assign dp_tx_cal_busy = {TX_MAX_LANE_COUNT{~&gxb_tx_ready}};
+assign gxb_tx_cal_busy = tx_rcfg_cal_busy  | {TX_MAX_LANE_COUNT{txpll_rcfg_cal_busy}}; // gxb_tx_cal_busy asserts wrongly during RX reconfiguration!
+
+
+// -------------------------------
+// TX XCVR FPLL
+// -------------------------------
+gxb_tx_fpll gxb_tx_pll_i
+(
+    .mcgb_rst               (~tx_pll_resetn), // to be synchronized
+    .pll_refclk0            (tx_pll_refclk),
+    .pll_cal_busy           (txpll_rcfg_cal_busy),
+    .pll_locked             (dp_txpll_locked),
+    .pll_powerdown          (dp_txpll_powerdown),
+    .reconfig_reset0        (reset),
+    .reconfig_clk0          (clk_100),
+    .reconfig_write0        (txpll_rcfg_write),
+    .reconfig_read0         (txpll_rcfg_read),
+    .reconfig_address0      (txpll_rcfg_address),
+    .reconfig_writedata0    (txpll_rcfg_writedata),
+    .reconfig_readdata0     (txpll_rcfg_readdata),
+    .reconfig_waitrequest0  (txpll_rcfg_waitrequest),
+    .tx_bonding_clocks      (gxb_tx_bonding_clocks),
+    .tx_serial_clk          ()
+); 
+
+bitec_reconfig_alt_a10 bitec_reconfig_alt_a10_i
+(
+    .clk                    (clk_100),
+    .reset                  (reset),
+    .tx_analogreset_ack     (&gxb_tx_analogreset_ack),
+  
+    .tx_link_rate           (dp_tx_link_rate_8bits),
+    .tx_link_rate_strobe    (dp_txpll_rcfg_req),
+    @@ if { $tx_support_analog_reconfig } {
+    .tx_vodemp_strobe       (dp_tx_rcfg_req),
+    .tx_vod                 (dp_tx_rcfg_vod),
+    .tx_emp                 (dp_tx_rcfg_emp),
+    @@ } else {
+    .tx_vodemp_strobe       (1'b0),     // TX_SUPPORT_ANALOG_RECONFIG is disabled.
+    .tx_vod                 ({TX_MAX_LANE_COUNT{2'b0}}),     // TX_SUPPORT_ANALOG_RECONFIG is disabled.
+    .tx_emp                 ({TX_MAX_LANE_COUNT{2'b0}}),     // TX_SUPPORT_ANALOG_RECONFIG is disabled.
+    @@ }
+    .tx_xcvr_busy           (dp_tx_rcfg_busy),    
+    .tx_xcvr_reset          (dp_tx_xcvr_reset),
+    
+    // RX Reconfig (Not Used)
+    .rx_analogreset_ack     (1'b0),
+    .rx_link_rate           (8'd0),
+    .rx_link_rate_strobe    (1'b0),
+    .rx_mgmt_readdata       (32'd0),
+    .rx_mgmt_waitrequest    (1'b0),
+    .rx_xcvr_cal_busy       (1'b0),
+    .rx_vodemp_strobe      (1'b0),
+    .rx_vod                (8'b0),
+    .rx_emp                (8'b0),
+    
+    .tx_mgmt_chnum          (tx_rcfg_address[11:10]),
+    .tx_mgmt_address        (tx_rcfg_address[9:0]),
+    .tx_mgmt_writedata      (tx_rcfg_writedata),
+    .tx_mgmt_readdata       (tx_rcfg_readdata),
+    .tx_mgmt_write          (tx_rcfg_write),
+    .tx_mgmt_read           (tx_rcfg_read),
+    .tx_mgmt_waitrequest    (tx_rcfg_waitrequest),
+
+    .txpll_mgmt_address     (txpll_rcfg_address),
+    .txpll_mgmt_writedata   (txpll_rcfg_writedata),
+    .txpll_mgmt_readdata    (txpll_rcfg_readdata),
+    .txpll_mgmt_write       (txpll_rcfg_write),
+    .txpll_mgmt_read        (txpll_rcfg_read),
+    .txpll_mgmt_waitrequest (txpll_rcfg_waitrequest),
+
+    .tx_xcvr_cal_busy       (|tx_rcfg_cal_busy),
+    .tx_pll_cal_busy        (txpll_rcfg_cal_busy)
+);
+    defparam  bitec_reconfig_alt_a10_i.TX_LANES = TX_MAX_LANE_COUNT;
+    defparam  bitec_reconfig_alt_a10_i.TX_RATES_NUM = 3;
+
+assign tx_rcfg_en = dp_tx_rcfg_busy;
+
+wire [((TX_MAX_LANE_COUNT*TX_SYMBOLS_PER_CLOCK*10)-1):0] gxb_tx_fmc_parallel_data;
+
+gxb_tx gxb_tx_i
+(
+    .reconfig_clk             ({TX_MAX_LANE_COUNT{clk_100}}),
+    .reconfig_reset           ({TX_MAX_LANE_COUNT{reset}}),
+    .reconfig_write           (gxb_tx_rcfg_write),
+    .reconfig_read            (gxb_tx_rcfg_read),
+    .reconfig_address         (gxb_tx_rcfg_address),
+    .reconfig_writedata       (gxb_tx_rcfg_writedata),
+    .reconfig_readdata        (gxb_tx_rcfg_readdata),
+    .reconfig_waitrequest     (gxb_tx_rcfg_waitrequest),
+    .tx_bonding_clocks        ({TX_MAX_LANE_COUNT{gxb_tx_bonding_clocks}}),
+    .tx_cal_busy              (gxb_tx_rcfg_cal_busy),
+    .tx_serial_data           (gxb_tx_serial_data),
+    .tx_clkout                (gxb_tx_clkout), 
+
+    .tx_analogreset           (gxb_tx_analogreset),
+    .tx_analogreset_ack       (gxb_tx_analogreset_ack),
+    .tx_digitalreset          (gxb_tx_digitalreset),
+    .tx_coreclkin             (gxb_tx_coreclkin),
+    .tx_polinv                (gxb_tx_polinv),           
+    .tx_parallel_data         (gxb_tx_fmc_parallel_data),
+
+    .unused_tx_parallel_data  ()
+);
+
+assign gxb_tx_coreclkin = {TX_MAX_LANE_COUNT{gxb_tx_clkout[0]}};
+generate
+  if(BITEC_DP_CARD_REV == 0)
+  begin
+    // TX lane ordering inverted: 0,1,2,3 -> 3,2,1,0
+	assign gxb_tx_fmc_parallel_data = (TX_MAX_LANE_COUNT == 1) ?  {dp_tx_parallel_data[0 +:(TX_SYMBOLS_PER_CLOCK*10)]} :
+					  ((TX_MAX_LANE_COUNT == 2) ? {dp_tx_parallel_data[0 +:(TX_SYMBOLS_PER_CLOCK*10)],dp_tx_parallel_data[(1*TX_SYMBOLS_PER_CLOCK*10) +:(TX_SYMBOLS_PER_CLOCK*10)]} :
+					  			      {dp_tx_parallel_data[0 +:(TX_SYMBOLS_PER_CLOCK*10)],dp_tx_parallel_data[(1*TX_SYMBOLS_PER_CLOCK*10) +:(TX_SYMBOLS_PER_CLOCK*10)],dp_tx_parallel_data[(2*TX_SYMBOLS_PER_CLOCK*10) +:(TX_SYMBOLS_PER_CLOCK*10)],dp_tx_parallel_data[(3*TX_SYMBOLS_PER_CLOCK*10) +:(TX_SYMBOLS_PER_CLOCK*10)]});
+	assign gxb_tx_polinv = {TX_MAX_LANE_COUNT{1'b1}};
+  end
+  else
+  begin
+    assign gxb_tx_fmc_parallel_data = dp_tx_parallel_data;
+	assign gxb_tx_polinv = {TX_MAX_LANE_COUNT{1'b0}};
+  end
+endgenerate
+
+// MISC  
+assign tx_cad = 1'b0;
+
+endmodule

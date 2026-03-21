@@ -1,0 +1,49 @@
+
+
+// Infrastructure components
+../../demo/src/dp_sync.v
+../../demo/src/dp_hs_req.v
+../../demo/src/dp_hs_resp.v
+
+// Source Components
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_source_mac.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_source_csr.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_source_control.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_source_application.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_source_adaptation.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_source_adaptation_ecc.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_dp_sync.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/source_absorber.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/control_word_decoder.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/aclr_filter.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/dcfifo_s5m20k.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/delay_regs.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/eq_5_ena.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/gray_cntr_5_sl.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/gray_to_bin_5.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/neq_5_ena.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/s5m20k_ecc_1r1w.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/sync_regs_aclr_m2.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/wys_lut.v
+
+// Sink Components
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_mac.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_csr.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_application.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_alignment.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_adaptation.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_dcfifo.v
+$SIM_LOCATION/seriallite_iii_a10_160/sim/synopsys/altera_sl3_sink_dcfifo_fifo.v
+
+// Demo Components
+../../demo/src/traffic_gen.sv
+../../demo/src/prbs_generator.v
+../../demo/src/prbs_poly.v
+../../demo/src/traffic_check.v
+../../demo/src/source_reconfig.v
+../../demo/src/sink_reconfig.v
+
+// Testbench Components
+../skew_insertion.v
+../testbench.sv
+../test_env.v

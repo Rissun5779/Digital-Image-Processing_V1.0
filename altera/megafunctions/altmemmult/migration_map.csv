@@ -1,0 +1,15 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param WIDTH_D [get_old_param COUNT_D_COMBO]
+,set_new_param DATA_REPRESENTATION [get_old_param DATA_REPRESENTATION_COMBO]
+,set_new_param WIDTH_C [get_old_param COUNT_C_COMBO]
+,set_new_param COEFF_REPRESENTATION [get_old_param COEFF_REPRESENTATION_COMBO]
+,set_new_param COEFFICIENT0 [get_old_param COEFFICIENT0]
+"[get_old_param RAM_BLOCK_TYPE] == "0"","set_new_param RAM_BLOCK_TYPE "AUTO""
+"[get_old_param RAM_BLOCK_TYPE] == "1"","set_new_param RAM_BLOCK_TYPE "MLAB""
+"[get_old_param RAM_BLOCK_TYPE] == "2" && [string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param RAM_BLOCK_TYPE "M20K""
+"[get_old_param RAM_BLOCK_TYPE] == "2" && ![string equal [get_old_param INTENDED_DEVICE_FAMILY] "Arria 10"]","set_new_param RAM_BLOCK_TYPE "AUTO""
+"[get_old_param LOADABLE_COEFF] == "0"","set_new_param GUI_USE_COEFF_LOAD "false""
+"[get_old_param LOADABLE_COEFF] == "1"","set_new_param GUI_USE_COEFF_LOAD "true""
+"[get_old_param SCLR_CHECK] == "0"","set_new_param GUI_USE_SCLR "false""
+"[get_old_param SCLR_CHECK] == "1"","set_new_param GUI_USE_SCLR "true""

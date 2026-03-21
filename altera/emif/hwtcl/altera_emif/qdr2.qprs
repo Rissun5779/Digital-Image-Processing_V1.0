@@ -1,0 +1,2264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip><presets version="18.1">
+	<preset name="QDRII-250 Component (x18) CY7C1312JV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1312JV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1314JV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1314JV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1910JV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1910JV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.55" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1312KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1312KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1312KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1312KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1312KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1312KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1314KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1314KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1314KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1314KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1314KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1314KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x9) CY7C1911KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x9) CY7C1911KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x9) CY7C1911KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x9) CY7C1911KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1911KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1911KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1313KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1313KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1313KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1313KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1313KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1313KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1315KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1315KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1315KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1315KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1315KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1315KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x9) CY7C1425KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x9) CY7C1425KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x9) CY7C1425KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x9) CY7C1425KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1425KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1425KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1412KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1412KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1412KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1412KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1412KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1412KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1414KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1414KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1414KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1414KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1414KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1414KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x9) CY7C1426KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x9) CY7C1426KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x9) CY7C1426KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x9) CY7C1426KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1426KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1426KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1413KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1413KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1413KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1413KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1413KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1413KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1415KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1415KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1415KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1415KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1415KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1415KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x9) CY7C1525KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x9) CY7C1525KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x9) CY7C1525KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x9) CY7C1525KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1525KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1525KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1512KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1512KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1512KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1512KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1512KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1512KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1514KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1514KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1514KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1514KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1514KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1514KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x9) CY7C1526KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x9) CY7C1526KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x9) CY7C1526KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x9) CY7C1526KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1526KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1526KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1513KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1513KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1513KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1513KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1513KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1513KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1515KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1515KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1515KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1515KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1515KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1515KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.5" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.5" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x9) CY7C1625KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x9) CY7C1625KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="23" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x9) CY7C1625KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x9) CY7C1625KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="23" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x9) CY7C1625KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x9) CY7C1625KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="23" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="9" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x18) CY7C1612KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x18) CY7C1612KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x18) CY7C1612KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x18) CY7C1612KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x18) CY7C1612KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x18) CY7C1612KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="22" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII-333 Component (x36) CY7C1614KV18" kind="altera_emif" version="18.1" description="QDRII-333 Component (x36) CY7C1614KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_333" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="333.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.25" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.25" />
+	</preset>
+	<preset name="QDRII-300 Component (x36) CY7C1614KV18" kind="altera_emif" version="18.1" description="QDRII-300 Component (x36) CY7C1614KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_300" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="300.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.27" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.27" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.4" />
+	</preset>
+	<preset name="QDRII-250 Component (x36) CY7C1614KV18" kind="altera_emif" version="18.1" description="QDRII-250 Component (x36) CY7C1614KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_FULL" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_250" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="250.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="2" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="1.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.35" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.3" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.3" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.75" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C1143KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C1143KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x18) CY7C1143KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x18) CY7C1143KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C1145KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C1145KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x36) CY7C1145KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x36) CY7C1145KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-550 Component (x18) CY7C1163KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x18) CY7C1163KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C1163KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C1163KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x18) CY7C1163KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x18) CY7C1163KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-550 Component (x36) CY7C1165KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x36) CY7C1165KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-400 Component (x36) CY7C1165KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x36) CY7C1165KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-550 Component (x18) CY7C2163KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x18) CY7C2163KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C2163KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C2163KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-550 Component (x36) CY7C2165KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x36) CY7C2165KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C2165KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C2165KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="17" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C1243KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C1243KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x18) CY7C1243KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x18) CY7C1243KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C1245KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C1245KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x36) CY7C1245KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x36) CY7C1245KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C2245KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C2245KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-550 Component (x18) CY7C1263KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x18) CY7C1263KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-500 Component (x18) CY7C1263KV18" kind="altera_emif" version="18.1" description="QDRII+-500 Component (x18) CY7C1263KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_500" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="500.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+-400 Component (x18) CY7C1263KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x18) CY7C1263KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-550 Component (x36) CY7C1265KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x36) CY7C1265KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C1265KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C1265KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x36) CY7C1265KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x36) CY7C1265KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-550 Component (x36) CY7C1565KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x36) CY7C1565KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-500 Component (x36) CY7C1565KV18" kind="altera_emif" version="18.1" description="QDRII+-500 Component (x36) CY7C1565KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_500" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="500.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.25" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C1565KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C1565KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x36) CY7C1565KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x36) CY7C1565KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C1643KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C1643KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x18) CY7C1643KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x18) CY7C1643KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C1645KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C1645KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-400 Component (x36) CY7C1645KV18" kind="altera_emif" version="18.1" description="QDRII+-400 Component (x36) CY7C1645KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_400" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="400.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.0" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.4" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.4" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.28" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.2" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.2" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="1.0" />
+	</preset>
+	<preset name="QDRII+-550 Component (x18) CY7C1663KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x18) CY7C1663KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C1663KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C1663KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-550 Component (x36) CY7C1665KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x36) CY7C1665KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C1665KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C1665KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-550 Component (x18) CY7C2663KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x18) CY7C2663KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x18) CY7C2663KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x18) CY7C2663KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="21" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+-550 Component (x36) CY7C2665KV18" kind="altera_emif" version="18.1" description="QDRII+-550 Component (x36) CY7C2665KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_550" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="550.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.655" />
+	</preset>
+	<preset name="QDRII+-450 Component (x36) CY7C2665KV18" kind="altera_emif" version="18.1" description="QDRII+-450 Component (x36) CY7C2665KV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_450" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="450.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.275" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.275" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.22" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.15" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.15" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.25" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.85" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x18) CY7C1263XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x18) CY7C1263XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x18) CY7C1263XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x18) CY7C1263XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x36) CY7C1265XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x36) CY7C1265XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x36) CY7C1265XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x36) CY7C1265XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x18) CY7C2263XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x18) CY7C2263XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x18) CY7C2263XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x18) CY7C2263XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x36) CY7C2265XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x36) CY7C2265XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x36) CY7C2265XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x36) CY7C2265XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="18" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x18) CY7C1563XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x18) CY7C1563XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x18) CY7C1563XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x18) CY7C1563XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x36) CY7C1565XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x36) CY7C1565XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x36) CY7C1565XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x36) CY7C1565XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x18) CY7C2563XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x18) CY7C2563XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x18) CY7C2563XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x18) CY7C2563XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="20" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="18" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+	<preset name="QDRII+ Xtreme-633 Component (x36) CY7C2565XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-633 Component (x36) CY7C2565XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_633" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="633.333" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.71" />
+	</preset>
+	<preset name="QDRII+ Xtreme-600 Component (x36) CY7C2565XV18" kind="altera_emif" version="18.1" description="QDRII+ Xtreme-600 Component (x36) CY7C2565XV18">
+		<parameter name="PHY_QDR2_RATE_ENUM" value="RATE_HALF" />
+		<parameter name="PROTOCOL_ENUM" value="PROTOCOL_QDR2" />
+		<parameter name="MEM_QDR2_SPEEDBIN_ENUM" value="QDR2_SPEEDBIN_600" />
+		<parameter name="PHY_QDR2_MEM_CLK_FREQ_MHZ" value="600.0" />
+		<parameter name="MEM_QDR2_ADDR_WIDTH" value="19" />
+		<parameter name="MEM_QDR2_DATA_PER_DEVICE" value="36" />
+		<parameter name="MEM_QDR2_BL" value="4" />
+		<parameter name="MEM_QDR2_TRL_CYC" value="2.5" />
+		<parameter name="MEM_QDR2_THA_NS" value="0.23" />
+		<parameter name="MEM_QDR2_TSA_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TSD_NS" value="0.23" />
+		<parameter name="MEM_QDR2_THD_NS" value="0.18" />
+		<parameter name="MEM_QDR2_TCQD_NS" value="0.09" />
+		<parameter name="MEM_QDR2_TCQDOH_NS" value="-0.09" />
+		<parameter name="MEM_QDR2_INTERNAL_JITTER_NS" value="0.08" />
+		<parameter name="MEM_QDR2_TCCQO_NS" value="0.45" />
+		<parameter name="MEM_QDR2_TCQH_NS" value="0.75" />
+	</preset>
+</presets></ip>

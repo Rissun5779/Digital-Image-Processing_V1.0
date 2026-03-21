@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system name="$${FILENAME}">
+ <component
+   name="$${FILENAME}"
+   displayName="$${FILENAME}"
+   version="1.0"
+   description=""
+   tags="INTERNAL_COMPONENT=true"
+   categories="" />
+ <parameter name="bonusData"><![CDATA[bonusData 
+{
+   element eth_1588_tod_synchronizer_0
+   {
+      datum _sortIndex
+      {
+         value = "0";
+         type = "int";
+      }
+   }
+}
+]]></parameter>
+ <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
+ <parameter name="device" value="10AX115S3F45E2SGE3" />
+ <parameter name="deviceFamily" value="Arria 10" />
+ <parameter name="deviceSpeedGrade" value="2" />
+ <parameter name="fabricMode" value="QSYS" />
+ <parameter name="generateLegacySim" value="false" />
+ <parameter name="generationId" value="0" />
+ <parameter name="globalResetBus" value="false" />
+ <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="true" />
+ <parameter name="lockedInterfaceDefinition" value="" />
+ <parameter name="maxAdditionalLatency" value="1" />
+ <parameter name="projectName" value="" />
+ <parameter name="sopcBorderPoints" value="false" />
+ <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
+ <parameter name="timeStamp" value="0" />
+ <parameter name="useTestBenchNamingPattern" value="false" />
+ <instanceScript></instanceScript>
+ <interface
+   name="clk_master"
+   internal="eth_1588_tod_synchronizer_0.clk_master"
+   type="clock"
+   dir="end">
+  <port name="clk_master" internal="clk_master" />
+ </interface>
+ <interface
+   name="clk_sampling"
+   internal="eth_1588_tod_synchronizer_0.clk_sampling"
+   type="clock"
+   dir="end">
+  <port name="clk_sampling" internal="clk_sampling" />
+ </interface>
+ <interface
+   name="clk_slave"
+   internal="eth_1588_tod_synchronizer_0.clk_slave"
+   type="clock"
+   dir="end">
+  <port name="clk_slave" internal="clk_slave" />
+ </interface>
+ <interface
+   name="reset_master"
+   internal="eth_1588_tod_synchronizer_0.reset_master"
+   type="reset"
+   dir="end">
+  <port name="reset_master" internal="reset_master" />
+ </interface>
+ <interface
+   name="reset_slave"
+   internal="eth_1588_tod_synchronizer_0.reset_slave"
+   type="reset"
+   dir="end">
+  <port name="reset_slave" internal="reset_slave" />
+ </interface>
+ <interface
+   name="start_tod_sync"
+   internal="eth_1588_tod_synchronizer_0.start_tod_sync"
+   type="conduit"
+   dir="end">
+  <port name="start_tod_sync" internal="start_tod_sync" />
+ </interface>
+ <interface
+   name="tod_master_data"
+   internal="eth_1588_tod_synchronizer_0.tod_master_data"
+   type="conduit"
+   dir="end">
+  <port name="tod_master_data" internal="tod_master_data" />
+ </interface>
+ <interface
+   name="tod_slave_data"
+   internal="eth_1588_tod_synchronizer_0.tod_slave_data"
+   type="conduit"
+   dir="end">
+  <port name="tod_slave_data" internal="tod_slave_data" />
+  <port name="tod_slave_valid" internal="tod_slave_valid" />
+ </interface>
+ <module
+   name="eth_1588_tod_synchronizer_0"
+   kind="altera_eth_1588_tod_synchronizer"
+   version="16.1"
+   enabled="1"
+   autoexport="1">
+  <parameter name="AUTO_CLK_MASTER_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_SAMPLING_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CLK_SLAVE_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Arria 10" />
+  <parameter name="PERIOD_FNSEC" value="26214" />
+  <parameter name="PERIOD_NSEC" value="6" />
+  <parameter name="SAMPLE_SIZE" value="64" />
+  <parameter name="SYNC_MODE" value="5" />
+  <parameter name="TOD_MODE" value="0" />
+ </module>
+ <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
+ <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
+ <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
+</system>

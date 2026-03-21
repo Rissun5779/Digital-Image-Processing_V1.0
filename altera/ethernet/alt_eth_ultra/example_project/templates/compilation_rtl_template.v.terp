@@ -1,0 +1,91 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ if {$speed == 100} {
+@@     set serial_lanes 10
+@@ } else {
+@@     set serial_lanes 4
+@@ }
+@@
+module ${module_name} (
+@@ set comma ","
+@@ set count 0
+@@ foreach port $ports width $widths direction $directions {
+@@ incr count
+@@ if {$count >= $port_count} {set comma ""}
+@@ if {$width == 1} {
+@@ set width_expr ""
+@@ } else {
+@@ set msb [expr {$width - 1}]
+@@ set width_expr "\[${msb}:0\]"
+@@ }
+    ${direction} wire ${width_expr} ${port}${comma}
+@@ }
+);
+
+    @@ if {$caui4} {
+    wire serial_clk_1;
+    wire pll_locked_1;
+    wire serial_clk_2;
+    wire pll_locked_2;
+    @@ } else {
+    wire serial_clk;
+    @@ }
+
+    wire pll_locked;
+
+    @@ if {$caui4} {
+
+    arria10_atx_pll atx1 (
+        .pll_powerdown(reset_async),    // pll_powerdown.pll_powerdown
+        .pll_refclk0(clk_ref),          // pll_refclk0.clk
+        .tx_serial_clk_gt(serial_clk_1),
+        .pll_locked(pll_locked_1),      // pll_locked.pll_locked
+        .pll_cal_busy()                 // pll_cal_busy.pll_cal_busy
+    );
+    
+    arria10_atx_pll atx2 (
+        .pll_powerdown(reset_async),    // pll_powerdown.pll_powerdown
+        .pll_refclk0(clk_ref),          // pll_refclk0.clk
+        .tx_serial_clk_gt(serial_clk_2),
+        .pll_locked(pll_locked_2),      // pll_locked.pll_locked
+        .pll_cal_busy()                 // pll_cal_busy.pll_cal_busy
+    );
+    
+    assign pll_locked = pll_locked_1 && pll_locked_2;
+    @@ } else {
+
+    arria10_atx_pll atx (
+        .pll_powerdown  (reset_async),
+        .pll_refclk0    (clk_ref),
+        .pll_locked     (pll_locked),
+        .pll_cal_busy   (),
+        .mcgb_rst       (reset_async),
+        .mcgb_serial_clk(serial_clk)
+    );
+
+    @@ }
+
+    ${ip_inst_name} ${ip_inst_name}_inst (
+    @@ foreach port $ports {
+        .${port}(${port}),
+    @@ }
+        @@ if {$caui4} {
+        .tx_serial_clk         ({{2{serial_clk_2}},{2{serial_clk_1}}}),
+        @@ } else {
+        .tx_serial_clk         ({${serial_lanes}{serial_clk}}),
+        @@ }
+
+        .tx_pll_locked         (pll_locked)
+    );
+endmodule

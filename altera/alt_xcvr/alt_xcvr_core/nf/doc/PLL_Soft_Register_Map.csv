@@ -1,0 +1,20 @@
+DPRIO Offset(hex) ,DPRIO Bit Offset ,Attribute Name ,Other DPRIO Offset (hex) ,Attribute Encoding ,DPRIO Encoding ,Block,VISIBLE,ACCESS,OVERRIDE,GUI VISIBLE,User Description,UI Index
+200,[7:0],A10_XR_ADDR_ID,201|202|203,A10_XR_ADDR_ID[7:0],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+201,[7:0],A10_XR_ADDR_ID,200|202|203,A10_XR_ADDR_ID[15:8],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+202,[7:0],A10_XR_ADDR_ID,200|201|203,A10_XR_ADDR_ID[23:16],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+203,[7:0],A10_XR_ADDR_ID,200|201|202,A10_XR_ADDR_ID[31:24],DIRECT MAPPED,capability,,RO,,,User Identifier,0
+204,[0:0],A10_XR_ADDR_STATUS_EN,,A10_XR_ADDR_STATUS_EN[0:0],DIRECT MAPPED,capability,,RO,,FALSE,Status Enable,
+,[7:1],RESERVED,,,,,,,,,,
+205,[0:0],A10_XR_ADDR_CONTROL_EN,,A10_XR_ADDR_CONTROL_EN[0:0],DIRECT MAPPED,capability,,RO,,FALSE,Control Enable,
+,[7:1],RESERVED,,,,capability,,,,,,
+210,[0:0],A10_XR_ADDR_PLL_MCGB_EN,,A10_XR_ADDR_PLL_MCGB_EN[0:0],DIRECT MAPPED,capability,,RO,,,Master CGB Enabled,1
+,[7:1],RESERVED,,,,capability,,,,,,
+280,[0:0],A10_XR_ADDR_GP_LOCK,,0,1'b0,status,,RO,,,PLL locked,0
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_GP_CAL_BUSY,,0,1'b0,status,,RO,,,PLL Cal busy,1
+,,,,1,1'b1,,,,,,,
+,[7:2],RESERVED,,,,,,,,,,
+2E0,[0:0],A10_XR_OFFSET_PLL_RST,,0,1'b0,control,,RW,,,Set PLL Reset,0
+,,,,1,1'b1,,,,,,,
+,[1:1],A10_XR_OFFSET_PLL_RST_OVR,,A10_XR_OFFSET_PLL_RST_OVR[0:0],DIRECT MAPPED,control,,RW,A10_XR_OFFSET_PLL_RST,FALSE,PLL Reset Override,
+,[7:2],RESERVED,,,,,,,,,,

@@ -1,0 +1,65 @@
+"tab: Width, Clks, Synchronization",,
+,param: GUI_Width,
+,param: GUI_diff_widths,
+,param: GUI_output_width,
+,param: GUI_Depth,
+,text: Note: You could enter arbitrary values for width.,
+,param: GUI_Clock,
+,param: GUI_CLOCKS_ARE_SYNCHRONIZED,
+,,
+tab: SCFIFO Options,,
+,group: Would you like to disable any circuitry protection?,
+,,param: GUI_Full
+,,param: GUI_Empty
+,,param: GUI_UsedW
+,,text: Note: You can use the MSB to generate a half-full flag.
+,,param: GUI_AlmostFull
+,,param: GUI_AlmostFullThr
+,,param: GUI_AlmostEmpty
+,,param: GUI_AlmostEmptyThr
+,,param: GUI_sc_aclr
+,,param: GUI_sc_sclr
+,,
+tab: DCFIFO 1,,
+,"text: <html>Total latency, clock synchronization, metastability protection, area, and fmax options must be set<br> as a group. Total latency is the sum of two write clock rising edges and the number of read<br> clocks selected below.</html>",
+,"text: <html>Which option(s) is most important to the DCFIFO? <br>(Read clk sync stages, metastability protection, area, fmax)</html>",
+,param: GUI_delaypipe,
+,,param: GUI_synStage,,
+,group: Timing Constraint,
+,,param: GUI_DISABLE_DCFIFO_EMBEDDED_TIMING_CONSTRAINT
+,,
+tab: DCFIFO 2,,
+,text: Which optional output control signals do you want?,
+,,text: usedw[] is the number of words in the FIFO.
+,group: Read-side,
+,,param: GUI_rsFull
+,,param: GUI_rsEmpty
+,,param: GUI_rsUsedw
+,,text: Note: These signals are synchronous to 'rdclk'.
+,group: Write-side,
+,,param: GUI_wsFull
+,,param: GUI_wsEmpty
+,,param: GUI_wsUsedw
+,,text: Note: These signals are synchronous to 'wrclk'.
+,param: GUI_msb_usedw,
+,text: Note: You can use the MSB to generate a half-full flag.,
+,param: GUI_dc_aclr,
+,,param: GUI_write_aclr_synch
+,,param: GUI_read_aclr_synch
+,,
+"tab: Rdreq Option, Blk Type",,
+,param: GUI_LegacyRREQ,
+,param: GUI_RAM_BLOCK_TYPE,
+,param: GUI_MAX_DEPTH,
+,param: GUI_MAX_DEPTH_BY_9,
+,,
+"tab: Optimization, Circuitry Protection",,
+,param: GUI_Optimize,
+,param: GUI_Optimize_max,param: GUI_Optimize_max
+,param: GUI_LE_BasedFIFO,
+,group: Would you like to disable any circuitry protection (overflow checking and underflow checking)?,
+,,"text: If not required, overflow and underflow checking can be disabled to improve performance."
+,,param: GUI_OVERFLOW_CHECKING
+,,param: GUI_UNDERFLOW_CHECKING
+,group: Would you like to enable ECC?,
+,,param: GUI_ENABLE_ECC

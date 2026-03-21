@@ -1,0 +1,44 @@
+#include <unistd.h>
+#include "system.h"
+#include <stdint.h>
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define MS 1000
+
+void print_int(int x)
+{
+    char buf[12];
+    int i = 0;
+
+    if (x == 0) {
+        write(1, "0\n", 2);
+        return;
+    }
+
+    while (x > 0) {
+        buf[i++] = '0' + (x % 10);
+        x /= 10;
+    }
+
+    while (i--)
+        write(1, &buf[i], 1);
+
+    write(1, "\n", 1);
+}
+
+int main()
+{
+    uint8_t LED = 0x01;
+
+    while (1) {
+        if (LED == 0x80)
+            LED = 0x01;
+
+        print_int(LED);
+
+        LED_REG = LED;
+        LED <<= 1;
+
+        usleep(100 * MS);
+    }
+}

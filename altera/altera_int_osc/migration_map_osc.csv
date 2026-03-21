@@ -1,0 +1,1 @@
+CONDITION,DO,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]

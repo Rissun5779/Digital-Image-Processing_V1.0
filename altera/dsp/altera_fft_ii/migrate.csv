@@ -1,0 +1,27 @@
+CONDITION,DO
+,set_new_param length [get_old_param NPS]
+[get_old_param ARCH]  == 0,"set_new_param data_flow ""Streaming"""
+[get_old_param ARCH]  == 1,"set_new_param data_flow ""Buffered Burst"""
+[get_old_param ARCH]  == 2,"set_new_param data_flow  ""Burst"""
+[get_old_param ARCH]  == 3,"set_new_param data_flow  ""Variable Streaming"""
+[get_old_param DIRECTION] == 0 && [get_old_param ARCH] ==3 && [get_old_param REPRESENTATION] == 1,"set_new_param direction ""Forward"""
+[get_old_param DIRECTION] == 1 && [get_old_param ARCH] ==3 && [get_old_param REPRESENTATION] == 1,"set_new_param direction ""Reverse"""
+[get_old_param DIRECTION] == 2 || [get_old_param ARCH] != 3 || [get_old_param REPRESENTATION] == 0,"set_new_param direction ""Bi-directional"""
+[get_old_param REPRESENTATION] == 0 && [get_old_param ARCH] == 3,"set_new_param data_rep ""Fixed Point"""
+[get_old_param REPRESENTATION] == 1 && [get_old_param ARCH] == 3,"set_new_param data_rep ""Single Floating Point"""
+[get_old_param ARCH] != 3,"set_new_param data_rep ""Block Floating Point"""
+,set_new_param in_width [get_old_param MPR]
+,set_new_param out_width [get_old_param OPR]
+,set_new_param twid_width [get_old_param TWR]
+[get_old_param INPUT_ORDER] == 1 || [get_old_param ARCH] != 3,"set_new_param in_order ""Natural"""
+[get_old_param INPUT_ORDER] == 0 && [get_old_param ARCH] == 3 && [get_old_param REPRESENTATION] == 0,"set_new_param in_order ""Bit Reverse"""
+[get_old_param INPUT_ORDER] == 0 && [get_old_param ARCH] == 3 && [get_old_param REPRESENTATION] == 1,"set_new_param in_order ""Digit Reverse"""
+[get_old_param OUTPUT_ORDER] == 1 || [get_old_param ARCH] != 3,"set_new_param out_order ""Natural"""
+[get_old_param OUTPUT_ORDER] == 0 && [get_old_param ARCH] == 3 && [get_old_param REPRESENTATION] == 0,"set_new_param out_order ""Bit Reverse"""
+[get_old_param OUTPUT_ORDER] == 0 && [get_old_param ARCH] == 3 && [get_old_param REPRESENTATION] == 1,"set_new_param out_order ""Digit Reverse"""
+,set_new_param num_engines [get_old_param NUME]
+[get_old_param ENGINE_THROUGHPUT] == 1,"set_new_param engine_arch ""Single Output"""
+[get_old_param ENGINE_THROUGHPUT] == 4,"set_new_param engine_arch ""Quad Output"" "
+[get_old_param DSP_ARCH] == 0,set_new_param dsp_resource_opt false 
+[get_old_param DSP_ARCH] != 0,set_new_param dsp_resource_opt true 
+,set_new_param selected_device_family [get_old_param DEVICE]

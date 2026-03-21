@@ -1,0 +1,10 @@
+#dump -file result.vpd
+
+#dump -add tb_top -depth 4
+#dump -add tb_top.genblk1.dut -depth 1
+#dump -add tb_top.genblk1.dut.altera_eth_channel_1588_inst_0 -depth 1
+#dump -add tb_top.genblk1.dut.altera_eth_channel_1588_inst_1 -depth 1
+#dump -add tb_top.genblk1.dut.altera_eth_channel_1588_inst_0.phy -depth 1
+#dump -add tb_top.genblk1.dut.altera_eth_channel_1588_inst_1.phy -depth 1
+
+run

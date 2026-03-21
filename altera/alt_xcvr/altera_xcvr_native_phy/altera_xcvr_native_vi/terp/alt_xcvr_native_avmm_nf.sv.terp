@@ -1,0 +1,308 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+`timescale 1 ps/1 ps
+
+
+
+module alt_xcvr_native_avmm_nf_${random_str} #(
+  parameter CHANNELS          = 1,
+  parameter RECONFIG_SHARED   = 0,
+  parameter JTAG_ENABLED      = 0,    // Can only be enabled when using a shared reconfig interface
+  parameter ADME_SLAVE_MAP    = "altera_xcvr_native_a10",
+  parameter ADME_ASSGN_MAP    = " ",
+  parameter RCFG_EMB_STRM_ENABLED = 0,    // Enable the embedded reconfiguration streamer logic
+  parameter RCFG_PROFILE_CNT  = 2,    // Number of configuration profiles for embedded streamer
+
+  // The following are not intended to be directly set
+  parameter IFACES            = RECONFIG_SHARED ? 1 : CHANNELS,
+  parameter ADDR_BITS         = 10,
+  parameter SEL_BITS          = (RECONFIG_SHARED ? altera_xcvr_native_a10_functions_h::clogb2_alt_xcvr_native_a10(CHANNELS-1) : 0),
+  parameter DATA_WIDTH        = 32
+) (
+  // User reconfig interface ports
+  input   wire  [IFACES-1:0]              reconfig_clk,
+  input   wire  [IFACES-1:0]              reconfig_reset,
+  input   wire  [IFACES-1:0]              reconfig_write,
+  input   wire  [IFACES-1:0]              reconfig_read,
+  input   wire  [IFACES*(ADDR_BITS+SEL_BITS)-1:0] reconfig_address,
+  input   wire  [IFACES*DATA_WIDTH-1:0]   reconfig_writedata,
+  output  wire  [IFACES*DATA_WIDTH-1:0]   reconfig_readdata,
+  output  wire  [IFACES-1:0]              reconfig_waitrequest,
+
+  // Embedded reconfig streamer ports
+  input   wire  [(CHANNELS*altera_xcvr_native_a10_functions_h::clogb2_alt_xcvr_native_a10(RCFG_PROFILE_CNT-1))-1:0] rcfg_emb_strm_cfg_sel,
+  input   wire  [CHANNELS-1:0]            rcfg_emb_strm_bcast_en,
+  input   wire  [CHANNELS-1:0]            rcfg_emb_strm_cfg_load,
+  output  wire  [CHANNELS-1:0]            rcfg_emb_strm_chan_sel,
+  output  wire  [CHANNELS-1:0]            rcfg_emb_strm_busy,
+  
+  // AVMM ports to transceiver
+  output  wire  [CHANNELS-1:0]            avmm_clk,
+  output  wire  [CHANNELS-1:0]            avmm_reset,
+  output  wire  [CHANNELS-1:0]            avmm_write,
+  output  wire  [CHANNELS-1:0]            avmm_read,
+  output  wire  [CHANNELS*ADDR_BITS-1:0]  avmm_address,
+  output  wire  [CHANNELS*8-1:0]          avmm_writedata,
+  input   wire  [CHANNELS*8-1:0]          avmm_readdata,
+  input   wire  [CHANNELS-1:0]            avmm_waitrequest
+);
+
+  localparam CHANNEL_SEL_WIDTH = altera_xcvr_native_a10_functions_h::clogb2_alt_xcvr_native_a10(CHANNELS-1);
+
+  // Set the slave type for the ADME.  Since the span needs to be a string, 2^(total addr_bits) will
+  // give the max value, however since the adme uses byte alignment, shift the span by two bits.
+  localparam set_slave_span = altera_xcvr_native_a10_functions_h::int2str_alt_xcvr_native_a10(2**(ADDR_BITS+CHANNEL_SEL_WIDTH+2));
+  localparam set_slave_map = {"{typeName ",ADME_SLAVE_MAP," address 0x0 span ",set_slave_span," hpath {}",ADME_ASSGN_MAP,"}"};
+
+
+  // Raw rmbedded reconfig signals (always independent)
+  wire [CHANNELS-1:0]             rcfg_emb_strm_write;
+  wire [CHANNELS-1:0]             rcfg_emb_strm_read;
+  wire [CHANNELS*ADDR_BITS-1:0]   rcfg_emb_strm_address;
+  wire [CHANNELS*DATA_WIDTH-1:0]  rcfg_emb_strm_writedata;
+  wire [CHANNELS-1:0]             rcfg_emb_strm_waitrequest;
+
+  // User AVMM signals expanded to independent channels
+  wire [CHANNELS-1:0]             split_user_write;
+  wire [CHANNELS-1:0]             split_user_read;
+  wire [CHANNELS*ADDR_BITS-1:0]   split_user_address;
+  wire [CHANNELS*DATA_WIDTH-1:0]  split_user_writedata;
+  wire [CHANNELS-1:0]             split_user_waitrequest;
+
+  // JTAG signals expanded to independent channels
+  wire [CHANNELS-1:0]             split_jtag_write;
+  wire [CHANNELS-1:0]             split_jtag_read;
+  wire [CHANNELS*ADDR_BITS-1:0]   split_jtag_address;
+  wire [CHANNELS*DATA_WIDTH-1:0]  split_jtag_writedata;
+  wire [CHANNELS-1:0]             split_jtag_waitrequest;
+
+  // Read_write signals to assist with prioritizing arbitrarion
+  wire  [CHANNELS-1:0]            user_read_write;
+  wire  [CHANNELS-1:0]            jtag_read_write;
+  wire  [CHANNELS-1:0]            rcfg_emb_strm_read_write;
+
+  // Wires for converting between data widths
+  wire  [CHANNELS*DATA_WIDTH-1:0] expanded_avmm_readdata;
+  wire  [CHANNELS*DATA_WIDTH-1:0] expanded_avmm_writedata;
+
+  // Generate read_write signals
+  assign user_read_write        = split_user_read | split_user_write;  // Bits asserted for corresponding channels from/to which user avmm is currently reading/writing
+  assign jtag_read_write        = split_jtag_read | split_jtag_write;  // Bits asserted for corresponding channels from/to which jtag is currently reading/writing
+  assign rcfg_emb_strm_read_write        = rcfg_emb_strm_read | rcfg_emb_strm_write;              // Bits asserted for corresponding channels from/to which embedded streamer is currently reading/writing
+
+
+  genvar ig;
+  generate
+    for(ig=0;ig<CHANNELS;ig=ig+1) begin: g_expanded_avmm_signals
+      assign  expanded_avmm_readdata [ig*DATA_WIDTH +: DATA_WIDTH] = {24'd0,avmm_readdata [ig*8 +: 8]};
+      assign  avmm_writedata [ig*8 +: 8]                           = expanded_avmm_writedata   [ig*DATA_WIDTH +: 8];
+    end
+
+    //***************************************************************************
+    //********************** Arbitration logic ***********************************
+    if(JTAG_ENABLED || RCFG_EMB_STRM_ENABLED) begin : g_arbiter
+      
+      wire [CHANNELS-1:0]   rcfg_emb_strm_grants;
+
+      // Split-channel arbitration logic allows multiple masters access to different individual channels in parallel
+      for(ig=0;ig<CHANNELS;ig=ig+1) begin: g_arbitration_logic
+    
+        // Lower n means higher priority
+        wire [2:0] req;   // req[n] means a master is requesting access for this cycle
+        wire [2:0] grant; // grant[n] means requester n is grantee in this cycle
+      
+        // Priority in decreasing order is embedded reconfig -> user AVMM -> JTAG
+        assign req   = {jtag_read_write[ig],user_read_write[ig],rcfg_emb_strm_read_write[ig]};
+
+        assign rcfg_emb_strm_grants[ig] = grant[0];
+
+        alt_xcvr_arbiter #(
+        	.width (3)
+        ) arbiter_inst (
+        	.clock (reconfig_clk[RECONFIG_SHARED ? 0 : ig]),
+        	.req   (req),
+        	.grant (grant)
+        );
+
+        assign avmm_write         [ig]                          = grant[0] ? (~&rcfg_emb_strm_write | &rcfg_emb_strm_grants) & rcfg_emb_strm_write[ig] : // If broadcasting, wait for all channels to receive grant before asserting write
+                                                                  grant[1] ? split_user_write[ig] :
+                                                                  grant[2] ? split_jtag_write[ig] : 1'b0;
+
+        assign avmm_read          [ig]                          = grant[0] ? (~&rcfg_emb_strm_read | &rcfg_emb_strm_grants) & rcfg_emb_strm_read[ig] : // If broadcasting, wait for all channels to receive grant before asserting read
+                                                                  grant[1] ? split_user_read[ig] :
+                                                                  grant[2] ? split_jtag_read[ig] : 1'b0;
+
+        assign avmm_address       [ig*ADDR_BITS +: ADDR_BITS]   = grant[0] ? rcfg_emb_strm_address[ig*ADDR_BITS +: ADDR_BITS] :
+                                                                  grant[1] ? split_user_address[ig*ADDR_BITS +: ADDR_BITS] :
+                                                                  grant[2] ? split_jtag_address[ig*ADDR_BITS +: ADDR_BITS] : {ADDR_BITS{1'b0}};
+
+        assign expanded_avmm_writedata [ig*DATA_WIDTH +: DATA_WIDTH] = grant[0] ? rcfg_emb_strm_writedata[ig*DATA_WIDTH +: DATA_WIDTH] :
+                                                                       grant[1] ? split_user_writedata[ig*DATA_WIDTH +: DATA_WIDTH] :
+                                                                       grant[2] ? split_jtag_writedata[ig*DATA_WIDTH +: DATA_WIDTH] : {DATA_WIDTH{1'b0}};
+
+        // Generate waitrequest signals
+        // If one master is currently a grant holder, all other masters have waitrequest asserted
+        // Waitrequest is deasserted when a master becomes the grant holder or if there is no grant holder
+        assign rcfg_emb_strm_waitrequest[ig] = !grant[0] | avmm_waitrequest[ig];
+        assign split_user_waitrequest   [ig] = !grant[1] | avmm_waitrequest[ig];
+        assign split_jtag_waitrequest   [ig] = !grant[2] | avmm_waitrequest[ig];
+      end
+
+    end else begin : g_no_arbiter
+      // If no embedded reconfig and no jtag, user AVMM is wired straight through
+      // No arbitration to allow for channel merging
+      assign avmm_write                = split_user_write;
+      assign avmm_read                 = split_user_read;
+      assign avmm_address              = split_user_address;
+      assign expanded_avmm_writedata   = split_user_writedata;
+      assign split_user_waitrequest    = avmm_waitrequest;
+      assign rcfg_emb_strm_waitrequest = avmm_waitrequest;
+      assign split_jtag_waitrequest    = avmm_waitrequest;
+    end
+
+
+    //***************************************************************************
+    //********************** USER AVMM Master ***********************************
+    if(!RECONFIG_SHARED) begin : g_not_shared
+      // Signals are already split, so wire straight through
+      assign avmm_clk             = reconfig_clk;
+      assign avmm_reset           = reconfig_reset;
+
+      assign split_user_write     = reconfig_write;
+      assign split_user_read      = reconfig_read;
+      assign split_user_address   = reconfig_address;
+      assign split_user_writedata = reconfig_writedata;
+      assign reconfig_readdata    = expanded_avmm_readdata;
+      assign reconfig_waitrequest = split_user_waitrequest;
+
+    end else begin : g_shared
+      wire [CHANNEL_SEL_WIDTH-1:0] rcfg_if_sel;
+
+      // Generate interface select based on upper address bits
+      assign rcfg_if_sel          = reconfig_address[ADDR_BITS+:CHANNEL_SEL_WIDTH];
+      assign reconfig_readdata    = expanded_avmm_readdata[rcfg_if_sel*DATA_WIDTH +: DATA_WIDTH];
+      assign reconfig_waitrequest = split_user_waitrequest[rcfg_if_sel];
+
+      for(ig=0;ig<CHANNELS;ig=ig+1) begin : g_shared
+        // Split shared signals to independent channels
+        assign avmm_clk   [ig] = reconfig_clk;
+        assign avmm_reset [ig] = reconfig_reset;
+
+        assign split_user_write     [ig]                          = reconfig_write & (rcfg_if_sel == ig);
+        assign split_user_read      [ig]                          = reconfig_read  & (rcfg_if_sel == ig);
+        assign split_user_address   [ig*ADDR_BITS +: ADDR_BITS]   = reconfig_address[0+:ADDR_BITS];
+        assign split_user_writedata [ig*DATA_WIDTH +: DATA_WIDTH] = reconfig_writedata;
+      end
+    end
+
+
+    //***************************************************************************
+    //********************** Embedded JTAG Debug Master *************************
+    if(!JTAG_ENABLED) begin : g_no_jtag
+      assign split_jtag_write         = {CHANNELS{1'b0}};
+      assign split_jtag_read          = {CHANNELS{1'b0}};
+      assign split_jtag_address       = {(CHANNELS*ADDR_BITS){1'b0}};
+      assign split_jtag_writedata     = {(CHANNELS*DATA_WIDTH){1'b0}};
+    end else begin : g_jtag // JTAG can only be enabled when using a shared reconfig interface
+      // Raw JTAG signals
+      wire                                     jtag_write;
+      wire                                     jtag_read;
+      wire [(ADDR_BITS+CHANNEL_SEL_WIDTH)-1:0] jtag_address;
+      wire [DATA_WIDTH-1:0]                    jtag_writedata;
+      wire [DATA_WIDTH-1:0]                    jtag_readdata;
+      wire                                     jtag_waitrequest;
+
+      wire                                     jtag_readdatavalid;
+      wire [CHANNEL_SEL_WIDTH-1:0]             jtag_if_sel;
+
+      // Generate channel select based on upper address bits
+      assign jtag_if_sel      = jtag_address[ADDR_BITS+:CHANNEL_SEL_WIDTH];
+      assign jtag_readdata    = expanded_avmm_readdata[jtag_if_sel*DATA_WIDTH +: DATA_WIDTH];
+      assign jtag_waitrequest = split_jtag_waitrequest[jtag_if_sel];
+
+      for(ig=0;ig<CHANNELS;ig=ig+1) begin: g_expanded_avmm_segnals
+        // Split shared signals to independent channels
+        assign split_jtag_write     [ig]                          = jtag_write & (jtag_if_sel == ig);
+        assign split_jtag_read      [ig]                          = jtag_read  & (jtag_if_sel == ig);
+        assign split_jtag_address   [ig*ADDR_BITS +: ADDR_BITS]   = jtag_address[0+:ADDR_BITS];
+        assign split_jtag_writedata [ig*DATA_WIDTH +: DATA_WIDTH] = jtag_writedata[DATA_WIDTH-1:0];
+      end
+
+      // When doing RTL sims, remove the altera_debug_master_endpoint, as 
+      // there is no RTL simulation model.  Pre and Post Fit sims are ok.
+      `ifdef ALTERA_RESERVED_QIS
+        altera_debug_master_endpoint
+        #(
+          .ADDR_WIDTH                     ( (ADDR_BITS+CHANNEL_SEL_WIDTH) ),
+          .DATA_WIDTH                     ( DATA_WIDTH ),
+          .HAS_RDV                        ( 0 ),
+          .SLAVE_MAP                      ( set_slave_map ),
+          .PREFER_HOST                    ( " " ),
+          .CLOCK_RATE_CLK                 ( 0 )
+        ) adme (
+          .clk                                   (reconfig_clk),
+          .reset                                 (reconfig_reset),
+          .master_write                          (jtag_write),
+          .master_read                           (jtag_read),
+          .master_address                        (jtag_address),
+          .master_writedata                      (jtag_writedata),
+          .master_waitrequest                    (jtag_waitrequest),
+          .master_readdatavalid                  (jtag_readdatavalid),
+          .master_readdata                       (jtag_readdata)
+        );
+      `else
+        assign jtag_write       = 1'b0;
+        assign jtag_read        = 1'b0;
+        assign jtag_address     = {(ADDR_BITS+CHANNEL_SEL_WIDTH){1'b0}};
+        assign jtag_writedata   = {DATA_WIDTH{1'b0}};
+      `endif
+    end
+
+
+    //*************************************************************************
+    //********************** Embedded Reconfig Streamer ***********************
+    if(!RCFG_EMB_STRM_ENABLED) begin : g_rcfg_strm_disabled
+      assign  rcfg_emb_strm_write       = {CHANNELS{1'b0}};
+      assign  rcfg_emb_strm_read        = {CHANNELS{1'b0}};
+      assign  rcfg_emb_strm_address     = {(CHANNELS*ADDR_BITS){1'b0}};
+      assign  rcfg_emb_strm_writedata   = {CHANNELS{32'b0}};
+      assign  rcfg_emb_strm_busy        = {CHANNELS{1'b0}};
+      assign  rcfg_emb_strm_chan_sel    = {CHANNELS{1'b0}};
+
+    end else begin : g_rcfg_emb_strm_enabled
+      alt_xcvr_native_rcfg_strm_top_${random_str} #(
+        .xcvr_rcfg_interfaces      (CHANNELS         ),
+        .xcvr_rcfg_addr_width      (ADDR_BITS        ),
+        .xcvr_rcfg_data_width      (DATA_WIDTH       ),
+        .rcfg_profile_cnt          (RCFG_PROFILE_CNT )
+      )rcfg_strm_top_inst(
+        .clk                       (reconfig_clk[0]           ), // All clock bits should be driven by the same source if using independent interface
+        .reset                     (|reconfig_reset           ), // Any reset bit will reset the reconfig streamer
+        .cfg_sel                   (rcfg_emb_strm_cfg_sel     ),
+        .bcast_en                  (rcfg_emb_strm_bcast_en    ),
+        .cfg_load                  (rcfg_emb_strm_cfg_load    ),
+        .chan_sel                  (rcfg_emb_strm_chan_sel    ),
+        .stream_busy               (rcfg_emb_strm_busy        ),
+        .xcvr_reconfig_write       (rcfg_emb_strm_write       ),
+        .xcvr_reconfig_read        (rcfg_emb_strm_read        ),
+        .xcvr_reconfig_address     (rcfg_emb_strm_address     ),
+        .xcvr_reconfig_writedata   (rcfg_emb_strm_writedata   ),
+        .xcvr_reconfig_readdata    (expanded_avmm_readdata    ),
+        .xcvr_reconfig_waitrequest (rcfg_emb_strm_waitrequest )
+      );
+    end
+  endgenerate
+
+endmodule
+

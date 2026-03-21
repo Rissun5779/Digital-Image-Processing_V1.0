@@ -1,0 +1,129 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ #-----------------------------------------------------------------------------------
+@@ #
+@@ # Name: params_to_v.v.terp
+@@ # 
+@@ # Purpose: transfer all parameters from hw.tcl file to verilog file
+@@ #
+@@ # Usage: IP core independent, general verilog format output for lpm ip cores, do not change.
+@@ #        use ip specific tcl file to do ip dependent params transfer.
+@@ #
+@@ #--------------------------------------------------------------------------------------
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module  ${output_name}  (
+@@
+@@  # output module port list #
+@@  # module_port_list {{port direction width value} {port direction width value} ...} #
+@@  set last_sub_module_port_list [lindex $module_port_list end]
+@@  set port_last [lindex $last_sub_module_port_list end-3]
+@@  foreach {sub_module_port_list} $module_port_list {
+@@  foreach {port direction width value} $sub_module_port_list {
+@@      if {[string equal $port $port_last]}    {
+	$port);
+@@      } else {
+	$port,
+@@      }
+@@  }
+@@  }
+
+@@  # output input and output port lists #
+@@  # module_port_list {{port direction width value} {port direction width value} ...} #
+@@  foreach {sub_module_port_list} $module_port_list {
+@@  foreach {port direction width value} $sub_module_port_list {
+@@      if {[string equal $direction "IN"]} {
+@@          if {$width!= -1}    {
+	input	[$width:0]  $port;
+@@          } else {
+	input	  $port;
+@@          }
+@@      } else {
+@@          if {$width!= -1}    {
+	output	[$width:0]  $port;
+@@          } else {
+	output	$port;
+@@          }
+@@      }
+@@  }
+@@  }
+
+@@  # output output ports wire connections #
+@@  foreach {name width} $sub_wire_list {
+@@      if {$width !=-1} {
+	wire [$width:0] $name;
+@@      } else {
+	wire $name;
+@@      }
+@@  }
+@@  foreach {name_l name_r width} $wire_list {
+@@      if {$width !=-1} {
+	wire [$width:0] $name_l = $name_r[$width:0];
+@@      } else {
+	wire $name_l = $name_r;
+@@      }
+@@  }
+
+@@  # output component information #
+@@  set ip_name_upper [string toupper $ip_name]
+	$ip_name  ${ip_name_upper}_component (
+@@      
+@@  # output component port list #
+@@  set size [llength $ports_not_added_list]
+@@  if {$size>0}    {
+@@      set port_last [lindex $port_map_list end-3]
+@@      foreach {name_l name_r direction width} $port_map_list {
+@@          if {[string equal $name_l $port_last]}    {
+				.$name_l ($name_r),
+@@          } else {
+				.$name_l ($name_r),
+@@          }
+@@      }
+@@      set port_last [lindex $ports_not_added_list end-1]
+@@      foreach {port connection} $ports_not_added_list {
+@@          if {[string equal $port $port_last]} {
+				.$port ($connection));
+@@          } else {
+				.$port ($connection),
+@@          }
+@@      }
+@@  } else  {
+@@      set port_last [lindex $port_map_list end-3]
+@@      foreach {name_l name_r direction width} $port_map_list {
+@@          if {[string equal $name_l $port_last]}    {
+				.$name_l ($name_r));
+@@          } else {
+				.$name_l ($name_r),
+@@          }
+@@      }
+@@  }
+@@
+@@  # output component parameters #
+	defparam
+@@  set last_param_list [lindex $params_list end]
+@@  set name_last [lindex $last_param_list end-2]
+@@  foreach {sub_param} $params_list  {
+@@      foreach {name str value} $sub_param  {
+@@          if {[string equal $name $name_last]} {
+		${ip_name_upper}_component.$name  = $value;
+@@          } else {
+		${ip_name_upper}_component.$name  = $value,
+@@          }
+@@      }
+@@  }
+
+
+endmodule

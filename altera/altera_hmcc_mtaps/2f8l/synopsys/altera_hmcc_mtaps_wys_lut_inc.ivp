@@ -1,0 +1,133 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// This simulation model contains highly confidential and
+// proprietary information of Intel and is being provided
+// in accordance with and subject to the protections of the
+// applicable Intel Program License Subscription Agreement
+// which governs its use and disclosure. Your use of Intel
+// Corporation's design tools, logic functions and other
+// software and tools, and its AMPP partner logic functions,
+// and any output files from any of the foregoing (including device
+// programming or simulation files), and any associated
+// documentation or information are expressly subject to the
+// terms and conditions of the Intel Program License Subscription
+// Agreement, Intel FPGA IP License Agreement, or other
+// applicable license agreement, including, without limitation,
+// that your use is for the sole purpose of simulating designs
+// for use exclusively in logic devices manufactured by Intel and sold
+// by Intel or its authorized distributors. Please refer to the
+// applicable agreement for further details. Intel products and
+// services are protected under numerous U.S. and foreign patents,
+// maskwork rights, copyrights and other intellectual property laws.
+// Intel assumes no responsibility or liability arising out of the
+// application or use of this simulation model.
+// ACDS 18.1
+`pragma protect begin_protected
+`pragma protect author="Altera"
+`pragma protect key_keyowner="VCS"
+`pragma protect key_keyname="VCS001"
+`pragma protect key_method="VCS003"
+`pragma protect encoding=(enctype="uuencode",bytes=200         )
+`pragma protect key_block
+H\R@82*0+,S'Z>M\?>L56_>3&J$Q?C#\Z?03N*Q$LB;Z9W-MF$N@5<0  
+H(9HA8\S)O/#ZON?I>\%E.I4%6G:-0;*&I24UD>6"%'>D9F==8Z%D.0  
+H;>M&MOL#6R#-^#(KSQTUQ7;(97H?JZ\EP24(L '6(L*?#&]\7X9DJP  
+H7)-%Y$6*[([0OS<"($S@K*\'\QRPY':(,?D,Q43)KZK 7SWV[I@JA   
+H89>))3J,$201KR8\(&_DI(U;6S=BM[)BM)Z# I\'0[L=^$OF9.QO=0  
+`pragma protect encoding=(enctype="uuencode",bytes=2976        )
+`pragma protect data_method="aes128-cbc"
+`pragma protect data_block
+@S'G=J3@:H7O"8"7EKYF=4IDRG"R#):VL! ]6/B91;*$ 
+@(]#-T0L8B<T#H^SCO*L3DP?C#!RI?!,Q! K"9'L4>DP 
+@-TU:$>'-*V3[ 1?5XW77%@E)P%K;O@TJ04F59M2[T<0 
+@^+[;\L'&:9T+E?0 %UJ[;?[XQJ/Z^6VM$L3%_S:N((0 
+@8"T,: -:+IH_HAP*.9";[P-[FP=T$Z @X/.L3=$"0I$ 
+@?:,?)J9ZV(Q2VK:L"=7GE-.HD**Z_*![C"SX-N%P,D4 
+@&@7ZB&3-T5T;CW;3F0VR@WQ7[>0V U6C'SL47*:R=Q( 
+@B^A1GI6S]%:J3NOSO,8/RMV2&,?_3YK25*SV2^];3(@ 
+@J__!+P7\-Y/+D11WQ6#VUR:9)."P5.43/GN@OG;O-2, 
+@%[WZ&W68_^L]"_2"^T=&E1<LP[_N*R*6P5Z8J'U475\ 
+@FV/3'27HA!IKDS[2& PX:,;?3GOH+@1V/F' &X7I^$, 
+@RTNWTYN6V.$@.^-4[ID2 &+=QUVW#98(.<,I6R%AY.< 
+@\]Q"HER5-;8-K)#._0M!]*@,0IZ?O*153Q:==^":A3\ 
+@JR:M)L]E5A +7NR' ..D+V/DC<8*MY19B]-Q.?,%\!D 
+@?HC6'++;UT!_H:MDBEO>_4F62 S&]5_*$)$B=1=Z8)X 
+@+U75-7;,K"FZ2#3R8#%1L\'T4*0VA<TUXLEZ2->))E@ 
+@(VV/7N/!9PP[D!LL(8^0//6?G/W;Y52+9*)>6A.Q78H 
+@D)YI2AB?BFT.[Y;.06ZM>@$9$Y7VX9'"!VHZ#N7-=OH 
+@'SVQE2N2'Q*8B75J>>)Z1^K,D+A$2_\F>&IXP$#2'<4 
+@#+M"W&FX'X57,1,?+4Z$O%@3KH1>#Q/\Z8S!#YPHCW( 
+@"%O#[E?O7B4)/#.26KZ5,/O,02% [982''"FGJ\;."0 
+@1MH:>^&R7<7.$"7<7)?_,$A[-9YIE/[GA0O37NHXFI8 
+@';2=(M]](C1$H3L,RF3IK&7KJ5#%FF6AAUE"F!6RJ78 
+@]0E)%5L?_U4E47A\;#\YS;6Y;_$WM-1266N)&]6%F4T 
+@6=!BZ<]/;,DR HQX5D0FB3Y&-A==SOM##::HI-(Y90D 
+@PK! UIOA2=M(Y;P.9?H\8.9YVJ7I#&[I#C/RKMR*[08 
+@F_7%L">!4]G_;*%>&,[$-J_ /&$8:.VU?B\0I\4-I)4 
+@NT2E/4/O4L&F*01!AYW@[F9X".V'B>9O@G\:A^,^F'D 
+@TM"0\6VO(//<39!9S<TWZ@<QIOE]1(707Z=7\\H?)/0 
+@W9L\$?/9KJ OPKMI!BL3EC*!NKG [#8O[S?]V I>_T< 
+@),/SL/[A+A<G,.87BXO"ART6L^(3^ZJF86@QBH'@9P4 
+@Y;6A,D=@-[E=/$+OC>#[_<N,?T6@36RNZ;K2T8PP#48 
+@80P-+./<U(W<OK#<&JIUSB8<8/7?A),%N-_?IOIW_H< 
+@B CZTN_P;Z#X#);U$:F%FKE-&3=%W[JQ#GRW3:7>SQ  
+@IS&6BEF7F*[YYPE;&";MH#VTO7.][:?]@O,_R?5QMC0 
+@.WM/WB9QRO^PEKKA!("MYXN@UME1[G$^[R ICD%M /H 
+@&*[$GEB/4]/4:&&TT"H[.;@+R-[BVG.[N\%ESJ@R;E@ 
+@A_G@5O8"CJXB[8>OU<@YV&C7T+K!/MZJ-/W0(_S&9K  
+@I8 J97:/3G*+KF*2X%%8^$!E2*I?&50^H!PKMR68=U4 
+@H1Q/[76"+=D85UMD;Q&9DL]0I@VV*DO/8D8;\PC=#NP 
+@N0V<ILL&X0:&<9M?FX'/?3'83]Q:ORC.-FPDE-8OHH\ 
+@YR;-M:RQ#HUOH\6(8-UX8W!M9!?S#,L>MN9;4<)U._4 
+@5^AC%MU]9$6A.H^.2X8<T"*[!/3!S\=IDYDG-=)JF/$ 
+@TKX^/$U>0:2G9BNU90L]7'>UY%([K4+*P43#;15_/W( 
+@$Q!,(;5O/%^?,=A.OZ8S16-\XGDKN2];R3C!3F+DT-, 
+@)L)N9 E:"Q8AN0:1YVSV@CV^[+Q*?_.MXJBQF.L8PTP 
+@M_MP#<%0OQYRXME"$JDQ27Q\8(2SZ/7_8.<MHVN?B $ 
+@^4^1TS\F.27'TQ(0?;+<>U_TGV[L%[:5\4\1J"!>91T 
+@=MYPX]VN#1#IT5Y+F$::J"3S!SRO$P%;W(?4K'W[,1L 
+@B\^@K#O'W^<S= H.]$WJ2Q*]47&;)F%,[8LFFE@5KQ0 
+@]S*C!L).4PV#THQ2:MIG5]X_\V)&[7UP6S2P.<B7+TH 
+@/3,=! S"=75IC>/$;*T!14^,2=9<+R@H\ D# TDX0.8 
+@_ K3>&7=A"F:G14RC1-RKRD]'G,?]^D6ZE>WU^VA&.T 
+@%'?CPN5A*V+'F(<"Q3Q9"9[G-+N>JO#DA@>&J(P1=_X 
+@\= =I-S)X<H>'$B]-CQHJF\+/&:7\F:-HO!EP5'<#JX 
+@'(Z_*+! WUT-1PM/$Z=B6NH<SYVN8E=V<==^WI"WY$X 
+@S<Q47D_XL0&Z#3=H*F>L)O6M@E$[\K*[47_Y0_I6"PT 
+@WC>:G;N%BH:9T@+T;MB*SV-/K#?B=QHO!W1%3,'3=*0 
+@8$V@X:D811/26H!M3CU@1:&43&"L9\E/'0G[N9H)PO< 
+@B^DL^CV05>3.L9/6 S(J;9&N)95PQ>%,'%Z&$24UCVL 
+@ZX7HQ-*?::X'9SD W*,8!P*Q+=GB&:LYKWQ<0Q:_V*D 
+@KG$(R'L<"[P#J\ LHN3?ZZQ!T"G\G^06)_I;A'F%JC< 
+@;P/N,VW.D"HMJQ@%X['D1FFE_C&2;_LXS@[1$[#,I.X 
+@CORLQA8/GO["!G4F'VUWLD1?ZGOY_L*2W?@/ A?7=F  
+@5U(:#-HDK$4%I)V4]'@5V@(>Z6Y0R::)8]B@<J (V]@ 
+@!X^FSX8Z&U6!H<!NZ\SS68?:[:#R'^+&,6 )3^G*Z:( 
+@PCB8JH6J)>Q'AEG\SDYB$/Q7;:9IR-4MI6U_($8 5]0 
+@A@P<@B#&8G(.7>6;%1'( VO/>]>J:ZO7;4Z'&@3%61L 
+@[YS]^FM=Z9ZLV4PD^'WPJF7>S4TZQO\&;Y57_<?//A\ 
+@"NVY6991X.NP;99UJP\H32EPJ@#X6T5HHRXK\&3!+2( 
+@93BU>S30]0?"W6?#JQX*C2LD]F0,U25$#\[Z08#5M"T 
+@0:1?I@=_OPZ(]#@@J2G,TYS00KGV\*BW_)D*(2XO.[\ 
+@!&&)R[:N?M5IN;+XK(HP,=!*:>@6;=%EMXKR2#<#',@ 
+@Q[%P$V""Q=I<6EC6<18Z;4'(AWZV\JK&(.>N4&\D<S$ 
+@ 3G>I8P'#XVG44RAV;0)X3U60P\W@N)IX<O_K/[WA>0 
+@,BQC0!MSD_CJY[)2$[@=K2"!0VIC9#RN5D#M5S2GD&$ 
+@6@K>&37IDR!IPOE[Q*RRIN#DG8/RC%YZ*: K3@MG/#4 
+@2AHZ^ +38864MJ^0_:2&S6.OJ AUE=)IV_0/P[1K3%0 
+@!6!P$,R\Q:7K-BX#JV42S46 F"NI4;S4<2D=1"-I=V, 
+@P2;F@'DYO9R(?7[!/A-M+07CX/R<#W@%Q(VOO<M>H4T 
+@(SB.00<#[&OX^LCQAYH-ST1DJ.,1=0E$3X8E!40'/EL 
+@4(W;AVY#ENIG'= F*B^9M=Z:BWL&HR@F-(S,Y*<S@U  
+@R56"30D;]<0F*W-U3.-JYH!2]&07Q84T2: ^421\W?4 
+@T!-67&T<W3/W<[X:_0G8>4QWI?)Z.6P!N)CB-Z7W3LH 
+@_'C%;[0J 9&8#E!"8KN[HYU"FMC))0\X)1KG<?\0GN( 
+@=0\&9EHKL^?%?2F""$P]WV7P8@H!#BK4AW)I"GMW";P 
+@\<6O 40*WTQ&\Q<C*4PRF$N^R0&:JE]C>.@\.;T9O-X 
+@G(AY^Y%XI9=S *ZZ7%K3_L2@S,R=_'0+*;:X.#11^04 
+@U+X,C(EX< 6[/##2B@+5M.)TRZS#I.61C->3NF4K&6  
+@YU=7-M].PWE)^P$*2+\B;CY$WJ<#EAGNY9 I4'W TC8 
+@S$U#J2F_)OQ_/CO/?>]4QZ^F5Q" SVH1Q\4+;D[>&Y, 
+@CTX9?BP'WR<X%.)F$[5+^WH4@J))Q9YA??32KZU/VFP 
+0T<P4"K9EV[^#G,J"3CPYJ0  
+0G(/[$"AB(Q?&V!<X;"#@!P  
+`pragma protect end_protected

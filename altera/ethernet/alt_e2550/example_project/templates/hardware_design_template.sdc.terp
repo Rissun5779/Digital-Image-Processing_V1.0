@@ -1,0 +1,67 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+# Automatically constrain PLL and other generated clocks
+derive_pll_clocks -create_base_clocks
+
+# Automatically calculate clock uncertainty to jitter and other effects.
+derive_clock_uncertainty
+
+set CLK100          [get_clocks sys_pll|altera_iopll_0|outclk0]
+set CLK_REF         [get_clocks clk_ref]
+@@ if {$speed == 50} {
+set TX_PMA_CLK      [get_clocks av_top|${ip_name}_0|s*|tx_pma_clk]
+set RX_PMA_CLK      [get_clocks av_top|${ip_name}_0|s*|rx_pma_clk]
+set TX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|s*|tx_pma_div_clk]
+set RX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|s*|rx_pma_div_clk]
+set TX_CORECLK      [get_clocks av_top|${ip_name}_0|s*|tx_coreclkin]
+set RX_CORECLK      [get_clocks av_top|${ip_name}_0|s*|rx_coreclkin]
+@@ } else {
+set RX_PMA_CLK      [get_clocks av_top|${ip_name}_0|rx_pma_clk]
+set TX_PMA_CLK      [get_clocks av_top|${ip_name}_0|tx_pma_clk]
+set RX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|rx_pma_div_clk]
+set TX_PMA_DIV_CLK  [get_clocks av_top|${ip_name}_0|tx_pma_div_clk]
+@@  if {$enable_ptp == 0} {
+set RX_CORECLK      [get_clocks av_top|${ip_name}_0|rx_coreclkin]
+set TX_CORECLK      [get_clocks av_top|${ip_name}_0|tx_coreclkin]
+@@ }
+@@ }
+
+# Clock groups
+@@  if {$enable_ptp == 0} {
+set_clock_groups -asynchronous -group \$CLK100 -group \$RX_CORECLK     -group \$TX_CORECLK
+@@ }
+set_clock_groups -asynchronous -group \$CLK100 -group \$RX_PMA_DIV_CLK -group \$RX_PMA_CLK
+set_clock_groups -asynchronous -group \$CLK100 -group \$TX_PMA_DIV_CLK
+set_clock_groups -asynchronous -group \$CLK100 -group \$TX_PMA_CLK
+set_clock_groups -asynchronous -group \$CLK100 -group \$CLK_REF
+set_clock_groups -asynchronous -group \$TX_PMA_DIV_CLK -group \$RX_PMA_DIV_CLK
+
+# False paths
+set_false_path -from [get_ports {cpu_resetn}]
+set_false_path -to   [get_ports {user_led[*]}]
+
+# From Timequest cookbook
+set_clock_groups -exclusive -group [get_clocks altera_reserved_tck]
+
+# From "AV SoC Golden Hardware Reference Design"
+set_input_delay -clock altera_reserved_tck -clock_fall 3 [get_ports altera_reserved_tdi]
+set_input_delay -clock altera_reserved_tck -clock_fall 3 [get_ports altera_reserved_tms]
+set_input_delay -clock altera_reserved_tck -clock_fall 3 [get_ports altera_reserved_ntrst]
+set_output_delay -clock altera_reserved_tck 3 [get_ports altera_reserved_tdo]
+
+# DIV40 clock
+@@ if {$speed == 50 && $enable_div40} {
+	set RX_CLK      [get_clocks av_top|${ip_name}_0|eth_custom|rxfpll|alt_e2550_rx_fpll|outclk0]
+	set_clock_groups -asynchronous -group \$CLK100 -group \$TX_PMA_DIV_CLK -group \$RX_CLK	
+@@ }

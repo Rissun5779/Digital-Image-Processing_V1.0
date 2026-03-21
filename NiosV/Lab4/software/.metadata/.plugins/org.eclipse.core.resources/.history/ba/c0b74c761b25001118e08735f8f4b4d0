@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <system.h>
+
+#define LED_REG (*(volatile uint32_t*)PIO_LED_BASE)
+#define ms		1000
+
+int main()
+{
+	int i = 0;
+    while(1)
+    {
+    	if(i!=0xFF){
+    		LED_REG = (uint32-t)i++;
+    	}
+
+    }
+    return 0;
+}

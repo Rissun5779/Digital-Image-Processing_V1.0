@@ -1,0 +1,4 @@
+{ "" "" "" "Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance." {  } {  } 0 18236 "" 0 0 "Design Software" 0 -1 0 ""}
+{ "" "" "" "7 hierarchies have connectivity warnings - see the Connectivity Checks report folder" {  } {  } 0 12241 "" 0 0 "Design Software" 0 -1 0 ""}
+{ "" "" "" "Clock uncertainty characteristics of the Arria 10 device family are preliminary" {  } {  } 0 332158 "" 0 0 "Design Software" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 18291 "" 0 0 "Design Software" 0 -1 0 ""}

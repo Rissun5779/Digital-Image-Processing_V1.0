@@ -1,0 +1,293 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// Testbench for BCH decoder, requires Bus Functional Modules as created by the Qsys
+
+
+// `timescale time_unit/time_precision
+`timescale 100 ns / 1 ns
+// console messaging level
+`define VERBOSITY VERBOSITY_INFO
+
+// BFM hierarchy
+`define CLK tb.${output_name}_inst_core_clk_bfm
+`define RST tb.${output_name}_inst_core_rst_bfm
+`define SRC tb.${output_name}_inst_core_in_bfm
+`define SNK tb.${output_name}_inst_core_out_bfm
+
+//Test parameters
+`define BACK_PRESSURE "true"
+`define FORWARD_PRESSURE "true"
+
+//BFM related parameters
+`define ST_ERROR_W              1
+
+
+// console messaging level
+import avalon_utilities_pkg::*;
+import verbosity_pkg::*;
+
+
+
+module test_program();
+
+  localparam N_BITS = ${N_BITS};
+  localparam K_BITS = ${K_BITS};
+  localparam DATA_WIDTH = ${DATA_WIDTH};
+  localparam OUT_WIDTH = DATA_WIDTH+8;
+  localparam CODE_CLOCKS = (N_BITS%DATA_WIDTH == 0) ? (N_BITS/DATA_WIDTH):(N_BITS/DATA_WIDTH+1);
+  localparam LAST_INPUT = N_BITS - DATA_WIDTH*(CODE_CLOCKS-1);
+
+  int bchmsg_rx_file, bch_decoded_file;
+  int data_counted_in = 0;
+  int data_counted_out = 0;
+
+  ${output_name}_tb tb();
+  
+
+
+  // class for source transaction (input data to the DUT)
+  class src_transaction_class;
+
+    int                         idles;
+    bit                         startofpacket;
+    bit                         endofpacket;
+    logic  [`ST_ERROR_W-1:0]    error;
+
+    logic [N_BITS-1:0] rx_word;
+    logic [DATA_WIDTH-1:0] data;
+    
+    function void open_input_files ();
+      bchmsg_rx_file = \$fopen("bchmsg_rx.txt", "r");
+      if(bchmsg_rx_file == -1) begin
+        print(VERBOSITY_WARNING,"Cannot open bchmsg_rx.txt file");
+      end else begin
+        print(VERBOSITY_INFO,"Input file bchmsg_rx.txt opened");
+      end;
+    endfunction; 
+
+
+    function void close_input_files ();
+      \$fclose(bchmsg_rx_file);
+      print(VERBOSITY_INFO,"Input file bchmsg_rx.txt closed");
+    endfunction;
+
+
+    function int read_input_data_files ();
+      int success;
+      string message;
+      
+      if(\$feof(bchmsg_rx_file)) begin
+         print(VERBOSITY_INFO,"End of bchmas_rx.txt file");
+         return -1;
+      end else begin
+         data_counted_in++;
+         success = \$fscanf(bchmsg_rx_file,"%b\\n,",rx_word);
+         return 1;
+      end;
+
+    endfunction;
+
+
+    task pack_send_data();
+
+      int i, j;
+
+      error = 1'b0;
+  
+      print(VERBOSITY_INFO, "Sending data of a new codeword");
+      
+      for(i=0;i<CODE_CLOCKS;i++) begin
+        data = 0;
+        if(i == CODE_CLOCKS-1) begin
+          for(j=0;j<LAST_INPUT;j++) begin
+            data[j] = rx_word[N_BITS-1-i*DATA_WIDTH-j];
+          end;
+        end else begin
+          for(j=0;j<DATA_WIDTH;j++) begin
+            data[j] = rx_word[N_BITS-1-i*DATA_WIDTH-j];
+          end;
+        end;
+
+        // start of packet signal
+        if(i == 0) begin
+          startofpacket = 1'b1;
+        end else begin
+          startofpacket = 1'b0;
+        end;
+
+        // end of packet signal
+        if(i == CODE_CLOCKS-1) begin
+          endofpacket =1'b1;
+        end else begin
+          endofpacket =1'b0;
+        end;
+
+        send_data();
+      end;
+      
+    endtask
+
+
+    task send_data();
+       `SRC.set_transaction_idles   (idles);
+       `SRC.set_transaction_sop     (startofpacket);
+       `SRC.set_transaction_eop     (endofpacket);
+       `SRC.set_transaction_data    (data);
+       `SRC.set_transaction_error   (error);
+       `SRC.push_transaction();
+    endtask;
+
+
+  endclass;
+
+
+
+  // class for sink transaction (output data from the DUT)
+  class snk_transaction_class;
+  
+    int                         idles;
+    bit                         startofpacket;
+    bit                         endofpacket;
+    logic  [`ST_ERROR_W-1:0]    error;
+
+    logic [N_BITS-1:0] decoded_word;
+    logic [OUT_WIDTH-1:0] data;
+
+    int data_counter;
+    int j;
+
+
+    function void open_output_files ();
+      data_counter = 0;
+      bch_decoded_file = \$fopen("bch_decoded.txt", "w");
+      if(bch_decoded_file == -1) begin
+        print(VERBOSITY_WARNING,"Cannot open bch_decoded.txt file");
+      end else begin
+        print(VERBOSITY_INFO,"Output file bch_decoded.txt opened");
+      end;
+    endfunction; 
+
+
+    function void close_output_files ();
+      \$fclose(bch_decoded_file);
+      print(VERBOSITY_INFO,"Output file bch_decoded.txt closed");
+    endfunction;
+
+    
+    //pop the transaction from Sink BFM queue and get the decriptors
+    function automatic void snk_pop_transaction();
+        `SNK.pop_transaction();
+        idles         = `SNK.get_transaction_idles();
+        startofpacket = `SNK.get_transaction_sop();
+        endofpacket   = `SNK.get_transaction_eop();
+        data          = `SNK.get_transaction_data();
+        error         = `SNK.get_transaction_error();
+
+      if (data_counter < CODE_CLOCKS-1) begin
+        for (j=0;j<DATA_WIDTH;j++) begin
+          decoded_word[N_BITS-1-data_counter*DATA_WIDTH-j] = data[8+j];
+        end;
+        data_counter = data_counter + 1;
+      end else if (data_counter == CODE_CLOCKS-1) begin
+        for (j=0;j<LAST_INPUT;j++) begin
+          decoded_word[N_BITS-1-data_counter*DATA_WIDTH-j] = data[8+j];
+        end;
+        data_counter = 0;
+        \$fdisplay(bch_decoded_file, "%b", decoded_word); // write decoded word to the output file
+        print(VERBOSITY_INFO,"Writing decoded word to the output file"); 
+        data_counted_out++;
+      end else begin
+        print(VERBOSITY_WARNING,"Error while writing output file");
+      end;
+      
+    endfunction;
+   
+  endclass;
+
+
+
+
+
+  src_transaction_class src_transaction;
+  snk_transaction_class snk_transaction;
+
+  int l;
+
+  initial begin
+
+    src_transaction = new();
+    snk_transaction = new();
+
+    //wait for reset to de-assert and trigger start_test event
+    wait(`RST.reset == 1);
+    `RST.reset_assert();
+    @(negedge `CLK.clk);
+    `RST.reset_deassert();
+    @(posedge `CLK.clk);
+
+    @(posedge `CLK.clk);
+    @(posedge `CLK.clk);
+    @(posedge `CLK.clk);
+    @(posedge `CLK.clk);
+    @(posedge `CLK.clk);
+
+    src_transaction.open_input_files();
+    snk_transaction.open_output_files();
+
+    `SRC.set_response_timeout(0);
+    fork: test_threads
+        begin : source_data_thread
+            while(src_transaction.read_input_data_files() != -1) begin
+                if(`FORWARD_PRESSURE=="true")
+                  begin
+                   src_transaction.idles =  (\$unsigned(\$random()) % 10);
+                  end else begin
+                   src_transaction.idles =  0;
+                end
+                src_transaction.pack_send_data();
+            end
+        end // source_data_thread
+  
+        begin: sink_data_thread
+          while (1) begin
+            `SNK.set_ready(1);
+            @`SNK.signal_transaction_received;
+            snk_transaction.snk_pop_transaction();
+            if(`BACK_PRESSURE=="true") begin
+                snk_transaction.idles = (\$unsigned(\$random()) % 10);
+                `SNK.set_ready(0);
+                for(l = 0; l < snk_transaction.idles; l++)
+                begin
+                    @(posedge `CLK.clk);
+                end
+            end
+            if(data_counted_in == data_counted_out) begin
+               break;
+            end
+          end
+        end // sink_data_thread
+    join
+    disable test_threads; // kill any threads still running
+
+    src_transaction.close_input_files();
+    snk_transaction.close_output_files();
+
+    print(VERBOSITY_INFO, "Simulation finished");
+    `CLK.clock_stop();  
+    \$stop;
+
+  end;
+
+
+endmodule

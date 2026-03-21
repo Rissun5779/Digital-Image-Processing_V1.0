@@ -1,0 +1,7 @@
+
+QUARTUS_VERSION = "14.1"
+DATE = "15:12:50  July 31, 2014"
+
+# Revisions
+
+PROJECT_REVISION = "seriallite_iii_streaming_demo"

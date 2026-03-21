@@ -1,0 +1,714 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+#
+package require -exact qsys 15.0
+source ../util/hps_utils.tcl
+source ../util/constants.tcl
+
+#
+# module hps_h2f_bridge_avalon
+#
+set_module_property NAME stratix10_hps_bridge_avalon
+set_module_property VERSION 18.1
+set_module_property INTERNAL true
+set_module_property DISPLAY_NAME "HPS Bridge Avalon"
+set_module_property EDITABLE true
+#set_module_property ANALYZE_HDL AUTO
+set_module_property REPORT_TO_TALKBACK false
+set_module_property ALLOW_GREYBOX_GENERATION false
+set_module_property ELABORATION_CALLBACK elaborate
+
+#
+# file sets
+#
+
+#
+# parameters
+#
+set_module_assignment embeddedsw.dts.vendor "altr"
+set_module_assignment embeddedsw.dts.name "bridge"
+set_module_assignment embeddedsw.dts.group "bridge"
+set_module_assignment embeddedsw.dts.compatible "simple-bus"
+
+#
+# display items
+#
+
+
+#
+# connection point axi_slave0
+#
+
+
+#
+# connection point avalon_master/slave for use of A9/FPGA
+#
+set h2f_width 29
+# case 212769 readDataReorderingDepth 8 
+hps_utils_add_axi_slave axi_h2f    axi_sig0 29 8
+hps_utils_add_axi_slave axi_h2f_lw axi_sig1 21 1
+
+add_parameter address_map string
+set_parameter_property address_map system_info_type address_map
+set_parameter_property address_map system_info_arg axi_f2h
+
+hps_utils_add_axi_master axi_f2h axi_master_sig clock_sink reset_sink 1 32 32 4
+
+
+#
+# connection point reset_sink
+#
+add_interface h2f_reset reset start
+set_interface_property h2f_reset synchronousEdges none
+set_interface_property h2f_reset ENABLED true
+set_interface_property h2f_reset associatedResetSinks none
+add_interface_port h2f_reset h2f_rst_n reset_n Output 1
+
+
+add_interface reset_sink reset end
+set_interface_property reset_sink associatedClock clock_sink
+set_interface_property reset_sink synchronousEdges DEASSERT
+set_interface_property reset_sink ENABLED true
+
+add_interface_port reset_sink new_signal_13 reset Input 1
+
+#
+# connection point clock_sink
+#
+
+add_interface clock_sink clock end
+set_interface_property clock_sink clockRate 0
+set_interface_property clock_sink ENABLED true
+
+add_interface_port clock_sink new_signal_14 clk Input 1
+
+add_parameter            F2S_Width  integer 2
+set_parameter_property   F2S_Width  allowed_ranges {"0:Unused" "1:32-bit" "2:64-bit" "3:128-bit"}
+set_parameter_property   F2S_Width  display_name   "FPGA-to-HPS interface width"
+set_parameter_property   F2S_Width  hdl_parameter  true
+set_parameter_property   F2S_Width  group          "AXI Bridges"
+
+add_parameter            S2F_Width  integer 2
+set_parameter_property   S2F_Width  allowed_ranges {"0:Unused" "1:32-bit" "2:64-bit" "3:128-bit"}
+set_parameter_property   S2F_Width  display_name   "HPS-to-FPGA interface width"
+set_parameter_property   S2F_Width  hdl_parameter  true
+set_parameter_property   S2F_Width  group          "AXI Bridges"
+
+add_parameter            LWH2F_Enable integer 1
+set_parameter_property   LWH2F_Enable display_name "Lightweight HPS-to-FPGA interface width"
+set_parameter_property   LWH2F_Enable description  "The lightweight HPS-to-FPGA bridge provides a secondary, fixed-width, smaller address space, lower-performance master interface to the FPGA fabric. Use the lightweight HPS-to-FPGA bridge for high-latency, low-bandwidth traffic, such as memory-mapped register accesses of FPGA peripherals. This approach diverts traffic from the high-performance HPS-to-FPGA bridge, which can improve overall performance."
+set_parameter_property   LWH2F_Enable allowed_ranges {"0:Unused" "1:32-bit AXI" "2:32-bit AXI (ready latency support)"}
+set_parameter_property   LWH2F_Enable group "AXI Bridges"
+
+
+add_parameter            F2SDRAM0_Width  integer 0
+set_parameter_property   F2SDRAM0_Width  allowed_ranges {"0:Unused" "1:32-bit AXI" "2:64-bit AXI" "3:128-bit AXI" "4:32-bit AXI (ready latency support)" "5:64-bit AXI (ready latency support)" "6:128-bit AXI (ready latency support)"}
+set_parameter_property   F2SDRAM0_Width  display_name   "F2SDRAM0 port "
+set_parameter_property   F2SDRAM0_Width  hdl_parameter  true
+set_parameter_property   F2SDRAM0_Width  group          "AXI Bridges"
+set_parameter_property   F2SDRAM0_Width  description    "Enable or disable the F2SDRAM port 0; if enabled, set the data width to 32, 64, or 128 bits and optionally enable ready latency support."
+
+add_parameter            F2SDRAM1_Width  integer 0
+set_parameter_property   F2SDRAM1_Width  allowed_ranges {"0:Unused" "1:32-bit AXI" "2:64-bit AXI" "3:128-bit AXI" "4:32-bit AXI (ready latency support)" "5:64-bit AXI (ready latency support)" "6:128-bit AXI (ready latency support)"}
+set_parameter_property   F2SDRAM1_Width  display_name   "F2SDRAM1 port "
+set_parameter_property   F2SDRAM1_Width  hdl_parameter  true
+set_parameter_property   F2SDRAM1_Width  group          "AXI Bridges"
+set_parameter_property   F2SDRAM1_Width  description    "Enable or disable the F2SDRAM port 1; if enabled, set the data width to 32, 64, or 128 bits and optionally enable ready latency support."
+
+add_parameter            F2SDRAM2_Width  integer 0
+set_parameter_property   F2SDRAM2_Width  allowed_ranges {"0:Unused" "1:32-bit AXI" "2:64-bit AXI" "3:128-bit AXI" "4:32-bit AXI (ready latency support)" "5:64-bit AXI (ready latency support)" "6:128-bit AXI (ready latency support)"}
+set_parameter_property   F2SDRAM2_Width  display_name   "F2SDRAM2 port "
+set_parameter_property   F2SDRAM2_Width  hdl_parameter  true
+set_parameter_property   F2SDRAM2_Width  group          "AXI Bridges"
+set_parameter_property   F2SDRAM2_Width  description    "Enable or disable the F2SDRAM port 2; if enabled, set the data width to 32, 64, or 128 bits and optionally enable ready latency support."
+
+
+add_parameter            F2SDRAM_ADDRESS_WIDTH  integer 32
+set_parameter_property   F2SDRAM_ADDRESS_WIDTH  allowed_ranges {"32:32-bit 4Gb" "31:31-bit 2Gb" "30:30-bit 1Gb" "29:29-bit 512 Mb" "28:28-bit 256 Mb" "27:27-bit 128 Mb" "26:26-bit 64 Mb" }
+set_parameter_property   F2SDRAM_ADDRESS_WIDTH  display_name   "F2SDRAM bidge address width"
+set_parameter_property   F2SDRAM_ADDRESS_WIDTH  group "AXI Bridges"
+
+
+foreach interface {
+    f2h_sdram0_clock        f2h_sdram1_clock        f2h_sdram2_clock
+    f2h_sdram3_clock        f2h_sdram4_clock        f2h_sdram5_clock
+} {
+    set parameter "[string toupper ${interface}]_FREQ"
+    add_parameter          $parameter integer 100 ""
+    set_parameter_property $parameter display_name  "${interface} clock frequency"
+    set_parameter_property $parameter system_info_type "CLOCK_RATE"
+    set_parameter_property $parameter system_info_arg $interface
+    set_parameter_property $parameter visible false
+}
+
+proc elaborate {} {
+    set h2f_instance_name hps2fpga
+
+    set h2f_addr_width 32
+    set h2f_id_width   4
+    set h2f_width [get_parameter_value S2F_Width]
+    if { $h2f_width > 0 } {
+        set data_h2f_width 32
+        set strb_h2f_width 4
+    
+        if {$h2f_width == 2 || $h2f_width == 5} {
+            set data_h2f_width 64
+            set strb_h2f_width 8
+    
+        } elseif {$h2f_width == 3 || $h2f_width == 6} {
+            set data_h2f_width 128
+            set strb_h2f_width 16
+        }
+    
+        set h2f_clock_name "h2f_axi_clock"
+        add_interface       h2f_axi_clock     clock             Input
+        add_interface_port  h2f_axi_clock     h2f_axi_clk       clk      Input  1
+    
+        if { $h2f_width > 3 } {
+            set reset_name "h2f_axi_reset"
+            add_interface           $reset_name reset Input
+            add_interface_port      $reset_name h2f_axi_rst_n  reset_n Input 1 
+            set_interface_property  $reset_name associatedClock $h2f_clock_name
+        } else {
+            set reset_name "h2f_reset"
+        }
+            
+        set h2f_iface_name "h2f"
+        set h2f_z          "h2f_"
+    
+        add_interface               h2f  axi start
+        set_interface_property      h2f associatedClock h2f_axi_clock
+        set_interface_property      h2f associatedReset $reset_name
+        set_interface_property      h2f readIssuingCapability 8
+        set_interface_property      h2f writeIssuingCapability 8
+        set_interface_property      h2f combinedIssuingCapability 16
+    
+        add_interface_port h2f  h2f_AWID     awid     Output $h2f_id_width
+        add_interface_port h2f  h2f_AWADDR   awaddr   Output $h2f_addr_width
+        add_interface_port h2f  h2f_AWLEN    awlen    Output 4
+        add_interface_port h2f  h2f_AWSIZE   awsize   Output 3
+        add_interface_port h2f  h2f_AWBURST  awburst  Output 2
+        add_interface_port h2f  h2f_AWLOCK   awlock   Output 2
+        add_interface_port h2f  h2f_AWCACHE  awcache  Output 4
+        add_interface_port h2f  h2f_AWPROT   awprot   Output 3
+        add_interface_port h2f  h2f_AWVALID  awvalid  Output 1
+        add_interface_port h2f  h2f_AWREADY  awready  Input  1
+        add_interface_port h2f  h2f_AWUSER   awuser   Output 5
+    
+        add_interface_port h2f  h2f_WID      wid      Output $h2f_id_width
+        add_interface_port h2f  h2f_WDATA    wdata    Output $data_h2f_width
+        add_interface_port h2f  h2f_WSTRB    wstrb    Output $strb_h2f_width
+        add_interface_port h2f  h2f_WLAST    wlast    Output 1
+        add_interface_port h2f  h2f_WVALID   wvalid   Output 1
+        add_interface_port h2f  h2f_WREADY   wready   Input  1
+    
+        add_interface_port h2f  h2f_BID      bid      Input  $h2f_id_width
+        add_interface_port h2f  h2f_BRESP    bresp    Input  2
+        add_interface_port h2f  h2f_BVALID   bvalid   Input  1
+        add_interface_port h2f  h2f_BREADY   bready   Output 1
+    
+        add_interface_port h2f  h2f_ARID     arid     Output $h2f_id_width
+        add_interface_port h2f  h2f_ARADDR   araddr   Output $h2f_addr_width
+        add_interface_port h2f  h2f_ARLEN    arlen    Output 4
+        add_interface_port h2f  h2f_ARSIZE   arsize   Output 3
+        add_interface_port h2f  h2f_ARBURST  arburst  Output 2
+        add_interface_port h2f  h2f_ARLOCK   arlock   Output 2
+        add_interface_port h2f  h2f_ARCACHE  arcache  Output 4
+        add_interface_port h2f  h2f_ARPROT   arprot   Output 3
+        add_interface_port h2f  h2f_ARVALID  arvalid  Output 1
+        add_interface_port h2f  h2f_ARREADY  arready  Input  1
+        add_interface_port h2f  h2f_ARUSER   aruser   Output 5
+    
+        add_interface_port h2f  h2f_RID      rid      Input  $h2f_id_width
+        add_interface_port h2f  h2f_RDATA    rdata    Input  $data_h2f_width
+        add_interface_port h2f  h2f_RRESP    rresp    Input  2
+        add_interface_port h2f  h2f_RLAST    rlast    Input  1
+        add_interface_port h2f  h2f_RVALID   rvalid   Input  1
+        add_interface_port h2f  h2f_RREADY   rready   Output 1
+        set_interface_property axi_h2f bridgesToMaster h2f
+    }
+    set h2f_lw_instance_name hps2fpga_light_weight
+    set lwh2f_en [ get_parameter_value LWH2F_Enable ]
+    if {$lwh2f_en > 0} {
+        set h2f_lw_addr_width 32
+        set h2f_lw_data_width 32
+        set h2f_lw_strb_width 4
+        set h2f_lw_id_width   4
+        set h2f_lw_clock_name "h2f_lw_axi_clock"
+        add_interface      $h2f_lw_clock_name    clock              Input
+        add_interface_port $h2f_lw_clock_name    h2f_lw_axi_clk     clk      Input  1
+    
+        if { $lwh2f_en > 1 } {
+            set reset_name "h2f_lw_axi_reset"
+            add_interface           $reset_name reset Input
+            add_interface_port      $reset_name h2f_lw_axi_rst_n  reset_n Input 1 
+            set_interface_property  $reset_name associatedClock $h2f_lw_clock_name
+        } else {
+            set reset_name "h2f_reset"
+        }
+
+        set h2f_lw_iface_name "h2f_lw"
+        set h2f_lw_z "h2f_lw_"
+        add_interface               h2f_lw axi start
+        set_interface_property      h2f_lw associatedClock $h2f_lw_clock_name
+        set_interface_property      h2f_lw associatedReset $reset_name
+        set_interface_property      h2f_lw readIssuingCapability 8
+        set_interface_property      h2f_lw writeIssuingCapability 8
+        set_interface_property      h2f_lw combinedIssuingCapability 16
+    
+        add_interface_port h2f_lw  h2f_lw_AWID     awid     Output $h2f_lw_id_width
+        add_interface_port h2f_lw  h2f_lw_AWADDR   awaddr   Output $h2f_lw_addr_width
+        add_interface_port h2f_lw  h2f_lw_AWLEN    awlen    Output 4
+        add_interface_port h2f_lw  h2f_lw_AWSIZE   awsize   Output 3
+        add_interface_port h2f_lw  h2f_lw_AWBURST  awburst  Output 2
+        add_interface_port h2f_lw  h2f_lw_AWLOCK   awlock   Output 2
+        add_interface_port h2f_lw  h2f_lw_AWCACHE  awcache  Output 4
+        add_interface_port h2f_lw  h2f_lw_AWPROT   awprot   Output 3
+        add_interface_port h2f_lw  h2f_lw_AWVALID  awvalid  Output 1
+        add_interface_port h2f_lw  h2f_lw_AWREADY  awready  Input  1
+        add_interface_port h2f_lw  h2f_lw_AWUSER   awuser   Output 5
+    
+        add_interface_port h2f_lw  h2f_lw_WID      wid      Output $h2f_lw_id_width
+        add_interface_port h2f_lw  h2f_lw_WDATA    wdata    Output $h2f_lw_data_width
+        add_interface_port h2f_lw  h2f_lw_WSTRB    wstrb    Output $h2f_lw_strb_width
+        add_interface_port h2f_lw  h2f_lw_WLAST    wlast    Output 1
+        add_interface_port h2f_lw  h2f_lw_WVALID   wvalid   Output 1
+        add_interface_port h2f_lw  h2f_lw_WREADY   wready   Input  1
+    
+        add_interface_port h2f_lw  h2f_lw_BID      bid      Input  $h2f_lw_id_width
+        add_interface_port h2f_lw  h2f_lw_BRESP    bresp    Input  2
+        add_interface_port h2f_lw  h2f_lw_BVALID   bvalid   Input  1
+        add_interface_port h2f_lw  h2f_lw_BREADY   bready   Output 1
+    
+        add_interface_port h2f_lw  h2f_lw_ARID     arid     Output $h2f_lw_id_width
+        add_interface_port h2f_lw  h2f_lw_ARADDR   araddr   Output $h2f_lw_addr_width
+        add_interface_port h2f_lw  h2f_lw_ARLEN    arlen    Output 4
+        add_interface_port h2f_lw  h2f_lw_ARSIZE   arsize   Output 3
+        add_interface_port h2f_lw  h2f_lw_ARBURST  arburst  Output 2
+        add_interface_port h2f_lw  h2f_lw_ARLOCK   arlock   Output 2
+        add_interface_port h2f_lw  h2f_lw_ARCACHE  arcache  Output 4
+        add_interface_port h2f_lw  h2f_lw_ARPROT   arprot   Output 3
+        add_interface_port h2f_lw  h2f_lw_ARVALID  arvalid  Output 1
+        add_interface_port h2f_lw  h2f_lw_ARREADY  arready  Input  1
+        add_interface_port h2f_lw  h2f_lw_ARUSER   aruser   Output 5
+    
+        add_interface_port h2f_lw  h2f_lw_RID      rid      Input  $h2f_lw_id_width
+        add_interface_port h2f_lw  h2f_lw_RDATA    rdata    Input  $h2f_lw_data_width
+        add_interface_port h2f_lw  h2f_lw_RRESP    rresp    Input  2
+        add_interface_port h2f_lw  h2f_lw_RLAST    rlast    Input  1
+        add_interface_port h2f_lw  h2f_lw_RVALID   rvalid   Input  1
+        add_interface_port h2f_lw  h2f_lw_RREADY   rready   Output 1
+        set_interface_property axi_h2f_lw bridgesToMaster h2f_lw
+    }
+
+    set f2h_instance_name fpga2hps
+    set f2h_addr_width 32
+    set f2h_width [get_parameter_value F2S_Width]
+
+    if {$f2h_width > 0} {
+        set data_f2h_width 32
+        set strb_f2h_width 4
+        if {$f2h_width == 2 || $f2h_width == 5} {
+            set data_f2h_width 64
+            set strb_f2h_width 8
+        } elseif {$f2h_width == 3 || $f2h_width == 6} {
+            set data_f2h_width 128
+            set strb_f2h_width 16
+        }
+    
+        set f2h_clock_name "f2h_axi_clock"
+        add_interface       $f2h_clock_name   clock              Input
+        add_interface_port  $f2h_clock_name   f2h_axi_clk        clk      Input  1
+    
+        if { $f2h_width > 3 } {
+            set reset_name "f2h_axi_reset"
+            add_interface           $reset_name reset Input
+            add_interface_port      $reset_name f2h_axi_rst_n  reset_n Input 1 
+            set_interface_property  $reset_name associatedClock $f2h_clock_name
+        } else {
+            set reset_name "h2f_reset"
+        }
+            
+        set f2h_iface_name "f2h"
+        set f2h_z          "f2h_"
+    
+        add_interface               f2h axi end
+        set_interface_property      f2h associatedClock $f2h_clock_name
+        set_interface_property      f2h associatedReset $reset_name
+        set_interface_property      f2h readAcceptanceCapability 8
+        set_interface_property      f2h writeAcceptanceCapability 8
+        set_interface_property      f2h combinedAcceptanceCapability 16
+    
+        add_interface_port  f2h f2h_AWID     awid     Input  4
+        add_interface_port  f2h f2h_AWADDR   awaddr   Input  $f2h_addr_width
+        add_interface_port  f2h f2h_AWLEN    awlen    Input  4
+        add_interface_port  f2h f2h_AWSIZE   awsize   Input  3
+        add_interface_port  f2h f2h_AWBURST  awburst  Input  2
+        add_interface_port  f2h f2h_AWLOCK   awlock   Input  2
+        add_interface_port  f2h f2h_AWCACHE  awcache  Input  4
+        add_interface_port  f2h f2h_AWPROT   awprot   Input  3
+        add_interface_port  f2h f2h_AWVALID  awvalid  Input  1
+        add_interface_port  f2h f2h_AWREADY  awready  Output 1
+        add_interface_port  f2h f2h_AWUSER   awuser   Input  5
+    
+        add_interface_port  f2h f2h_WID      wid      Input  4
+        add_interface_port  f2h f2h_WDATA    wdata    Input  $data_f2h_width
+        add_interface_port  f2h f2h_WSTRB    wstrb    Input  $strb_f2h_width
+        add_interface_port  f2h f2h_WLAST    wlast    Input  1
+        add_interface_port  f2h f2h_WVALID   wvalid   Input  1
+        add_interface_port  f2h f2h_WREADY   wready   Output 1
+    
+        add_interface_port  f2h f2h_BID      bid      Output 4
+        add_interface_port  f2h f2h_BRESP    bresp    Output 2
+        add_interface_port  f2h f2h_BVALID   bvalid   Output 1
+        add_interface_port  f2h f2h_BREADY   bready   Input  1
+    
+    
+        add_interface_port  f2h f2h_ARID     arid     Input  4
+        add_interface_port  f2h f2h_ARADDR   araddr   Input  $f2h_addr_width
+        add_interface_port  f2h f2h_ARLEN    arlen    Input  4
+        add_interface_port  f2h f2h_ARSIZE   arsize   Input  3
+        add_interface_port  f2h f2h_ARBURST  arburst  Input  2
+        add_interface_port  f2h f2h_ARLOCK   arlock   Input  2
+        add_interface_port  f2h f2h_ARCACHE  arcache  Input  4
+        add_interface_port  f2h f2h_ARPROT   arprot   Input  3
+        add_interface_port  f2h f2h_ARVALID  arvalid  Input  1
+        add_interface_port  f2h f2h_ARREADY  arready  Output 1
+        add_interface_port  f2h f2h_ARUSER   aruser   Input  5
+    
+        add_interface_port  f2h f2h_RID      rid      Output 4
+        add_interface_port  f2h f2h_RDATA    rdata    Output $data_f2h_width
+        add_interface_port  f2h f2h_RRESP    rresp    Output 2
+        add_interface_port  f2h f2h_RLAST    rlast    Output 1
+        add_interface_port  f2h f2h_RVALID   rvalid   Output 1
+        add_interface_port  f2h f2h_RREADY   rready   Input  1
+        set_interface_property f2h bridgesToMaster axi_f2h
+    }
+    ######
+
+    set f2h_sdram_addr_width  [get_parameter_value F2SDRAM_ADDRESS_WIDTH]
+    
+    foreach n { 0 1 2 } {
+        
+        set f2h_sdram_addr_width 32
+        set f2h_sdram_width [get_parameter_value F2SDRAM${n}_Width]
+    
+        if {$f2h_sdram_width > 0} {
+            set data_f2h_sdram_width 32
+            set strb_f2h_sdram_width 4
+            if {$f2h_sdram_width == 2 || $f2h_width == 5} {
+                set data_f2h_sdram_width 64
+                set strb_f2h_sdram_width 8
+            } elseif {$f2h_sdram_width == 3 || $f2h_width == 6} {
+                set data_f2h_sdram_width 128
+                set strb_f2h_sdram_width 16
+            }
+        
+            set f2h_sdram_clock_name "f2sdram${n}_clock"
+            add_interface       $f2h_sdram_clock_name   clock              Input
+            add_interface_port  $f2h_sdram_clock_name   f2sdram${n}_clk  clk      Input  1
+        
+            if { $f2h_sdram_width > 3 } {
+                set reset_name "f2sdram${n}_reset"
+                add_interface           $reset_name reset Input
+                add_interface_port      $reset_name "f2s_sdram${n}_rst_n"  reset_n Input 1 
+                set_interface_property  $reset_name associatedClock $f2h_sdram_clock_name
+            } else {
+                set reset_name "h2f_reset"
+            }
+        
+            set f2h_iface_name "f2sdram${n}_data"
+            set z          "f2sdram${n}_"
+            
+            add_interface               $f2h_iface_name axi end
+            set_interface_property      $f2h_iface_name associatedClock $f2h_sdram_clock_name
+            set_interface_property      $f2h_iface_name associatedReset $reset_name
+            set_interface_property      $f2h_iface_name readAcceptanceCapability 8
+            set_interface_property      $f2h_iface_name writeAcceptanceCapability 8
+            set_interface_property      $f2h_iface_name combinedAcceptanceCapability 16
+        
+            add_interface_port  $f2h_iface_name ${z}AWID     awid     Input  4
+            add_interface_port  $f2h_iface_name ${z}AWADDR   awaddr   Input  $f2h_sdram_addr_width
+            add_interface_port  $f2h_iface_name ${z}AWLEN    awlen    Input  4
+            add_interface_port  $f2h_iface_name ${z}AWSIZE   awsize   Input  3
+            add_interface_port  $f2h_iface_name ${z}AWBURST  awburst  Input  2
+            add_interface_port  $f2h_iface_name ${z}AWLOCK   awlock   Input  2
+            add_interface_port  $f2h_iface_name ${z}AWCACHE  awcache  Input  4
+            add_interface_port  $f2h_iface_name ${z}AWPROT   awprot   Input  3
+            add_interface_port  $f2h_iface_name ${z}AWVALID  awvalid  Input  1
+            add_interface_port  $f2h_iface_name ${z}AWREADY  awready  Output 1
+            add_interface_port  $f2h_iface_name ${z}AWUSER   awuser   Input  5
+        
+            add_interface_port  $f2h_iface_name ${z}WID      wid      Input  4
+            add_interface_port  $f2h_iface_name ${z}WDATA    wdata    Input  $data_f2h_sdram_width
+            add_interface_port  $f2h_iface_name ${z}WSTRB    wstrb    Input  $strb_f2h_sdram_width
+            add_interface_port  $f2h_iface_name ${z}WLAST    wlast    Input  1
+            add_interface_port  $f2h_iface_name ${z}WVALID   wvalid   Input  1
+            add_interface_port  $f2h_iface_name ${z}WREADY   wready   Output 1
+        
+            add_interface_port  $f2h_iface_name ${z}BID      bid      Output 4
+            add_interface_port  $f2h_iface_name ${z}BRESP    bresp    Output 2
+            add_interface_port  $f2h_iface_name ${z}BVALID   bvalid   Output 1
+            add_interface_port  $f2h_iface_name ${z}BREADY   bready   Input  1
+        
+        
+            add_interface_port  $f2h_iface_name ${z}ARID     arid     Input  4
+            add_interface_port  $f2h_iface_name ${z}ARADDR   araddr   Input  $f2h_sdram_addr_width
+            add_interface_port  $f2h_iface_name ${z}ARLEN    arlen    Input  4
+            add_interface_port  $f2h_iface_name ${z}ARSIZE   arsize   Input  3
+            add_interface_port  $f2h_iface_name ${z}ARBURST  arburst  Input  2
+            add_interface_port  $f2h_iface_name ${z}ARLOCK   arlock   Input  2
+            add_interface_port  $f2h_iface_name ${z}ARCACHE  arcache  Input  4
+            add_interface_port  $f2h_iface_name ${z}ARPROT   arprot   Input  3
+            add_interface_port  $f2h_iface_name ${z}ARVALID  arvalid  Input  1
+            add_interface_port  $f2h_iface_name ${z}ARREADY  arready  Output 1
+            add_interface_port  $f2h_iface_name ${z}ARUSER   aruser   Input  5
+        
+            add_interface_port  $f2h_iface_name ${z}RID      rid      Output 4
+            add_interface_port  $f2h_iface_name ${z}RDATA    rdata    Output $data_f2h_sdram_width
+            add_interface_port  $f2h_iface_name ${z}RRESP    rresp    Output 2
+            add_interface_port  $f2h_iface_name ${z}RLAST    rlast    Output 1
+            add_interface_port  $f2h_iface_name ${z}RVALID   rvalid   Output 1
+            add_interface_port  $f2h_iface_name ${z}RREADY   rready   Input  1
+            
+            set_interface_property $f2h_iface_name bridgesToMaster axi_f2sdram${n}
+        }
+    }
+}
+
+proc init_registers {} {
+    uplevel 1 {
+        # map of registers to the number of entries
+        set registers_map {
+            width_reg        6
+            cmd_to_write_reg 6
+            cmd_to_read_reg  6
+            read_to_cmd_reg  4
+            write_to_cmd_reg 4
+            direction_reg    6
+            fabric_reg       6
+            cmd_bitmap       1
+            read_bitmap      1
+            write_bitmap     1
+        }
+
+        set registers [list]
+        foreach {register len} $registers_map {
+            set $register [list]
+            for {set i 0} {$i < $len} {incr i} {
+                lappend $register 0
+            }
+            lappend registers $register
+        }
+    }
+}
+proc add_cmd_port {cmd_bitmap_var_name is_axi} {
+    #
+    # Description: Adds a command port.
+    #
+    # Parameters:  cmd_bitmap_var_name
+    #                variable name for the port bitmap
+    #              is_axi
+    #                1 if port is axi, 0 if avalon-mm
+    #
+    # Returns: a list of indexes of ports that were added. Throws an
+    #          error if there is insufficient room for the port.
+    # ----------------------------------------------------------------
+    upvar 1 $cmd_bitmap_var_name cmd_bitmap
+
+    set MAX_CMD_PORTS 6
+
+    set result [list]
+    set mask 0
+    if {$is_axi} {
+        set no_match 1
+        for {set i 0} {$i < ($MAX_CMD_PORTS / 2)} {incr i} {
+            set mask [expr 3 << ($i * 2)]
+            if {($cmd_bitmap & $mask) == 0} {
+                set no_match 0
+                break
+            }
+        }
+        if $no_match {
+        return {}
+        }
+        set cmd_bitmap [expr $cmd_bitmap | $mask]
+        set result [list [expr $i * 2] [expr $i * 2 + 1]]
+    } else {
+        set no_match 1
+        for {set i 0} {$i < $MAX_CMD_PORTS} {incr i} {
+            set mask [expr 1 << $i]
+            if {($cmd_bitmap & $mask) == 0} {
+                set no_match 0
+                break
+            }
+        }
+        if $no_match {
+            return {}
+        }
+        set cmd_bitmap [expr $cmd_bitmap | $mask]
+        set result [list $i]
+    }
+    return $result
+}
+
+proc add_data_port {data_bitmap_var_name width} {
+    #
+    # Description: Adds a data (read or write) port.
+    #
+    # Parameters:  data_bitmap_var_name
+    #                variable name for the port bitmap
+    #              width
+    #                width of the data port as an integer
+    #
+    # Returns: a list of indexes of ports that were added. Throws an
+    #          error if there is insufficient room for the port.
+    # ----------------------------------------------------------------
+    upvar 1 $data_bitmap_var_name data_bitmap
+
+    set MAX_DATA_PORTS 4
+
+    set num_ports 1
+    set mask_base 1
+    if {$width == 128} {
+        set num_ports 2
+        set mask_base 3
+    } elseif {$width == 256} {
+        set num_ports 4
+        set mask_base 15
+    }
+    set no_match 1
+    for {set startport 0} {$startport + $num_ports <= $MAX_DATA_PORTS} {incr startport $num_ports} {
+        set mask [expr $mask_base << $startport]
+        if {($data_bitmap & $mask) == 0} {
+            set no_match 0
+            break
+        }
+    }
+    if $no_match {
+        return {}
+    }
+
+    set data_bitmap [expr $data_bitmap | $mask]
+    set result [list]
+    for {set port $startport} {$port < ($startport + $num_ports)} {incr port} {
+        lappend result $port
+    }
+    return $result
+}
+
+proc update_registers {registers_var cmd_ports read_ports
+               write_ports width is_axi} {
+    #
+    # Description: Updates the F2SDRAM registers for an added interface.
+    #
+    # Parameters:  registers_var
+    #                variable name for the register list
+    #              cmd_ports
+    #                list of command port indexes
+    #              read_ports
+    #                list of read port indexes
+    #              write_ports
+    #                list of write port indexes
+    #              width
+    #                data width of the interface
+    #              is_axi
+    #                1 if interface is axi, 0 if avalon-mm
+    #
+    # Returns: nothing
+    # ----------------------------------------------------------------
+    plumb_registers $registers_var
+
+    set WRITE 1
+    set READ  2
+
+    # get width register value
+    set reg_value_for_width 0
+    if {$width == 64} {
+        set reg_value_for_width 1
+    } elseif {$width == 128} {
+        set reg_value_for_width 2
+    } elseif {$width == 256} {
+        set reg_value_for_width 3
+    }
+
+    # get direction register value for avalon ports
+    set avalon_rw_value 0
+    if {[llength $read_ports] > 0} {
+        set avalon_rw_value $READ
+    }
+    if {[llength $write_ports] > 0} {
+        set avalon_rw_value [expr $avalon_rw_value | $WRITE]
+    }
+
+    foreach cmd_port $cmd_ports {
+        lset width_reg $cmd_port $reg_value_for_width
+        if {[llength $write_ports] > 0} {
+        # use the lowest port #
+            lset cmd_to_write_reg $cmd_port [lindex $write_ports 0]
+        }
+        if {[llength $read_ports] > 0} {
+            lset cmd_to_read_reg $cmd_port [lindex $read_ports 0]
+        }
+        if {$is_axi == 0} {
+            lset direction_reg $cmd_port $avalon_rw_value
+        }
+        lset fabric_reg $cmd_port $is_axi
+    }
+    if {$is_axi} { # axi always has two command ports, read always comes first
+        lset direction_reg [lindex $cmd_ports 0] $READ
+        lset direction_reg [lindex $cmd_ports 1] $WRITE
+    }
+
+    foreach read_port $read_ports {
+        lset read_to_cmd_reg $read_port [lindex $cmd_ports 0]
+    }
+    set index_of_cmd_port_for_write 0
+    if {$is_axi} { # write port is always the second cmd port in axi
+        set index_of_cmd_port_for_write 1
+    }
+    foreach write_port $write_ports {
+        lset write_to_cmd_reg $write_port [lindex $cmd_ports $index_of_cmd_port_for_write]
+    }
+}
+
+proc pack_register {register bits_per_piece} {
+    set packed 0
+    set register_len [llength $register]
+    for {set i 0} {$i < $register_len} {incr i} {
+        set mask [expr (1 << $bits_per_piece) - 1]
+        set piece [lindex $register $i]
+        set shifted_and_masked_piece [expr ($piece & $mask) << ($i * $bits_per_piece)]
+
+        set packed [expr $packed | $shifted_and_masked_piece]
+    }
+    return $packed
+}
+
+
+proc plumb_registers {registers_var} {
+    uplevel 1 "upvar 1 $registers_var registers"
+    uplevel 1 {
+        upvar 1 [lindex $registers 0] width_reg
+        upvar 1 [lindex $registers 1] cmd_to_write_reg
+        upvar 1 [lindex $registers 2] cmd_to_read_reg
+        upvar 1 [lindex $registers 3] read_to_cmd_reg
+        upvar 1 [lindex $registers 4] write_to_cmd_reg
+        upvar 1 [lindex $registers 5] direction_reg
+        upvar 1 [lindex $registers 6] fabric_reg
+        upvar 1 [lindex $registers 7] cmd_bitmap
+        upvar 1 [lindex $registers 8] read_bitmap
+        upvar 1 [lindex $registers 9] write_bitmap
+    }
+}

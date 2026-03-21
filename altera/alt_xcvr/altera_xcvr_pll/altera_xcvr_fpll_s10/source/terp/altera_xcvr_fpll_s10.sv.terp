@@ -1,0 +1,1373 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+ 
+//------------------------------------------------------------------
+// filename: altera_xcvr_fpll_a10.sv
+//
+// Description : instantiates refclk_select_mux, master CGB and cmu_fpll atoms 
+//
+// Limitation  : Intended for Stratix10 
+//
+// Copyright (c) Altera Corporation 1997-2012
+// All rights reserved
+//-------------------------------------------------------------------
+`timescale 1ps/1ps
+
+module ${module_name}
+#(
+  // ct1_cmu_fpll_refclk_select parameters 
+  parameter cmu_fpll_refclk_select_mux_clk_sel_override                             = "normal",
+  parameter cmu_fpll_refclk_select_mux_clk_sel_override_value                       = "select_clk0",
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_auto_clk_sw_en = "pll_auto_clk_sw_disabled",
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_clk_loss_edge  = "pll_clk_loss_rising_edge",
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_clk_loss_sw_en = "pll_clk_loss_sw_byps",
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_manu_clk_sw_en = "pll_manu_clk_sw_disabled",
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_sw_refclk_src  = "pll_sw_refclk_src_clk_0",
+  parameter cmu_fpll_refclk_select_mux_silicon_rev                                  = "14nm_hssi",
+  parameter cmu_fpll_refclk_select_mux_refclk_select0                               = "ref_iqclk0",
+  parameter cmu_fpll_refclk_select_mux_refclk_select1                               = "ref_iqclk0",
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_pll_clkin_0_src               = "pll_clkin_0_src_ref_clk",  
+  parameter cmu_fpll_refclk_select_mux_xpm_clkin_fpll_pll_clkin_1_src               = "pll_clkin_1_src_ref_clk",
+  parameter cmu_fpll_refclk_select_mux_mux0_inclk0_logical_to_physical_mapping      = "ref_iqclk0",
+  parameter cmu_fpll_refclk_select_mux_mux0_inclk1_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux0_inclk2_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux0_inclk3_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux0_inclk4_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux1_inclk0_logical_to_physical_mapping      = "ref_iqclk0",
+  parameter cmu_fpll_refclk_select_mux_mux1_inclk1_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux1_inclk2_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux1_inclk3_logical_to_physical_mapping      = "power_down",
+  parameter cmu_fpll_refclk_select_mux_mux1_inclk4_logical_to_physical_mapping      = "power_down",
+  // refclk_select bitvecs < 32 bits
+  parameter [2:0] cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_clk_sw_dly = 0,
+  // ct1_cmu_fpll parameters 
+  parameter cmu_fpll_analog_mode                                     = "user_custom",
+  parameter cmu_fpll_bandwidth_range_high                            = "1",
+  parameter cmu_fpll_bandwidth_range_low                             = "1",
+  parameter cmu_fpll_bonding                                         = "pll_bonding",
+  parameter cmu_fpll_bw_mode                                         = "mid_bw",
+  parameter cmu_fpll_cali_ref_off                                    = "ref_on",
+  parameter cmu_fpll_cali_vco_off                                    = "vco_on",
+  parameter cmu_fpll_chgpmp_testmode                                 = "cp_normal",
+  parameter cmu_fpll_datarate_bps                                    = "5000000000",
+  parameter cmu_fpll_device_variant                                  = "device1",
+  parameter cmu_fpll_f_max_band_0                                    = "1",
+  parameter cmu_fpll_f_max_band_1                                    = "1",
+  parameter cmu_fpll_f_max_band_2                                    = "1",
+  parameter cmu_fpll_f_max_band_3                                    = "1",
+  parameter cmu_fpll_f_max_band_4                                    = "1",
+  parameter cmu_fpll_f_max_band_5                                    = "1",
+  parameter cmu_fpll_f_max_band_6                                    = "1",
+  parameter cmu_fpll_f_max_band_7                                    = "1",
+  parameter cmu_fpll_f_max_band_8                                    = "1",
+  parameter cmu_fpll_f_max_band_9                                    = "1",
+  parameter cmu_fpll_f_max_div_two_bypass                            = "1",
+  parameter cmu_fpll_f_max_pfd                                       = "1",
+  parameter cmu_fpll_f_max_pfd_bonded                                = "1",
+  parameter cmu_fpll_f_max_pfd_fractional                            = "1",
+  parameter cmu_fpll_f_max_pfd_integer                               = "1",
+  parameter cmu_fpll_f_max_vco                                       = "1",
+  parameter cmu_fpll_f_max_vco_fractional                            = "1",
+  parameter cmu_fpll_f_min_band_0                                    = "1",
+  parameter cmu_fpll_f_min_band_1                                    = "1",
+  parameter cmu_fpll_f_min_band_2                                    = "1",
+  parameter cmu_fpll_f_min_band_3                                    = "1",
+  parameter cmu_fpll_f_min_band_4                                    = "1",
+  parameter cmu_fpll_f_min_band_5                                    = "1",
+  parameter cmu_fpll_f_min_band_6                                    = "1",
+  parameter cmu_fpll_f_min_band_7                                    = "1",
+  parameter cmu_fpll_f_min_band_8                                    = "1",
+  parameter cmu_fpll_f_min_band_9                                    = "1",
+  parameter cmu_fpll_f_min_pfd                                       = "1",
+  parameter cmu_fpll_f_min_vco                                       = "1",
+  parameter cmu_fpll_f_out_c0                                        = "1",
+  parameter cmu_fpll_f_out_c0_hz                                     = "1",
+  parameter cmu_fpll_f_out_c1                                        = "1",
+  parameter cmu_fpll_f_out_c1_hz                                     = "1",
+  parameter cmu_fpll_f_out_c2                                        = "1",
+  parameter cmu_fpll_f_out_c2_hz                                     = "1",
+  parameter cmu_fpll_f_out_c3                                        = "1",
+  parameter cmu_fpll_f_out_c3_hz                                     = "1",
+  parameter cmu_fpll_feedback                                        = "normal",
+  parameter cmu_fpll_cal_status                                      = "calibration_not_okay",
+  parameter cmu_fpll_cal_test_sel                                    = "sel_cal_out_7_to_0",
+  parameter cmu_fpll_calibration                                     = "fpll_cal_enable",
+  parameter cmu_fpll_cas_out_enable                                  = "fpll_cas_out_disable",
+  parameter cmu_fpll_pll_l_counter                                   = 1,
+  parameter cmu_fpll_cmu_rstn_value                                  = "cmu_normal",
+  parameter cmu_fpll_hclk_out_enable                                 = "fpll_hclk_out_disable",
+  parameter cmu_fpll_iqtxrxclk_out_enable                            = "fpll_iqtxrxclk_out_disable",
+  parameter cmu_fpll_lpf_rstn_value                                  = "lpf_normal",
+  parameter cmu_fpll_ppm_clk0_src                                    = "ppm_clk0_vss",
+  parameter cmu_fpll_ppm_clk1_src                                    = "ppm_clk1_vss",
+  parameter cmu_fpll_rstn_override                                   = "user_reset_normal",
+  parameter cmu_fpll_initial_settings                                = "true",
+  parameter cmu_fpll_input_tolerance                                 = 0,
+  parameter cmu_fpll_is_otn                                          = "true",
+  parameter cmu_fpll_is_pa_core                                      = "false",
+  parameter cmu_fpll_is_sdi                                          = "true",
+  parameter cmu_fpll_enable_hclk                                     = "false",
+  parameter cmu_fpll_is_pcie_hip                                     = "false",
+  parameter cmu_fpll_optimal                                         = "true",
+  parameter cmu_fpll_out_freq                                        = "2500000000",
+  parameter cmu_fpll_out_freq_hz                                     = "2500000000",
+  parameter cmu_fpll_pfd_freq                                        = "100000000",
+  parameter cmu_fpll_phase_shift_c0                                  = "1",
+  parameter cmu_fpll_phase_shift_c1                                  = "1",
+  parameter cmu_fpll_phase_shift_c2                                  = "1",
+  parameter cmu_fpll_phase_shift_c3                                  = "1",
+  parameter cmu_fpll_pll_vco_freq_band_0_fix_high                    = "pll_vco_freq_band_0_fix_high_1",
+  parameter cmu_fpll_pll_vco_freq_band_1_fix_high                    = "pll_vco_freq_band_1_fix_high_1",
+  parameter cmu_fpll_powerdown_mode                                  = "powerup",
+  parameter cmu_fpll_primary_use                                     = "tx",
+  parameter cmu_fpll_prot_mode                                       = "basic_tx",
+  parameter cmu_fpll_refclk                                          = "1",
+  parameter cmu_fpll_sup_mode                                        = "user_mode",
+  parameter cmu_fpll_vco_freq                                        = "10000000000",
+  parameter cmu_fpll_vco_freq_hz                                     = "10000000000",
+  parameter cmu_fpll_c0_pllcout_enable                               = "pllcout_disable",
+  parameter cmu_fpll_c0_cnt_min_tco                                  = "cnt_bypass_dly",
+  parameter cmu_fpll_c0_m_cnt_in_src                                 = "m_cnt_in_src_ph_mux_clk",
+  parameter cmu_fpll_c0_coarse_dly                                   = "pll_coarse_dly_setting0",
+  parameter cmu_fpll_c0_fine_dly                                     = "pll_fine_dly_setting0",
+  parameter cmu_fpll_c1_pllcout_enable                               = "pllcout_disable",
+  parameter cmu_fpll_c1_cnt_min_tco                                  = "cnt_bypass_dly",
+  parameter cmu_fpll_c1_m_cnt_in_src                                 = "m_cnt_in_src_ph_mux_clk",
+  parameter cmu_fpll_c1_coarse_dly                                   = "pll_coarse_dly_setting0",
+  parameter cmu_fpll_c1_fine_dly                                     = "pll_fine_dly_setting0",
+  parameter cmu_fpll_c2_pllcout_enable                               = "pllcout_disable",
+  parameter cmu_fpll_c2_cnt_min_tco                                  = "cnt_bypass_dly",
+  parameter cmu_fpll_c2_m_cnt_in_src                                 = "m_cnt_in_src_ph_mux_clk",
+  parameter cmu_fpll_c2_coarse_dly                                   = "pll_coarse_dly_setting0",
+  parameter cmu_fpll_c2_fine_dly                                     = "pll_fine_dly_setting0",
+  parameter cmu_fpll_c3_pllcout_enable                               = "pllcout_disable",
+  parameter cmu_fpll_c3_cnt_min_tco                                  = "cnt_bypass_dly",
+  parameter cmu_fpll_c3_m_cnt_in_src                                 = "m_cnt_in_src_ph_mux_clk",
+  parameter cmu_fpll_c3_coarse_dly                                   = "pll_coarse_dly_setting0",
+  parameter cmu_fpll_c3_fine_dly                                     = "pll_fine_dly_setting0",
+  parameter cmu_fpll_cal_vco_count_length                            = "sel_8b_count",
+  parameter cmu_fpll_refclk_source                                   = "normal_refclk",
+  parameter cmu_fpll_vco_div_by_2_sel                                = "bypass_divide_by_2",
+  parameter cmu_fpll_pfd_delay_compensation                          = "normal_delay",
+  parameter cmu_fpll_pfd_pulse_width                                 = "pulse_width_setting0",
+  parameter cmu_fpll_vccdreg_fb                                      = "vreg_fb5",
+  parameter cmu_fpll_vccdreg_fw                                      = "vreg_fw5",
+  parameter cmu_fpll_vreg0_atbsel                                    = "atb_disabled",
+  parameter cmu_fpll_vreg1_atbsel                                    = "atb_disabled1",
+  parameter cmu_fpll_fb_cmp_buf_dly                                  = "pll_cmp_buf_dly_setting0",
+  parameter cmu_fpll_fb_fbclk_mux_1                                  = "pll_fbclk_mux_1_glb",
+  parameter cmu_fpll_fb_fbclk_mux_2                                  = "pll_fbclk_mux_2_m_cnt",
+  parameter cmu_fpll_iqfb_mux_iqclk_sel                              = "iqtxrxclk0",
+  parameter cmu_fpll_chgpmp_compensation                             = "cp_mode_enable",
+  parameter cmu_fpll_chgpmp_current_setting                          = "cp_current_setting25",
+  parameter cmu_fpll_cp_current_boost                                = "normal_setting",
+  parameter cmu_fpll_lf_3rd_pole_freq                                = "lf_3rd_pole_setting0",
+  parameter cmu_fpll_lf_cbig                                         = "lf_cbig_setting4",
+  parameter cmu_fpll_lf_order                                        = "lf_2nd_order",
+  parameter cmu_fpll_lf_resistance                                   = "lf_res_setting1",
+  parameter cmu_fpll_lf_ripplecap                                    = "lf_no_ripple",
+  parameter cmu_fpll_vco_ph0_en                                      = "pll_vco_ph0_en",
+  parameter cmu_fpll_vco_ph0_value                                   = "pll_vco_ph0_vss",
+  parameter cmu_fpll_vco_ph1_en                                      = "pll_vco_ph1_dis_en",
+  parameter cmu_fpll_vco_ph1_value                                   = "pll_vco_ph1_vss",
+  parameter cmu_fpll_vco_ph2_en                                      = "pll_vco_ph2_dis_en",
+  parameter cmu_fpll_vco_ph2_value                                   = "pll_vco_ph2_vss",
+  parameter cmu_fpll_vco_ph3_en                                      = "pll_vco_ph3_dis_en",
+  parameter cmu_fpll_vco_ph3_value                                   = "pll_vco_ph3_vss",
+  parameter cmu_fpll_dsm_mode                                        = "dsm_mode_integer",
+  parameter cmu_fpll_pll_dsm_out_sel                                 = "pll_dsm_disable",
+  parameter cmu_fpll_pll_ecn_bypass                                  = "pll_ecn_bypass_disable",
+  parameter cmu_fpll_pll_ecn_test_en                                 = "pll_ecn_test_disable",
+  parameter cmu_fpll_pll_fractional_division                         = "1",
+  parameter cmu_fpll_pll_fractional_value_ready                      = "pll_k_ready",
+  parameter cmu_fpll_lcnt_l_cnt_bypass                               = "lcnt_normal",
+  parameter cmu_fpll_lcnt_l_cnt_enable                               = "lcnt_en",
+  parameter cmu_fpll_lockf_lock_fltr_test                            = "pll_lock_fltr_nrm",
+  parameter cmu_fpll_mcnt_cnt_min_tco                                = "cnt_enable_dly",
+  parameter cmu_fpll_mcnt_m_cnt_in_src                               = "m_cnt_in_src_ph_mux_clk",
+  parameter cmu_fpll_mcnt_coarse_dly                                 = "pll_coarse_dly_setting0",
+  parameter cmu_fpll_mcnt_fine_dly                                   = "pll_fine_dly_setting0",
+  parameter cmu_fpll_ncnt_coarse_dly                                 = "pll_coarse_dly_setting0",
+  parameter cmu_fpll_ncnt_fine_dly                                   = "pll_fine_dly_setting0",
+  parameter cmu_fpll_ref_ref_buf_dly                                 = "pll_ref_buf_dly_setting0",
+  parameter cmu_fpll_testmux_tclk_mux_en                             = "pll_tclk_mux_disabled",
+  parameter cmu_fpll_testmux_tclk_sel                                = "pll_tclk_m_src",
+  parameter cmu_fpll_dprio_broadcast_en                              = "dprio_dprio_broadcast_en_csr_ctrl_disable",
+  parameter cmu_fpll_uc_clk_vreg_boost                               = "clk_fpll_vreg_no_voltage_boost",
+  parameter cmu_fpll_dprio_cvp_inter_sel                             = "dprio_cvp_inter_sel_csr_ctrl_disable",
+  parameter cmu_fpll_dprio_force_inter_sel                           = "dprio_force_inter_sel_csr_ctrl_disable",
+  parameter cmu_fpll_uc_vreg1_boost                                  = "fpll_vreg1_boost_1_step",
+  parameter cmu_fpll_uc_vreg_boost                                   = "fpll_vreg_boost_1_step",
+  parameter cmu_fpll_dprio_power_iso_en                              = "dprio_power_iso_en_csr_ctrl_disable",
+  parameter cmu_fpll_dprio_status_select                             = "dprio_normal_status",
+  parameter cmu_fpll_ctrl_nreset_prgmnvrt                            = "nreset_noninv",
+  parameter cmu_fpll_ctrl_ctrl_override_setting                      = "pll_ctrl_enable",
+  parameter cmu_fpll_ctrl_enable                                     = "pll_enabled",
+  parameter cmu_fpll_ctrl_slf_rst                                    = "pll_slf_rst_off",
+  parameter cmu_fpll_ctrl_test_enable                                = "pll_testen_off",
+  parameter cmu_fpll_ctrl_plniotri_override                          = "plniotri_ctrl_disable",
+  parameter cmu_fpll_ctrl_vccr_pd                                    = "vccd_powerup",
+  parameter cmu_fpll_silicon_rev                                     = "14nm_hssi",
+  parameter cmu_fpll_pll_op_mode                                     = "false",
+  parameter cmu_fpll_bw_sel                                          = "auto",
+  parameter cmu_fpll_compensation_mode                               = "direct",
+  parameter cmu_fpll_duty_cycle_0                                    = 50,
+  parameter cmu_fpll_duty_cycle_1                                    = 50,
+  parameter cmu_fpll_duty_cycle_2                                    = 50,
+  parameter cmu_fpll_duty_cycle_3                                    = 50,
+  parameter cmu_fpll_hssi_output_clock_frequency                     = "2500000000",
+  parameter cmu_fpll_is_cascaded_pll                                 = "false",
+  parameter cmu_fpll_output_clock_frequency_0                        = "2500000000",
+  parameter cmu_fpll_output_clock_frequency_1                        = "2500000000",
+  parameter cmu_fpll_output_clock_frequency_2                        = "2500000000",
+  parameter cmu_fpll_output_clock_frequency_3                        = "2500000000",
+  parameter cmu_fpll_reference_clock_frequency                       = "100000000",
+  parameter cmu_fpll_vco_frequency                                   = "10000000000",
+  //-----------------------------------------------------------------------------------------------
+  // Adding the following parameters as an addendum following switching their
+  // resolution stage to IPGEN.  IS mentioned that we are no longer concerned
+  // about matching order or parameters in terp vs tcl so will simply collect
+  // them here
+  //-----------------------------------------------------------------------------------------------
+  parameter [6:0] cmu_fpll_max_fractional_percentage                       = 1,
+  parameter [6:0] cmu_fpll_min_fractional_percentage                       = 1,
+  parameter cmu_fpll_output_tolerance                                = 0,
+  parameter cmu_fpll_power_mode                                      = "mid_power",
+  parameter cmu_fpll_power_rail_et                                   = 0,
+  parameter cmu_fpll_side                                            = "side_unknown",
+  parameter cmu_fpll_speed_grade                                     = "e2",
+  parameter cmu_fpll_top_or_bottom                                   = "tb_unknown",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_0_scratch0_src = "pll_clkin_0_scratch0_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_0_scratch1_src = "pll_clkin_0_scratch1_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_0_scratch2_src = "pll_clkin_0_scratch2_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_0_scratch3_src = "pll_clkin_0_scratch3_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_0_scratch4_src = "pll_clkin_0_scratch4_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_1_scratch0_src = "pll_clkin_1_scratch0_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_1_scratch1_src = "pll_clkin_1_scratch1_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_1_scratch2_src = "pll_clkin_1_scratch2_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_1_scratch3_src = "pll_clkin_1_scratch3_src_vss",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_pll_clkin_1_scratch4_src = "pll_clkin_1_scratch4_src_vss",
+  parameter cmu_fpll_refclk_select_mux_powerdown_mode                            = "powerup",
+  parameter cmu_fpll_refclk_select_mux_sup_mode                                  = "user_mode",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq0_scratch0_src    = "iq0_scratch0_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq0_scratch1_src    = "iq0_scratch1_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq0_scratch2_src    = "iq0_scratch2_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq0_scratch3_src    = "iq0_scratch3_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq0_scratch4_src    = "iq0_scratch4_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq1_scratch0_src    = "iq1_scratch0_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq1_scratch1_src    = "iq1_scratch1_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq1_scratch2_src    = "iq1_scratch2_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq1_scratch3_src    = "iq1_scratch3_power_down",
+  parameter cmu_fpll_refclk_select_mux_pm_cmu_fpll_atom_fpll_iq1_scratch4_src    = "iq1_scratch4_power_down",
+  parameter cmu_fpll_refclk_select_mux_xpm_iqref_mux0_iqclk_sel			 = "power_down",
+  parameter cmu_fpll_refclk_select_mux_xpm_iqref_mux1_iqclk_sel                  = "power_down",
+  // bitvecs < 32 bits
+  parameter [3:0] cmu_fpll_cgb_div                                   = 1,                 
+  parameter [5:0] cmu_fpll_l_counter                                 = 2,                  
+  parameter [7:0] cmu_fpll_m_counter                                 = 50,                   
+  parameter [8:0] cmu_fpll_m_counter_c0                              = 0,                    
+  parameter [8:0] cmu_fpll_m_counter_c1                              = 0,                   
+  parameter [8:0] cmu_fpll_m_counter_c2                              = 0,                    
+  parameter [8:0] cmu_fpll_m_counter_c3                              = 0,                    
+  parameter [5:0] cmu_fpll_n_counter                                 = 1,                  
+  parameter [1:0] cmu_fpll_pll_vco_freq_band_0_dyn_high_bits         = 1,                   
+  parameter [2:0] cmu_fpll_pll_vco_freq_band_0_dyn_low_bits          = 3,                   
+  parameter [4:0] cmu_fpll_pll_vco_freq_band_0_fix                   = 21,                   
+  parameter [1:0] cmu_fpll_pll_vco_freq_band_1_dyn_high_bits         = 1,                   
+  parameter [2:0] cmu_fpll_pll_vco_freq_band_1_dyn_low_bits          = 3,                  
+  parameter [4:0] cmu_fpll_pll_vco_freq_band_1_fix                   = 21,                 
+  parameter [6:0] cmu_fpll_pma_width                                 = 64,                   
+  parameter [7:0] cmu_fpll_set_input_freq_range                      = 255, //0               
+  parameter [8:0] cmu_fpll_c0_cnt_div                                = 1,               
+  parameter [1:0] cmu_fpll_c0_m_cnt_ph_mux_prst                      = 1,              
+  parameter [7:0] cmu_fpll_c0_m_cnt_prst                             = 1,             
+  parameter [8:0] cmu_fpll_c1_cnt_div                                = 1,            
+  parameter [1:0] cmu_fpll_c1_m_cnt_ph_mux_prst                      = 1,           
+  parameter [7:0] cmu_fpll_c1_m_cnt_prst                             = 1,          
+  parameter [8:0] cmu_fpll_c2_cnt_div                                = 1,         
+  parameter [1:0] cmu_fpll_c2_m_cnt_ph_mux_prst                      = 1,        
+  parameter [7:0] cmu_fpll_c2_m_cnt_prst                             = 1,       
+  parameter [8:0] cmu_fpll_c3_cnt_div                                = 1,      
+  parameter [1:0] cmu_fpll_c3_m_cnt_ph_mux_prst                      = 1,     
+  parameter [7:0] cmu_fpll_c3_m_cnt_prst                             = 1,    
+  parameter [11:0] cmu_fpll_lockf_lock_fltr_cfg                      = 25,  
+  parameter [2:0] cmu_fpll_lockf_unlock_fltr_cfg                     = 2,  
+  parameter [8:0] cmu_fpll_mcnt_cnt_div                              = 1, 
+  parameter [1:0] cmu_fpll_mcnt_m_cnt_ph_mux_prst                    = 0,
+  parameter [7:0] cmu_fpll_mcnt_m_cnt_prst                           = 1,
+  parameter [4:0] cmu_fpll_ncnt_ncnt_divide                          = 0,
+  parameter [8:0] cmu_fpll_dprio_base_addr                           = 256,
+  parameter [2:0] cmu_fpll_extra_csr                                 = 0,                   
+  // other misc parameters 
+  parameter hip_cal_en                                               = "disable",
+  parameter calibration_en                                           = "enable",
+  parameter enable_pcie_hip_connectivity                             = 0,
+  parameter enable_clk_divider                                       = 0,
+  parameter test_mode                                                = "false",
+  // Master CGB parameters 
+  parameter enable_mcgb                                              = 0,
+  parameter enable_mcgb_debug_ports_parameters                       = 0,
+  parameter hssi_pma_cgb_master_prot_mode                            = "basic_tx",
+  parameter hssi_pma_cgb_master_silicon_rev                          = "14nm_hssi",
+  parameter hssi_pma_cgb_master_x1_div_m_sel                         = "divbypass",
+  parameter hssi_pma_cgb_master_cgb_enable_iqtxrxclk                 = "disable_iqtxrxclk",
+  parameter hssi_pma_cgb_master_ser_mode                             = "sixty_four_bit",
+  parameter hssi_pma_cgb_master_datarate_bps                         = "1002000000",
+  parameter hssi_pma_cgb_master_cgb_power_down                       = "normal_cgb",
+  parameter hssi_pma_cgb_master_observe_cgb_clocks                   = "observe_nothing",
+  parameter hssi_pma_cgb_master_op_mode                              = "enabled",
+  parameter hssi_pma_cgb_master_tx_ucontrol_reset_pcie               = "pcscorehip_controls_mcgb",
+  parameter hssi_pma_cgb_master_vccdreg_output                       = "vccdreg_nominal",
+  parameter hssi_pma_cgb_master_input_select                         = "lcpll_top",
+  parameter hssi_pma_cgb_master_input_select_gen3                    = "unused",
+  
+  //Begin: removed by Anthony 
+  //parameter cmu_fpll_atb_atb                                         = "atb_selectdisable",
+  //End: removed by Anthony
+
+  //AVMM2 parameters
+  parameter          hssi_avmm2_if_silicon_rev                       = "14nm5"                       ,//"14nm5"
+  parameter          hssi_avmm2_if_calibration_type                  = "one_time"                    ,//"continuous" "one_time"
+  parameter          hssi_avmm2_if_pcs_calibration_feature_en        = "avmm2_pcs_calibration_dis"   ,//"avmm2_pcs_calibration_dis" "avmm2_pcs_calibration_en"
+  parameter          hssi_avmm2_if_pcs_arbiter_ctrl                  = "avmm2_arbiter_uc_sel"        ,//"avmm2_arbiter_pld_sel" "avmm2_arbiter_uc_sel"
+  parameter          hssi_avmm2_if_pcs_cal_done                      = "avmm2_cal_done_assert"       ,//"avmm2_cal_done_assert" "avmm2_cal_done_deassert"
+  parameter          hssi_avmm2_if_pcs_hip_cal_en                    = "disable"                     ,//"disable" "enable"
+  parameter [4:0]    hssi_avmm2_if_pcs_cal_reserved                  = 5'd0                          ,//0:31
+  parameter          hssi_avmm2_if_hssiadapt_hip_mode                = "disable_hip"                 ,//"debug_chnl" "disable_hip" "user_chnl"
+  parameter          hssi_avmm2_if_pldadapt_hip_mode                 = "disable_hip"                 ,//"debug_chnl" "disable_hip" "user_chnl"
+  parameter          hssi_avmm2_if_hssiadapt_avmm_osc_clock_setting  = "osc_clk_div_by1"             ,//"osc_clk_div_by1" "osc_clk_div_by2" "osc_clk_div_by4"
+  parameter          hssi_avmm2_if_pldadapt_avmm_osc_clock_setting   = "osc_clk_div_by1"             ,//"osc_clk_div_by1" "osc_clk_div_by2" "osc_clk_div_by4"
+  parameter          hssi_avmm2_if_hssiadapt_avmm_testbus_sel        = "avmm1_transfer_testbus"      ,//"avmm1_cmn_intf_testbus" "avmm1_transfer_testbus" "avmm2_transfer_testbus" "avmm_clk_dcg_testbus"
+  parameter          hssi_avmm2_if_pldadapt_avmm_testbus_sel         = "avmm1_transfer_testbus"      ,//"avmm1_cmn_intf_testbus" "avmm1_transfer_testbus" "avmm2_transfer_testbus" "unused_testbus"
+  parameter          hssi_avmm2_if_pldadapt_gate_dis                 = "disable"                     ,//"disable" "enable"
+	 
+
+// reconfig multiprofile required ports + others
+  parameter cmu_fpll_atb_fpll_atb                                    ="atb_selectdisable",
+  parameter dbg_capability_reg_enable                                =0,
+  parameter dbg_ctrl_soft_logic_enable                               =0,
+  parameter dbg_embedded_debug_enable                                =0,
+  parameter dbg_stat_soft_logic_enable                               =0,
+  parameter dbg_user_identifier                                      =0,
+  parameter rcfg_enable                                              =0,
+  parameter rcfg_jtag_enable                                         =0,
+  parameter rcfg_separate_avmm_busy                                  =0,
+
+  parameter rcfg_profile_cnt                                         =0,
+  parameter rcfg_emb_strm_enable                                     =0,
+
+
+  parameter SIZE_AVMM_RDDATA_BUS = 32,
+  parameter SIZE_AVMM_WRDATA_BUS = 32
+)
+(
+  // general usage for core and HSSI
+  input pll_refclk0,
+  input pll_refclk1,          
+  input pll_refclk2,          
+  input pll_refclk3,          
+  input pll_refclk4,          
+  input pll_powerdown,
+  input atx_to_fpll_cascade_clk,
+  output wire tx_serial_clk,
+  output wire pll_cascade_clk,
+  output wire outclk,
+  output wire [3:0] unused_pllcout,
+  output wire outclk_div1,
+  output wire outclk_div2,
+  output wire outclk_div4,
+  output wire pll_pcie_clk,
+  output wire pll_locked,
+  output wire pll_locked_hip,
+  output wire pll_cal_busy,
+  output wire hip_cal_done,
+  
+  // dps ports 
+  input phase_reset, 
+  input phase_enable, 
+  input updn,
+  input [3:0] cntsel,    
+  input [2:0] num_phase_shifts,
+  output wire phase_done, 
+
+  // M CGB ports 
+  input mcgb_aux_clk0,                                                                                             
+  input mcgb_aux_clk1,                                                                                             
+  input mcgb_aux_clk2,                                                                                             
+//  input [1:0] mcgb_pcie_sw,
+  input  mcgb_rst,
+  output wire [5:0] tx_bonding_clocks,
+  output wire mcgb_serial_clk,                    
+//  output wire [1:0] mcgb_pcie_sw_done,
+
+  output wire clklow,
+  output wire fref,
+
+  input reconfig_clk0,
+  input reconfig_reset0,
+  input reconfig_write0,
+  input reconfig_read0,
+  input [10:0] reconfig_address0,                        
+  input [SIZE_AVMM_WRDATA_BUS-1:0] reconfig_writedata0,
+  output wire [SIZE_AVMM_RDDATA_BUS-1:0] reconfig_readdata0,
+  output wire avmm_busy0,
+  output wire reconfig_waitrequest0,
+
+  input reconfig_clk1,
+  input reconfig_reset1,
+  input reconfig_write1,
+  input reconfig_read1,
+  input [10:0] reconfig_address1,
+  input [SIZE_AVMM_WRDATA_BUS-1:0] reconfig_writedata1,
+  output wire [SIZE_AVMM_RDDATA_BUS-1:0] reconfig_readdata1,
+  output wire avmm_busy1,
+  output wire reconfig_waitrequest1,
+  output wire mcgb_cal_busy,   
+  output wire mcgb_hip_cal_done, 
+
+  input [1:0] pcie_sw, 
+  output wire [1:0] pcie_sw_done
+
+);
+  localparam REFIQCLK_SIZE = 12;
+  localparam REFCLK_CNT = 5;
+
+
+wire pll_powerdown_wire;
+wire mcgb_rst_wire;
+
+// temp assignment to disable pll_powerdown and mcgb_rst internally
+assign pll_powerdown_wire = pll_powerdown;
+assign mcgb_rst_wire = mcgb_rst;
+//assign pll_powerdown_wire = 1'b0;
+//assign mcgb_rst_wire = 1'b0;
+/////////////////
+
+
+  wire refclk_sel_outclk; 
+  wire pll_cout0; 
+  wire pll_cout1; 
+  wire pll_cout2; 
+  wire pll_cout3; 
+
+  // wire declarations for pll adapt connections 
+  wire w_phase_reset; 
+  wire w_phase_enable; 
+  wire w_pll_powerdown;
+  wire w_updn;
+  wire [3:0] w_cntsel;
+  wire [2:0] w_num_phase_shifts; 
+  wire w_clklow; 
+  wire w_fref; 
+  wire w_pll_locked;
+  wire w_phase_done;
+  wire w_pll_cout0; 
+  wire w_pll_cout1; 
+  wire w_pll_cout2; 
+  wire w_pll_cout3; 
+
+  // Wire around the HIP
+  wire pll_powerdown_adapt;
+  wire pll_powerdown_fpll;
+  wire mcgb_rst_adapt;
+  wire mcgb_rst_mcgb;
+  wire w_mcgb_rst; 
+  
+  // define the avmm interfaces depending on whether master CGB is enabled or not. 
+//  localparam avmm_interfaces = (enable_mcgb == 1) && (enable_mcgb_debug_ports_parameters==1) ? 2 : 1;
+  localparam avmm_interfaces = (enable_mcgb == 1) ? 2 : 1;
+
+  // upper 24 bits are not used, but should not be left at X
+  //assign reconfig_readdata0[SIZE_AVMM_RDDATA_BUS-1:8] =  0;
+  assign reconfig_readdata1[SIZE_AVMM_RDDATA_BUS-1:8] =  0;
+
+  //// mcgb_serial_clk connection  
+    // \OPEN find a better way for the following parameters
+   localparam SIZE_CGB_BONDING_CLK = 6;
+   localparam SIZE_REFIQCLK = 12;
+   
+   assign mcgb_serial_clk = tx_bonding_clocks[SIZE_CGB_BONDING_CLK-1];
+
+
+  //-----------------------------------
+  // reconfigAVMM to pllAtoms internal wires  
+  // interface #0 to PLL, interface #1 to CGB 
+  wire [avmm_interfaces-1    :0]  pll_avmm_clk;
+  //wire [avmm_interfaces-1    :0]  pll_avmm_rstn;
+  wire [avmm_interfaces*8-1  :0]  pll_avmm_writedata;
+  wire [avmm_interfaces*10-1 :0]  pll_avmm_address;
+  wire [avmm_interfaces-1    :0]  pll_avmm_write;
+  wire [avmm_interfaces-1    :0]  pll_avmm_read;
+
+  wire [avmm_interfaces*8-1  :0]  pll_avmmreaddata_fpll;                        // \NOTE only [7:0] is used
+  wire [avmm_interfaces*8-1  :0]  pll_avmmreaddata_refclk;                    // \NOTE only [7:0] is used
+  wire [avmm_interfaces*8-1  :0]  pll_avmmreaddata_mcgb;                      // \NOTE only [15:8] is used
+  wire [avmm_interfaces-1    :0]  pll_blockselect_fpll;                         // \NOTE only [0:0] is used
+  wire [avmm_interfaces-1    :0]  pll_blockselect_refclk;                     // \NOTE only [0:0] is used
+  wire [avmm_interfaces-1    :0]  pll_blockselect_mcgb;                       // \NOTE only [1:1] is used
+  //-----------------------------------
+  
+  wire            avmm_clk_refclk,       avmm_clk_fpll,       avmm_clk_mcgb;
+  //wire          avmm_rstn_refclk,      avmm_rstn_fpll,      avmm_rstn_mcgb;
+  wire [7:0] 	    avmm_writedata_refclk, avmm_writedata_fpll, avmm_writedata_mcgb;
+  //wire [8:0] 	  avmm_address_refclk,   avmm_address_fpll,   avmm_address_mcgb;
+  wire [9:0] 	    avmm_address_refclk,   avmm_address_fpll,   avmm_address_mcgb;   
+  wire            avmm_write_refclk,     avmm_write_fpll,     avmm_write_mcgb;
+  wire            avmm_read_refclk,      avmm_read_fpll,      avmm_read_mcgb;
+  wire [7:0] 	    avmmreaddata_refclk,   avmmreaddata_fpll,   avmmreaddata_mcgb;
+  wire            blockselect_refclk,    blockselect_fpll,    blockselect_mcgb;
+   
+  //-----------------------------------
+  // reconfigAVMM to top wrapper wires  
+  // interface #0 to PLL, interface #1 to CGB 
+  wire [avmm_interfaces-1    :0]  reconfig_clk;
+  wire [avmm_interfaces-1    :0]  reconfig_reset;
+  wire [avmm_interfaces*8-1  :0]  reconfig_writedata;
+  wire [avmm_interfaces*11-1 :0]  reconfig_address;
+  wire [avmm_interfaces-1    :0]  reconfig_write;
+  wire [avmm_interfaces-1    :0]  reconfig_read;
+  wire [avmm_interfaces*8-1  :0]  reconfig_readdata;
+  wire [avmm_interfaces-1    :0]  reconfig_waitrequest;
+  wire [avmm_interfaces-1    :0]  avmm_busy;
+  wire [avmm_interfaces-1    :0]  pld_cal_done;
+  wire [avmm_interfaces-1    :0]  hip_cal_done_w;
+
+  // AVMM reconfiguration signals for the hardware
+  wire [avmm_interfaces-1:0] 	    avmm_write;
+  wire [avmm_interfaces-1:0] 	    avmm_read;
+  wire [avmm_interfaces-1:0] 	    avmm_waitrequest;
+  wire [avmm_interfaces*8-1:0]    avmm_readdata;
+
+
+   // AVMM reconfiguration signals for embedded debug
+   wire [avmm_interfaces*8-1:0]    debug_writedata;
+   wire [avmm_interfaces-1:0] 	   debug_clk;
+   wire [avmm_interfaces-1:0] 	   debug_reset;
+   wire [avmm_interfaces*11-1:0]   debug_address; 
+   wire [avmm_interfaces-1:0] 	   debug_write;
+   wire [avmm_interfaces-1:0] 	   debug_read;
+   wire [avmm_interfaces-1:0] 	   debug_busy;
+   wire [avmm_interfaces-1:0] 	   debug_waitrequest;
+   wire [avmm_interfaces*8-1:0]    debug_readdata;
+
+
+  // avmm signals shared accross all interfaces
+  assign reconfig_clk[0]              = reconfig_clk0;
+  assign reconfig_reset[0]            = reconfig_reset0;
+  assign reconfig_writedata[7:0]      = reconfig_writedata0[7:0];
+  assign reconfig_address[9:0]        = reconfig_address0[9:0];
+  assign reconfig_write[0]            = reconfig_write0;
+  assign reconfig_read[0]             = reconfig_read0;
+  assign reconfig_readdata0[7:0]      = reconfig_readdata[7:0];
+  assign reconfig_waitrequest0        = reconfig_waitrequest[0];
+
+  assign avmm_busy0 = avmm_busy[0];
+  assign hip_cal_done = hip_cal_done_w[0];
+  //---
+  assign mcgb_cal_busy = 1'b0;
+  assign pll_cal_busy = ~pld_cal_done[0];
+
+  generate
+    if (avmm_interfaces == 2) begin
+      assign reconfig_clk[1]              = reconfig_clk1;
+      assign reconfig_reset[1]            = reconfig_reset1;
+      assign reconfig_writedata[15:8]     = reconfig_writedata1[7:0];
+      assign reconfig_address[20:11]      = reconfig_address1[9:0];
+      assign reconfig_write[1]            = reconfig_write1;
+      assign reconfig_read[1]             = reconfig_read1;
+      assign reconfig_readdata1[7:0]      = reconfig_readdata[15:8];
+      assign reconfig_waitrequest1        = reconfig_waitrequest[1];
+      assign avmm_busy1                   = avmm_busy[1];
+      //assign mcgb_cal_busy              = ~pld_cal_done[1];
+      assign mcgb_hip_cal_done            = hip_cal_done_w[1];
+     end else begin
+      assign reconfig_readdata1           = 8'b0;
+      assign reconfig_waitrequest1        = 1'b0;
+      assign avmm_busy1                   = 1'b0;
+      assign mcgb_hip_cal_done            = 1'b0;
+     end
+  endgenerate
+  
+  generate
+   if (avmm_interfaces==2) begin
+      assign pll_avmmreaddata_fpll[avmm_interfaces*8-1:8]     = { 8 {1'b0} };             // \NOTE only [7:0] is used, hence [15:8] is tied-off to '0'
+      assign pll_avmmreaddata_refclk[avmm_interfaces*8-1:8]   = { 8 {1'b0} };   // \NOTE only [7:0] is used, hence [15:8] is tied-off to '0'
+	
+      assign pll_blockselect_fpll[avmm_interfaces-1:1]        = {1'b0};                      // \NOTE only [0:0] is used, hence [1:1] is tied-off to '0'
+      assign pll_blockselect_refclk[avmm_interfaces-1:1]      = {1'b0};            // \NOTE only [0:0] is used, hence [1:1] is tied-off to '0'
+	
+      assign avmm_clk_mcgb                  = pll_avmm_clk[1];
+      //assign avmm_rstn_mcgb               = pll_avmm_rstn[1];
+      assign avmm_writedata_mcgb            = pll_avmm_writedata[15:8];
+      //assign avmm_address_mcgb            = pll_avmm_address[17:9];
+      assign avmm_address_mcgb              = pll_avmm_address[19:10];	 
+      assign avmm_write_mcgb                = pll_avmm_write[1];
+      assign avmm_read_mcgb                 = pll_avmm_read[1];
+      //assign pll_avmmreaddata_mcgb[15:8]    = avmmreaddata_mcgb;
+      assign pll_avmmreaddata_mcgb[15:8]    = 8'b0;
+      //assign pll_blockselect_mcgb[1]        = blockselect_mcgb;
+      assign pll_blockselect_mcgb[1]        = 1'b0;
+   end
+  endgenerate
+  
+  assign avmm_clk_refclk                    = pll_avmm_clk[0];
+  //assign avmm_rstn_refclk                 = pll_avmm_rstn[0];
+  assign avmm_writedata_refclk              = pll_avmm_writedata[7:0];
+  //assign avmm_address_refclk              = pll_avmm_address[8:0];
+  assign avmm_address_refclk                = pll_avmm_address[9:0];   
+  assign avmm_write_refclk                  = pll_avmm_write[0];
+  assign avmm_read_refclk                   = pll_avmm_read[0];
+  assign pll_avmmreaddata_refclk[7:0]       = avmmreaddata_refclk;
+  assign pll_blockselect_refclk[0]          = blockselect_refclk;
+
+  assign avmm_clk_fpll                      = pll_avmm_clk[0];
+  //assign avmm_rstn_fpll                   = pll_avmm_rstn[0];
+  assign avmm_writedata_fpll                = pll_avmm_writedata[7:0];
+  //assign avmm_address_fpll                = pll_avmm_address[8:0];
+  assign avmm_address_fpll                  = pll_avmm_address[9:0];   
+  assign avmm_write_fpll                    = pll_avmm_write[0];
+  assign avmm_read_fpll                     = pll_avmm_read[0];
+  assign pll_avmmreaddata_fpll[7:0]         = avmmreaddata_fpll;
+  assign pll_blockselect_fpll[0]            = blockselect_fpll;
+
+  localparam  MAX_CONVERSION_SIZE_ALT_XCVR_FPLL_S10 = 128;
+  localparam  MAX_STRING_CHARS_ALT_XCVR_FPLL_S10  = 64;
+  
+  // STRING TO BINARY FUNCTION 
+  function automatic [MAX_CONVERSION_SIZE_ALT_XCVR_FPLL_S10-1:0] str_2_bin_altera_xcvr_fpll_s10;
+  input [MAX_STRING_CHARS_ALT_XCVR_FPLL_S10*8-1:0] instring;
+  
+  integer this_char;
+  integer i;
+  begin
+    // Initialize accumulator
+    str_2_bin_altera_xcvr_fpll_s10 = {MAX_CONVERSION_SIZE_ALT_XCVR_FPLL_S10{1'b0}};
+    for(i=MAX_STRING_CHARS_ALT_XCVR_FPLL_S10-1;i>=0;i=i-1) begin
+      this_char = instring[i*8+:8];
+      // Add value of this digit
+      if(this_char >= 48 && this_char <= 57)
+        str_2_bin_altera_xcvr_fpll_s10 = (str_2_bin_altera_xcvr_fpll_s10 * 10) + (this_char - 48);
+    end
+  end
+  endfunction
+
+  // converting the following parameters into bitvec
+  // cmu_fpll_atom bitvecs >= 32 bits (str2bin)
+  localparam [127:0] temp_cmu_fpll_datarate_bps            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_datarate_bps);			
+  localparam [127:0] temp_cmu_fpll_f_out_c0                = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c0);		
+  localparam [127:0] temp_cmu_fpll_f_out_c0_hz             = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c0_hz);			
+  localparam [127:0] temp_cmu_fpll_f_out_c1		           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c1);		
+  localparam [127:0] temp_cmu_fpll_f_out_c1_hz	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c1_hz);		
+  localparam [127:0] temp_cmu_fpll_f_out_c2		           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c2);	
+  localparam [127:0] temp_cmu_fpll_f_out_c2_hz	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c2_hz);		
+  localparam [127:0] temp_cmu_fpll_f_out_c3		           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c3);		
+  localparam [127:0] temp_cmu_fpll_f_out_c3_hz	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_out_c3_hz);			
+  localparam [127:0] temp_cmu_fpll_out_freq		           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_out_freq);	
+  localparam [127:0] temp_cmu_fpll_out_freq_hz	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_out_freq_hz);		
+  localparam [127:0] temp_cmu_fpll_pfd_freq		           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_pfd_freq);	
+  localparam [127:0] temp_cmu_fpll_phase_shift_c0		   = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_phase_shift_c0);		
+  localparam [127:0] temp_cmu_fpll_phase_shift_c1	       = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_phase_shift_c1);			
+  localparam [127:0] temp_cmu_fpll_phase_shift_c2          = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_phase_shift_c2);				
+  localparam [127:0] temp_cmu_fpll_phase_shift_c3	       = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_phase_shift_c3);			
+  localparam [127:0] temp_cmu_fpll_refclk			       = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_refclk);	
+  localparam [127:0] temp_cmu_fpll_vco_freq		           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_vco_freq);	
+  localparam [127:0] temp_cmu_fpll_vco_freq_hz	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_vco_freq_hz);		
+  localparam [127:0] temp_cmu_fpll_pll_fractional_division = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_pll_fractional_division);		
+ 
+  localparam [127:0] temp_cmu_fpll_f_max_band_0            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_0);
+  localparam [127:0] temp_cmu_fpll_f_max_band_1            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_1);
+  localparam [127:0] temp_cmu_fpll_f_max_band_2	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_2);
+  localparam [127:0] temp_cmu_fpll_f_max_band_3	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_3);
+  localparam [127:0] temp_cmu_fpll_f_max_band_4            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_4);
+  localparam [127:0] temp_cmu_fpll_f_max_band_5	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_5);
+  localparam [127:0] temp_cmu_fpll_f_max_band_6	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_6);
+  localparam [127:0] temp_cmu_fpll_f_max_band_7	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_7);
+  localparam [127:0] temp_cmu_fpll_f_max_band_8	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_8);
+  localparam [127:0] temp_cmu_fpll_f_max_band_9	           = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_band_9);
+  localparam [127:0] temp_cmu_fpll_f_max_div_two_bypass    = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_div_two_bypass);
+  localparam [127:0] temp_cmu_fpll_f_max_pfd               = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_pfd);
+  localparam [127:0] temp_cmu_fpll_f_max_pfd_bonded        = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_pfd_bonded);
+  localparam [127:0] temp_cmu_fpll_f_max_pfd_fractional    = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_pfd_fractional);
+  localparam [127:0] temp_cmu_fpll_f_max_pfd_integer       = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_pfd_integer);
+  localparam [127:0] temp_cmu_fpll_f_max_vco               = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_vco);
+  localparam [127:0] temp_cmu_fpll_f_max_vco_fractional    = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_max_vco_fractional);
+  localparam [127:0] temp_cmu_fpll_f_min_band_0            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_0);
+  localparam [127:0] temp_cmu_fpll_f_min_band_1            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_1);
+  localparam [127:0] temp_cmu_fpll_f_min_band_2            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_2);
+  localparam [127:0] temp_cmu_fpll_f_min_band_3            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_3);
+  localparam [127:0] temp_cmu_fpll_f_min_band_4            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_4);
+  localparam [127:0] temp_cmu_fpll_f_min_band_5            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_5);
+  localparam [127:0] temp_cmu_fpll_f_min_band_6            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_6);
+  localparam [127:0] temp_cmu_fpll_f_min_band_7            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_7);
+  localparam [127:0] temp_cmu_fpll_f_min_band_8            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_8);
+  localparam [127:0] temp_cmu_fpll_f_min_band_9            = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_band_9);
+  localparam [127:0] temp_cmu_fpll_f_min_pfd               = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_pfd);
+  localparam [127:0] temp_cmu_fpll_f_min_vco               = str_2_bin_altera_xcvr_fpll_s10(cmu_fpll_f_min_vco);
+
+
+
+  // to avoid warnings 
+  localparam [35:0] lcl_cmu_fpll_datarate_bps              = temp_cmu_fpll_datarate_bps [35:0];          
+  localparam [35:0] lcl_cmu_fpll_f_out_c0                  = temp_cmu_fpll_f_out_c0 [35:0];              
+  localparam [35:0] lcl_cmu_fpll_f_out_c0_hz               = temp_cmu_fpll_f_out_c0_hz [35:0];           
+  localparam [35:0] lcl_cmu_fpll_f_out_c1		           = temp_cmu_fpll_f_out_c1 [35:0];	           
+  localparam [35:0] lcl_cmu_fpll_f_out_c1_hz	           = temp_cmu_fpll_f_out_c1_hz [35:0];	           
+  localparam [35:0] lcl_cmu_fpll_f_out_c2		           = temp_cmu_fpll_f_out_c2 [35:0];		           
+  localparam [35:0] lcl_cmu_fpll_f_out_c2_hz	           = temp_cmu_fpll_f_out_c2_hz [35:0];	           
+  localparam [35:0] lcl_cmu_fpll_f_out_c3		           = temp_cmu_fpll_f_out_c3 [35:0];		           
+  localparam [35:0] lcl_cmu_fpll_f_out_c3_hz	           = temp_cmu_fpll_f_out_c3_hz [35:0];	           
+  localparam [35:0] lcl_cmu_fpll_out_freq		           = temp_cmu_fpll_out_freq [35:0];		           
+  localparam [35:0] lcl_cmu_fpll_out_freq_hz	           = temp_cmu_fpll_out_freq_hz [35:0];	           
+  localparam [35:0] lcl_cmu_fpll_pfd_freq		           = temp_cmu_fpll_pfd_freq [35:0];	           
+  localparam [35:0] lcl_cmu_fpll_phase_shift_c0		       = temp_cmu_fpll_phase_shift_c0 [35:0];	     
+  localparam [35:0] lcl_cmu_fpll_phase_shift_c1	           = temp_cmu_fpll_phase_shift_c1 [35:0];       
+  localparam [35:0] lcl_cmu_fpll_phase_shift_c2            = temp_cmu_fpll_phase_shift_c2 [35:0];       
+  localparam [35:0] lcl_cmu_fpll_phase_shift_c3	           = temp_cmu_fpll_phase_shift_c3 [35:0];       
+  localparam [35:0] lcl_cmu_fpll_refclk			           = temp_cmu_fpll_refclk [35:0];         
+  localparam [35:0] lcl_cmu_fpll_vco_freq		           = temp_cmu_fpll_vco_freq [35:0];          
+  localparam [35:0] lcl_cmu_fpll_vco_freq_hz	           = temp_cmu_fpll_vco_freq_hz [35:0];         
+  localparam [31:0] lcl_cmu_fpll_pll_fractional_division   = temp_cmu_fpll_pll_fractional_division [31:0];
+
+localparam [35:0] lcl_cmu_fpll_f_max_band_0            = temp_cmu_fpll_f_max_band_0 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_1            = temp_cmu_fpll_f_max_band_1 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_2            = temp_cmu_fpll_f_max_band_2 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_3            = temp_cmu_fpll_f_max_band_3 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_4            = temp_cmu_fpll_f_max_band_4 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_5            = temp_cmu_fpll_f_max_band_5 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_6            = temp_cmu_fpll_f_max_band_6 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_7            = temp_cmu_fpll_f_max_band_7 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_8            = temp_cmu_fpll_f_max_band_8 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_band_9            = temp_cmu_fpll_f_max_band_9 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_div_two_bypass    = temp_cmu_fpll_f_max_div_two_bypass [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_pfd               = temp_cmu_fpll_f_max_pfd [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_pfd_bonded        = temp_cmu_fpll_f_max_pfd_bonded [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_pfd_fractional    = temp_cmu_fpll_f_max_pfd_fractional [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_pfd_integer       = temp_cmu_fpll_f_max_pfd_integer [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_vco               = temp_cmu_fpll_f_max_vco [35:0];
+localparam [35:0] lcl_cmu_fpll_f_max_vco_fractional    = temp_cmu_fpll_f_max_vco_fractional [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_0            = temp_cmu_fpll_f_min_band_0 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_1            = temp_cmu_fpll_f_min_band_1 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_2            = temp_cmu_fpll_f_min_band_2 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_3            = temp_cmu_fpll_f_min_band_3 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_4            = temp_cmu_fpll_f_min_band_4 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_5            = temp_cmu_fpll_f_min_band_5 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_6            = temp_cmu_fpll_f_min_band_6 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_7            = temp_cmu_fpll_f_min_band_7 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_8            = temp_cmu_fpll_f_min_band_8 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_band_9            = temp_cmu_fpll_f_min_band_9 [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_pfd               = temp_cmu_fpll_f_min_pfd [35:0];
+localparam [35:0] lcl_cmu_fpll_f_min_vco               = temp_cmu_fpll_f_min_vco [35:0];
+
+
+  
+
+
+  // Master CGB atom bitvecs (str2bin)
+  localparam [127:0] temp_hssi_pma_cgb_master_datarate_bps = str_2_bin_altera_xcvr_fpll_s10(hssi_pma_cgb_master_datarate_bps);
+  // to avoid warnings 
+  localparam [35:0] lcl_hssi_pma_cgb_master_datarate_bps   = temp_hssi_pma_cgb_master_datarate_bps [35:0];
+
+  //-----------------------------------
+  // instantiation of ct1_fpll_refclk_select
+  ct1_cmu_fpll_refclk_select 
+  #( 
+    .clk_sel_override(cmu_fpll_refclk_select_mux_clk_sel_override),                             
+    .clk_sel_override_value(cmu_fpll_refclk_select_mux_clk_sel_override_value),                       
+    .xpm_clkin_fpll_pll_clkin_0_src(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_pll_clkin_0_src), 
+    .xpm_clkin_fpll_pll_clkin_1_src(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_pll_clkin_1_src),
+    .xpm_clkin_fpll_xpm_pll_so_pll_auto_clk_sw_en(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_auto_clk_sw_en), 
+    .xpm_clkin_fpll_xpm_pll_so_pll_clk_loss_edge(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_clk_loss_edge),  
+    .xpm_clkin_fpll_xpm_pll_so_pll_clk_loss_sw_en(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_clk_loss_sw_en), 
+    .xpm_clkin_fpll_xpm_pll_so_pll_manu_clk_sw_en(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_manu_clk_sw_en), 
+    .xpm_clkin_fpll_xpm_pll_so_pll_sw_refclk_src(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_sw_refclk_src),  
+    .silicon_rev(cmu_fpll_refclk_select_mux_silicon_rev),                                  
+    .refclk_select0(cmu_fpll_refclk_select_mux_refclk_select0),                               
+    .refclk_select1(cmu_fpll_refclk_select_mux_refclk_select1),                               
+    .mux0_inclk0_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux0_inclk0_logical_to_physical_mapping),      
+    .mux0_inclk1_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux0_inclk1_logical_to_physical_mapping),      
+    .mux0_inclk2_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux0_inclk2_logical_to_physical_mapping),      
+    .mux0_inclk3_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux0_inclk3_logical_to_physical_mapping),      
+    .mux0_inclk4_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux0_inclk4_logical_to_physical_mapping),      
+    .mux1_inclk0_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux1_inclk0_logical_to_physical_mapping),      
+    .mux1_inclk1_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux1_inclk1_logical_to_physical_mapping),      
+    .mux1_inclk2_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux1_inclk2_logical_to_physical_mapping),      
+    .mux1_inclk3_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux1_inclk3_logical_to_physical_mapping),      
+    .mux1_inclk4_logical_to_physical_mapping(cmu_fpll_refclk_select_mux_mux1_inclk4_logical_to_physical_mapping),
+    //bitvec 
+    .xpm_clkin_fpll_xpm_pll_so_pll_clk_sw_dly(cmu_fpll_refclk_select_mux_xpm_clkin_fpll_xpm_pll_so_pll_clk_sw_dly)     
+                                                                
+  ) fpll_refclk_select_inst (
+    // Input Ports
+	  .lvpecl_in         (1'b0),
+	  .pll_cas_in        (1'b0),
+	  .core_refclk       (1'b0),
+	  .tx_rx_core_refclk (1'b0),
+	  .ref_iqclk         ({{(SIZE_REFIQCLK-REFCLK_CNT){1'b0}}, {pll_refclk4, pll_refclk3, pll_refclk2, pll_refclk1, pll_refclk0}}),
+	  .extswitch         (1'b0),
+	  .iqtxrxclk         (6'd0),
+
+	  // Output Ports
+	  .clk0bad(/* unconnected */),
+	  .clk1bad(/* unconnected */),
+	  .extswitch_buf(/* unconnected */),
+	  .clkout(refclk_sel_outclk),
+	  .pllclksel(/* unconnected */),
+
+    //-----------------------------------          
+	  .avmmaddress(avmm_address_refclk),
+	  .avmmclk(avmm_clk_refclk),
+	  .avmmread(avmm_read_refclk),
+    //.avmmrstn(avmm_rstn_refclk),
+	  .avmmwrite(avmm_write_refclk),
+	  .avmmwritedata(avmm_writedata_refclk),
+	  .avmmreaddata(avmmreaddata_refclk),
+	  .blockselect(blockselect_refclk)
+    //-----------------------------------
+  );
+
+  assign pll_powerdown_fpll   = (enable_pcie_hip_connectivity) ? pll_powerdown   : w_pll_powerdown;
+  assign pll_powerdown_adapt  = (enable_pcie_hip_connectivity) ? 1'b0            : ~pll_powerdown_wire;
+  assign mcgb_rst_mcgb        = (enable_pcie_hip_connectivity) ? mcgb_rst        : w_mcgb_rst;
+  assign mcgb_rst_adapt       = (enable_pcie_hip_connectivity) ? 1'b0            : ~mcgb_rst_wire;
+
+  ct1_cmu_fpll 
+  #(
+    //Begin: removed by Anthony
+	  //.atb_atb                                                       (cmu_fpll_atb_atb), 
+	  //.dprio_clk_vreg_boost                                          (cmu_fpll_dprio_clk_vreg_boost), 
+	  //.dprio_vreg1_boost                                             (cmu_fpll_dprio_vreg1_boost), 
+	  //.dprio_vreg_boost                                              (cmu_fpll_dprio_vreg_boost), 
+    //End: removed by Anthony
+
+    //Begin: added by Anthony
+	  .atb_fpll_atb                                                  (cmu_fpll_atb_fpll_atb), 
+	  .uc_clk_vreg_boost                                             (cmu_fpll_uc_clk_vreg_boost), 
+	  .uc_vreg1_boost                                                (cmu_fpll_uc_vreg1_boost), 
+	  .uc_vreg_boost                                                 (cmu_fpll_uc_vreg_boost), 
+    //End: added by Anthony 
+
+    //Begin: added by stam
+      .analog_mode                                                   (cmu_fpll_analog_mode), 
+      .power_mode                                                    (cmu_fpll_power_mode),
+    //End: added by stam
+
+
+      .bw_mode                                                       (cmu_fpll_bw_mode), 	  
+      .feedback                                                      (cmu_fpll_feedback), 
+	  .cal_status                                                    (cmu_fpll_cal_status), 
+	  .cal_test_sel                                                  (cmu_fpll_cal_test_sel), 
+	  .calibration                                                   (cmu_fpll_calibration), 
+	  .cas_out_enable                                                (cmu_fpll_cas_out_enable), 
+	  .pll_l_counter                                                 (cmu_fpll_pll_l_counter), 
+	  .cmu_rstn_value                                                (cmu_fpll_cmu_rstn_value), 
+	  .hclk_out_enable                                               (cmu_fpll_hclk_out_enable), 
+	  .iqtxrxclk_out_enable                                          (cmu_fpll_iqtxrxclk_out_enable), 
+	  .lpf_rstn_value                                                (cmu_fpll_lpf_rstn_value), 
+	  .ppm_clk0_src                                                  (cmu_fpll_ppm_clk0_src), 
+	  .ppm_clk1_src                                                  (cmu_fpll_ppm_clk1_src), 
+	  .rstn_override                                                 (cmu_fpll_rstn_override), 
+	  .initial_settings                                              (cmu_fpll_initial_settings), 
+	  .is_otn                                                        (cmu_fpll_is_otn), 
+	  .is_pa_core                                                    (cmu_fpll_is_pa_core), 
+	  .is_sdi                                                        (cmu_fpll_is_sdi), 
+	  .enable_hclk                                                   (cmu_fpll_enable_hclk), 
+	  .is_pcie_hip                                                   (cmu_fpll_is_pcie_hip), 
+    .optimal                                                       (cmu_fpll_optimal), 
+	  .powerdown_mode                                                (cmu_fpll_powerdown_mode), 
+	  .primary_use                                                   (cmu_fpll_primary_use), 
+	  .prot_mode                                                     (cmu_fpll_prot_mode), 
+	  .sup_mode                                                      (cmu_fpll_sup_mode), 
+	  .c0_pllcout_enable                                             (cmu_fpll_c0_pllcout_enable), 
+	  .c0_cnt_min_tco                                                (cmu_fpll_c0_cnt_min_tco), 
+	  .c0_m_cnt_in_src                                               (cmu_fpll_c0_m_cnt_in_src), 
+	  .c0_coarse_dly                                                 (cmu_fpll_c0_coarse_dly), 
+	  .c0_fine_dly                                                   (cmu_fpll_c0_fine_dly), 
+	  .c1_pllcout_enable                                             (cmu_fpll_c1_pllcout_enable), 
+	  .c1_cnt_min_tco                                                (cmu_fpll_c1_cnt_min_tco), 
+	  .c1_m_cnt_in_src                                               (cmu_fpll_c1_m_cnt_in_src), 
+	  .c1_coarse_dly                                                 (cmu_fpll_c1_coarse_dly), 
+	  .c1_fine_dly                                                   (cmu_fpll_c1_fine_dly), 
+	  .c2_pllcout_enable                                             (cmu_fpll_c2_pllcout_enable), 
+	  .c2_cnt_min_tco                                                (cmu_fpll_c2_cnt_min_tco), 
+	  .c2_m_cnt_in_src                                               (cmu_fpll_c2_m_cnt_in_src), 
+	  .c2_coarse_dly                                                 (cmu_fpll_c2_coarse_dly), 
+	  .c2_fine_dly                                                   (cmu_fpll_c2_fine_dly), 
+	  .c3_pllcout_enable                                             (cmu_fpll_c3_pllcout_enable), 
+	  .c3_cnt_min_tco                                                (cmu_fpll_c3_cnt_min_tco), 
+	  .c3_m_cnt_in_src                                               (cmu_fpll_c3_m_cnt_in_src),	  
+    .c3_coarse_dly                                                 (cmu_fpll_c3_coarse_dly), 
+	  .c3_fine_dly                                                   (cmu_fpll_c3_fine_dly), 
+	  .cal_vco_count_length                                          (cmu_fpll_cal_vco_count_length), 
+	  .refclk_source                                                 (cmu_fpll_refclk_source), 
+	  .vco_div_by_2_sel                                              (cmu_fpll_vco_div_by_2_sel), 
+	  .pfd_delay_compensation                                        (cmu_fpll_pfd_delay_compensation), 
+	  .pfd_pulse_width                                               (cmu_fpll_pfd_pulse_width), 
+	  .vccdreg_fb                                                    (cmu_fpll_vccdreg_fb), 
+	  .vccdreg_fw                                                    (cmu_fpll_vccdreg_fw), 
+	  .vreg0_atbsel                                                  (cmu_fpll_vreg0_atbsel), 
+	  .vreg1_atbsel                                                  (cmu_fpll_vreg1_atbsel), 
+	  .fb_cmp_buf_dly                                                (cmu_fpll_fb_cmp_buf_dly), 
+	  .fb_fbclk_mux_1                                                (cmu_fpll_fb_fbclk_mux_1), 
+	  .fb_fbclk_mux_2                                                (cmu_fpll_fb_fbclk_mux_2), 
+	  .iqfb_mux_iqclk_sel                                            (cmu_fpll_iqfb_mux_iqclk_sel), 
+	  .chgpmp_compensation                                           (cmu_fpll_chgpmp_compensation), 
+	  .chgpmp_current_setting                                        (cmu_fpll_chgpmp_current_setting), 
+	  .cp_current_boost                                              (cmu_fpll_cp_current_boost), 
+	  .lf_3rd_pole_freq                                              (cmu_fpll_lf_3rd_pole_freq), 
+	  .lf_cbig                                                       (cmu_fpll_lf_cbig), 
+	  .lf_order                                                      (cmu_fpll_lf_order), 
+	  .lf_resistance                                                 (cmu_fpll_lf_resistance), 
+	  .lf_ripplecap                                                  (cmu_fpll_lf_ripplecap), 
+	  .vco_ph0_en                                                    (cmu_fpll_vco_ph0_en), 
+	  .vco_ph0_value                                                 (cmu_fpll_vco_ph0_value), 
+	  .vco_ph1_en                                                    (cmu_fpll_vco_ph1_en), 
+	  .vco_ph1_value                                                 (cmu_fpll_vco_ph1_value), 
+	  .vco_ph2_en                                                    (cmu_fpll_vco_ph2_en), 
+	  .vco_ph2_value                                                 (cmu_fpll_vco_ph2_value), 
+	  .vco_ph3_en                                                    (cmu_fpll_vco_ph3_en), 
+	  .vco_ph3_value                                                 (cmu_fpll_vco_ph3_value), 
+	  .dsm_mode                                                      (cmu_fpll_dsm_mode), 
+	  .pll_dsm_out_sel                                               (cmu_fpll_pll_dsm_out_sel), 
+	  .pll_ecn_bypass                                                (cmu_fpll_pll_ecn_bypass), 
+	  .pll_ecn_test_en                                               (cmu_fpll_pll_ecn_test_en), 
+	  .pll_fractional_value_ready                                    (cmu_fpll_pll_fractional_value_ready), 
+	  .lcnt_l_cnt_bypass                                             (cmu_fpll_lcnt_l_cnt_bypass), 
+	  .lcnt_l_cnt_enable                                             (cmu_fpll_lcnt_l_cnt_enable), 
+	  .lockf_lock_fltr_test                                          (cmu_fpll_lockf_lock_fltr_test), 
+	  .mcnt_cnt_min_tco                                              (cmu_fpll_mcnt_cnt_min_tco), 
+	  .mcnt_m_cnt_in_src                                             (cmu_fpll_mcnt_m_cnt_in_src), 
+	  .mcnt_coarse_dly                                               (cmu_fpll_mcnt_coarse_dly), 
+	  .mcnt_fine_dly                                                 (cmu_fpll_mcnt_fine_dly), 
+	  .ncnt_coarse_dly                                               (cmu_fpll_ncnt_coarse_dly), 
+	  .ncnt_fine_dly                                                 (cmu_fpll_ncnt_fine_dly), 
+	  .ref_ref_buf_dly                                               (cmu_fpll_ref_ref_buf_dly), 
+	  .testmux_tclk_mux_en                                           (cmu_fpll_testmux_tclk_mux_en), 
+	  .testmux_tclk_sel                                              (cmu_fpll_testmux_tclk_sel), 
+	  .dprio_broadcast_en                                            (cmu_fpll_dprio_broadcast_en), 
+	  .dprio_cvp_inter_sel                                           (cmu_fpll_dprio_cvp_inter_sel), 
+	  .dprio_force_inter_sel                                         (cmu_fpll_dprio_force_inter_sel), 
+	  .dprio_power_iso_en                                            (cmu_fpll_dprio_power_iso_en), 
+	  .dprio_status_select                                           (cmu_fpll_dprio_status_select), 
+	  .ctrl_nreset_prgmnvrt                                          (cmu_fpll_ctrl_nreset_prgmnvrt), 
+	  .ctrl_ctrl_override_setting                                    (cmu_fpll_ctrl_ctrl_override_setting), 
+	  .ctrl_enable                                                   (cmu_fpll_ctrl_enable), 
+	  .ctrl_slf_rst                                                  (cmu_fpll_ctrl_slf_rst), 
+	  .ctrl_test_enable                                              (cmu_fpll_ctrl_test_enable), 
+	  .ctrl_plniotri_override                                        (cmu_fpll_ctrl_plniotri_override), 
+	  .ctrl_vccr_pd                                                  (cmu_fpll_ctrl_vccr_pd), 
+	  .silicon_rev                                                   (cmu_fpll_silicon_rev), 
+	  .pll_op_mode                                                   (cmu_fpll_pll_op_mode), 
+	  .bw_sel                                                        (cmu_fpll_bw_sel), 
+	  .compensation_mode                                             (cmu_fpll_compensation_mode), 
+	  .duty_cycle_0                                                  (cmu_fpll_duty_cycle_0), 
+	  .duty_cycle_1                                                  (cmu_fpll_duty_cycle_1), 
+	  .duty_cycle_2                                                  (cmu_fpll_duty_cycle_2), 
+	  .duty_cycle_3                                                  (cmu_fpll_duty_cycle_3), 
+	  .hssi_output_clock_frequency                                   (cmu_fpll_hssi_output_clock_frequency), 
+	  .is_cascaded_pll                                               (cmu_fpll_is_cascaded_pll), 
+	  .output_clock_frequency_0                                      (cmu_fpll_output_clock_frequency_0), 
+	  .output_clock_frequency_1                                      (cmu_fpll_output_clock_frequency_1), 
+	  .output_clock_frequency_2                                      (cmu_fpll_output_clock_frequency_2), 
+	  .output_clock_frequency_3                                      (cmu_fpll_output_clock_frequency_3), 
+	  .reference_clock_frequency                                     (cmu_fpll_reference_clock_frequency), 
+	  .vco_frequency                                                 (cmu_fpll_vco_frequency), 
+	  .pll_vco_freq_band_0_fix_high                                  (cmu_fpll_pll_vco_freq_band_0_fix_high), 
+	  .pll_vco_freq_band_1_fix_high                                  (cmu_fpll_pll_vco_freq_band_1_fix_high), 
+      // bitvec parameters < 32 bits  
+    .cgb_div                                                       (cmu_fpll_cgb_div), 
+	  .l_counter                                                     (cmu_fpll_l_counter), 
+	  .m_counter                                                     (cmu_fpll_m_counter), 
+	  .m_counter_c0                                                  (cmu_fpll_m_counter_c0), 
+	  .m_counter_c1                                                  (cmu_fpll_m_counter_c1), 
+	  .m_counter_c2                                                  (cmu_fpll_m_counter_c2), 
+	  .m_counter_c3                                                  (cmu_fpll_m_counter_c3), 
+	  .n_counter                                                     (cmu_fpll_n_counter), 
+	  .pll_vco_freq_band_0_dyn_high_bits                             (cmu_fpll_pll_vco_freq_band_0_dyn_high_bits), 
+	  .pll_vco_freq_band_0_dyn_low_bits                              (cmu_fpll_pll_vco_freq_band_0_dyn_low_bits), 
+	  .pll_vco_freq_band_0_fix                                       (cmu_fpll_pll_vco_freq_band_0_fix), 
+	  .pll_vco_freq_band_1_dyn_high_bits                             (cmu_fpll_pll_vco_freq_band_1_dyn_high_bits), 
+	  .pll_vco_freq_band_1_dyn_low_bits                              (cmu_fpll_pll_vco_freq_band_1_dyn_low_bits), 
+	  .pll_vco_freq_band_1_fix                                       (cmu_fpll_pll_vco_freq_band_1_fix), 
+	  .pma_width                                                     (cmu_fpll_pma_width), 
+	  .set_input_freq_range                                          (cmu_fpll_set_input_freq_range), 
+	  .c0_cnt_div                                                    (cmu_fpll_c0_cnt_div), 
+	  .c0_m_cnt_ph_mux_prst                                          (cmu_fpll_c0_m_cnt_ph_mux_prst), 
+	  .c0_m_cnt_prst                                                 (cmu_fpll_c0_m_cnt_prst), 
+	  .c1_cnt_div                                                    (cmu_fpll_c1_cnt_div), 
+	  .c1_m_cnt_ph_mux_prst                                          (cmu_fpll_c1_m_cnt_ph_mux_prst), 
+	  .c1_m_cnt_prst                                                 (cmu_fpll_c1_m_cnt_prst), 
+	  .c2_cnt_div                                                    (cmu_fpll_c2_cnt_div), 
+	  .c2_m_cnt_ph_mux_prst                                          (cmu_fpll_c2_m_cnt_ph_mux_prst), 
+	  .c2_m_cnt_prst                                                 (cmu_fpll_c2_m_cnt_prst), 
+	  .c3_cnt_div                                                    (cmu_fpll_c3_cnt_div), 
+	  .c3_m_cnt_ph_mux_prst                                          (cmu_fpll_c3_m_cnt_ph_mux_prst), 
+	  .c3_m_cnt_prst                                                 (cmu_fpll_c3_m_cnt_prst), 
+	  .lockf_lock_fltr_cfg                                           (cmu_fpll_lockf_lock_fltr_cfg), 
+	  .lockf_unlock_fltr_cfg                                         (cmu_fpll_lockf_unlock_fltr_cfg), 
+	  .mcnt_cnt_div                                                  (cmu_fpll_mcnt_cnt_div), 
+	  .mcnt_m_cnt_ph_mux_prst                                        (cmu_fpll_mcnt_m_cnt_ph_mux_prst), 
+	  .mcnt_m_cnt_prst                                               (cmu_fpll_mcnt_m_cnt_prst), 
+	  .ncnt_ncnt_divide                                              (cmu_fpll_ncnt_ncnt_divide), 
+	  .dprio_base_addr                                               (cmu_fpll_dprio_base_addr), 
+	  .extra_csr                                                     (cmu_fpll_extra_csr),
+      
+      .max_fractional_percentage                                     (cmu_fpll_max_fractional_percentage),
+      .min_fractional_percentage                                     (cmu_fpll_min_fractional_percentage),
+
+ 
+      // bitvecs >= 32 bits 
+	  .datarate_bps                                                  (lcl_cmu_fpll_datarate_bps), 
+	  .f_out_c0                                                      (lcl_cmu_fpll_f_out_c0), 
+	  .f_out_c0_hz                                                   (lcl_cmu_fpll_f_out_c0_hz), 
+	  .f_out_c1                                                      (lcl_cmu_fpll_f_out_c1), 
+	  .f_out_c1_hz                                                   (lcl_cmu_fpll_f_out_c1_hz), 
+	  .f_out_c2                                                      (lcl_cmu_fpll_f_out_c2), 
+	  .f_out_c2_hz                                                   (lcl_cmu_fpll_f_out_c2_hz), 
+	  .f_out_c3                                                      (lcl_cmu_fpll_f_out_c3), 
+	  .f_out_c3_hz                                                   (lcl_cmu_fpll_f_out_c3_hz), 
+	  .out_freq                                                      (lcl_cmu_fpll_out_freq), 
+	  .out_freq_hz                                                   (lcl_cmu_fpll_out_freq_hz), 
+	  .pfd_freq                                                      (lcl_cmu_fpll_pfd_freq), 
+	  .phase_shift_c0                                                (lcl_cmu_fpll_phase_shift_c0), 
+	  .phase_shift_c1                                                (lcl_cmu_fpll_phase_shift_c1), 
+	  .phase_shift_c2                                                (lcl_cmu_fpll_phase_shift_c2), 
+	  .phase_shift_c3                                                (lcl_cmu_fpll_phase_shift_c3), 
+	  .refclk                                                        (lcl_cmu_fpll_refclk), 
+	  .vco_freq                                                      (lcl_cmu_fpll_vco_freq), 
+	  .vco_freq_hz                                                   (lcl_cmu_fpll_vco_freq_hz), 
+	  .pll_fractional_division                                       (lcl_cmu_fpll_pll_fractional_division),
+
+	  .f_max_band_0	                                                 (lcl_cmu_fpll_f_max_band_0),
+      .f_max_band_1	                                                 (lcl_cmu_fpll_f_max_band_1),
+	  .f_max_band_2	                                                 (lcl_cmu_fpll_f_max_band_2),
+	  .f_max_band_3	                                                 (lcl_cmu_fpll_f_max_band_3),
+	  .f_max_band_4	                                                 (lcl_cmu_fpll_f_max_band_4),
+	  .f_max_band_5	                                                 (lcl_cmu_fpll_f_max_band_5),
+	  .f_max_band_6	                                                 (lcl_cmu_fpll_f_max_band_6),
+	  .f_max_band_7	                                                 (lcl_cmu_fpll_f_max_band_7),
+	  .f_max_band_8	                                                 (lcl_cmu_fpll_f_max_band_8),
+	  .f_max_band_9	                                                 (lcl_cmu_fpll_f_max_band_9),
+	  .f_max_div_two_bypass	                                         (lcl_cmu_fpll_f_max_div_two_bypass),
+	  .f_max_pfd	                                                 (lcl_cmu_fpll_f_max_pfd),
+	  .f_max_pfd_bonded	                                             (lcl_cmu_fpll_f_max_pfd_bonded),
+	  .f_max_pfd_fractional	                                         (lcl_cmu_fpll_f_max_pfd_fractional),
+
+
+	  .f_max_pfd_integer	                                         (lcl_cmu_fpll_f_max_pfd_integer),
+
+	  .f_max_vco	                                                 (lcl_cmu_fpll_f_max_vco),
+	  .f_max_vco_fractional	                                         (lcl_cmu_fpll_f_max_vco_fractional),
+	  .f_min_band_0	                                                 (lcl_cmu_fpll_f_min_band_0),
+	  .f_min_band_1	                                                 (lcl_cmu_fpll_f_min_band_1),
+	  .f_min_band_2	                                                 (lcl_cmu_fpll_f_min_band_2),
+	  .f_min_band_3	                                                 (lcl_cmu_fpll_f_min_band_3),
+	  .f_min_band_4	                                                 (lcl_cmu_fpll_f_min_band_4),
+	  .f_min_band_5	                                                 (lcl_cmu_fpll_f_min_band_5),
+	  .f_min_band_6	                                                 (lcl_cmu_fpll_f_min_band_6),
+	  .f_min_band_7	                                                 (lcl_cmu_fpll_f_min_band_7),
+	  .f_min_band_8	                                                 (lcl_cmu_fpll_f_min_band_8),
+	  .f_min_band_9	                                                 (lcl_cmu_fpll_f_min_band_9),
+	  .f_min_pfd	                                                 (lcl_cmu_fpll_f_min_pfd),
+	  .f_min_vco                                                     (lcl_cmu_fpll_f_min_vco)
+ 
+  
+  ) fpll_inst (
+     // Input Ports
+    .core_refclk                  (), 
+    .csr_bufin                    (/*unconnected*/), 
+    .csr_clk                      (/*unconnected*/), 
+    .csr_en                       (/*unconnected*/), 
+    .csr_en_dly                   (/*unconnected*/), 
+    .csr_in                       (/*unconnected*/), 
+    .dps_rst_n                    (w_phase_reset), 
+    .extswitch_buf                (/*unconnected*/), 
+    .fbclkin                      (1'b1), 
+    .lc_to_fpll_refclk            (atx_to_fpll_cascade_clk), 
+    .mdio_dis                     (/*unconnected*/), 
+    .nfrzdrv                      (/*unconnected*/), 
+    .nrpi_freeze                  (/*unconnected*/), 
+    .pfden                        (1'b1), 
+    .phase_en                     (w_phase_enable), 
+    .pllclksel                    (1'b0), 
+    .pma_atpg_los_en_n            (/*unconnected*/), 
+    .pma_csr_test_dis             (/*unconnected*/), 
+    .refclkind                    (refclk_sel_outclk), 
+    .rst_n                        (pll_powerdown_fpll), 
+    .scan_mode_n                  (1'b1), 
+    .scan_shift_n                 (1'b1), 
+    .up_dn                        (w_updn), 
+    .cnt_sel                      (w_cntsel),
+    .fpll_ppm_clk                 (), 
+    .iqtxrxclk                    (), 
+    .num_phase_shifts             (w_num_phase_shifts), 
+    .read                         (), 
+    .write                        (), 
+    .writedata                    (),
+
+    // output ports                
+    .clk0                         (tx_serial_clk), 
+    .clk180                       (/*unconnected*/), 
+    .clklow                       (w_clklow), 
+    .csr_bufout                   (/*unconnected*/), 
+    .csr_out                      (/*unconnected*/), 
+    .fref                         (w_fref), 
+    .hclk_out                     (pll_pcie_clk), 
+    .iqtxrxclk_out                (pll_cascade_clk), 
+    .lock                         (pll_locked_hip), 
+    .phase_done                   (w_phase_done), 
+    .pll_cas_out                  (/*unconnected*/), 
+    .pllcout                      ({w_pll_cout3, w_pll_cout2, w_pll_cout1, w_pll_cout0}),     
+    .ppm_clk                      (/*unconnected*/),
+    
+    // AVMM signals 
+		.avmmclk                      (avmm_clk_fpll),
+    //.avmmrstn                   (avmm_rstn_fpll),
+		.avmmwritedata                (avmm_writedata_fpll),
+		.avmmaddress                  (avmm_address_fpll),
+		.avmmwrite                    (avmm_write_fpll),
+		.avmmread                     (avmm_read_fpll),
+		.avmmreaddata                 (avmmreaddata_fpll),
+		.blockselect                  (blockselect_fpll)
+  );                                 
+  //-----------------------------------
+  
+  localparam  avmm_busy_en                = rcfg_separate_avmm_busy ? "enable" : "disable";
+
+  // Instantiating the AVMM2 wrapper 
+  ct1_xcvr_avmm2 
+  #(
+    .avmm_interfaces                      (avmm_interfaces),
+    .rcfg_enable                          (rcfg_enable),
+    .enable_avmm                          (1),              
+    .silicon_rev                          (hssi_avmm2_if_silicon_rev),      
+    .calibration_type                     (hssi_avmm2_if_calibration_type),
+    .pcs_calibration_feature_en           (hssi_avmm2_if_pcs_calibration_feature_en),
+    .pcs_arbiter_ctrl                     (hssi_avmm2_if_pcs_arbiter_ctrl),
+    .pcs_cal_done                         (hssi_avmm2_if_pcs_cal_done),
+    .pcs_hip_cal_en                       (hssi_avmm2_if_pcs_hip_cal_en),
+    .pcs_cal_reserved                     (hssi_avmm2_if_pcs_cal_reserved),
+    .pldadapt_hip_mode                    (hssi_avmm2_if_pldadapt_hip_mode),
+    .hssiadapt_hip_mode                   (hssi_avmm2_if_hssiadapt_hip_mode),
+    .hssiadapt_avmm_osc_clock_setting     (hssi_avmm2_if_hssiadapt_avmm_osc_clock_setting),  
+    .pldadapt_avmm_osc_clock_setting      (hssi_avmm2_if_pldadapt_avmm_osc_clock_setting), 
+    .hssiadapt_avmm_testbus_sel           (hssi_avmm2_if_hssiadapt_avmm_testbus_sel),
+    .pldadapt_avmm_testbus_sel            (hssi_avmm2_if_pldadapt_avmm_testbus_sel),
+    .pldadapt_gate_dis                    (hssi_avmm2_if_pldadapt_gate_dis)  
+  ) xcvr_avmm2_inst (
+
+		.avmm_clk                             (reconfig_clk               ),
+		.avmm_reset                           (reconfig_reset             ),
+		.avmm_writedata                       (reconfig_writedata         ),
+		.avmm_address                         (reconfig_address           ),
+		.avmm_write                           (reconfig_write             ),
+		.avmm_read                            (reconfig_read              ),
+		.avmm_readdata                        (reconfig_readdata          ),
+		.avmm_waitrequest                     (reconfig_waitrequest       ),
+		.avmm_busy                            (avmm_busy                  ),
+		.pld_cal_done                         (pld_cal_done               ),
+		.hip_cal_done                         (hip_cal_done_w             ),
+
+		.pll_avmm_clk                         (pll_avmm_clk               ),
+		.pll_avmm_writedata                   (pll_avmm_writedata         ),
+		.pll_avmm_address                     (pll_avmm_address           ),
+		.pll_avmm_write                       (pll_avmm_write             ),
+		.pll_avmm_read                        (pll_avmm_read              ),
+
+		.pll_avmmreaddata_lc_pll              ({avmm_interfaces{8'b0}}    ), 
+		.pll_avmmreaddata_lc_refclk_select    ({avmm_interfaces{8'b0}}    ), 
+		.pll_blockselect_lc_pll               ({avmm_interfaces{8'b0}}    ),            
+		.pll_blockselect_lc_refclk_select     ({avmm_interfaces{8'b0}}    ),  
+
+		.pll_avmmreaddata_cgb_master          (pll_avmmreaddata_mcgb      ),                                        
+		.pll_blockselect_cgb_master           (pll_blockselect_mcgb       ),
+
+		.pll_avmmreaddata_cmu_fpll              (pll_avmmreaddata_fpll    ),
+		.pll_avmmreaddata_cmu_fpll_refclk_select(pll_avmmreaddata_refclk  ),
+		.pll_blockselect_cmu_fpll               (pll_blockselect_fpll     ),
+		.pll_blockselect_cmu_fpll_refclk_select (pll_blockselect_refclk   ),
+
+		//HIP signals
+		.hip_avmm_read                        ({avmm_interfaces{1'b0}}    ),
+		.hip_avmm_write                       ({avmm_interfaces{1'b0}}    ),
+		.hip_avmm_reg_addr                    ({avmm_interfaces{21'b0}}   ),
+		.hip_avmm_writedata                   ({avmm_interfaces{8'b0}}    ),
+		.hip_aib_avmm_out                     ({avmm_interfaces{15'b0}}   ),
+		.hip_avmm_readdata                    (                           ),
+    .hip_avmm_readdatavalid               (                           ),
+		.hip_avmm_writedone                   (                           ),
+		.hip_avmm_reserved_out                (                           ),
+		.hip_aib_avmm_clk                     (                           ),
+		.hip_aib_avmm_in                      (                           )		 
+  ); 
+
+  // Instantiating PLD adapt atoms
+  // PLL and mcgb PLD adapter atoms are required to interface with the core
+  // all control/input signals will come to PLL through PLD adapter
+  // all status signals are going to PLD core through PLD adapter
+
+  ct1_cmu_fpll_pld_adapt cmu_fpll_pld_adapt_inst
+  (
+    //INPUTS
+    //-------
+    // core inputs 
+    .avmmclk         ( avmm_clk_fpll ),
+    .dps_rst_n       ( phase_reset ),
+    .extswitch_buf   ( ),
+    .pfden           ( 1'b1 ),
+    .phase_en        ( phase_enable ),
+    .pllclksel       ( ),
+    .rst_n           ( pll_powerdown_adapt),
+    .up_dn           ( updn ),
+    .cnt_sel         ( cntsel ),
+    .fpll_ppm_clk    ( ),
+    .num_phase_shifts( num_phase_shifts ),
+    .fbclkin         ( ),
+    
+    // fpll outputs
+    //.int_clk0_bad  ( ),
+    //.int_clk1_bad  ( ),
+    //.int_fbclkout  ( ),
+    .int_clklow      ( w_clklow ),
+    .int_fref        ( w_fref ),
+    .int_lock        ( pll_locked_hip ),
+    .int_phase_done  ( w_phase_done ),
+    .int_pllcout     ( {w_pll_cout3, w_pll_cout2, w_pll_cout1, w_pll_cout0} ),
+
+    //OUTPUTS
+    //--------
+
+    // fpll inputs 
+    .int_dps_rst_n       ( w_phase_reset ),
+    .int_extswitch_buf   ( ),
+    .int_fbclkin         ( ),
+    .int_pfden           ( ),
+    .int_phase_en        ( w_phase_enable ),
+    .int_pllclksel       ( ),
+    .int_rst_n           ( w_pll_powerdown ),
+    .int_up_dn           ( w_updn ),
+    .int_cnt_sel         ( w_cntsel ),
+    .int_fpll_ppm_clk    ( ),
+    .int_num_phase_shifts( w_num_phase_shifts ),
+
+    // core outputs 
+    //.clk0_bad( ),
+    //.clk1_bad( ),
+    //.fbclkout( ),
+    .clklow    ( clklow ),
+    .fref      ( fref ),
+    .lock      ( pll_locked),
+    .phase_done( phase_done ),
+    .pllcout   ( {pll_cout3, pll_cout2, pll_cout1, pll_cout0} )
+  
+  );
+
+  // direct core output 
+  assign outclk = pll_cout2; 
+  assign unused_pllcout = {pll_cout3, pll_cout1, pll_cout0}; 
+  
+  generate 
+    if (enable_mcgb == 1) begin 
+
+      
+      ct1_hssi_pma_cgb_master
+      #( 
+  	    .prot_mode(hssi_pma_cgb_master_prot_mode),                
+  	    .silicon_rev(hssi_pma_cgb_master_silicon_rev),            
+        .x1_div_m_sel(hssi_pma_cgb_master_x1_div_m_sel),                
+        .cgb_enable_iqtxrxclk(hssi_pma_cgb_master_cgb_enable_iqtxrxclk),       
+        .ser_mode(hssi_pma_cgb_master_ser_mode),                   
+        .cgb_power_down(hssi_pma_cgb_master_cgb_power_down),             
+        .observe_cgb_clocks(hssi_pma_cgb_master_observe_cgb_clocks),          
+        //.op_mode(hssi_pma_cgb_master_op_mode),                     
+        //.tx_ucontrol_reset_pcie(hssi_pma_cgb_master_tx_ucontrol_reset_pcie),      
+        .vccdreg_output(hssi_pma_cgb_master_vccdreg_output),            
+        .input_select(hssi_pma_cgb_master_input_select), 
+        .input_select_gen3(hssi_pma_cgb_master_input_select_gen3),         
+        //bitvec 
+        .datarate_bps(lcl_hssi_pma_cgb_master_datarate_bps)              
+
+      ) pma_cgb_master_inst (
+
+        .cgb_rstb(mcgb_rst_mcgb),                             
+        .clk_fpll_b(mcgb_aux_clk2),
+
+       // Changed default connection from FPLL core to MCGB to port clk_fpll_t
+       // The aux_clk0 input is now connected to clk_lc_t
+       // The mcgb tcl package has been modified to default to clk_fpll_t
+
+//        .clk_fpll_t(mcgb_aux_clk0),
+        .clk_fpll_t(tx_serial_clk),
+        .clk_lc_b(mcgb_aux_clk1),
+//        .clk_lc_t(tx_serial_clk),
+        .clk_lc_t(mcgb_aux_clk0),
+
+        .clkb_fpll_b( /*unused*/ ),
+        .clkb_fpll_t( /*unused*/ ),
+        .clkb_lc_b( /*unused*/ ),
+        .clkb_lc_t( /*unused*/ ),
+
+        .cpulse_out_bus(tx_bonding_clocks),                
+        .tx_iqtxrxclk_out( /*unused*/ ),
+        .pcie_sw_done(pcie_sw_done),
+        .pcie_sw(pcie_sw),
+        .tx_bonding_rstb(1'b1),
+
+	      //-----------------------------------          
+	      .avmmaddress(avmm_address_mcgb),
+	      .avmmclk(avmm_clk_mcgb),
+	      .avmmread(avmm_read_mcgb),
+        //.avmmrstn(avmm_rstn_mcgb),
+	      .avmmwrite(avmm_write_mcgb),
+	      .avmmwritedata(avmm_writedata_mcgb),
+	      .avmmreaddata(avmmreaddata_mcgb),
+	      .blockselect(blockselect_mcgb)
+        //----------------------------------- 
+      );
+
+      ct1_hssi_pma_cgb_master_pld_adapt pma_cgb_master_pld_adapt_inst 
+      (
+        // inputs
+        .avmmclk(avmm_clk_mcgb), 
+        .cgb_rstb(mcgb_rst_adapt),
+        // outputs 
+        .int_cgb_rstb(w_mcgb_rst)
+      ); 
+
+    end else begin 
+      assign pcie_sw_done = 2'b0;
+      assign tx_bonding_clocks = 6'b0;
+    end 
+  endgenerate 
+  
+  // Optionally include the clk divider atom if user enables it in the GUI
+  // C2 is the dedicated counter to the core 
+  generate 
+    if (enable_clk_divider == 1) begin  
+      fourteennm_clk_divider 
+ //     #(
+ //       .test_mode(test_mode)
+ //     )
+        clk_divider_inst (
+        // Input ports 
+        .inclk(pll_cout2), 
+        .rst_n(), 
+        // Output ports 
+        .clock_div1(outclk_div1),
+        .clock_div2(outclk_div2),
+        .clock_div4(outclk_div4)
+      );
+    end 
+  endgenerate 
+
+endmodule

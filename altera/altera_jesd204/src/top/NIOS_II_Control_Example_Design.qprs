@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="NIOS II Control Example Design (Arria 10 only)"
+     kind="altera_jesd204"
+     version="All"
+     description="">
+   <parameter name="PCS_CONFIG" value="JESD_PCS_CFG1" />
+   <parameter name="SCR" value="1" />
+   <parameter name="CF" value="0" />
+   <parameter name="DATA_PATH" value="RX_TX" />
+   <parameter name="REFCLK_FREQ" value="153.6" />
+   <parameter name="K" value="16" />
+   <parameter name="L" value="2" />
+   <parameter name="M" value="2" />
+   <parameter name="F" value="2" />
+   <parameter name="GUI_CFG_F" value="2" />
+   <parameter name="ECC_EN" value="1" />
+   <parameter name="N" value="16" />
+   <parameter name="SUBCLASSV" value="1" />
+   <parameter name="CS" value="0" />
+   <parameter name="bonded_mode" value="non_bonded" />
+   <parameter name="pll_reconfig_enable" value="true" />
+   <parameter name="S" value="1" />
+   <parameter name="lane_rate" value="6144.0" />
+   <parameter name="wrapper_opt" value="base_phy" />
+   <parameter name="HD" value="0" />
+   <parameter name="bitrev_en" value="false" />
+   <parameter name="N_PRIME" value="16" />
+   <parameter name="ED_FILESET_SYNTH" value="true" />
+  </preset>
+ </presets>
+</ip>

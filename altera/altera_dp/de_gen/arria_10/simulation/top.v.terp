@@ -1,0 +1,550 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+// *********************************************************************
+// Description
+// 
+// DisplayPort Design Example Top-level module 
+//
+// *********************************************************************
+
+@@ set top_level_name           $param0
+@@ set rx_max_lane_count        $param1
+@@ set rx_symbols_per_clock     $param2
+@@ set rx_pixels_per_clock      $param3
+@@ set rx_video_bpc             $param4
+@@ set rx_support_ss            $param5
+@@ set rx_support_audio         $param6
+@@ set rx_audio_chans           $param7
+@@ set rx_export_msa            $param8
+@@ set rx_aux_gpu               $param9
+@@ set tx_max_lane_count        $param10
+@@ set tx_symbols_per_clock     $param11
+@@ set tx_pixels_per_clock      $param12
+@@ set tx_video_bpc             $param13
+@@ set tx_support_ss            $param14
+@@ set tx_support_audio         $param15
+@@ set tx_audio_chans           $param16
+@@ set tx_support_analog_reconfig   $param17
+
+module $top_level_name 
+#(
+    parameter RX_MAX_LANE_COUNT = $rx_max_lane_count,
+    parameter RX_PIXELS_PER_CLOCK = $rx_pixels_per_clock,
+    parameter RX_VIDEO_BPC = $rx_video_bpc,
+    parameter TX_MAX_LANE_COUNT = $tx_max_lane_count,
+    parameter TX_PIXELS_PER_CLOCK = $tx_pixels_per_clock,
+    parameter TX_VIDEO_BPC = $tx_video_bpc 
+)(
+    // top-level clocks & reset
+    input  wire                                                 clk,                    // 100 MHz clock for the Avalon-MM domain
+    input  wire                                                 reset,
+    input  wire [8:0]                                           tx_mgmt_address, 
+    input  wire                                                 tx_mgmt_chipselect,
+    input  wire                                                 tx_mgmt_read,
+    input  wire                                                 tx_mgmt_write,
+    input  wire [31:0]                                          tx_mgmt_writedata,
+    output wire [31:0]                                          tx_mgmt_readdata,
+    output wire                                                 tx_mgmt_waitrequest,
+    output wire                                                 tx_mgmt_irq,
+    input  wire                                                 xcvr_refclk,
+    output wire [(TX_MAX_LANE_COUNT-1):0]                       tx_serial_data,
+    input  wire [(RX_MAX_LANE_COUNT-1):0]                       rx_serial_data,
+    input  wire                                                 tx_vid_clk,             // 120 MHz used in this example
+    input  wire                                                 tx_vid_v_sync,        
+    input  wire                                                 tx_vid_h_sync,        
+    input  wire                                                 tx_vid_de,            
+    input  wire [((TX_PIXELS_PER_CLOCK*TX_VIDEO_BPC*3)-1):0]    tx_vid_data, 
+    output wire [(RX_MAX_LANE_COUNT-1):0]                       gxb_rx_clkout,
+    output wire [(TX_MAX_LANE_COUNT-1):0]                       gxb_tx_clkout,
+
+    // RX Video Output adapted to talk to CVI Video Input
+    output wire                                                 rx_cvi_datavalid,         
+    output wire                                                 rx_cvi_f,         
+    output wire [(RX_PIXELS_PER_CLOCK-1):0]                     rx_cvi_h_sync,           
+    output wire [(RX_PIXELS_PER_CLOCK-1):0]                     rx_cvi_v_sync,           
+    output wire                                                 rx_cvi_locked,        
+    output wire [(RX_PIXELS_PER_CLOCK-1):0]                     rx_cvi_de,        
+    output wire [((RX_PIXELS_PER_CLOCK*RX_VIDEO_BPC*3)-1):0]    rx_cvi_data,          
+    input  wire                                                 tx_aux_in,            
+    output wire                                                 tx_aux_out,          
+    output wire                                                 tx_aux_oe,           
+    input  wire                                                 tx_hpd,              
+    input  wire                                                 rx_aux_in,           
+    output wire                                                 rx_aux_out,          
+    output wire                                                 rx_aux_oe,           
+    output wire                                                 rx_hpd             
+);
+
+
+// -------------------------------------------------------------------------
+// Local Parameter
+// -------------------------------------------------------------------------
+localparam RX_SYMBOLS_PER_CLOCK = $rx_symbols_per_clock;
+localparam TX_SYMBOLS_PER_CLOCK = $tx_symbols_per_clock;
+localparam DPRIO_ADDRESS_WIDTH = 12;
+localparam DPRIO_DATA_WIDTH = 32;
+
+// -------------------------------------------------------------------------
+// Signal Declaration
+// -------------------------------------------------------------------------
+// From Video PLL 
+wire                                                dp_rx_vid_clk;
+wire                                                clk_16;
+wire                                                video_pll_locked;
+
+// From/To Video Buffering Module
+wire [((RX_PIXELS_PER_CLOCK*RX_VIDEO_BPC*3)-1):0]   dp_rx_vid_data;
+wire [(RX_PIXELS_PER_CLOCK-1):0]                    dp_rx_vid_valid;
+wire                                                dp_rx_vid_locked;
+wire                                                dp_rx_vid_sof;
+wire                                                dp_rx_vid_eof;
+wire                                                dp_rx_vid_sol;
+wire                                                dp_rx_vid_eol;
+wire                                                dp_rx_vid_field;
+@@ if { $rx_export_msa } {
+wire [216:0]                                        dp_rx_msa;
+@@ }
+wire [1:0]                                          dp_rx_link_rate;
+wire [7:0]                                          dp_rx_link_rate_8bits;
+wire [7:0]                                          dp_tx_link_rate_8bits;
+/*
+wire                                                rec_vid_clk;
+wire [((TX_PIXELS_PER_CLOCK*TX_VIDEO_BPC*3)-1):0]   rec_vid_data;
+wire                                                rec_vid_hsync;
+wire                                                rec_vid_vsync;
+wire                                                rec_vid_de;
+*/
+    
+// From/To Reconfiguration Arbiter
+wire                                                rx_rcfg_en;
+wire                                                rx_rcfg_write;
+wire                                                rx_rcfg_read;
+wire [(DPRIO_ADDRESS_WIDTH)-1:0]					rx_rcfg_address;
+wire [(DPRIO_DATA_WIDTH)-1:0]						rx_rcfg_writedata;
+wire [(DPRIO_DATA_WIDTH)-1:0]						rx_rcfg_readdata;
+wire                                                rx_rcfg_waitrequest;
+wire [RX_MAX_LANE_COUNT-1:0]                        rx_rcfg_cal_busy;
+wire                                                tx_rcfg_en;
+wire                                                tx_rcfg_write;
+wire                                                tx_rcfg_read;
+wire [(DPRIO_ADDRESS_WIDTH)-1:0]					tx_rcfg_address;
+wire [(DPRIO_DATA_WIDTH)-1:0]						tx_rcfg_writedata;
+wire [(DPRIO_DATA_WIDTH)-1:0]						tx_rcfg_readdata;
+wire                                                tx_rcfg_waitrequest;
+wire [TX_MAX_LANE_COUNT-1:0]                        tx_rcfg_cal_busy;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rcfg_write;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rcfg_read;
+wire [(RX_MAX_LANE_COUNT*10)-1:0]                   gxb_rcfg_address;
+wire [(RX_MAX_LANE_COUNT*DPRIO_DATA_WIDTH)-1:0]     gxb_rcfg_writedata;
+wire [(RX_MAX_LANE_COUNT*DPRIO_DATA_WIDTH)-1:0]     gxb_rx_rcfg_readdata;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rx_rcfg_waitrequest;
+wire [RX_MAX_LANE_COUNT-1:0]                        gxb_rx_rcfg_cal_busy;
+wire [(TX_MAX_LANE_COUNT*DPRIO_DATA_WIDTH)-1:0]     gxb_tx_rcfg_readdata;
+wire [TX_MAX_LANE_COUNT-1:0]                        gxb_tx_rcfg_waitrequest;
+wire [TX_MAX_LANE_COUNT-1:0]                        gxb_tx_rcfg_cal_busy;
+
+// From/To Core Qsys-system
+//      DP RX Sus-system
+wire                                                dp_rx_clk_cal;
+wire                                                dp_rx_resetn;
+wire                                                dp_rx_restart;
+wire                                                dp_rx_rcfg_req;
+wire                                                dp_rx_rcfg_ack;
+wire                                                dp_rx_rcfg_busy;
+wire                                                dp_rx_analog_rcfg_req;
+wire [(RX_MAX_LANE_COUNT*2)-1:0]                    dp_rx_analog_rcfg_vod;
+wire [(RX_MAX_LANE_COUNT*2)-1:0]                    dp_rx_analog_rcfg_emp;
+wire [((RX_MAX_LANE_COUNT*RX_SYMBOLS_PER_CLOCK*10)-1):0]    dp_rx_parallel_data;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_is_lockedtoref;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_is_lockedtodata;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_bitslip;
+wire                                                dp_rx_cal_busy;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_set_locktoref;
+wire [(RX_MAX_LANE_COUNT-1):0]                      dp_rx_set_locktodata;
+
+//      DP TX Sus-system
+wire                                                dp_tx_resetn;
+wire                                                dp_tx_clk_cal;
+@@ if { $tx_support_analog_reconfig } {
+wire                                                dp_tx_rcfg_req;
+wire                                                dp_tx_rcfg_ack;
+wire [7:0]                                          dp_tx_rcfg_vod;
+wire [7:0]                                          dp_tx_rcfg_emp;
+@@ }
+wire                                                dp_txpll_rcfg_req;
+wire                                                dp_txpll_rcfg_ack;
+wire                                                dp_tx_rcfg_busy;
+wire [((TX_MAX_LANE_COUNT*TX_SYMBOLS_PER_CLOCK*10)-1):0]    dp_tx_parallel_data;
+wire                                                dp_txpll_powerdown;
+wire [(TX_MAX_LANE_COUNT-1):0]                      dp_tx_cal_busy;
+wire                                                dp_txpll_locked;
+
+// -------------------------------------------------------------------------
+// DisplayPort Core Qsys system
+// -------------------------------------------------------------------------
+dp_core
+dp_core_i (
+    .reset_bridge_in_reset_n                        (~reset),
+    .clk_100_in_clk                                 (clk),
+    // -------------------------------------------------------------------
+    // DisplayPort Sink Sub-System
+    // -------------------------------------------------------------------
+    .dp_rx_reset_bridge_in_reset_n                  (video_pll_locked),
+    .dp_rx_clk_16_in_clk                            (clk_16),
+    .dp_rx_dp_sink_clk_cal                          (dp_rx_clk_cal),
+    // Hot Plug Detect Interface
+    .dp_rx_dp_sink_rx_hpd                           (rx_hpd),
+    .dp_rx_dp_sink_rx_cable_detect                  (1'b1),
+    .dp_rx_dp_sink_rx_pwr_detect                    (1'b1),
+    // DisplayPort Auxiliarty Interface
+    .dp_rx_dp_sink_rx_aux_in                        (rx_aux_in),
+    .dp_rx_dp_sink_rx_aux_out                       (rx_aux_out),
+    .dp_rx_dp_sink_rx_aux_oe                        (rx_aux_oe),
+    // DisplayPort RX Video Protocol Interface (Interface with PCR)
+    .dp_rx_dp_sink_rx_vid_clk                       (dp_rx_vid_clk),
+    .dp_rx_dp_sink_rx_vid_sol                       (dp_rx_vid_sol),
+    .dp_rx_dp_sink_rx_vid_eol                       (dp_rx_vid_eol),
+    .dp_rx_dp_sink_rx_vid_sof                       (dp_rx_vid_sof),
+    .dp_rx_dp_sink_rx_vid_eof                       (dp_rx_vid_eof),
+    .dp_rx_dp_sink_rx_vid_locked                    (dp_rx_vid_locked),
+    .dp_rx_dp_sink_rx_vid_interlace                 (),
+    .dp_rx_dp_sink_rx_vid_field                     (dp_rx_vid_field),
+    .dp_rx_dp_sink_rx_vid_overflow                  (),
+    .dp_rx_dp_sink_rx_vid_data                      (dp_rx_vid_data),
+    .dp_rx_dp_sink_rx_vid_valid                     (dp_rx_vid_valid),
+    @@ if { $rx_export_msa } {
+    .dp_rx_dp_sink_rx_msa                           (dp_rx_msa),
+    @@ }
+    .dp_rx_dp_sink_rx_lane_count                    (),
+    .dp_rx_dp_sink_rx_link_rate                     (dp_rx_link_rate),
+    .dp_rx_dp_sink_rx_link_rate_8bits               (dp_rx_link_rate_8bits),
+    .dp_rx_dp_sink_rx_reconfig_req                  (dp_rx_rcfg_req),
+    .dp_rx_dp_sink_rx_reconfig_ack                  (dp_rx_rcfg_ack),
+    .dp_rx_dp_sink_rx_reconfig_busy                 (dp_rx_rcfg_busy),
+    .dp_rx_dp_sink_rx_analog_reconfig_req			(dp_rx_analog_rcfg_req),
+    .dp_rx_dp_sink_rx_vod							(dp_rx_analog_rcfg_vod),
+    .dp_rx_dp_sink_rx_emp							(dp_rx_analog_rcfg_emp),
+    .dp_rx_dp_sink_rx_parallel_data                 (dp_rx_parallel_data),
+    .dp_rx_dp_sink_rx_std_clkout                    (gxb_rx_clkout),
+    .dp_rx_dp_sink_rx_is_lockedtoref                (dp_rx_is_lockedtoref),
+    .dp_rx_dp_sink_rx_is_lockedtodata               (dp_rx_is_lockedtodata),
+    .dp_rx_dp_sink_rx_restart                       (dp_rx_restart),
+    .dp_rx_dp_sink_rx_bitslip                       (dp_rx_bitslip),
+    .dp_rx_dp_sink_rx_cal_busy                      ({RX_MAX_LANE_COUNT{dp_rx_cal_busy}}),
+    .dp_rx_dp_sink_rx_analogreset                   (),
+    .dp_rx_dp_sink_rx_digitalreset                  (),
+    .dp_rx_dp_sink_rx_set_locktoref                 (dp_rx_set_locktoref),
+    .dp_rx_dp_sink_rx_set_locktodata                (dp_rx_set_locktodata),
+    .dp_rx_dp_sink_rx_stream_valid                  (),
+    .dp_rx_dp_sink_rx_stream_clk                    (),
+    .dp_rx_dp_sink_rx_stream_data                   (),
+    .dp_rx_dp_sink_rx_stream_ctrl                   (),
+
+    // -------------------------------------------------------------------
+    // DisplayPort Source Sub-System
+    // -------------------------------------------------------------------
+    .dp_tx_reset_bridge_in_reset_n                  (video_pll_locked),
+    .dp_tx_clk_16_in_clk                            (clk_16),
+    .dp_tx_dp_source_clk_cal                        (dp_tx_clk_cal),
+    // Hot Plug Detect Interface
+    .dp_tx_dp_source_tx_hpd                         (tx_hpd),
+    // DisplayPort Auxiliarty Interface
+    .dp_tx_dp_source_tx_aux_in                      (tx_aux_in),
+    .dp_tx_dp_source_tx_aux_out                     (tx_aux_out),
+    .dp_tx_dp_source_tx_aux_oe                      (tx_aux_oe),
+    // TX Video Signal Interface 
+    .dp_tx_dp_source_tx_vid_clk                     (tx_vid_clk),
+    .dp_tx_dp_source_tx_vid_data                    (tx_vid_data),
+    .dp_tx_dp_source_tx_vid_v_sync                  ({TX_PIXELS_PER_CLOCK{tx_vid_v_sync}}),
+    .dp_tx_dp_source_tx_vid_h_sync                  ({TX_PIXELS_PER_CLOCK{tx_vid_h_sync}}),
+    .dp_tx_dp_source_tx_vid_de                      ({TX_PIXELS_PER_CLOCK{tx_vid_de}}),
+    .dp_tx_dp_source_tx_link_rate                   (),
+    .dp_tx_dp_source_tx_link_rate_8bits             (dp_tx_link_rate_8bits),
+    .dp_tx_dp_source_tx_reconfig_req                (dp_txpll_rcfg_req),
+    .dp_tx_dp_source_tx_reconfig_ack                (dp_txpll_rcfg_ack),
+    .dp_tx_dp_source_tx_reconfig_busy               (dp_tx_rcfg_busy),
+    .dp_tx_dp_source_tx_parallel_data               (dp_tx_parallel_data),
+    .dp_tx_dp_source_tx_pll_powerdown               (dp_txpll_powerdown),
+    .dp_tx_dp_source_tx_analogreset                 (),
+    .dp_tx_dp_source_tx_digitalreset                (),
+    .dp_tx_dp_source_tx_cal_busy                    (dp_tx_cal_busy),
+    .dp_tx_dp_source_tx_std_clkout                  (gxb_tx_clkout),
+    .dp_tx_dp_source_tx_pll_locked                  (dp_txpll_locked),
+    .dp_tx_dp_source_tx_mgmt_address                (tx_mgmt_address),
+    .dp_tx_dp_source_tx_mgmt_chipselect             (tx_mgmt_chipselect),
+    .dp_tx_dp_source_tx_mgmt_read                   (tx_mgmt_read),
+    .dp_tx_dp_source_tx_mgmt_write                  (tx_mgmt_write),
+    .dp_tx_dp_source_tx_mgmt_writedata              (tx_mgmt_writedata),
+    .dp_tx_dp_source_tx_mgmt_readdata               (tx_mgmt_readdata),
+    .dp_tx_dp_source_tx_mgmt_waitrequest            (tx_mgmt_waitrequest),
+    .dp_tx_dp_source_tx_mgmt_irq                    (tx_mgmt_irq)    
+    );
+
+// -------------------------------------------------------------------------
+// Receiver IP Top Level
+// -------------------------------------------------------------------------
+rx_phy_top
+#(
+    .RX_SYMBOLS_PER_CLOCK           (RX_SYMBOLS_PER_CLOCK),
+    .RX_MAX_LANE_COUNT              (RX_MAX_LANE_COUNT)
+)
+rx_phy_top_i
+(
+    // RX Reference Clock
+    .rx_cdr_refclk                  (xcvr_refclk),
+    .dp_rx_clk_cal                  (dp_rx_clk_cal),
+    // RX Reference Reset
+    .rx_cdr_resetn                  (~reset),
+    .video_pll_locked               (video_pll_locked),
+    // RX Link Rate (8bits)
+    .dp_rx_link_rate_8bits          (dp_rx_link_rate_8bits),
+    // RX Transceiver Reconfiguration Interface (To Arbiter or Altera Reconfig module)
+    .rx_rcfg_mgmt_reset             (reset),
+    .rx_rcfg_mgmt_clk               (clk),
+    .rx_rcfg_en                     (rx_rcfg_en),
+    .rx_rcfg_write                  (rx_rcfg_write),
+    .rx_rcfg_read                   (rx_rcfg_read),
+    .rx_rcfg_address                (rx_rcfg_address),
+    .rx_rcfg_writedata              (rx_rcfg_writedata),
+    .rx_rcfg_readdata               (rx_rcfg_readdata),
+    .rx_rcfg_waitrequest            (rx_rcfg_waitrequest),
+    .rx_rcfg_cal_busy               (rx_rcfg_cal_busy),
+    // RX Transceiver Interface
+    .gxb_rx_clkout                  (gxb_rx_clkout),
+    .gxb_rx_serial_data             (rx_serial_data),
+    .gxb_rx_rcfg_write              (gxb_rcfg_write),
+    .gxb_rx_rcfg_read               (gxb_rcfg_read),
+    .gxb_rx_rcfg_address            (gxb_rcfg_address),
+    .gxb_rx_rcfg_writedata          (gxb_rcfg_writedata),
+    .gxb_rx_rcfg_readdata           (gxb_rx_rcfg_readdata),
+    .gxb_rx_rcfg_waitrequest        (gxb_rx_rcfg_waitrequest),
+    .gxb_rx_rcfg_cal_busy           (gxb_rx_rcfg_cal_busy),
+    // To DP RX Core Sub-System
+    .dp_rx_restart                  (dp_rx_restart),
+    .dp_rx_rcfg_req                 (dp_rx_rcfg_req),
+    .dp_rx_rcfg_ack                 (dp_rx_rcfg_ack),
+    .dp_rx_rcfg_busy                (dp_rx_rcfg_busy),
+    .dp_rx_analog_rcfg_req			(dp_rx_analog_rcfg_req),
+    .dp_rx_analog_rcfg_vod			(dp_rx_analog_rcfg_vod),
+    .dp_rx_analog_rcfg_emp			(dp_rx_analog_rcfg_emp),
+    .dp_rx_parallel_data            (dp_rx_parallel_data),
+    .dp_rx_is_lockedtoref           (dp_rx_is_lockedtoref),
+    .dp_rx_is_lockedtodata          (dp_rx_is_lockedtodata),
+    .dp_rx_bitslip                  (dp_rx_bitslip),
+    .dp_rx_cal_busy                 (dp_rx_cal_busy),
+    .dp_rx_set_locktoref            (dp_rx_set_locktoref),
+    .dp_rx_set_locktodata           (dp_rx_set_locktodata)
+);
+
+// -------------------------------------------------------------------------
+// Video/Image Processing Module Top Level
+// Or
+// Video Buffering Module
+// -------------------------------------------------------------------------
+// ----------------------
+// Video PLL
+// ----------------------
+video_pll_a10 dp_clkrec_video_pll_i
+(
+    .rst      (reset),
+    .refclk   (clk),
+    .outclk_0 (dp_rx_vid_clk),
+    .outclk_1 (clk_16),
+    .outclk_2 (),
+    .locked   (video_pll_locked)
+);
+/*
+bitec_clkrec 
+#(
+    .DEVICE_FAMILY                  ("Arria 10"),
+    .PIXELS_PER_CLOCK               (RX_PIXELS_PER_CLOCK),
+    .BPP                            ((RX_VIDEO_BPC*3)),
+    .CLK_PERIOD_NS                  (62),
+    .FIXED_NVID                     (1)
+)
+bitec_clkrec_i
+(
+    .areset                         (~pll_locked),
+    .clk                            (clk_16),               // 16Mhz
+    .clk_135                        (xcvr_refclk), // 135Mhz 
+
+    .rx_link_clk                    (gxb_rx_clkout[0]),
+    .rx_link_rate                   (dp_rx_link_rate),
+    @@ if { $rx_export_msa } {
+    .rx_msa                         (dp_rx_msa),
+    @@ } else {
+    .rx_msa                         (216'b0),               // RX_EXPORT_MSA has turned off. Please manually specify the correct MSA value.
+    @@ }
+    .vidin_clk                      (dp_rx_vid_clk),
+    .vidin_data                     (dp_rx_vid_data),
+    .vidin_valid                    (|dp_rx_vid_valid),
+    .vidin_locked                   (dp_rx_vid_locked),
+    .vidin_sof                      (dp_rx_vid_sof),
+    .vidin_eof                      (dp_rx_vid_eof),
+    .vidin_sol                      (dp_rx_vid_sol),
+    .vidin_eol                      (dp_rx_vid_eol),
+
+    .reset_out                      (),
+    .rec_clk                        (rec_vid_clk),
+    .vidout                         (rec_vid_data),
+    .hsync                          (rec_vid_hsync),
+    .vsync                          (rec_vid_vsync),
+    .de                             (rec_vid_de)
+);
+*/
+
+// -------------------------------
+// DP - CVI II Interface Signals
+// -------------------------------
+// CVI II Hsync and Vsync are derived from delayed versions of DP RX eol and eof signals
+reg [(RX_PIXELS_PER_CLOCK-1):0]     vid_h_sync;
+reg [(RX_PIXELS_PER_CLOCK-1):0]     vid_v_sync;
+reg                                 h_blanking;
+genvar i;
+generate
+    for (i=0; i<RX_PIXELS_PER_CLOCK; i=i+1) begin: CVI_SYNC
+        always @(posedge dp_rx_vid_clk) 
+            begin
+                vid_h_sync[i] <= dp_rx_vid_eol;
+                vid_v_sync[i] <= dp_rx_vid_eof;
+            end
+    end
+endgenerate
+
+// CVI II vid_datavalid 
+always @(negedge dp_rx_resetn or posedge dp_rx_vid_clk)
+begin
+    if (~dp_rx_resetn)
+        h_blanking <= 1'b0;
+    else
+        h_blanking <= dp_rx_vid_eol? 1'b1 :
+                      dp_rx_vid_sol? 1'b0 :
+                      h_blanking;
+end
+
+assign dp_rx_resetn = ~reset;
+assign rx_cvi_h_sync = vid_h_sync;
+assign rx_cvi_v_sync = vid_v_sync;
+assign rx_cvi_data = dp_rx_vid_data;
+assign rx_cvi_de = dp_rx_vid_valid;
+assign rx_cvi_datavalid = (|dp_rx_vid_valid) | h_blanking; 
+assign rx_cvi_locked = dp_rx_vid_locked;
+assign rx_cvi_f = dp_rx_vid_field;
+
+
+// -------------------------------------------------------------------------
+// Transmitter IP Top Level
+// -------------------------------------------------------------------------
+tx_phy_top
+#(
+    .TX_SYMBOLS_PER_CLOCK           (TX_SYMBOLS_PER_CLOCK),
+    .TX_MAX_LANE_COUNT              (TX_MAX_LANE_COUNT)
+)
+tx_phy_top_i
+(
+    // TX Reference Clock
+    .tx_pll_refclk                  (xcvr_refclk),
+    .dp_tx_clk_cal                  (dp_tx_clk_cal),
+    // TX Reference Reset
+    .tx_pll_resetn                  (~reset),
+    .video_pll_locked               (video_pll_locked),
+    // DP TX FMC Interface
+    .tx_cad                         (),
+    // TX Link Rate (8bits)
+    .dp_tx_link_rate_8bits          (dp_tx_link_rate_8bits),
+    // TX Transceiver Reconfiguration Interface (To Arbiter or Altera Reconfig module)
+    .tx_rcfg_mgmt_reset             (reset),
+    .tx_rcfg_mgmt_clk               (clk),
+    .tx_rcfg_en                     (tx_rcfg_en),
+    .tx_rcfg_write                  (tx_rcfg_write),
+    .tx_rcfg_read                   (tx_rcfg_read),
+    .tx_rcfg_address                (tx_rcfg_address),
+    .tx_rcfg_writedata              (tx_rcfg_writedata),
+    .tx_rcfg_readdata               (tx_rcfg_readdata),
+    .tx_rcfg_waitrequest            (tx_rcfg_waitrequest),
+    .tx_rcfg_cal_busy               (tx_rcfg_cal_busy),
+    // TX Transceiver Interface
+    .gxb_tx_clkout                  (gxb_tx_clkout),
+    .gxb_tx_serial_data             (tx_serial_data),
+    .gxb_tx_rcfg_write              (gxb_rcfg_write),
+    .gxb_tx_rcfg_read               (gxb_rcfg_read),
+    .gxb_tx_rcfg_address            (gxb_rcfg_address),
+    .gxb_tx_rcfg_writedata          (gxb_rcfg_writedata),
+    .gxb_tx_rcfg_readdata           (gxb_tx_rcfg_readdata),
+    .gxb_tx_rcfg_waitrequest        (gxb_tx_rcfg_waitrequest),
+    .gxb_tx_rcfg_cal_busy           (gxb_tx_rcfg_cal_busy),
+    // To DP TX Core Sub-System 
+    @@ if { $tx_support_analog_reconfig } {
+    .dp_tx_rcfg_req                 (dp_tx_rcfg_req),
+    .dp_tx_rcfg_ack                 (dp_tx_rcfg_ack),
+    .dp_tx_rcfg_vod                 (dp_tx_rcfg_vod),
+    .dp_tx_rcfg_emp                 (dp_tx_rcfg_emp),
+    @@ }
+    .dp_txpll_rcfg_req              (dp_txpll_rcfg_req),
+    .dp_txpll_rcfg_ack              (dp_txpll_rcfg_ack),
+    .dp_tx_rcfg_busy                (dp_tx_rcfg_busy),
+    .dp_tx_parallel_data            (dp_tx_parallel_data),
+    .dp_txpll_powerdown             (dp_txpll_powerdown),
+    .dp_tx_cal_busy                 (dp_tx_cal_busy),
+    .dp_txpll_locked                (dp_txpll_locked)
+);
+
+// -------------------------------------------------------------------------
+// Transceiver Reconfiguration Arbtier
+// -------------------------------------------------------------------------
+a10_reconfig_arbiter 
+#(
+    .LANES                          (RX_MAX_LANE_COUNT),
+    .DPRIO_ADDRESS_WIDTH            ((DPRIO_ADDRESS_WIDTH-2)),
+    .DPRIO_DATA_WIDTH               (DPRIO_DATA_WIDTH),
+    .EXPIRED_COUNTER                (70000000)  // 700ms
+)
+a10_reconfig_arbiter_i
+(
+    .clk                            (clk),
+    .reset                          (reset),
+
+    .rx_rcfg_en                     (rx_rcfg_en),
+    .rx_rcfg_ch                     (rx_rcfg_address[11:10]),
+    .rx_reconfig_mgmt_write         (rx_rcfg_write),
+    .rx_reconfig_mgmt_read          (rx_rcfg_read),
+    .rx_reconfig_mgmt_address       (rx_rcfg_address[9:0]),
+    .rx_reconfig_mgmt_writedata     (rx_rcfg_writedata),
+    .rx_reconfig_mgmt_readdata      (rx_rcfg_readdata),
+    .rx_reconfig_mgmt_waitrequest   (rx_rcfg_waitrequest),
+    .rx_reconfig_cal_busy           (rx_rcfg_cal_busy),
+
+    .tx_rcfg_en                     (tx_rcfg_en),
+    .tx_rcfg_ch                     (tx_rcfg_address[11:10]),
+    .tx_reconfig_mgmt_write         (tx_rcfg_write),
+    .tx_reconfig_mgmt_read          (tx_rcfg_read),
+    .tx_reconfig_mgmt_address       (tx_rcfg_address[9:0]),
+    .tx_reconfig_mgmt_writedata     (tx_rcfg_writedata),
+    .tx_reconfig_mgmt_readdata      (tx_rcfg_readdata),
+    .tx_reconfig_mgmt_waitrequest   (tx_rcfg_waitrequest),
+    .tx_reconfig_cal_busy           (tx_rcfg_cal_busy),
+
+    .reconfig_write                 (gxb_rcfg_write),
+    .reconfig_read                  (gxb_rcfg_read),
+    .reconfig_address               (gxb_rcfg_address),
+    .reconfig_writedata             (gxb_rcfg_writedata),
+    .rx_reconfig_readdata           (gxb_rx_rcfg_readdata),
+    .rx_reconfig_waitrequest        (gxb_rx_rcfg_waitrequest),
+    .tx_reconfig_readdata           (gxb_tx_rcfg_readdata),
+    .tx_reconfig_waitrequest        (gxb_tx_rcfg_waitrequest),
+    .rx_cal_busy                    (gxb_rx_rcfg_cal_busy),
+    .tx_cal_busy                    (gxb_tx_rcfg_cal_busy)
+);
+
+endmodule

@@ -1,0 +1,56 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+@@ #
+@@ # Variables used for TERP:
+@@ # channels  : number of channels
+@@ # data_rate : data rate of each lane in Gbps.
+@@ # top_level_name:  dynamically generated top level file name (based on parameterization)
+@@ # altera_hmcc_xcvr_reset_name: dynamicly generated name of the altera_hmcc_xcvr_reset module
+
+
+set LANE_RATE_GBPS $data_rate
+set CORE_CLK_PERIOD_PS [expr {1.0 / (\$LANE_RATE_GBPS * 1.0e9 / 32) / 1.0e-12}]
+
+# The reset signal to the master TX PCS channel and its two adjacent channels TX PCS channels must
+# meet a maximum skew tolerance of one-half the TX parallel clock cycle.
+
+set master [expr {$channels/2}]
+set adj_hi [expr {\$master + 1}]
+set adj_lo [expr {\$master - 1}]
+
+set adj_union [add_to_collection [get_keepers *g_xcvr_native_insts\\[\$adj_lo\\]*pld_pcs_interface*] [get_keepers *g_xcvr_native_insts\\[\$adj_hi\\]*pld_pcs_interface*]]
+set adj_union [add_to_collection \$adj_union [get_keepers *g_xcvr_native_insts\\[\$master\\]*pld_pcs_interface*]]
+set_max_skew -from *$top_level_name*xrst*tx_digitalreset*r_reset -to \$adj_union [expr {\$CORE_CLK_PERIOD_PS/2}]ps -exclude to_clock
+
+
+# The reset signal to all other TX PCS channels within the bonded group must
+# meet a less strict maximum skew tolerance of one TX parallel clock cycle.
+# The skew can technically be increased safely to ~2 clock cycles.
+set channels_union [get_keepers *g_xcvr_native_insts\\[0\\]*pld_pcs_interface*] ; # Initialize union
+
+for {set i 1} {\$i < $channels} {incr i} {
+	if {\$i != \$adj_lo && \$i != \$adj_hi} {
+		set channels_union [add_to_collection [get_keepers *g_xcvr_native_insts\\[\$i\\]*pld_pcs_interface*] \$channels_union]
+	}
+}
+
+set_max_skew -from *$top_level_name*xrst*tx_digitalreset*r_reset -to \$channels_union [expr {\$CORE_CLK_PERIOD_PS}]ps -exclude to_clock
+
+
+
+# Cut paths for reset synchronizers.
+set_false_path -from {*$top_level_name:*|$altera_hmcc_xcvr_reset_name:*|altera_xcvr_reset_control:$altera_hmcc_xcvr_reset_name|alt_xcvr_reset_counter:g_tx.g_tx[0].g_tx.counter_tx_ready|r_reset}    -to {*$top_level_name:*|core_rst_n_meta[*]}
+set_false_path -from {*$top_level_name:*|$altera_hmcc_xcvr_reset_name:*|altera_xcvr_reset_control:$altera_hmcc_xcvr_reset_name|alt_xcvr_reset_counter:g_tx.g_tx[0].g_tx.counter_tx_ready|r_reset}    -to {*$top_level_name:*|core_rst_n}
+set_false_path -from {*$top_level_name:*|$altera_hmcc_xcvr_reset_name:*|altera_xcvr_reset_control:$altera_hmcc_xcvr_reset_name|alt_xcvr_reset_counter:g_rx.g_rx[0].g_rx.counter_rx_digitalreset|r_reset} -to {*$top_level_name:*|altera_hmcc_sync_regs_aclr:xcvr_ready_sync|sync_sr[0]}
+

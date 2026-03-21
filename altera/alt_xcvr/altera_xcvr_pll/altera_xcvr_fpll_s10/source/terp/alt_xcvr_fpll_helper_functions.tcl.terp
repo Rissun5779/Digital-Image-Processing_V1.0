@@ -1,0 +1,342 @@
+# (C) 2001-2018 Intel Corporation. All rights reserved.
+# Your use of Intel Corporation's design tools, logic functions and other 
+# software and tools, and its AMPP partner logic functions, and any output 
+# files from any of the foregoing (including device programming or simulation 
+# files), and any associated documentation or information are expressly subject 
+# to the terms and conditions of the Intel Program License Subscription 
+# Agreement, Intel FPGA IP License Agreement, or other applicable 
+# license agreement, including, without limitation, that your use is for the 
+# sole purpose of programming logic devices manufactured by Intel and sold by 
+# Intel or its authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+
+
+# -------------------------------------------------------------------------- #
+# - 
+# --- This file contains helper functions for fpll PHY SDC file
+# -
+# -------------------------------------------------------------------------- #
+set script_dir [file dirname [info script]]
+
+load_package sdc_ext 
+
+if {![info exists fpll_sdc_debug]} {
+  global ::fpll_sdc_debug
+}
+
+set fpll_sdc_debug 0
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to initialize the database of all required pins and      --- #
+# --- registers to create clocks                                         --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc fpll_initialize_db_${random_str} { fpll_db } {
+
+  # upvar links one variable to another variable at specified level of execution
+  upvar \$fpll_db local_fpll_db
+
+  # Set the GLOBAL_corename in ip_parameters.tcl 
+  global ::GLOBAL_corename
+  global ::fpll_sdc_debug
+
+  # Delete the database if it exists
+  if [info exists local_fpll_db] {
+    post_message -type info "IP SDC: Database existed before, deleting it now"
+    unset local_fpll_db
+  } 
+
+  set local_fpll_db [dict create]
+
+  post_message -type info "IP SDC: Initializing S10 fPLL database for CORE \$::GLOBAL_corename"
+
+  # Find all the fpll PHY instance names in the design
+  set instance_list [fpll_get_core_instance_list_${random_str} \$::GLOBAL_corename]
+
+  foreach inst_name \$instance_list {
+
+    # Create dictionary of pins
+    post_message -type info "IP SDC: Finding port-to-pin mapping for CORE: \$::GLOBAL_corename INSTANCE: \$inst_name"
+    set all_pins [dict create]
+    fpll_get_pins_${random_str} \$inst_name \$all_pins
+  
+    # Set the associative array
+    dict set local_fpll_db \$inst_name \$all_pins
+
+  }
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to find all the fpll PHY instance names in TimeQuest   --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc fpll_get_core_instance_list_${random_str} { core_name } {
+  
+  global ::fpll_sdc_debug
+
+  set instance_list [list]
+
+  set split_var_name [fpll_wsplit_${random_str} \$core_name "_altera_xcvr_fpll_s10"]
+  set ip_top_level [lindex \$split_var_name 0]
+
+  set all_nodes [get_nodes * ]
+  
+  # set show entity name after the collection manager is initialized in get_nodes
+  set_project_mode -always_show_entity_name on
+
+  set full_instance_list [list]
+
+  set inst_regexp {(^.*}
+  # careful when using $ and \; this is a terp file
+  append inst_regexp {:[A-Za-z0-9\\.\\\\_\\[\\]\\-\\$\(\):]+)\\|}
+  append inst_regexp "\${core_name}" 
+  post_message "Regular expression = \$inst_regexp"
+
+  foreach_in_collection node \$all_nodes {
+    set name [ get_node_info -name \$node ]
+
+    if {[regexp -- \$inst_regexp \$name -> hier_name] == 1} {  
+
+      if {[lsearch \$full_instance_list [escape_brackets \$hier_name]] == -1} {
+        lappend full_instance_list \$hier_name
+      }
+    }
+  }
+
+  set_project_mode -always_show_entity_name qsf
+  
+  if {[ llength \$full_instance_list ] == 0} {
+     post_message -type error "IP SDC: The auto-constraining script was not able to detect any instance for core < \$core_name >"
+     post_message -type error "IP SDC: Make sure the core < \$core_name > is instantiated within another component (wrapper) and it's not the top-level for your project"
+  }
+
+  foreach inst \$full_instance_list { 
+    
+    set full_instance_split [ split \$inst | ]  
+    
+    set module_inst_name [ lsearch -inline \$full_instance_split \$ip_top_level:* ]
+    set sta_name [fpll_get_timequest_name_${random_str} \$inst] 
+    # you can shorten it further by \$module_inst_name
+
+    if {[lsearch \$instance_list [escape_brackets \$sta_name]] == -1} {
+      lappend instance_list \$sta_name
+    } 
+    
+  }
+
+  if { \$fpll_sdc_debug ==1 } {
+    post_message -type info "IP SDC: Instance_list is \$instance_list" 
+  }
+
+  return \$instance_list
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to split up a string based on given substring            --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc fpll_wsplit_${random_str} {str sep} {
+
+  split [string map [list \$sep \\0] \$str] \\0
+
+}
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to convert the full hierarchy name into a TimeQuest name --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc fpll_get_timequest_name_${random_str} { hier_name } {
+
+   set sta_name ""
+   for {set inst_start [string first ":" \$hier_name]} {\$inst_start != -1} {} {
+      incr inst_start
+      set inst_end [string first "|" \$hier_name \$inst_start]
+      if {\$inst_end == -1} {
+         append sta_name [string range \$hier_name \$inst_start end]
+         set inst_start -1
+      } else {
+         append sta_name [string range \$hier_name \$inst_start \$inst_end]
+         set inst_start [string first ":" \$hier_name \$inst_end]
+      }
+   }
+   return \$sta_name
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to find all the pins and registers for nodes of interest --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc fpll_get_pins_${random_str} { inst_name all_pins } {
+
+  global ::fpll_sdc_debug
+
+  # We need to make a local copy of the allpins associative array
+  upvar all_pins fpll_pins
+
+  # ------------------------------------------------------------------------- #
+  # Define the pins here 
+  # Include regex to grab pins for multiple channels
+  set clkdiv_inclk_pin       "*\$inst_name*clk_divider_inst*inclk"
+  set clkdiv_output_div1_pin "*\$inst_name*clk_divider_inst*clock_div1"
+  set clkdiv_output_div2_pin "*\$inst_name*clk_divider_inst*clock_div2"
+  set clkdiv_output_div4_pin "*\$inst_name*clk_divider_inst*clock_div4"
+
+  # ------------------------------------------------------------------------- #
+  # Create an associative array for each clock pin 
+  set fpll_pins [dict create]
+
+  # ------------------------------------------------------------------------- #
+  set clkdiv_inclk_id [get_pins -compatibility_mode -nowarn \$clkdiv_inclk_pin]
+
+  if {[get_collection_size \$clkdiv_inclk_id] > 0} {
+    foreach_in_collection clk \$clkdiv_inclk_id {
+      dict lappend fpll_pins clkdiv_inclk [get_pin_info -name \$clk]
+    }
+
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC: After getting CLKDIV_INCLK node info: [dict get \$fpll_pins clkdiv_inclk]"
+    }
+
+    dict set fpll_pins clkdiv_inclk [join [lsort -dictionary [dict get \$fpll_pins clkdiv_inclk]]]
+
+  } else {
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC Error: Could not find pins for CLKDIV_INCLK"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set clkdiv_output_div1_id [get_pins -compatibility_mode -nowarn \$clkdiv_output_div1_pin]
+
+  if {[get_collection_size \$clkdiv_output_div1_id] > 0} {
+    foreach_in_collection clk \$clkdiv_output_div1_id {
+      dict lappend fpll_pins clkdiv_output_div1 [get_pin_info -name \$clk]
+    }
+
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC: After getting CLOCK_DIV1 node info: [dict get \$fpll_pins clkdiv_output_div1]"
+    }
+
+    dict set fpll_pins clkdiv_output_div1 [join [lsort -dictionary [dict get \$fpll_pins clkdiv_output_div1]]]
+
+  } else {
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC Error: Could not find pins for CLOCK_DIV1"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set clkdiv_output_div2_id [get_pins -compatibility_mode -nowarn \$clkdiv_output_div2_pin]
+
+  if {[get_collection_size \$clkdiv_output_div2_id] > 0} {
+    foreach_in_collection clk \$clkdiv_output_div2_id {
+      dict lappend fpll_pins clkdiv_output_div2 [get_pin_info -name \$clk]
+    }
+
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC: After getting CLOCK_DIV2 node info: [dict get \$fpll_pins clkdiv_output_div2]"
+    }
+
+    dict set fpll_pins clkdiv_output_div2 [join [lsort -dictionary [dict get \$fpll_pins clkdiv_output_div2]]]
+
+  } else {
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC Error: Could not find pins for CLOCK_DIV2"
+    }
+  }
+
+  # ------------------------------------------------------------------------- #
+  set clkdiv_output_div4_id [get_pins -compatibility_mode -nowarn \$clkdiv_output_div4_pin]
+
+  if {[get_collection_size \$clkdiv_output_div4_id] > 0} {
+    foreach_in_collection clk \$clkdiv_output_div4_id {
+      dict lappend fpll_pins clkdiv_output_div4 [get_pin_info -name \$clk]
+    }
+
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC: After getting CLOCK_DIV4 node info: [dict get \$fpll_pins clkdiv_output_div4]"
+    }
+
+    dict set fpll_pins clkdiv_output_div4 [join [lsort -dictionary [dict get \$fpll_pins clkdiv_output_div4]]]
+
+  } else {
+    if {\$fpll_sdc_debug == 1} {
+      post_message -type info "IP SDC Error: Could not find pins for CLOCK_DIV4"
+    }
+  }
+
+}
+
+
+# -------------------------------------------------------------------------- #
+# ---                                                                    --- #
+# --- Procedure to create clocks in an instance                          --- #
+# ---                                                                    --- #
+# -------------------------------------------------------------------------- #
+proc fpll_create_clocks_all_ch_${random_str} { instance mode clk_group freq clk_list profile_cnt profile refclk_cnt args} {
+  global ::fpll_sdc_debug
+
+  set clock_name_list [list]
+
+  foreach clk \$clk_list {
+
+    # Shorten the clock name if multiple profiles are not used
+    if { \$profile_cnt > 1 } { 
+      set clock_name \$instance\|profile\$profile\|\$clk_group
+    } else {
+      set clock_name \$instance\|\$clk_group      
+    }
+    # Add the clock name to the list 
+    lappend clock_name_list \$clock_name
+  
+    if { \$fpll_sdc_debug == 1 } {
+      post_message -type info "IP SDC: Clock name = \$clock_name"
+    }
+
+    # Create the clock constraint
+    if {\$mode == "inclk"} {
+      create_clock \\
+        -name \$clock_name \\
+        -period "\$freq MHz" \\
+        \$clk -add
+
+    } elseif {\$mode == "clkdiv_output_clks" && \$args != ""} {
+
+      if {\$refclk_cnt > 1} {
+        for {set i 0} {\$i < \$refclk_cnt} {incr i} {
+          create_generated_clock \\
+            -name "\${clock_name}_refclk\$i" \\
+            -source \$args \\
+            -divide_by [string index \$clk_group end] \\
+            \$clk -add
+        }
+      } else {
+        create_generated_clock \\
+          -name \$clock_name \\
+          -source \$args \\
+          -divide_by [string index \$clk_group end] \\
+          \$clk -add
+      }
+
+    } else {
+      if {\$fpll_sdc_debug == 1} {
+        post_message -type info "IP SDC Error: Clock group \$clk_group did not match any expected clock group."
+      }
+    }
+  }
+  # Return the list of clock names  
+  return \$clock_name_list
+
+}
+

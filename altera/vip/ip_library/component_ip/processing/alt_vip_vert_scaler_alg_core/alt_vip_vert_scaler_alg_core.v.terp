@@ -1,0 +1,102 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+module $output_name
+   (  input    wire                             clock,
+      input    wire                             reset,
+   
+      input    wire                                av_st_cmd_valid,
+      input    wire                                av_st_cmd_startofpacket,
+      input    wire                                av_st_cmd_endofpacket,
+      input    wire  [$cmd_data_width - 1 : 0]     av_st_cmd_data,
+      output   wire                                av_st_cmd_ready,
+      
+      
+      input    wire                                av_st_din_valid,
+      input    wire                                av_st_din_startofpacket,
+      input    wire                                av_st_din_endofpacket,
+      input    wire  [$din_data_width - 1 : 0]     av_st_din_data,
+      output   wire                                av_st_din_ready,
+      
+   @@if {$load_at_runtime == 1} {
+      input    wire                                av_st_coeff_valid,
+      input    wire                                av_st_coeff_startofpacket,
+      input    wire                                av_st_coeff_endofpacket,
+      input    wire  [$coeff_data_width - 1 : 0]   av_st_coeff_data,
+      output   wire                                av_st_coeff_ready,
+   @@}
+   
+      output   wire                                av_st_dout_valid,
+      output   wire                                av_st_dout_startofpacket,
+      output   wire                                av_st_dout_endofpacket,
+      output   wire   [$dout_data_width - 1 : 0]   av_st_dout_data,
+      input    wire                                av_st_dout_ready
+   );
+   
+@@if {!($load_at_runtime == 1)} {
+   wire                                av_st_coeff_valid;
+   wire                                av_st_coeff_startofpacket;
+   wire                                av_st_coeff_endofpacket;
+   wire  [$coeff_data_width - 1 : 0]   av_st_coeff_data;
+   wire                                av_st_coeff_ready;
+@@}
+   
+   alt_vip_vert_scaler_alg_core # (
+      .NUMBER_OF_COLOR_PLANES    ($num_colours),
+      .BITS_PER_SYMBOL           ($bits_per_symbol),
+      .PIXELS_IN_PARALLEL        ($pip),
+      .IS_422                    ($is_422),
+      .ALGORITHM_NAME            ($algorithm),
+      .V_TAPS                    ($v_taps),
+      .V_PHASES                  ($v_phases),
+      .V_SIGNED                  ($v_signed),
+      .V_INTEGER_BITS            ($v_int_bits),
+      .V_FRACTION_BITS           ($v_frac_bits),
+      .PRESERVE_FRACTION_BITS    ($preserve_bits),
+      .LOAD_AT_RUNTIME           ($load_at_runtime),
+      .V_BANKS                   ($v_banks),
+      .SRC_WIDTH                 ($src_width),
+      .DST_WIDTH                 ($dst_width),
+      .CONTEXT_WIDTH             ($context_width),
+      .TASK_WIDTH                ($task_width),
+      .SOURCE_ID                 ($src_id),
+      .COEFF_FILE                ($coeff_file),
+      .PIPELINE_READY            ($pipeline),
+      .CYCLONE_STYLE             ($cyclone_style),
+      .V_SERIES_STYLE            ($v_series_style)
+   ) vert_scaler_core_inst (
+      .clock                     (clock),
+      .reset                     (reset),
+      .av_st_din_ready           (av_st_din_ready),
+      .av_st_din_valid           (av_st_din_valid),
+      .av_st_din_startofpacket   (av_st_din_startofpacket),
+      .av_st_din_endofpacket     (av_st_din_endofpacket),
+      .av_st_din_data            (av_st_din_data),
+      .av_st_coeff_ready         (av_st_coeff_ready),
+      .av_st_coeff_valid         (av_st_coeff_valid),
+      .av_st_coeff_startofpacket (av_st_coeff_startofpacket),
+      .av_st_coeff_endofpacket   (av_st_coeff_endofpacket),
+      .av_st_coeff_data          (av_st_coeff_data),
+      .av_st_cmd_ready           (av_st_cmd_ready),
+      .av_st_cmd_valid           (av_st_cmd_valid),
+      .av_st_cmd_startofpacket   (av_st_cmd_startofpacket),
+      .av_st_cmd_endofpacket     (av_st_cmd_endofpacket),
+      .av_st_cmd_data            (av_st_cmd_data),
+      .av_st_dout_ready          (av_st_dout_ready),
+      .av_st_dout_valid          (av_st_dout_valid),
+      .av_st_dout_startofpacket  (av_st_dout_startofpacket),
+      .av_st_dout_endofpacket    (av_st_dout_endofpacket),
+      .av_st_dout_data           (av_st_dout_data)
+   );
+   
+   endmodule

@@ -1,0 +1,20 @@
+CONDITION,DO
+,set_new_param DEVICE_FAMILY [get_old_param INTENDED_DEVICE_FAMILY]
+,set_new_param WIDTH_A [get_old_param WIDTH_A]
+,set_new_param WIDTH_B [get_old_param WIDTH_B]
+,set_new_param WIDTH_RESULT [get_old_param WIDTH_RESULT]
+"[get_old_param REPRESENTATION_A] == ""SIGNED""","set_new_param REPRESENTATION_A "1""
+"[get_old_param REPRESENTATION_A] == ""UNSIGNED""","set_new_param REPRESENTATION_A "0""
+"[get_old_param REPRESENTATION_B] == ""SIGNED""","set_new_param REPRESENTATION_B "1""
+"[get_old_param REPRESENTATION_B] == ""UNSIGNED""","set_new_param REPRESENTATION_B "0""
+"[get_old_param IMPLEMENTATION_STYLE] == ""AUTO""","set_new_param IMPLEMENTATION_STYLE "AUTO""
+"[get_old_param IMPLEMENTATION_STYLE] == ""CANONICAL""","set_new_param IMPLEMENTATION_STYLE "CANONICAL""
+"[get_old_param IMPLEMENTATION_STYLE] == ""CONVENTIONAL""","set_new_param IMPLEMENTATION_STYLE "CONVENTIONAL""
+,set_new_param PIPELINE [get_old_param PIPELINE]
+"[exists_old_param USED_PORT_complex] && [string equal [get_old_param USED_PORT_complex] "true"]","set_new_param GUI_DYNAMIC_COMPLEX ""True"""
+"[exists_old_param USED_PORT_ena] && [string equal [get_old_param USED_PORT_ena] "true"]","set_new_param GUI_USE_CLKEN ""True"""
+"![exists_old_param USED_PORT_complex]","set_new_param GUI_DYNAMIC_COMPLEX ""False"""
+"[exists_old_param USED_PORT_aclr] && [string equal [get_old_param USED_PORT_aclr] "true"]","set_new_param GUI_CLEAR_TYPE ""ACLR"""
+"![exists_old_param USED_PORT_aclr]","set_new_param GUI_CLEAR_TYPE ""NONE"""
+"![exists_old_param USED_PORT_ena]","set_new_param GUI_USE_CLKEN ""False"""
+,ignore_new_param CBX_AUTO_BLACKBOX

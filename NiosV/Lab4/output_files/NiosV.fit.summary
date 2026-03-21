@@ -1,16 +1,16 @@
-Fitter Status : Successful - Fri Mar 13 18:16:44 2026
+Fitter Status : Successful - Sat Mar 21 20:47:43 2026
 Quartus Prime Version : 24.1std.0 Build 1077 03/04/2025 SC Lite Edition
 Revision Name : NiosV
 Top-level Entity Name : NiosV_top
 Family : Cyclone V
 Device : 5CSXFC6D6F31C6
 Timing Models : Final
-Logic utilization (in ALMs) : 2,985 / 41,910 ( 7 % )
+Logic utilization (in ALMs) : 3,332 / 41,910 ( 8 % )
 Total registers : 4372
-Total pins : 87 / 499 ( 17 % )
+Total pins : 89 / 499 ( 18 % )
 Total virtual pins : 0
-Total block memory bits : 986,240 / 5,662,720 ( 17 % )
-Total RAM Blocks : 133 / 553 ( 24 % )
+Total block memory bits : 3,935,360 / 5,662,720 ( 69 % )
+Total RAM Blocks : 485 / 553 ( 88 % )
 Total DSP Blocks : 0 / 112 ( 0 % )
 Total HSSI RX PCSs : 0 / 9 ( 0 % )
 Total HSSI PMA RX Deserializers : 0 / 9 ( 0 % )

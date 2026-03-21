@@ -1,0 +1,34 @@
+bsp/CMakeFiles/hal2_bsp.dir/HAL/src/alt_sbrk.c.obj: \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/src/alt_sbrk.c \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/types.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/_ansi.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/newlib.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/_newlib_version.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/config.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/machine/ieeefp.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/features.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/cdefs.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/machine/_default_types.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/lib/gcc/riscv32-unknown-elf/13.2.0/include/stddef.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/machine/_types.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/_types.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/_stdint.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/machine/endian.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/machine/_endian.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/select.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/_sigset.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/_timeval.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/timespec.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/_timespec.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/_pthreadtypes.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/sys/sched.h \
+ /home/rissun57/intelFPGA_lite/24.1std/riscfree/toolchain/riscv32-unknown-elf/riscv32-unknown-elf/include/machine/types.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/os/alt_syscall.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/sys/alt_irq.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/intel_niosv.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/alt_types.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/io.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/./system.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/./linker.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/alt_types.h \
+ /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4_1/software/bsp/HAL/inc/sys/alt_stack.h

@@ -1,0 +1,28 @@
+[Interface Protocols|Transceiver PHY]
+Low Latency PHY Intel FPGA IP = "%t" "%w/../common/lib/megawizard.pl" --wizard:altera_xcvr_low_latency_phy --familyparameter:DEVICE_FAMILY --early_gen:on --wizard_file:"%w/source/altera_xcvr_low_latency_phy/altera_xcvr_low_latency_phy_hw.tcl" %f %o %h
+<INFO>
+<QIP_FILE_ENABLED/>
+<ACCEPT_OTHER_CNX VALUE="ON"/>
+<DEVICE_FAMILY   SUPPORTED="NONE | family_stratixv | Arria V GZ"   SUPPORT_CHECK="ON" /> 
+<LANGUAGES   AHDL="OFF"/>
+<PINPLAN SUPPORTED="ON"/>
+<ALIAS>Low Latency PHY</ALIAS>
+<ALIAS>Low Latency PHY v10.0</ALIAS>
+<ALIAS>Low Latency PHY v10.1</ALIAS>
+<ALIAS>Low Latency PHY v11.0</ALIAS>
+<ALIAS>Low Latency PHY v11.1</ALIAS>
+<ALIAS>Low Latency PHY v12.0</ALIAS>
+<ALIAS>Low Latency PHY v12.1</ALIAS>
+<ALIAS>Low Latency PHY v13.0</ALIAS>
+<ALIAS>Low Latency PHY v13.1</ALIAS>
+<ALIAS>Low Latency PHY v14.0</ALIAS>
+<ALIAS>Low Latency PHY v14.1</ALIAS>
+<ALIAS>Low Latency PHY v15.0</ALIAS>
+<ALIAS>Low Latency PHY v15.1</ALIAS>
+<ALIAS>Low Latency PHY v16.0</ALIAS>
+<ALIAS>Low Latency PHY v16.1</ALIAS>
+<ALIAS>Low Latency PHY v17.0</ALIAS>
+<ALIAS>Low Latency PHY v17.1</ALIAS>
+<ALIAS>Low Latency PHY v18.0</ALIAS>
+<ALIAS>Low Latency PHY Intel FPGA IP v18.0</ALIAS>
+</INFO>

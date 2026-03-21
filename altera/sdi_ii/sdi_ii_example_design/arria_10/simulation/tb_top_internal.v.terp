@@ -1,0 +1,1028 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+@@ set vid_std      $param0
+@@ set direction    $param1
+@@ set ed_variant   $param2
+@@ set rx_crc       $param3
+@@ set err_tol      $param4
+@@ # Manually overwrite Payload ID Extraction when Direction = Tx
+@@ if { $vid_std != "hd" && $direction == "tx" } {
+@@ set pid_xtrct            1
+@@ } else {
+@@ set pid_xtrct            $param5
+@@ }
+@@ set pid_ins              $param6
+@@ set sd_bitw              $param7
+@@ set txclk_sw             $param8
+@@ set internal_test        $param9
+@@ # Test param
+@@ set test_ln_output       $param10
+@@ set test_sync_output     $param11
+@@ set test_reconfig_seq    $param12
+@@ set test_disturb_serial  $param13
+@@ set test_dl_sync         $param14
+@@ set test_data_compare    $param15
+@@ set test_trs_locked      $param16
+@@ set test_frame_locked    $param17
+@@ set test_vpid_overwrite  $param18
+@@ set test_multi_recon     $param19
+@@ set test_serial_delay    $param20
+@@ set test_reset_seq       $param21
+@@ set test_reset_recon     $param22
+@@ set test_rst_pre_ow      $param23
+@@ set test_rxsample_chk    $param24
+@@ set test_gen_anc         $param25
+@@ set test_gen_vpid        $param26
+@@ set test_vpid_pkt_count  $param27
+@@ set test_err_vpid        $param28
+//internal testing
+`timescale 1 ps / 1 ps
+module tb_top (
+
+);
+
+@@ if { $vid_std == "mr" } {
+localparam NUM_STREAMS = 4;
+@@ } else {
+localparam NUM_STREAMS = 1;
+@@ }
+
+wire    [2:0]               tb_test_control_tx_std;
+wire    [2:0]               tb_test_control_pattgen_tx_std;
+wire    [2:0]               sdi_rx_std;
+wire                        tb_test_control_tx_xcvr_refclk;
+wire                        tb_test_control_rx_xcvr_refclk;
+wire                        tb_test_control_rx_coreclk;
+wire                        tb_test_control_tx_chk_refclk;
+wire                        tb_test_control_rx_chk_refclk;
+wire                        tb_test_control_reconfig_clk;
+wire                        tb_test_control_tx_xcvr_refclk_alt;
+wire                        tb_test_control_tx_rst;
+wire                        tb_test_control_tx_rst_sync;
+wire                        tb_test_control_rx_rst;
+wire                        tb_test_control_rx_chk_rst;
+wire                        tb_test_control_reconfig_rst;
+wire                        sdi_tx_p;
+wire                        sdi_rx_p;
+wire                        pll_locked;
+wire                        pll_locked_alt;
+wire                        tx_ready;
+wire                        tx_readyn_sync;
+wire                        rx_rcfg_cal_busy;
+wire                        gxb_rx_cal_busy;
+wire                        tx_rcfg_cal_busy;
+wire                        gxb_tx_cal_busy;
+wire                        sdi_rx_align_locked;
+wire [NUM_STREAMS-1:0]      sdi_rx_trs_locked;
+wire [NUM_STREAMS-1:0]      sdi_rx_trs;
+wire [NUM_STREAMS-1:0]      sdi_rx_ap;
+wire [NUM_STREAMS-1:0]      sdi_rx_eav;
+wire [NUM_STREAMS-1:0]      sdi_rx_h;
+wire [NUM_STREAMS-1:0]      sdi_rx_v;
+wire [NUM_STREAMS-1:0]      sdi_rx_f;
+wire [NUM_STREAMS*20-1:0]   sdi_rx_dataout;
+wire [NUM_STREAMS*4-1:0]    sdi_rx_format;
+wire [NUM_STREAMS*11-1:0]   sdi_rx_ln;
+wire [NUM_STREAMS*11-1:0]   sdi_rx_ln_b;
+wire [NUM_STREAMS-1:0]      sdi_rx_crc_error_c;
+wire [NUM_STREAMS-1:0]      sdi_rx_crc_error_c_b;
+wire [NUM_STREAMS-1:0]      sdi_rx_crc_error_y;
+wire [NUM_STREAMS-1:0]      sdi_rx_crc_error_y_b;
+wire [NUM_STREAMS*11-1:0]   sdi_rx_line_f0;
+wire [NUM_STREAMS*11-1:0]   sdi_rx_line_f1;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte1;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte1_b;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte2;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte2_b;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte3;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte3_b;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte4;
+wire [NUM_STREAMS*8-1:0]    sdi_rx_vpid_byte4_b;
+wire [NUM_STREAMS-1:0]      sdi_rx_vpid_checksum_error;
+wire [NUM_STREAMS-1:0]      sdi_rx_vpid_checksum_error_b;
+wire [NUM_STREAMS-1:0]      sdi_rx_vpid_valid;
+wire [NUM_STREAMS-1:0]      sdi_rx_vpid_valid_b;
+wire                        sdi_rx_frame_locked;
+wire                        sdi_rx_dataout_valid;
+wire                        tb_test_control_pattgen_dl_mapping;
+wire    [3:0]               tb_test_control_pattgen_tx_format;
+wire    [3:0]               tb_test_control_rx_chk_tx_format;
+wire                        tb_test_control_tx_status;
+wire                        tb_test_control_tx_enable_crc;
+wire                        tb_test_control_tx_enable_ln;
+wire                        sdi_tx_clkout;
+wire                        sdi_rx_clkout;
+wire                        sdi_tx_dataout_valid;
+wire                        cdr_reconfig_busy;
+wire                        tx_reconfig_busy;
+wire                        tb_test_control_rx_chk_dl_mapping;
+wire [NUM_STREAMS*20-1:0]   pattgen_dout;
+wire                        pattgen_trs;
+wire                        pattgen_dout_valid;
+wire [NUM_STREAMS*11-1:0]   pattgen_ln;
+wire [NUM_STREAMS*11-1:0]   pattgen_ln_b;
+wire [NUM_STREAMS*11-1:0]   pattgen_line_f0;
+wire [NUM_STREAMS*11-1:0]   pattgen_line_f1;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte1;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte1_b;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte2;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte2_b;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte3;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte3_b;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte4;
+wire [NUM_STREAMS*8-1:0]    pattgen_pid_byte4_b;
+wire    [2:0]               tb_test_control_tx_chk_tx_std;
+wire    [1:0]               tb_test_control_tx_chk_start_chk;
+wire    [1:0]               tb_test_control_rx_chk_start_chk;
+wire                        tb_test_control_tx_pll_select;
+wire                        tb_test_control_tx_clkout_match;
+wire                        rx_rcfg_write;
+wire                        rx_rcfg_read;
+wire    [9:0]               rx_rcfg_address;
+wire    [31:0]              rx_rcfg_writedata;
+wire    [31:0]              rx_rcfg_readdata;
+wire                        rx_rcfg_waitrequest;
+wire                        tx_rcfg_write;
+wire                        tx_rcfg_read;
+wire    [9:0]               tx_rcfg_address;
+wire    [31:0]              tx_rcfg_writedata;
+wire    [31:0]              tx_rcfg_readdata;
+wire                        tx_rcfg_waitrequest;
+wire                        tx_sdi_start_reconfig;
+wire    [1:0]               tb_rx_checker_rxcheck_done;
+wire                        tb_rx_checker_chk_completed;
+wire                        tb_rx_checker_rx_check_posedge;
+@@ if { $direction == "du" } {
+wire    [31:0]              gxb_du_rcfg_readdata;
+wire                        gxb_du_rcfg_waitrequest;
+@@ } else {
+wire    [31:0]              gxb_rx_rcfg_readdata;
+wire                        gxb_rx_rcfg_waitrequest;
+wire    [31:0]              gxb_tx_rcfg_readdata;
+wire                        gxb_tx_rcfg_waitrequest;
+@@ }
+wire                        gxb_rcfg_write;
+wire                        gxb_rcfg_read;
+wire    [9:0]               gxb_rcfg_address;
+wire    [31:0]              gxb_rcfg_writedata;
+
+sdi_ii_tb_control #(
+    .FAMILY               ("Arria 10"),
+    .VIDEO_STANDARD       ("$vid_std"),
+    .DIRECTION            ("$direction"),
+    .RX_INC_ERR_TOLERANCE ($err_tol),
+    .RX_CRC_ERROR_OUTPUT  ($rx_crc),
+    .RX_EN_A2B_CONV       (0),
+    .RX_EN_B2A_CONV       (0),
+    .ED_TXPLL_SWITCH      ($txclk_sw),
+    .TEST_LN_OUTPUT       ($test_ln_output),
+    .TEST_SYNC_OUTPUT     ($test_sync_output),
+    .TEST_RECONFIG_SEQ    ("$test_reconfig_seq"),
+    .TEST_DISTURB_SERIAL  ($test_disturb_serial),
+    .TEST_DL_SYNC         ($test_dl_sync),
+    .TEST_TRS_LOCKED      ($test_trs_locked),
+    .TEST_FRAME_LOCKED    ($test_frame_locked),
+    .TEST_VPID_OVERWRITE  ($test_vpid_overwrite),
+    .TEST_MULTI_RECON     ($test_multi_recon),
+    .TEST_SERIAL_DELAY    ($test_serial_delay),
+    .TEST_RESET_SEQ       ($test_reset_seq),
+    .TEST_RESET_RECON     ($test_reset_recon),
+    .TEST_RST_PRE_OW      ($test_rst_pre_ow),
+    .TEST_RXSAMPLE_CHK    ($test_rxsample_chk),
+@@ if { $vid_std != "mr" && $ed_variant == 1 } {
+    .DEVKIT_A10_CDR_270M  (1),
+    .VCXOLESS_TXPLL_100M  (0)
+@@ } elseif { $ed_variant == 2 } {
+    .DEVKIT_A10_CDR_270M  (0),
+    .VCXOLESS_TXPLL_100M  (1)
+@@ } else {
+    .DEVKIT_A10_CDR_270M  (0),
+    .VCXOLESS_TXPLL_100M  (0)
+@@ }
+) tb_test_control (
+    // Clocks and resets
+    .tx_xcvr_refclk               (tb_test_control_tx_xcvr_refclk),
+    .rx_xcvr_refclk               (tb_test_control_rx_xcvr_refclk),
+    .rx_coreclk                   (tb_test_control_rx_coreclk),
+    .tx_chk_refclk                (tb_test_control_tx_chk_refclk),
+    .rx_chk_refclk                (tb_test_control_rx_chk_refclk),
+    .reconfig_clk                 (tb_test_control_reconfig_clk),
+    .tx_rst                       (tb_test_control_tx_rst),
+    .rx_rst                       (tb_test_control_rx_rst),
+    .rx_chk_rst                   (tb_test_control_rx_chk_rst),
+    .reconfig_rst                 (tb_test_control_reconfig_rst),
+@@ if { $txclk_sw != 0 } {
+    .tx_xcvr_refclk_alt           (tb_test_control_tx_xcvr_refclk_alt),
+@@ } else {
+    .tx_xcvr_refclk_alt           (),
+@@ }
+    .tx_coreclk                   (),
+    .tx_rst_ch0                   (),
+    .rx_rst_ch0                   (),
+    .tx_xcvr_refclk_smpte372      (),
+    .rx_xcvr_refclk_smpte372      (),
+    .tx_coreclk_smpte372          (),
+    .rx_coreclk_smpte372          (),
+    .tx_rst_smpte372              (),
+    .rx_rst_smpte372              (),
+    .tx_phy_mgmt_clk_rst          (),
+    .rx_phy_mgmt_clk_rst          (),
+    .phy_mgmt_clk                 (),
+    .phy_mgmt_clk_smpte372        (),
+    .clk_fpga                     (),
+    .sdi_gxb_powerdown            (),
+
+    // Inputs
+    .tx_sdi_serial                (sdi_tx_p),
+    .tx_pll_locked                (pll_locked),
+@@ if { $txclk_sw == 1 } {
+    .tx_pll_locked_alt            (pll_locked_alt),
+@@ } else {
+    .tx_pll_locked_alt            (1'b0),
+@@ }
+    .tx_ready                     (tx_ready),
+@@ if { $txclk_sw != 0 } {
+    .tx_clkout_match              (tb_test_control_tx_clkout_match),
+    .rx_check_posedge             (tb_rx_checker_rx_check_posedge),
+@@ } else {
+    .tx_clkout_match              (1'b0),
+    .rx_check_posedge             (1'b0),
+@@ }
+    .rx_chk_done                  (tb_rx_checker_rxcheck_done),
+    .rx_chk_completed             (tb_rx_checker_chk_completed),
+    .pattgen_dout                 (20'd0),
+    .pattgen_dvalid               (1'b0),
+    .pattgen_dout_b               (20'd0),
+    .pattgen_dvalid_b             (1'b0),
+    .pattgen_trs                  (1'b0),
+    .pattgen_trs_b                (1'b0),
+    .tx_sdi_serial_ch1_smpte372   (1'b0),
+    .tx_sdi_serial_ch1_smpte372_b (1'b0),
+    .tx_sdi_serial_b              (1'b0),
+    .rx_rst_proto                 (1'b0),
+    .rx_sdi_start_reconfig        (1'b0),
+    .rx_reconfig_busy             (1'b0),
+    .rx_chk_done_ch0              (2'b00),
+    .rx_chk_completed_ch0         (1'b0),
+
+    // Outputs
+    .pattgen_dl_mapping           (tb_test_control_pattgen_dl_mapping),
+    .pattgen_tx_std               (tb_test_control_pattgen_tx_std),
+    .pattgen_tx_format            (tb_test_control_pattgen_tx_format),
+    .tx_std                       (tb_test_control_tx_std),
+    .tx_status                    (tb_test_control_tx_status),
+    .rx_sdi_serial                (sdi_rx_p),
+    .tx_chk_tx_std                (tb_test_control_tx_chk_tx_std),
+    .tx_chk_start_chk             (tb_test_control_tx_chk_start_chk),
+    .rx_chk_start_chk             (tb_test_control_rx_chk_start_chk),
+    .rx_chk_dl_mapping            (tb_test_control_rx_chk_dl_mapping),
+    .rx_chk_tx_format             (tb_test_control_rx_chk_tx_format),
+@@ if { $txclk_sw != 0 } {
+    .tx_sdi_start_reconfig        (tx_sdi_start_reconfig),
+    .tx_sdi_pll_sel               (tb_test_control_tx_pll_select),
+@@ } else {
+    .tx_sdi_start_reconfig        (),
+    .tx_sdi_pll_sel               (),
+@@ }
+    .tx_enable_crc                (tb_test_control_tx_enable_crc),
+    .tx_enable_ln                 (tb_test_control_tx_enable_ln),
+    .tx_vpid_overwrite            (),
+    .pattgen_bar_100_75n          (),
+    .pattgen_patho                (),
+    .pattgen_blank                (),
+    .pattgen_no_color             (),
+    .pattgen_sgmt_frame           (),
+    .pattgen_ntsc_paln            (),
+    .tx_dout                      (),
+    .tx_dvalid                    (),
+    .tx_trs                       (),
+    .tx_dout_b                    (),
+    .tx_dvalid_b                  (),
+    .tx_trs_b                     (),
+    .rx_sdi_serial_ch0            (),
+    .rx_chk_start_chk_ch0         (),
+    .rx_sdi_serial_ch1_smpte372   (),
+    .rx_sdi_serial_ch1_smpte372_b (),
+    .rx_sdi_serial_b              ()
+);
+
+reset_sync #(
+    .NUM_RESET_INPUTS          (1),
+    .RESET_REQ_WAIT_TIME       (1),
+    .MIN_RST_ASSERTION_TIME    (3),
+    .RESET_REQ_EARLY_DSRT_TIME (1)
+) test_control_tx_rst_sync_inst (
+// Input Clock and reset
+    .reset_in0      (tb_test_control_tx_rst),
+    .clk            (sdi_tx_clkout),
+// Outputs
+    .reset_out      (tb_test_control_tx_rst_sync)
+);
+
+reset_sync #(
+    .NUM_RESET_INPUTS          (1),
+    .RESET_REQ_WAIT_TIME       (1),
+    .MIN_RST_ASSERTION_TIME    (3),
+    .RESET_REQ_EARLY_DSRT_TIME (1)
+) tx_readyn_sync_inst (
+// Input Clock and reset
+    .reset_in0      (~tx_ready),
+    .clk            (sdi_tx_clkout),
+// Outputs
+    .reset_out      (tx_readyn_sync)
+);
+
+sdi_ii_ed_vid_pattgen #(
+    .OUTW_MULTP          (NUM_STREAMS),
+    .SD_BIT_WIDTH        ($sd_bitw),
+@@ if { $pid_xtrct & !$pid_ins } {
+    .TEST_GEN_ANC        (1),
+    .TEST_GEN_VPID       (1),
+@@ } else {
+    .TEST_GEN_ANC        ($test_gen_anc),
+    .TEST_GEN_VPID       ($test_gen_vpid),
+@@ }
+    .TEST_VPID_PKT_COUNT ($test_vpid_pkt_count),
+    .TEST_ERR_VPID       ($test_err_vpid),
+    .TEST_VPID_OVERWRITE ($test_vpid_overwrite)
+) pattgen (
+    // Clocks and resets
+    .clk          (sdi_tx_clkout),
+    .rst          (tb_test_control_tx_rst_sync | tx_readyn_sync),
+
+    // Inputs
+    .enable       (sdi_tx_dataout_valid),
+    .tx_std       (tb_test_control_pattgen_tx_std),
+    .tx_format    (tb_test_control_pattgen_tx_format),
+    .dl_mapping   (tb_test_control_pattgen_dl_mapping),
+    .bar_100_75n  (1'b1),
+    .patho        (1'b0),
+    .blank        (1'b0),
+    .no_color     (1'b0),
+    .sgmt_frame   (1'b0),
+    .ntsc_paln    (1'b0),
+
+    // Outputs
+    .dout_valid   (pattgen_dout_valid),
+    .trs          (pattgen_trs),
+    .dout         (pattgen_dout),
+    .ln           (pattgen_ln),
+    .ln_b         (pattgen_ln_b),
+    .line_f0      (pattgen_line_f0),
+    .line_f1      (pattgen_line_f1),
+    .vpid_byte1   (pattgen_pid_byte1),
+    .vpid_byte2   (pattgen_pid_byte2),
+    .vpid_byte3   (pattgen_pid_byte3),
+    .vpid_byte4   (pattgen_pid_byte4),
+    .vpid_byte1_b (pattgen_pid_byte1_b),
+    .vpid_byte2_b (pattgen_pid_byte2_b),
+    .vpid_byte3_b (pattgen_pid_byte3_b),
+    .vpid_byte4_b (pattgen_pid_byte4_b),
+    .dout_b       (),
+    .dout_valid_b (),
+    .trs_b        ()
+);
+
+@@ if { $direction == "du" } {
+du_top #(
+    .NUM_STREAMS                    (NUM_STREAMS)
+) du_inst (
+// Clock and reset
+    .rx_resetn                      (~tb_test_control_rx_rst),
+    .tx_resetn                      (~tb_test_control_tx_rst),
+    .rx_cdr_refclk                  (tb_test_control_rx_xcvr_refclk),
+    .rx_core_refclk                 (tb_test_control_rx_coreclk),
+    .tx_pll_refclk                  (tb_test_control_tx_xcvr_refclk),
+@@ if { $txclk_sw != 0 } {
+    .tx_pll_refclk_alt              (tb_test_control_tx_xcvr_refclk_alt),
+@@ }
+    .tx_rcfg_mgmt_resetn            (~tb_test_control_reconfig_rst),
+    .tx_rcfg_mgmt_clk               (tb_test_control_reconfig_clk),
+    .rx_rcfg_mgmt_resetn            (~tb_test_control_reconfig_rst),
+    .rx_rcfg_mgmt_clk               (tb_test_control_reconfig_clk),
+
+// Inputs
+    .sdi_rx_coreclk_is_ntsc_paln    (1'b0),
+    .gxb_rx_serial_data             (sdi_rx_p),
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_rcfg_readdata               (rx_rcfg_readdata),
+    .rx_rcfg_waitrequest            (rx_rcfg_waitrequest),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .rx_rcfg_cal_busy               (rx_rcfg_cal_busy),
+    .gxb_du_rcfg_write              (gxb_rcfg_write),
+    .gxb_du_rcfg_read               (gxb_rcfg_read),
+    .gxb_du_rcfg_address            (gxb_rcfg_address),
+    .gxb_du_rcfg_writedata          (gxb_rcfg_writedata),
+    .tx_rcfg_cal_busy               (tx_rcfg_cal_busy),
+@@      }
+@@      if { $txclk_sw == 1 } {
+    .tx_rcfg_readdata               (tx_rcfg_readdata),
+    .tx_rcfg_waitrequest            (tx_rcfg_waitrequest),
+@@      }
+@@      if { $txclk_sw != 0 } {
+    .tx_pll_refclk_sel              (tb_test_control_tx_pll_select),
+@@      }
+    .tx_vid_data                    (pattgen_dout),
+    .tx_vid_datavalid               (pattgen_dout_valid),
+@@      if { $vid_std != "hd" } {
+    .tx_vid_std                     (tb_test_control_tx_std),
+@@      }
+    .tx_vid_trs                     (pattgen_trs),
+    .sdi_tx_enable_crc              (tb_test_control_tx_enable_crc),
+    .sdi_tx_enable_ln               (tb_test_control_tx_enable_ln),
+    .sdi_tx_ln                      (pattgen_ln),
+@@      if { $vid_std != "hd" } {
+    .sdi_tx_ln_b                    (pattgen_ln_b),
+@@      }
+@@      if { $pid_ins } {
+    .sdi_tx_vpid_overwrite          (1'b1),
+    .sdi_tx_line_f0                 (pattgen_line_f0),
+    .sdi_tx_line_f1                 (pattgen_line_f1),
+    .sdi_tx_vpid_byte1              (pattgen_pid_byte1),
+    .sdi_tx_vpid_byte2              (pattgen_pid_byte2),
+    .sdi_tx_vpid_byte3              (pattgen_pid_byte3),
+    .sdi_tx_vpid_byte4              (pattgen_pid_byte4),
+@@          if { $vid_std != "hd" } {
+    .sdi_tx_vpid_byte1_b            (pattgen_pid_byte1_b),
+    .sdi_tx_vpid_byte2_b            (pattgen_pid_byte2_b),
+    .sdi_tx_vpid_byte3_b            (pattgen_pid_byte3_b),
+    .sdi_tx_vpid_byte4_b            (pattgen_pid_byte4_b),
+@@          }
+@@      }
+@@      if { $ed_variant == 2 } {
+    // Testbench is not simulating any reconfig on PLL here
+    .tx_fpll_rcfg_write             (1'b0),
+    .tx_fpll_rcfg_read              (1'b0),
+    .tx_fpll_rcfg_writedata         (32'd0),
+    .tx_fpll_rcfg_address           (10'd0),
+
+// Outputs
+    .tx_fpll_rcfg_readdata          (),
+    .tx_fpll_rcfg_waitrequest       (),
+@@      } else {
+
+// Outputs
+@@      }
+    .rx_vid_clkout                  (sdi_rx_clkout),
+    .rx_vid_data                    (sdi_rx_dataout),
+    .rx_vid_datavalid               (sdi_rx_dataout_valid),
+@@      if { $vid_std != "hd" } {
+    .rx_vid_std                     (sdi_rx_std),
+@@      }
+    .rx_vid_locked                  (sdi_rx_frame_locked),
+    .rx_vid_hsync                   (sdi_rx_h),
+    .rx_vid_vsync                   (sdi_rx_v),
+    .rx_vid_f                       (sdi_rx_f),
+    .rx_vid_trs                     (sdi_rx_trs),
+    .sdi_rx_rst_proto_out           (),
+    .sdi_rx_align_locked            (sdi_rx_align_locked),
+    .sdi_rx_trs_locked              (sdi_rx_trs_locked),
+    .sdi_rx_clkout_is_ntsc_paln     (),
+    .sdi_rx_format                  (sdi_rx_format),
+    .sdi_rx_ap                      (sdi_rx_ap),
+    .sdi_rx_eav                     (sdi_rx_eav),
+    .sdi_rx_ln                      (sdi_rx_ln),
+@@      if { $vid_std != "hd" } {
+    .sdi_rx_ln_b                    (sdi_rx_ln_b),
+@@      }
+@@      if { $rx_crc } {
+    .sdi_rx_crc_error_c             (sdi_rx_crc_error_c),
+    .sdi_rx_crc_error_y             (sdi_rx_crc_error_y),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_crc_error_c_b           (sdi_rx_crc_error_c_b),
+    .sdi_rx_crc_error_y_b           (sdi_rx_crc_error_y_b),
+@@          }
+@@      }
+@@      if { $pid_xtrct } {
+    .sdi_rx_line_f0                 (sdi_rx_line_f0),
+    .sdi_rx_line_f1                 (sdi_rx_line_f1),
+    .sdi_rx_vpid_byte1              (sdi_rx_vpid_byte1),
+    .sdi_rx_vpid_byte2              (sdi_rx_vpid_byte2),
+    .sdi_rx_vpid_byte3              (sdi_rx_vpid_byte3),
+    .sdi_rx_vpid_byte4              (sdi_rx_vpid_byte4),
+    .sdi_rx_vpid_checksum_error     (sdi_rx_vpid_checksum_error),
+    .sdi_rx_vpid_valid              (sdi_rx_vpid_valid),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_vpid_byte1_b            (sdi_rx_vpid_byte1_b),
+    .sdi_rx_vpid_byte2_b            (sdi_rx_vpid_byte2_b),
+    .sdi_rx_vpid_byte3_b            (sdi_rx_vpid_byte3_b),
+    .sdi_rx_vpid_byte4_b            (sdi_rx_vpid_byte4_b),
+    .sdi_rx_vpid_checksum_error_b   (sdi_rx_vpid_checksum_error_b),
+    .sdi_rx_vpid_valid_b            (sdi_rx_vpid_valid_b),
+@@          }
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .cdr_reconfig_busy              (cdr_reconfig_busy),
+    .rx_rcfg_write                  (rx_rcfg_write),
+    .rx_rcfg_read                   (rx_rcfg_read),
+    .rx_rcfg_address                (rx_rcfg_address),
+    .rx_rcfg_writedata              (rx_rcfg_writedata),
+@@      }
+    .gxb_rx_ready                   (),
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_rx_cal_busy                (gxb_rx_cal_busy),
+    .gxb_du_rcfg_readdata           (gxb_du_rcfg_readdata),
+    .gxb_du_rcfg_waitrequest        (gxb_du_rcfg_waitrequest),
+    .gxb_tx_cal_busy                (gxb_tx_cal_busy),
+@@      }
+    .gxb_tx_serial_data             (sdi_tx_p),
+    .gxb_tx_ready                   (tx_ready),
+@@      if { $txclk_sw != 0 } {
+    .tx_reconfig_busy               (tx_reconfig_busy),
+@@      }
+    .tx_pll_locked                  (pll_locked),
+@@      if { $txclk_sw == 1 } {
+    .tx_pll_locked_alt              (pll_locked_alt),
+    .tx_rcfg_writedata              (tx_rcfg_writedata),
+    .tx_rcfg_address                (tx_rcfg_address),
+    .tx_rcfg_read                   (tx_rcfg_read),
+    .tx_rcfg_write                  (tx_rcfg_write),
+@@      }
+    .tx_vid_clkout                  (sdi_tx_clkout),
+    .sdi_tx_datavalid               (sdi_tx_dataout_valid)
+);
+@@ } else {
+tx_top #(
+    .NUM_STREAMS                    (NUM_STREAMS)
+) tx_inst (
+// Clocks and reset
+    .tx_resetn                      (~tb_test_control_tx_rst),
+    .tx_pll_refclk                  (tb_test_control_tx_xcvr_refclk),
+@@      if { $txclk_sw != 0 } {
+    .tx_pll_refclk_alt              (tb_test_control_tx_xcvr_refclk_alt),
+@@      }
+    .tx_rcfg_mgmt_clk               (tb_test_control_reconfig_clk),
+    .tx_rcfg_mgmt_resetn            (~tb_test_control_reconfig_rst),
+
+// Inputs
+@@      if { $txclk_sw != 0 } {
+    .tx_pll_refclk_sel              (tb_test_control_tx_pll_select),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .tx_rcfg_cal_busy               (tx_rcfg_cal_busy),
+@@      }
+    .tx_vid_data                    (pattgen_dout),
+    .tx_vid_datavalid               (pattgen_dout_valid),
+@@      if { $vid_std != "hd" } {
+    .tx_vid_std                     (tb_test_control_tx_std),
+@@      }
+    .tx_vid_trs                     (pattgen_trs),
+    .sdi_tx_enable_crc              (tb_test_control_tx_enable_crc),
+    .sdi_tx_enable_ln               (tb_test_control_tx_enable_ln),
+    .sdi_tx_ln                      (pattgen_ln),
+@@      if { $vid_std != "hd" } {
+    .sdi_tx_ln_b                    (pattgen_ln_b),
+@@      }
+@@      if { $pid_ins } {
+    .sdi_tx_vpid_overwrite          (1'b1),
+    .sdi_tx_line_f0                 (pattgen_line_f0),
+    .sdi_tx_line_f1                 (pattgen_line_f1),
+    .sdi_tx_vpid_byte1              (pattgen_pid_byte1),
+    .sdi_tx_vpid_byte2              (pattgen_pid_byte2),
+    .sdi_tx_vpid_byte3              (pattgen_pid_byte3),
+    .sdi_tx_vpid_byte4              (pattgen_pid_byte4),
+@@          if { $vid_std != "hd" } {
+    .sdi_tx_vpid_byte1_b            (pattgen_pid_byte1_b),
+    .sdi_tx_vpid_byte2_b            (pattgen_pid_byte2_b),
+    .sdi_tx_vpid_byte3_b            (pattgen_pid_byte3_b),
+    .sdi_tx_vpid_byte4_b            (pattgen_pid_byte4_b),
+@@          }
+@@      }
+@@      if { $txclk_sw == 1 } {
+    .tx_rcfg_readdata               (tx_rcfg_readdata),
+    .tx_rcfg_waitrequest            (tx_rcfg_waitrequest),
+    .gxb_tx_rcfg_write              (gxb_rcfg_write),
+    .gxb_tx_rcfg_read               (gxb_rcfg_read),
+    .gxb_tx_rcfg_address            (gxb_rcfg_address),
+    .gxb_tx_rcfg_writedata          (gxb_rcfg_writedata),
+@@      }
+@@      if { $ed_variant == 2 } {
+    // Testbench is not simulating any reconfig on PLL here
+    .tx_fpll_rcfg_write             (1'b0),
+    .tx_fpll_rcfg_read              (1'b0),
+    .tx_fpll_rcfg_writedata         (32'd0),
+    .tx_fpll_rcfg_address           (10'd0),
+
+// Outputs
+    .tx_fpll_rcfg_readdata          (),
+    .tx_fpll_rcfg_waitrequest       (),
+@@      } else {
+
+// Outputs
+@@      }
+    .tx_vid_clkout                  (sdi_tx_clkout),
+@@      if { $txclk_sw != 0 } {
+    .tx_reconfig_busy               (tx_reconfig_busy),
+@@      }
+    .tx_pll_locked                  (pll_locked),
+@@      if { $txclk_sw == 1 } {
+    .tx_pll_locked_alt              (pll_locked_alt),
+    .tx_rcfg_writedata              (tx_rcfg_writedata),
+    .tx_rcfg_address                (tx_rcfg_address),
+    .tx_rcfg_read                   (tx_rcfg_read),
+    .tx_rcfg_write                  (tx_rcfg_write),
+    .gxb_tx_rcfg_readdata           (gxb_tx_rcfg_readdata),
+    .gxb_tx_rcfg_waitrequest        (gxb_tx_rcfg_waitrequest),
+@@      }
+    .gxb_tx_serial_data             (sdi_tx_p),
+    .gxb_tx_ready                   (tx_ready),
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_tx_cal_busy                (gxb_tx_cal_busy),
+@@      }
+    .sdi_tx_datavalid               (sdi_tx_dataout_valid)
+);
+
+rx_top #(
+    .NUM_STREAMS                    (NUM_STREAMS)
+) rx_inst (
+// Clock and reset
+    .rx_resetn                      (~tb_test_control_rx_rst),
+    .rx_core_refclk                 (tb_test_control_rx_coreclk),
+    .rx_cdr_refclk                  (tb_test_control_rx_xcvr_refclk),
+    .rx_rcfg_mgmt_resetn            (~tb_test_control_reconfig_rst),
+    .rx_rcfg_mgmt_clk               (tb_test_control_reconfig_clk),
+
+// Inputs
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .rx_rcfg_cal_busy               (rx_rcfg_cal_busy),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_rcfg_readdata               (rx_rcfg_readdata),
+    .rx_rcfg_waitrequest            (rx_rcfg_waitrequest),
+    .gxb_rx_rcfg_write              (gxb_rcfg_write),
+    .gxb_rx_rcfg_read               (gxb_rcfg_read),
+    .gxb_rx_rcfg_address            (gxb_rcfg_address),
+    .gxb_rx_rcfg_writedata          (gxb_rcfg_writedata),
+@@      }
+    .gxb_rx_serial_data             (sdi_rx_p),
+    .sdi_rx_coreclk_is_ntsc_paln    (1'b0),
+
+// Outputs
+    .rx_vid_clkout                  (sdi_rx_clkout),
+    .rx_vid_data                    (sdi_rx_dataout),
+    .rx_vid_datavalid               (sdi_rx_dataout_valid),
+@@      if { $vid_std != "hd" } {
+    .rx_vid_std                     (sdi_rx_std),
+@@      }
+    .rx_vid_locked                  (sdi_rx_frame_locked),
+    .rx_vid_hsync                   (sdi_rx_h),
+    .rx_vid_vsync                   (sdi_rx_v),
+    .rx_vid_f                       (sdi_rx_f),
+    .rx_vid_trs                     (sdi_rx_trs),
+    .sdi_rx_rst_proto_out           (),
+    .sdi_rx_align_locked            (sdi_rx_align_locked),
+    .sdi_rx_trs_locked              (sdi_rx_trs_locked),
+    .sdi_rx_clkout_is_ntsc_paln     (),
+    .sdi_rx_format                  (sdi_rx_format),
+    .sdi_rx_ap                      (sdi_rx_ap),
+    .sdi_rx_eav                     (sdi_rx_eav),
+    .sdi_rx_ln                      (sdi_rx_ln),
+@@      if { $vid_std != "hd" } {
+    .sdi_rx_ln_b                    (sdi_rx_ln_b),
+@@      }
+@@      if { $rx_crc } {
+    .sdi_rx_crc_error_c             (sdi_rx_crc_error_c),
+    .sdi_rx_crc_error_y             (sdi_rx_crc_error_y),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_crc_error_c_b           (sdi_rx_crc_error_c_b),
+    .sdi_rx_crc_error_y_b           (sdi_rx_crc_error_y_b),
+@@          }
+@@      }
+@@      if { $pid_xtrct } {
+    .sdi_rx_line_f0                 (sdi_rx_line_f0),
+    .sdi_rx_line_f1                 (sdi_rx_line_f1),
+    .sdi_rx_vpid_byte1              (sdi_rx_vpid_byte1),
+    .sdi_rx_vpid_byte2              (sdi_rx_vpid_byte2),
+    .sdi_rx_vpid_byte3              (sdi_rx_vpid_byte3),
+    .sdi_rx_vpid_byte4              (sdi_rx_vpid_byte4),
+    .sdi_rx_vpid_checksum_error     (sdi_rx_vpid_checksum_error),
+    .sdi_rx_vpid_valid              (sdi_rx_vpid_valid),
+@@          if { $vid_std != "hd" } {
+    .sdi_rx_vpid_byte1_b            (sdi_rx_vpid_byte1_b),
+    .sdi_rx_vpid_byte2_b            (sdi_rx_vpid_byte2_b),
+    .sdi_rx_vpid_byte3_b            (sdi_rx_vpid_byte3_b),
+    .sdi_rx_vpid_byte4_b            (sdi_rx_vpid_byte4_b),
+    .sdi_rx_vpid_checksum_error_b   (sdi_rx_vpid_checksum_error_b),
+    .sdi_rx_vpid_valid_b            (sdi_rx_vpid_valid_b),
+@@          }
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .cdr_reconfig_busy              (cdr_reconfig_busy),
+    .rx_rcfg_write                  (rx_rcfg_write),
+    .rx_rcfg_read                   (rx_rcfg_read),
+    .rx_rcfg_address                (rx_rcfg_address),
+    .rx_rcfg_writedata              (rx_rcfg_writedata),
+    .gxb_rx_rcfg_readdata           (gxb_rx_rcfg_readdata),
+    .gxb_rx_rcfg_waitrequest        (gxb_rx_rcfg_waitrequest),
+@@      }
+@@      if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1 } {
+    .gxb_rx_cal_busy                (gxb_rx_cal_busy),
+@@      }
+    .gxb_rx_ready                   ()
+);
+@@ }
+
+@@ if { $vid_std == "tr" || $vid_std == "mr" || $txclk_sw == 1  } {
+// -------------------------------------------------------------------------
+// Transceiver Reconfiguration Arbiter
+// -------------------------------------------------------------------------
+a10_reconfig_arbiter #(
+    .LANES                 (1),
+    .DPRIO_ADDRESS_WIDTH  (10), 
+    .DPRIO_DATA_WIDTH     (32)
+) u_rcfg_arb(
+// Clocks and reset
+    .clk                            (tb_test_control_reconfig_clk),
+    .reset                          (tb_test_control_reconfig_rst),
+// Inputs
+    .rx_rcfg_ch                     (2'b00),
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_rcfg_en                     (cdr_reconfig_busy),
+    .rx_reconfig_mgmt_write         (rx_rcfg_write),
+    .rx_reconfig_mgmt_read          (rx_rcfg_read),
+    .rx_reconfig_mgmt_address       (rx_rcfg_address),
+    .rx_reconfig_mgmt_writedata     (rx_rcfg_writedata),
+@@          if { $direction == "du" } {
+    .rx_reconfig_readdata           (gxb_du_rcfg_readdata),
+    .rx_reconfig_waitrequest        (gxb_du_rcfg_waitrequest),
+@@          } else {
+    .rx_reconfig_readdata           (gxb_rx_rcfg_readdata),
+    .rx_reconfig_waitrequest        (gxb_rx_rcfg_waitrequest),
+@@          }
+@@      } else {
+    .rx_rcfg_en                     (1'b0),
+    .rx_reconfig_mgmt_write         (1'b0),
+    .rx_reconfig_mgmt_read          (1'b0),
+    .rx_reconfig_mgmt_address       (10'd0),
+    .rx_reconfig_mgmt_writedata     (32'd0),
+    .rx_reconfig_readdata           (32'd0),
+    .rx_reconfig_waitrequest        (1'b0),
+@@      }
+    .rx_cal_busy                    (gxb_rx_cal_busy),
+    .tx_rcfg_ch                     (2'b00),
+@@      if { $txclk_sw == 1  } {
+    .tx_rcfg_en                     (tx_reconfig_busy),
+    .tx_reconfig_mgmt_write         (tx_rcfg_write),
+    .tx_reconfig_mgmt_read          (tx_rcfg_read),
+    .tx_reconfig_mgmt_address       (tx_rcfg_address),
+    .tx_reconfig_mgmt_writedata     (tx_rcfg_writedata),
+@@          if { $direction == "du" } {
+    .tx_reconfig_readdata           (gxb_du_rcfg_readdata),
+    .tx_reconfig_waitrequest        (gxb_du_rcfg_waitrequest),
+@@          } else {
+    .tx_reconfig_readdata           (gxb_tx_rcfg_readdata),
+    .tx_reconfig_waitrequest        (gxb_tx_rcfg_waitrequest),
+@@          }
+@@      } else {
+    .tx_rcfg_en                     (1'b0),
+    .tx_reconfig_mgmt_write         (1'b0),
+    .tx_reconfig_mgmt_read          (1'b0),
+    .tx_reconfig_mgmt_address       (10'd0),
+    .tx_reconfig_mgmt_writedata     (32'd0),
+    .tx_reconfig_readdata           (32'd0),
+    .tx_reconfig_waitrequest        (1'b0),
+@@      }
+    .tx_cal_busy                    (gxb_tx_cal_busy),
+
+// Outputs
+@@      if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_reconfig_mgmt_readdata      (rx_rcfg_readdata),
+    .rx_reconfig_mgmt_waitrequest   (rx_rcfg_waitrequest),
+@@      } else {
+    .rx_reconfig_mgmt_readdata      (),
+    .rx_reconfig_mgmt_waitrequest   (),
+@@ }
+    .rx_reconfig_cal_busy           (rx_rcfg_cal_busy),
+@@      if { $txclk_sw == 1  } {
+    .tx_reconfig_mgmt_readdata      (tx_rcfg_readdata),
+    .tx_reconfig_mgmt_waitrequest   (tx_rcfg_waitrequest),
+@@      } else {
+    .tx_reconfig_mgmt_readdata      (),
+    .tx_reconfig_mgmt_waitrequest   (),
+@@      }
+    .tx_reconfig_cal_busy           (tx_rcfg_cal_busy),
+    .reconfig_write                 (gxb_rcfg_write),
+    .reconfig_read                  (gxb_rcfg_read),
+    .reconfig_address               (gxb_rcfg_address),
+    .reconfig_writedata             (gxb_rcfg_writedata)
+);
+@@ }
+
+sdi_ii_tb_tx_checker #(
+    .FAMILY               ("Arria 10"),
+    .VIDEO_STANDARD       ("$vid_std"),
+    .RX_INC_ERR_TOLERANCE ($err_tol),
+    .RX_EN_A2B_CONV       (0),
+    .RX_EN_B2A_CONV       (0)
+) tb_tx_checker (
+    // Clocks and resets
+    .ref_clk         (tb_test_control_tx_chk_refclk),
+    
+    // Inputs
+    .sdi_serial      (sdi_tx_p),
+    .sdi_serial_b    (1'b0),
+    .tx_status       (tb_test_control_tx_status),
+    .chk_tx          (tb_test_control_tx_chk_start_chk),
+    .tx_std          (tb_test_control_tx_chk_tx_std),
+@@ if { $txclk_sw != 0 } {
+    .tx_clkout       (sdi_tx_clkout),
+
+    // Outputs
+    .tx_clkout_match (tb_test_control_tx_clkout_match)
+@@ } else {
+    .tx_clkout       (1'b0),
+
+    // Outputs
+    .tx_clkout_match ()
+@@ }
+);
+
+sdi_ii_tb_rx_checker #(
+    .FAMILY               ("Arria 10"),
+    .VIDEO_STANDARD       ("$vid_std"),
+    .SD_BIT_WIDTH         ($sd_bitw),
+    .DIRECTION            ("$direction"),
+    .RX_INC_ERR_TOLERANCE ($err_tol),
+    .RX_CRC_ERROR_OUTPUT  ($rx_crc),
+@@  if { $vid_std != "mr" } {
+    .RX_EN_VPID_EXTRACT   ($pid_xtrct),
+@@  } else {
+    .RX_EN_VPID_EXTRACT   (0),
+@@ }
+    .RX_EN_A2B_CONV       (0),
+    .RX_EN_B2A_CONV       (0),
+    .TX_EN_VPID_INSERT    ($pid_ins),
+    .ED_TXPLL_SWITCH      ($txclk_sw),
+@@  if { $vid_std != "mr" } {
+    .TEST_LN_OUTPUT       ($test_ln_output),
+@@  } else {
+    .TEST_LN_OUTPUT       (0),
+@@ }
+    .TEST_SYNC_OUTPUT     ($test_sync_output),
+    .TEST_DISTURB_SERIAL  ($test_disturb_serial),
+    .TEST_DATA_COMPARE    ($test_data_compare),
+    .TEST_DL_SYNC         ($test_dl_sync),
+    .TEST_TRS_LOCKED      ($test_trs_locked),
+    .TEST_FRAME_LOCKED    ($test_frame_locked),
+    .TEST_VPID_OVERWRITE  ($test_vpid_overwrite),
+    .TEST_RESET_RECON     ($test_reset_recon),
+    .TEST_RST_PRE_OW      ($test_rst_pre_ow),
+    .TEST_RXSAMPLE_CHK    ($test_rxsample_chk),
+@@ if { $pid_xtrct & !$pid_ins } {
+    .TEST_GEN_ANC         (1),
+    .TEST_GEN_VPID        (1),
+@@ } else {
+    .TEST_GEN_ANC         ($test_gen_anc),
+    .TEST_GEN_VPID        ($test_gen_vpid),
+@@ }
+    .TEST_VPID_PKT_COUNT  ($test_vpid_pkt_count),
+    .TEST_ERR_VPID        ($test_err_vpid),
+    .CH_NUMBER            (1)
+) tb_rx_checker (
+    // Clocks and resets
+    .rx_clk                   (sdi_rx_clkout),
+    .rx_refclk                (tb_test_control_rx_chk_refclk),
+    .ref_rst                  (tb_test_control_rx_chk_rst),
+@@ if { $test_data_compare } {
+    .tx_clk                   (sdi_tx_clkout),
+@@ } else {
+    .tx_clk                   (1'b0),
+@@ }
+    
+    // Inputs
+    .align_locked             (sdi_rx_align_locked),
+    .trs_locked               (sdi_rx_trs_locked),
+    .frame_locked             (sdi_rx_frame_locked),
+    .rxdata_valid             (sdi_rx_dataout_valid),
+    .dl_mapping               (tb_test_control_rx_chk_dl_mapping),
+    .chk_rx                   (tb_test_control_rx_chk_start_chk),
+    .tx_format                (tb_test_control_rx_chk_tx_format),
+    .tx_std                   (tb_test_control_tx_std),
+@@ if { $vid_std == "tr" || $vid_std == "mr" } {
+    .rx_sdi_start_reconfig    (cdr_reconfig_busy),
+@@ } else {
+    .rx_sdi_start_reconfig    (1'b0),
+@@ }
+@@ if { $txclk_sw != 0 } {
+    .tx_sdi_start_reconfig    (tx_sdi_start_reconfig),
+    .tx_sdi_reconfig_done     (tx_reconfig_busy),
+@@ } else {
+    .tx_sdi_start_reconfig    (1'b0),
+    .tx_sdi_reconfig_done     (1'b0),
+@@ }
+    .rx_f                     (sdi_rx_f),
+    .rx_v                     (sdi_rx_v),
+    .rx_h                     (sdi_rx_h),
+    .rx_ap                    (sdi_rx_ap),
+    .rxdata                   (sdi_rx_dataout),
+    .rx_ln                    (sdi_rx_ln),
+@@ if { $vid_std != "hd" } {
+    .rx_ln_b                  (sdi_rx_ln_b),
+    .rx_std                   (sdi_rx_std),
+@@ } else {
+    .rx_ln_b                  (11'd0),
+    .rx_std                   (3'b001),
+@@ }
+@@ if { $pid_xtrct } {
+    .rx_vpid_byte1            (sdi_rx_vpid_byte1),
+    .rx_vpid_byte2            (sdi_rx_vpid_byte2),
+    .rx_vpid_byte3            (sdi_rx_vpid_byte3),
+    .rx_vpid_byte4            (sdi_rx_vpid_byte4),
+    .rx_vpid_valid            (sdi_rx_vpid_valid),
+    .rx_vpid_checksum_error   (sdi_rx_vpid_checksum_error),
+    .rx_line_f0               (sdi_rx_line_f0),
+    .rx_line_f1               (sdi_rx_line_f1),
+@@      if { $vid_std != "hd" } {
+    .rx_vpid_byte1_b          (sdi_rx_vpid_byte1_b),
+    .rx_vpid_byte2_b          (sdi_rx_vpid_byte2_b),
+    .rx_vpid_byte3_b          (sdi_rx_vpid_byte3_b),
+    .rx_vpid_byte4_b          (sdi_rx_vpid_byte4_b),
+    .rx_vpid_valid_b          (sdi_rx_vpid_valid_b),
+    .rx_vpid_checksum_error_b (sdi_rx_vpid_checksum_error_b),
+@@      } else {
+    .rx_vpid_byte1_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte2_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte3_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte4_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_valid_b          ({NUM_STREAMS{1'b0}}),
+    .rx_vpid_checksum_error_b ({NUM_STREAMS{1'b0}}),
+@@      }
+@@ } else {
+    .rx_vpid_byte1            ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte2            ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte3            ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte4            ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_valid            ({NUM_STREAMS{1'b0}}),
+    .rx_vpid_checksum_error   ({NUM_STREAMS{1'b0}}),
+    .rx_line_f0               ({11*NUM_STREAMS{1'b0}}),
+    .rx_line_f1               ({11*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte1_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte2_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte3_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_byte4_b          ({8*NUM_STREAMS{1'b0}}),
+    .rx_vpid_valid_b          ({NUM_STREAMS{1'b0}}),
+    .rx_vpid_checksum_error_b ({NUM_STREAMS{1'b0}}),
+@@ }
+    .align_locked_b           (1'b0),
+    .trs_locked_b             (1'b0),
+    .dl_locked                (1'b0),
+    .frame_locked_b           (1'b0),
+    .rxdata_b                 (20'd0),
+    .rxdata_valid_b           (1'b0),
+    .rx_format                (sdi_rx_format),
+@@ if { $test_data_compare } {
+    .txdata                   (pattgen_dout),
+    .txdata_valid             (pattgen_dout_valid),
+@@ } else {
+    .txdata                   ({20*NUM_STREAMS{1'b0}}),
+    .txdata_valid             (1'b0),
+@@ }
+    .txdata_b                 (20'd0),
+    .txdata_valid_b           (1'b0),
+@@ if { $test_trs_locked || $test_frame_locked } {
+    .rx_trs                   (sdi_rx_trs),
+    .rx_eav                   (sdi_rx_eav),
+@@ } else {
+    .rx_trs                   ({NUM_STREAMS{1'b0}}),
+    .rx_eav                   ({NUM_STREAMS{1'b0}}),
+@@ }
+@@ if { $rx_crc } {
+    .rx_crc_error_c           (sdi_rx_crc_error_c),
+    .rx_crc_error_y           (sdi_rx_crc_error_y),
+@@      if { $vid_std != "hd" } {
+    .rx_crc_error_c_b         (sdi_rx_crc_error_c_b),
+    .rx_crc_error_y_b         (sdi_rx_crc_error_y_b),
+@@      } else {
+    .rx_crc_error_c_b         ({NUM_STREAMS{1'b0}}),
+    .rx_crc_error_y_b         ({NUM_STREAMS{1'b0}}),
+@@      }
+@@ } else {
+    .rx_crc_error_c           ({NUM_STREAMS{1'b0}}),
+    .rx_crc_error_y           ({NUM_STREAMS{1'b0}}),
+    .rx_crc_error_c_b         ({NUM_STREAMS{1'b0}}),
+    .rx_crc_error_y_b         ({NUM_STREAMS{1'b0}}),
+@@ }
+
+    // Outputs
+    .rxcheck_done             (tb_rx_checker_rxcheck_done),
+    .chk_completed            (tb_rx_checker_chk_completed),
+@@ if { $txclk_sw != 0 } {
+    .rx_check_posedge         (tb_rx_checker_rx_check_posedge)
+@@ } else {
+    .rx_check_posedge         ()
+@@ }
+);
+
+endmodule

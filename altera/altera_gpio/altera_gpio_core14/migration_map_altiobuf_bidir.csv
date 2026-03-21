@@ -1,0 +1,28 @@
+CONDITION,DO
+,"set_new_param PIN_TYPE_GUI ""Bidir"""
+,set_new_param SIZE [get_old_param number_of_channels]
+,set_new_param gui_diff_buff [get_old_param use_differential_mode]
+,"set_new_param gui_pseudo_diff ""false"""
+,set_new_param gui_bus_hold [get_old_param enable_bus_hold]
+,set_new_param gui_open_drain [get_old_param open_drain_output]
+,"set_new_param gui_io_reg_mode ""none"""
+,"set_new_param gui_hr_logic ""false"""
+,"set_new_param gui_separate_io_clks ""false"""
+,"set_new_param gui_areset_mode ""None"""
+,"set_new_param gui_sreset_mode ""None"""
+,set_new_param device_family [get_old_param INTENDED_DEVICE_FAMILY]
+,"set_new_param gui_use_oe ""true"""
+"[exists_old_param use_termination_control] && [get_old_param use_termination_control] == ""TRUE""","set_new_param gui_enable_termination_ports ""true"""
+"[exists_old_param use_termination_control] && [get_old_param use_termination_control] == ""FALSE""","set_new_param gui_enable_termination_ports ""false"""
+"[exists_old_param use_dynamic_termination_control] && [get_old_param use_dynamic_termination_control] == ""TRUE""","croak ""Dynamic termination is not supported in Altera GPIO. Please use Altera PHYLite for Bidir dynamic termination"""
+"[exists_old_param use_in_dynamic_delay_chain] && [get_old_param use_in_dynamic_delay_chain] == ""TRUE""","croak ""Dynamic delay chains are not supported in Altera GPIO"""
+"[exists_old_param use_out_dynamic_delay_chain1] && [get_old_param use_out_dynamic_delay_chain1] == ""TRUE""","croak ""Dynamic delay chains are not supported in Altera GPIO"""
+"[exists_old_param use_out_dynamic_delay_chain2] && [get_old_param use_out_dynamic_delay_chain2] == ""TRUE""","croak ""Dynamic delay chains are not supported in Altera GPIO"""
+,"set_new_param gui_enable_cke ""false"""
+,ignore_new_param EXT_DRIVER_PARAM
+,ignore_new_param GENERATE_SDC_FILE
+,ignore_new_param AUTO_DEVICE
+,ignore_new_param AUTO_BASE_DEVICE
+,ignore_new_param AUTO_DEVICE_SPEEDGRADE
+,"set_new_param gui_enable_migratable_port_names ""true"""
+,"set_new_param IP_MIGRATE_PORT_MAP_FILE ""altiobuf_bidir_port_map.csv"""

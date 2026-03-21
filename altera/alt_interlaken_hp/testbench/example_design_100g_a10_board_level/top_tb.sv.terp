@@ -1,0 +1,124 @@
+// (C) 2001-2018 Intel Corporation. All rights reserved.
+// Your use of Intel Corporation's design tools, logic functions and other 
+// software and tools, and its AMPP partner logic functions, and any output 
+// files from any of the foregoing (including device programming or simulation 
+// files), and any associated documentation or information are expressly subject 
+// to the terms and conditions of the Intel Program License Subscription 
+// Agreement, Intel FPGA IP License Agreement, or other applicable 
+// license agreement, including, without limitation, that your use is for the 
+// sole purpose of programming logic devices manufactured by Intel and sold by 
+// Intel or its authorized distributors.  Please refer to the applicable 
+// agreement for further details.
+
+
+//*********************************************************** 
+// The top level sim file
+// define chan_pll_period: 412.5 MHz for 12x10G
+//                         312.5 MHz for 12x12G 24x6G 8x6G 
+// Notes: define: pll_ref_clk NUM_LANES
+//*********************************************************** 
+
+`timescale 1 ps / 1 ps
+
+module top_tb ();
+
+   reg chan_pll_ref_clk = 1'b0;
+   reg serv_pll_ref_clk = 1'b0;
+
+   parameter TB_CNTR_BITS            = 6;
+   parameter TB_FAMILY              = ${family_select};
+   parameter TB_TX_PKTMOD_ONLY      = ${tx_packet_mode};      //Set to 1, testbench will generate traffic in packet mode. Otherwise will be segment mode.
+   parameter TB_RX_PKTMOD_ONLY      = 1;
+   parameter TB_INT_TX_CLK_DIV      = ${clk_div};
+   parameter TB_NUM_LANES           = ${num_lane};
+   parameter TB_METALEN             = 128;
+   // parameter TB_SYS_CLK_PERIOD      = 20000;
+   parameter TB_TX_DUAL_SEG         = ${rx_dual_segment};
+   parameter TB_CALENDAR_PAGES      = ${cal_pages};
+   parameter TB_LOG_CALENDAR_PAGES  = ${log_cal_pages};
+   parameter TB_DATA_RATE           = ${data_rate};
+   parameter TB_PLL_OUT_FREQ        = ${pll_out_freq};
+   parameter TB_PLL_REFCLK_FREQ     = ${pll_ref_clk_freq}; // PLL reference clock frequency; should match the one in ilk_core
+   parameter TB_REF_CLK_PERIOD      = (TB_PLL_REFCLK_FREQ == "206.25 MHz")     ? 4848 : // PLL reference clock period;								  
+                                      (TB_PLL_REFCLK_FREQ == "257.8125 MHz")   ? 3878 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "322.265625 MHz") ? 3103 : // PLL reference clock period;									  
+                                      (TB_PLL_REFCLK_FREQ == "322.265625 MHz") ? 3103 : // PLL reference clock period;									  
+                                      (TB_PLL_REFCLK_FREQ == "412.5 MHz")      ? 2424 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "515.625 MHz")    ? 1939 : // PLL reference clock period;								  
+                                      (TB_PLL_REFCLK_FREQ == "644.53125 MHz")  ? 1551 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "156.25 MHz")     ? 6400 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "195.3125 MHz")   ? 5120 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "250.0 MHz")      ? 4000 : // PLL reference clock period;								  
+                                      (TB_PLL_REFCLK_FREQ == "312.5 MHz")      ? 3200 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "390.625 MHz")    ? 2560 : // PLL reference clock period;									  
+                                      (TB_PLL_REFCLK_FREQ == "500.0 MHz")      ? 2000 : // PLL reference clock period;
+                                      (TB_PLL_REFCLK_FREQ == "625.0 MHz")      ? 1600 : // PLL reference clock period;								  
+                                      1;                                           // PLL reference clock frequency either not set or set to wrong value
+   	parameter TB_REF_CLK_PERIOD_HALF= (TB_REF_CLK_PERIOD/2);	
+   ////////////////////////////////////////////
+
+   wire [TB_NUM_LANES-1:0]              pin;
+   wire                              fc_clk;
+   wire                              fc_data;
+   wire                              fc_sync;
+
+   example_design #(
+    .SIM_FAKE_JTAG          (1'b1                   ),
+    .USE_RECO_CTRL          (0                      ),
+    .CNTR_BITS              (TB_CNTR_BITS           ),
+    .RX_PKTMOD_ONLY         (TB_RX_PKTMOD_ONLY      ),
+    .TX_PKTMOD_ONLY         (TB_TX_PKTMOD_ONLY      ),
+    .NUM_LANES              (TB_NUM_LANES           ),
+    .METALEN                (TB_METALEN             ),
+    // .TX_DUAL_SEG            (TB_TX_DUAL_SEG         ),
+    .CALENDAR_PAGES         (TB_CALENDAR_PAGES      ),
+    .LOG_CALENDAR_PAGES     (TB_LOG_CALENDAR_PAGES  ),
+    .DATA_RATE              (TB_DATA_RATE           )
+    // .PLL_OUT_FREQ           (TB_PLL_OUT_FREQ        ),
+    // .PLL_REFCLK_FREQ        (TB_PLL_REFCLK_FREQ     )
+	
+	
+   ) example_design_inst (
+    .clk50                            (serv_pll_ref_clk),
+    .pll_ref_clk                      (chan_pll_ref_clk),
+    .rx_pin                           (pin),
+    // .rx_pin                           (),                 //KEEP floating
+    .tx_pin                           (pin),
+
+    .tx_fc_clk                        (fc_clk),
+    .tx_fc_data                       (fc_data),
+    .tx_fc_sync                       (fc_sync),
+
+    .rx_fc_clk                        (fc_clk),
+    .rx_fc_data                       (fc_data),
+    .rx_fc_sync                       (fc_sync)
+   );
+
+   initial begin
+     time serv_pll_period;
+     //serv_pll_period = str2hz(example_design_inst.test_env.test_infra.serv_pll.reference_clock_frequency);
+     //serv_pll_period = str2hz("50.0 MHz");
+     while (1) begin
+       serv_pll_ref_clk = 1'b0;
+	   #(10000);
+	   
+       serv_pll_ref_clk = 1'b1;
+	   #(10000);
+     end
+   end
+
+   initial begin
+     time chan_pll_period;
+     //chan_pll_period = str2hz(example_design_inst.test_env.test_dut.dut.hah.PLL_REFCLK_FREQ);
+     //chan_pll_period = str2hz(example_design_inst.test_env.test_dut.dut.PLL_REFCLK_FREQ);
+     //chan_pll_period = str2hz(TB_PLL_REFCLK_FREQ);
+     while (1) begin
+       chan_pll_ref_clk = 1'b0;
+	    #(TB_REF_CLK_PERIOD_HALF);
+		
+       chan_pll_ref_clk = 1'b1;
+	   #(TB_REF_CLK_PERIOD_HALF);
+     end
+   end
+
+endmodule
