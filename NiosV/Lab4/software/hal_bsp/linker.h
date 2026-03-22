@@ -4,7 +4,7 @@
  * Machine generated for CPU 'NiosV' in SOPC Builder design 'NiosV'
  * SOPC Builder design path: /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/NiosV.sopcinfo
  *
- * Generated: Sat Mar 21 20:50:41 CST 2026
+ * Generated: Sun Mar 22 10:25:40 CST 2026
  */
 
 /*
@@ -65,12 +65,12 @@
  *
  */
 
-#define RAM_REGION_BASE 0x4000020
-#define RAM_REGION_SPAN 491488
-#define RESET_REGION_BASE 0x4000000
+#define RAM_REGION_BASE 0x4000000
+#define RAM_REGION_SPAN 491520
+#define RESET_REGION_BASE 0x0
 #define RESET_REGION_SPAN 32
-#define SDRAM_REGION_BASE 0x0
-#define SDRAM_REGION_SPAN 67108864
+#define SDRAM_REGION_BASE 0x20
+#define SDRAM_REGION_SPAN 67108832
 
 
 /*
@@ -79,7 +79,7 @@
  */
 
 #define ALT_EXCEPTIONS_DEVICE SDRAM
-#define ALT_RESET_DEVICE RAM
+#define ALT_RESET_DEVICE SDRAM
 #define ALT_RODATA_DEVICE SDRAM
 #define ALT_RWDATA_DEVICE SDRAM
 #define ALT_TEXT_DEVICE SDRAM

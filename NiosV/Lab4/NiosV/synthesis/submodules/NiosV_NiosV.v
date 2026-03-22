@@ -73,7 +73,7 @@ module NiosV_NiosV (
 	wire    hart_sw_irq_rx_irq;           // irq_mapper_002:sender_irq -> hart:irq_sw
 
 	NiosV_NiosV_hart #(
-		.RESET_VECTOR    (32'b00000100000000000000000000000000),
+		.RESET_VECTOR    (32'b00000000000000000000000000000000),
 		.DBG_EXPN_VECTOR (32'b00000100000010000000000000000000),
 		.HARTID          (32'b00000000000000000000000000000000),
 		.CORE_EXTN       (256),

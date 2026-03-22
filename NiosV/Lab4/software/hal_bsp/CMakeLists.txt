@@ -115,6 +115,9 @@ target_sources("${BspLibraryName}"
         drivers/src/altera_avalon_jtag_uart_read.c
         drivers/src/altera_avalon_jtag_uart_write.c
         drivers/src/altera_avalon_sysid_qsys.c
+        drivers/src/altera_avalon_timer_sc.c
+        drivers/src/altera_avalon_timer_ts.c
+        drivers/src/altera_avalon_timer_vars.c
     PUBLIC
         HAL/inc/alt_niosv_int_mode.h
         HAL/inc/alt_types.h
@@ -181,6 +184,8 @@ target_sources("${BspLibraryName}"
         drivers/inc/altera_avalon_pio_regs.h
         drivers/inc/altera_avalon_sysid_qsys.h
         drivers/inc/altera_avalon_sysid_qsys_regs.h
+        drivers/inc/altera_avalon_timer.h
+        drivers/inc/altera_avalon_timer_regs.h
         system.h
 )
 

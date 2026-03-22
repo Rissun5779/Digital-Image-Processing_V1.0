@@ -20,20 +20,20 @@ preplace inst NiosV -pg 1 -lvl 1 -y 40 -regy -20
 preplace inst NiosV.NiosV.dbg_mod -pg 1
 preplace inst NiosV.NiosV.reset_bridge -pg 1
 preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)PIO_LED.external_connection,(SLAVE)NiosV.pio_led) 1 0 3 NJ 720 NJ 720 NJ
-preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)PIO_HEX_1.external_connection,(SLAVE)NiosV.pio_hex_1) 1 0 3 NJ 160 NJ 160 NJ
-preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.reset,(SLAVE)CLK.clk_in_reset) 1 0 1 NJ
-preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pio_hex_2,(SLAVE)PIO_HEX_2.external_connection) 1 0 3 NJ 420 NJ 420 NJ
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pll_0_locked,(SLAVE)pll_0.locked) 1 0 2 NJ 900 NJ
 preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)CLK.clk_in,(SLAVE)NiosV.clk) 1 0 1 NJ
-preplace netloc FAN_OUT<net_container>NiosV</net_container>(SLAVE)NiosV.clk,(SLAVE)RAM.clk1,(MASTER)CLK.clk,(SLAVE)PIO_LED.clk,(SLAVE)PIO_HEX_0.clk,(SLAVE)sysid_qsys_0.clk,(SLAVE)PIO_HEX_3.clk,(SLAVE)PIO_HEX_2.clk,(SLAVE)pll_0.refclk,(SLAVE)PIO_HEX_1.clk,(SLAVE)JTAG_UART.clk,(SLAVE)PIO_SW.clk) 1 1 2 320 640 710
+preplace netloc INTERCONNECT<net_container>NiosV</net_container>(SLAVE)PIO_LED.s1,(SLAVE)PIO_SW.s1,(SLAVE)NiosV.timer_sw_agent,(SLAVE)SDRAM.s1,(SLAVE)sysid_qsys_0.control_slave,(SLAVE)NiosV.dm_agent,(SLAVE)PIO_HEX_1.s1,(SLAVE)JTAG_UART.avalon_jtag_slave,(SLAVE)PIO_HEX_3.s1,(SLAVE)RAM.s1,(MASTER)NiosV.data_manager,(SLAVE)PIO_HEX_0.s1,(SLAVE)PIO_HEX_2.s1,(MASTER)NiosV.instruction_manager) 1 1 2 360 620 670
 preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)SDRAM.wire,(SLAVE)NiosV.sdram) 1 0 3 NJ 980 NJ 980 NJ
 preplace netloc POINT_TO_POINT<net_container>NiosV</net_container>(MASTER)pll_0.outclk1,(SLAVE)SDRAM.clk) 1 2 1 690
 preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pio_hex_3,(SLAVE)PIO_HEX_3.external_connection) 1 0 3 NJ 660 NJ 660 NJ
-preplace netloc POINT_TO_POINT<net_container>NiosV</net_container>(SLAVE)JTAG_UART.irq,(MASTER)NiosV.platform_irq_rx) 1 2 1 690
-preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pio_hex_0,(SLAVE)PIO_HEX_0.external_connection) 1 0 3 NJ 60 NJ 60 NJ
-preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)pll_0.locked,(SLAVE)NiosV.pll_0_locked) 1 0 2 NJ 900 NJ
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)PIO_HEX_0.external_connection,(SLAVE)NiosV.pio_hex_0) 1 0 3 NJ 60 NJ 60 NJ
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)PIO_HEX_2.external_connection,(SLAVE)NiosV.pio_hex_2) 1 0 3 NJ 420 NJ 420 NJ
+preplace netloc FAN_OUT<net_container>NiosV</net_container>(SLAVE)PIO_SW.clk,(SLAVE)PIO_LED.clk,(SLAVE)PIO_HEX_2.clk,(SLAVE)PIO_HEX_0.clk,(MASTER)CLK.clk,(SLAVE)PIO_HEX_1.clk,(SLAVE)PIO_HEX_3.clk,(SLAVE)JTAG_UART.clk,(SLAVE)NiosV.clk,(SLAVE)RAM.clk1,(SLAVE)sysid_qsys_0.clk,(SLAVE)pll_0.refclk) 1 1 2 320 640 710
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pio_hex_1,(SLAVE)PIO_HEX_1.external_connection) 1 0 3 NJ 160 NJ 160 NJ
+preplace netloc FAN_OUT<net_container>NiosV</net_container>(SLAVE)PIO_HEX_0.reset,(SLAVE)JTAG_UART.reset,(SLAVE)PIO_HEX_1.reset,(SLAVE)RAM.reset1,(SLAVE)NiosV.reset,(MASTER)CLK.clk_reset,(SLAVE)sysid_qsys_0.reset,(SLAVE)PIO_HEX_3.reset,(SLAVE)SDRAM.reset,(SLAVE)PIO_LED.reset,(SLAVE)PIO_HEX_2.reset,(SLAVE)PIO_SW.reset,(SLAVE)pll_0.reset) 1 1 2 340 680 730
 preplace netloc EXPORT<net_container>NiosV</net_container>(MASTER)NiosV.clk_sdram,(MASTER)pll_0.outclk0) 1 2 2 NJ 900 NJ
+preplace netloc POINT_TO_POINT<net_container>NiosV</net_container>(MASTER)NiosV.platform_irq_rx,(SLAVE)JTAG_UART.irq) 1 2 1 690
 preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)NiosV.pio_sw,(SLAVE)PIO_SW.external_connection) 1 0 3 NJ 820 NJ 820 NJ
-preplace netloc FAN_OUT<net_container>NiosV</net_container>(SLAVE)sysid_qsys_0.reset,(SLAVE)PIO_HEX_0.reset,(SLAVE)PIO_HEX_2.reset,(SLAVE)PIO_HEX_3.reset,(SLAVE)PIO_HEX_1.reset,(SLAVE)PIO_SW.reset,(SLAVE)SDRAM.reset,(SLAVE)pll_0.reset,(SLAVE)RAM.reset1,(SLAVE)JTAG_UART.reset,(SLAVE)NiosV.reset,(MASTER)CLK.clk_reset,(SLAVE)PIO_LED.reset) 1 1 2 340 680 730
-preplace netloc INTERCONNECT<net_container>NiosV</net_container>(SLAVE)RAM.s1,(SLAVE)sysid_qsys_0.control_slave,(SLAVE)PIO_LED.s1,(SLAVE)PIO_HEX_3.s1,(SLAVE)JTAG_UART.avalon_jtag_slave,(SLAVE)PIO_SW.s1,(SLAVE)PIO_HEX_1.s1,(SLAVE)NiosV.timer_sw_agent,(MASTER)NiosV.instruction_manager,(SLAVE)PIO_HEX_0.s1,(SLAVE)PIO_HEX_2.s1,(SLAVE)SDRAM.s1,(MASTER)NiosV.data_manager,(SLAVE)NiosV.dm_agent) 1 1 2 360 620 670
+preplace netloc EXPORT<net_container>NiosV</net_container>(SLAVE)CLK.clk_in_reset,(SLAVE)NiosV.reset) 1 0 1 NJ
 levelinfo -pg 1 0 90 1020
 levelinfo -hier NiosV 100 130 470 780 930

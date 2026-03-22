@@ -2,12 +2,12 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal2</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Mar 21, 2026 8:50:41 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1774097441077</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Mar 22, 2026 10:25:40 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1774146340388</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>./</BspGeneratedLocation>
         <BspSettingsFile>/home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/software/hal_bsp/settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../NiosV.sopcinfo</SopcDesignFile>
-        <SystemFileHash>98d04c4f66fda97a468cb2b2e8a404cce6f62f0591d520d5f9e8dee4ac5f8</SystemFileHash>
+        <SystemFileHash>7df7947128ee148fef682c75f2888d7e5480864c9ec5fdee5794065b65ed3</SystemFileHash>
         <JdiFile>default</JdiFile>
         <Cpu>NiosV</Cpu>
         <SchemaVersion>1.9</SchemaVersion>
@@ -618,56 +618,62 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>sys_clk_timer</slaveDescriptor>
+                <addressRange>0x04090000 - 0x0409001F</addressRange>
+                <addressSpan>32</addressSpan>
+                <attributes>timer</attributes>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>PIO_HEX_3</slaveDescriptor>
-                <addressRange>0x04090000 - 0x0409000F</addressRange>
-                <addressSpan>16</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
-                <slaveDescriptor>PIO_HEX_2</slaveDescriptor>
-                <addressRange>0x04090010 - 0x0409001F</addressRange>
-                <addressSpan>16</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
-                <slaveDescriptor>PIO_HEX_1</slaveDescriptor>
                 <addressRange>0x04090020 - 0x0409002F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>PIO_HEX_0</slaveDescriptor>
+                <slaveDescriptor>PIO_HEX_2</slaveDescriptor>
                 <addressRange>0x04090030 - 0x0409003F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>PIO_LED</slaveDescriptor>
+                <slaveDescriptor>PIO_HEX_1</slaveDescriptor>
                 <addressRange>0x04090040 - 0x0409004F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>PIO_SW</slaveDescriptor>
+                <slaveDescriptor>PIO_HEX_0</slaveDescriptor>
                 <addressRange>0x04090050 - 0x0409005F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>PIO_LED</slaveDescriptor>
+                <addressRange>0x04090060 - 0x0409006F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>PIO_SW</slaveDescriptor>
+                <addressRange>0x04090070 - 0x0409007F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>sysid_qsys_0</slaveDescriptor>
-                <addressRange>0x04090060 - 0x04090067</addressRange>
+                <addressRange>0x04090080 - 0x04090087</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>JTAG_UART</slaveDescriptor>
-                <addressRange>0x04090068 - 0x0409006F</addressRange>
+                <addressRange>0x04090088 - 0x0409008F</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>NiosV_timer_sw_agent</slaveDescriptor>
-                <addressRange>0x04090080 - 0x040900BF</addressRange>
+                <addressRange>0x040900C0 - 0x040900FF</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>

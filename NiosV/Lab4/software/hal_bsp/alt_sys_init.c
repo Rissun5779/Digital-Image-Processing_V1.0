@@ -4,7 +4,7 @@
  * Machine generated for CPU 'NiosV' in SOPC Builder design 'NiosV'
  * SOPC Builder design path: /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/NiosV.sopcinfo
  *
- * Generated: Sat Mar 21 20:50:41 CST 2026
+ * Generated: Sun Mar 22 10:25:41 CST 2026
  */
 
 /*
@@ -61,6 +61,7 @@
 #include "intel_niosv_m_irq.h"
 #include "altera_avalon_jtag_uart.h"
 #include "altera_avalon_sysid_qsys.h"
+#include "altera_avalon_timer.h"
 #include "intel_niosv_m.h"
 
 /*
@@ -70,6 +71,7 @@
 INTEL_NIOSV_M_IRQ_INSTANCE ( NIOSV, NiosV);
 ALTERA_AVALON_JTAG_UART_INSTANCE ( JTAG_UART, JTAG_UART);
 ALTERA_AVALON_SYSID_QSYS_INSTANCE ( SYSID_QSYS_0, sysid_qsys_0);
+ALTERA_AVALON_TIMER_INSTANCE ( SYS_CLK_TIMER, sys_clk_timer);
 INTEL_NIOSV_M_INSTANCE ( NIOSV, NiosV);
 
 /*
@@ -93,6 +95,7 @@ void alt_irq_init ( const void* base )
 
 void alt_sys_init( void )
 {
+    ALTERA_AVALON_TIMER_INIT ( SYS_CLK_TIMER, sys_clk_timer);
     ALTERA_AVALON_JTAG_UART_INIT ( JTAG_UART, JTAG_UART);
     ALTERA_AVALON_SYSID_QSYS_INIT ( SYSID_QSYS_0, sysid_qsys_0);
     INTEL_NIOSV_M_INIT ( NIOSV, NiosV);

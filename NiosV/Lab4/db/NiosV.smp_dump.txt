@@ -15,15 +15,6 @@ i_next.010 0 0 1 1
 i_next.101 0 1 0 1 
 i_next.111 1 0 0 1 
 
-State Machine - |NiosV_top|NiosV:inst|NiosV_NiosV:niosv|niosv_dm_top:dbg_mod|niosv_debug_module:dm_inst|dm_state
-Name dm_state.EXE_PNDG dm_state.RESUMING dm_state.CMD_EXE dm_state.HALTED dm_state.HALTREQ dm_state.IDLE 
-dm_state.IDLE 0 0 0 0 0 0 
-dm_state.HALTREQ 0 0 0 0 1 1 
-dm_state.HALTED 0 0 0 1 0 1 
-dm_state.CMD_EXE 0 0 1 0 0 1 
-dm_state.RESUMING 0 1 0 0 0 1 
-dm_state.EXE_PNDG 1 0 0 0 0 1 
-
 State Machine - |NiosV_top|NiosV:inst|NiosV_SDRAM:sdram|m_state
 Name m_state.100000000 m_state.010000000 m_state.001000000 m_state.000100000 m_state.000010000 m_state.000001000 m_state.000000100 m_state.000000010 m_state.000000001 
 m_state.000000001 0 0 0 0 0 0 0 0 0 
@@ -42,3 +33,12 @@ m_next.000000001 0 0 0 0
 m_next.000001000 0 0 1 1 
 m_next.000010000 0 1 0 1 
 m_next.010000000 1 0 0 1 
+
+State Machine - |NiosV_top|NiosV:inst|NiosV_NiosV:niosv|niosv_dm_top:dbg_mod|niosv_debug_module:dm_inst|dm_state
+Name dm_state.EXE_PNDG dm_state.RESUMING dm_state.CMD_EXE dm_state.HALTED dm_state.HALTREQ dm_state.IDLE 
+dm_state.IDLE 0 0 0 0 0 0 
+dm_state.HALTREQ 0 0 0 0 1 1 
+dm_state.HALTED 0 0 0 1 0 1 
+dm_state.CMD_EXE 0 0 1 0 0 1 
+dm_state.RESUMING 0 1 0 0 0 1 
+dm_state.EXE_PNDG 1 0 0 0 0 1 

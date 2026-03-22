@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <system.h>
+#include <unistd.h>
+
+#define LED_REG  (*(volatile uint32_t*)PIO_LED_BASE)
+#define HEX0_REG (*(volatile uint32_t*)PIO_HEX_0_BASE)
+#define HEX1_REG (*(volatile uint32_t*)PIO_HEX_1_BASE)
+#define HEX2_REG (*(volatile uint32_t*)PIO_HEX_2_BASE)
+#define HEX3_REG (*(volatile uint32_t*)PIO_HEX_3_BASE)
+
+#define ms		 1000
+
+int main()
+{
+	int i = 0;
+    while(1)
+    {
+    	if(i<=0xFF){
+    		LED_REG = (uint32_t)i++;
+    	}
+    	else{
+    		i = 0;
+    	}
+    	usleep(100*ms);
+    	i++;
+    }
+    return 0;
+}

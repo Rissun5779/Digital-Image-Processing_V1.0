@@ -123,6 +123,11 @@ module NiosV (
 	wire         mm_interconnect_0_sdram_s1_readdatavalid;                  // SDRAM:za_valid -> mm_interconnect_0:SDRAM_s1_readdatavalid
 	wire         mm_interconnect_0_sdram_s1_write;                          // mm_interconnect_0:SDRAM_s1_write -> SDRAM:az_wr_n
 	wire  [15:0] mm_interconnect_0_sdram_s1_writedata;                      // mm_interconnect_0:SDRAM_s1_writedata -> SDRAM:az_data
+	wire         mm_interconnect_0_sys_clk_timer_s1_chipselect;             // mm_interconnect_0:sys_clk_timer_s1_chipselect -> sys_clk_timer:chipselect
+	wire  [15:0] mm_interconnect_0_sys_clk_timer_s1_readdata;               // sys_clk_timer:readdata -> mm_interconnect_0:sys_clk_timer_s1_readdata
+	wire   [2:0] mm_interconnect_0_sys_clk_timer_s1_address;                // mm_interconnect_0:sys_clk_timer_s1_address -> sys_clk_timer:address
+	wire         mm_interconnect_0_sys_clk_timer_s1_write;                  // mm_interconnect_0:sys_clk_timer_s1_write -> sys_clk_timer:write_n
+	wire  [15:0] mm_interconnect_0_sys_clk_timer_s1_writedata;              // mm_interconnect_0:sys_clk_timer_s1_writedata -> sys_clk_timer:writedata
 	wire  [31:0] mm_interconnect_0_niosv_timer_sw_agent_readdata;           // NiosV:timer_sw_agent_readdata -> mm_interconnect_0:NiosV_timer_sw_agent_readdata
 	wire         mm_interconnect_0_niosv_timer_sw_agent_waitrequest;        // NiosV:timer_sw_agent_waitrequest -> mm_interconnect_0:NiosV_timer_sw_agent_waitrequest
 	wire   [5:0] mm_interconnect_0_niosv_timer_sw_agent_address;            // mm_interconnect_0:NiosV_timer_sw_agent_address -> NiosV:timer_sw_agent_address
@@ -132,8 +137,9 @@ module NiosV (
 	wire         mm_interconnect_0_niosv_timer_sw_agent_write;              // mm_interconnect_0:NiosV_timer_sw_agent_write -> NiosV:timer_sw_agent_write
 	wire  [31:0] mm_interconnect_0_niosv_timer_sw_agent_writedata;          // mm_interconnect_0:NiosV_timer_sw_agent_writedata -> NiosV:timer_sw_agent_writedata
 	wire         irq_mapper_receiver0_irq;                                  // JTAG_UART:av_irq -> irq_mapper:receiver0_irq
+	wire         irq_mapper_receiver1_irq;                                  // sys_clk_timer:irq -> irq_mapper:receiver1_irq
 	wire  [15:0] niosv_platform_irq_rx_irq;                                 // irq_mapper:sender_irq -> NiosV:platform_irq_rx_irq
-	wire         rst_controller_reset_out_reset;                            // rst_controller:reset_out -> [JTAG_UART:rst_n, NiosV:reset_reset, PIO_HEX_0:reset_n, PIO_HEX_1:reset_n, PIO_HEX_2:reset_n, PIO_HEX_3:reset_n, PIO_LED:reset_n, PIO_SW:reset_n, RAM:reset, irq_mapper:reset, mm_interconnect_0:NiosV_reset_reset_bridge_in_reset_reset, rst_translator:in_reset, sysid_qsys_0:reset_n]
+	wire         rst_controller_reset_out_reset;                            // rst_controller:reset_out -> [JTAG_UART:rst_n, NiosV:reset_reset, PIO_HEX_0:reset_n, PIO_HEX_1:reset_n, PIO_HEX_2:reset_n, PIO_HEX_3:reset_n, PIO_LED:reset_n, PIO_SW:reset_n, RAM:reset, irq_mapper:reset, mm_interconnect_0:NiosV_reset_reset_bridge_in_reset_reset, rst_translator:in_reset, sys_clk_timer:reset_n, sysid_qsys_0:reset_n]
 	wire         rst_controller_reset_out_reset_req;                        // rst_controller:reset_req -> [RAM:reset_req, rst_translator:reset_req_in]
 	wire         rst_controller_001_reset_out_reset;                        // rst_controller_001:reset_out -> [SDRAM:reset_n, mm_interconnect_0:SDRAM_reset_reset_bridge_in_reset_reset]
 
@@ -333,6 +339,17 @@ module NiosV (
 		.locked   (pll_0_locked_export)  //  locked.export
 	);
 
+	NiosV_sys_clk_timer sys_clk_timer (
+		.clk        (clk_clk),                                       //   clk.clk
+		.reset_n    (~rst_controller_reset_out_reset),               // reset.reset_n
+		.address    (mm_interconnect_0_sys_clk_timer_s1_address),    //    s1.address
+		.writedata  (mm_interconnect_0_sys_clk_timer_s1_writedata),  //      .writedata
+		.readdata   (mm_interconnect_0_sys_clk_timer_s1_readdata),   //      .readdata
+		.chipselect (mm_interconnect_0_sys_clk_timer_s1_chipselect), //      .chipselect
+		.write_n    (~mm_interconnect_0_sys_clk_timer_s1_write),     //      .write_n
+		.irq        (irq_mapper_receiver1_irq)                       //   irq.irq
+	);
+
 	NiosV_sysid_qsys_0 sysid_qsys_0 (
 		.clock    (clk_clk),                                               //           clk.clk
 		.reset_n  (~rst_controller_reset_out_reset),                       //         reset.reset_n
@@ -448,6 +465,11 @@ module NiosV (
 		.SDRAM_s1_readdatavalid                  (mm_interconnect_0_sdram_s1_readdatavalid),                  //                                  .readdatavalid
 		.SDRAM_s1_waitrequest                    (mm_interconnect_0_sdram_s1_waitrequest),                    //                                  .waitrequest
 		.SDRAM_s1_chipselect                     (mm_interconnect_0_sdram_s1_chipselect),                     //                                  .chipselect
+		.sys_clk_timer_s1_address                (mm_interconnect_0_sys_clk_timer_s1_address),                //                  sys_clk_timer_s1.address
+		.sys_clk_timer_s1_write                  (mm_interconnect_0_sys_clk_timer_s1_write),                  //                                  .write
+		.sys_clk_timer_s1_readdata               (mm_interconnect_0_sys_clk_timer_s1_readdata),               //                                  .readdata
+		.sys_clk_timer_s1_writedata              (mm_interconnect_0_sys_clk_timer_s1_writedata),              //                                  .writedata
+		.sys_clk_timer_s1_chipselect             (mm_interconnect_0_sys_clk_timer_s1_chipselect),             //                                  .chipselect
 		.sysid_qsys_0_control_slave_address      (mm_interconnect_0_sysid_qsys_0_control_slave_address),      //        sysid_qsys_0_control_slave.address
 		.sysid_qsys_0_control_slave_readdata     (mm_interconnect_0_sysid_qsys_0_control_slave_readdata)      //                                  .readdata
 	);
@@ -456,6 +478,7 @@ module NiosV (
 		.clk           (clk_clk),                        //       clk.clk
 		.reset         (rst_controller_reset_out_reset), // clk_reset.reset
 		.receiver0_irq (irq_mapper_receiver0_irq),       // receiver0.irq
+		.receiver1_irq (irq_mapper_receiver1_irq),       // receiver1.irq
 		.sender_irq    (niosv_platform_irq_rx_irq)       //    sender.irq
 	);
 

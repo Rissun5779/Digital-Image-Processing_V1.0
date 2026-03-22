@@ -4,7 +4,7 @@
  * Machine generated for CPU 'NiosV' in SOPC Builder design 'NiosV'
  * SOPC Builder design path: /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/NiosV.sopcinfo
  *
- * Generated: Sat Mar 21 20:50:41 CST 2026
+ * Generated: Sun Mar 22 10:25:40 CST 2026
  */
 
 /*
@@ -50,9 +50,9 @@
 
 MEMORY
 {
-    SDRAM : ORIGIN = 0x0, LENGTH = 67108864
-    reset : ORIGIN = 0x4000000, LENGTH = 32
-    RAM : ORIGIN = 0x4000020, LENGTH = 491488
+    reset : ORIGIN = 0x0, LENGTH = 32
+    SDRAM : ORIGIN = 0x20, LENGTH = 67108832
+    RAM : ORIGIN = 0x4000000, LENGTH = 491520
 }
 
 /* Define symbols for each memory base-address */

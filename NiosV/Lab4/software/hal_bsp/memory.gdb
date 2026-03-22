@@ -3,7 +3,7 @@
 # Machine generated for CPU 'NiosV' in SOPC Builder design 'NiosV'
 # SOPC Builder design path: /home/rissun57/Desktop/Git/Digital-Image-Processing_V1.0/NiosV/Lab4/NiosV.sopcinfo
 #
-# Generated: Sat Mar 21 20:50:41 CST 2026
+# Generated: Sun Mar 22 10:25:40 CST 2026
 
 # DO NOT MODIFY THIS FILE
 #
